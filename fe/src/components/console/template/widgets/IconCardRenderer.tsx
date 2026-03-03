@@ -1,0 +1,725 @@
+import React from "react";
+import { IconCardWidget } from "@/types/console/template";
+import {
+  useWidgetStyle,
+  getElementStyle,
+  SafeHtml,
+  WidgetRendererProps,
+  formatUnit,
+  UniversalMedia,
+} from "./WidgetUtils";
+
+export const ICON_CARD_DEFAULTS = {
+  variant: "box",
+  title: "좌측타이틀영역",
+  titleStyle: { fontSize: "36px", fontSizeMobile: "28px", fontWeight: "700" },
+  subTitle: "서브타이틀영역입니다.",
+  subTitleStyle: { fontSize: "18px" },
+  items: [
+    {
+      id: "ts-1",
+      icon: "/images/template/icon_default.png",
+      title: "프로그램 특징",
+      desc: "프로그램 특징 내용 입력",
+      titleStyle: {
+        fontWeight: "700",
+        fontSize: "20px",
+        fontSizeMobile: "20px",
+      },
+      descStyle: { fontSize: "18px", color: "#666666" },
+    },
+    {
+      id: "ts-2",
+      icon: "/images/template/icon_default.png",
+      title: "프로그램 특징",
+      desc: "프로그램 특징 내용 입력",
+      titleStyle: {
+        fontWeight: "700",
+        fontSize: "20px",
+        fontSizeMobile: "20px",
+      },
+      descStyle: { fontSize: "18px", color: "#666666" },
+    },
+    {
+      id: "ts-3",
+      icon: "/images/template/icon_default.png",
+      title: "프로그램 특징",
+      desc: "프로그램 특징 내용 입력",
+      titleStyle: {
+        fontWeight: "700",
+        fontSize: "20px",
+        fontSizeMobile: "20px",
+      },
+      descStyle: { fontSize: "18px", color: "#666666" },
+    },
+    {
+      id: "ts-4",
+      icon: "/images/template/icon_default.png",
+      title: "프로그램 특징",
+      desc: "프로그램 특징 내용 입력",
+      titleStyle: {
+        fontWeight: "700",
+        fontSize: "20px",
+        fontSizeMobile: "20px",
+      },
+      descStyle: { fontSize: "18px", color: "#666666" },
+    },
+  ],
+};
+
+export const ICON_CARD_ITEM_DEFAULT = {
+  icon: "/images/template/icon_default.png",
+  title: "콘텐츠 비즈니스 설계자들 2024",
+  desc: "새로운 시대를 이끄는 기획자들의 비결",
+  titleStyle: { fontWeight: "700", fontSize: "20px", fontSizeMobile: "20px" },
+  descStyle: { fontSize: "18px", color: "#666666" },
+};
+
+export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
+  widget,
+  onElementSelect,
+  viewport = "desktop",
+}) => {
+  const w = widget as IconCardWidget;
+  const style = useWidgetStyle(w.style);
+
+  const currentLayout = String(w.data.layout || w.data.variant || "1");
+
+  if (
+    currentLayout === "1" ||
+    currentLayout === "layout1" ||
+    currentLayout === "box"
+  ) {
+    return (
+      <section style={style} className="w-full">
+        <div
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("style");
+          }}
+        >
+          <div className="flex flex-col justify-start items-center">
+            {!w.data.subTitleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.subTitle || "( 서브타이틀 )"}
+                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subTitle");
+                }}
+              />
+            )}
+            {!w.data.titleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.title || "타이틀명 입력"}
+                className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                style={getElementStyle(w.data.titleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              />
+            )}
+            {!(w.data as any).descStyle?.isHidden && (
+              <SafeHtml
+                html={(w.data as any).desc || "이민 프로그램명 입력"}
+                className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle((w.data as any).descStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("desc");
+                }}
+              />
+            )}
+          </div>
+
+          <div className="self-stretch flex flex-col justify-start items-start w-full">
+            <div className="self-stretch cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all overflow-hidden w-full">
+              <UniversalMedia
+                className="self-stretch w-full object-cover"
+                url={
+                  (w.data as any).imageUrl || "/images/placeholder/wide-image.jpg"
+                }
+                alt="banner image"
+                style={{
+                  height: (w.data as any).imageHeight || "320px",
+                  ...getElementStyle((w.data as any).imageStyle, viewport),
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+              />
+            </div>
+            <div
+              className="self-stretch px-5 xl:px-14 inline-flex justify-start items-start flex-wrap content-start -mt-20 relative z-10"
+              style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
+            >
+              {(w.data.items || []).map((item: any, i: number) => (
+                <div
+                  key={item.id || i}
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(to bottom right, #f8fafc, #eff6ff)",
+                  }}
+                  className="flex-1 min-w-80 p-6 rounded-2xl outline outline-1 outline-offset-[-1px] outline-시안-mode-gray10 inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                >
+                  <SafeHtml
+                    html={item.title || "프로그램 특징"}
+                    className="text-center justify-start text-시안-mode-Primary80 text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                    style={getElementStyle(item.titleStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemTitle", item.id || i.toString());
+                    }}
+                  />
+                  <div className="w-14 h-14 relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center p-1">
+                    <UniversalMedia
+                      url={
+                        item.icon &&
+                        item.icon !== "/images/template/icon_default.png"
+                          ? item.icon
+                          : "/images/template/icon_default.png"
+                      }
+                      alt="icon"
+                      className="w-10 h-10 object-contain"
+                      style={getElementStyle(item.iconStyle, viewport)}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("itemIcon", item.id || i.toString());
+                      }}
+                    />
+                  </div>
+                  <SafeHtml
+                    html={item.desc || "프로그램 특징 내용 입력"}
+                    className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                    style={getElementStyle(item.descStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemDesc", item.id || i.toString());
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (currentLayout === "2") {
+    return (
+      <section style={style} className="w-full">
+        <div
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("style");
+          }}
+        >
+          <div className="flex flex-col justify-start items-center">
+            {!w.data.subTitleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.subTitle || "( 서브타이틀 )"}
+                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subTitle");
+                }}
+              />
+            )}
+            {!w.data.titleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.title || "타이틀명 입력"}
+                className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                style={getElementStyle(w.data.titleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              />
+            )}
+            {!(w.data as any).descStyle?.isHidden && (
+              <SafeHtml
+                html={(w.data as any).desc || "이민 프로그램명 입력"}
+                className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle((w.data as any).descStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("desc");
+                }}
+              />
+            )}
+          </div>
+
+          <div
+            className="self-stretch px-5 xl:px-14 bg-시안-mode-gray5 rounded-[20px] inline-flex justify-center items-center overflow-hidden flex-wrap"
+            style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "0px" }}
+          >
+            {(w.data.items || []).map((item: any, i: number) => (
+              <div
+                key={item.id || i}
+                className="flex-1 min-w-[180px] p-6 rounded-2xl inline-flex flex-col justify-start items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+              >
+                <div className="w-14 h-14 relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center p-1 shrink-0">
+                  <UniversalMedia
+                    url={
+                      item.icon &&
+                      item.icon !== "/images/template/icon_default.png"
+                        ? item.icon
+                        : "/images/template/icon_default.png"
+                    }
+                    alt="icon"
+                    className="w-10 h-10 object-contain"
+                    style={getElementStyle(item.iconStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemIcon", item.id || i.toString());
+                    }}
+                  />
+                </div>
+
+                <div className="flex flex-col justify-center items-center gap-2">
+                  <SafeHtml
+                    html={item.title || "프로그램 특징"}
+                    className="text-center justify-start text-시안-mode-Primary50 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                    style={getElementStyle(item.titleStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemTitle", item.id || i.toString());
+                    }}
+                  />
+                  <SafeHtml
+                    html={item.desc || "프로그램 특징 내용 입력"}
+                    className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                    style={getElementStyle(item.descStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemDesc", item.id || i.toString());
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (currentLayout === "3") {
+    const items = w.data.items || [];
+    const itemsPerRow = 3;
+    const rows: any[][] = [];
+    for (let i = 0; i < items.length; i += itemsPerRow) {
+      rows.push(items.slice(i, i + itemsPerRow));
+    }
+
+    return (
+      <section style={style} className="w-full">
+        <div
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("style");
+          }}
+        >
+          <div className="flex flex-col justify-start items-center">
+            {!w.data.subTitleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.subTitle || "( 서브타이틀 )"}
+                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subTitle");
+                }}
+              />
+            )}
+            {!w.data.titleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.title || "타이틀명 입력"}
+                className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                style={getElementStyle(w.data.titleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              />
+            )}
+            {!(w.data as any).descStyle?.isHidden && (
+              <SafeHtml
+                html={(w.data as any).desc || "이민 프로그램명 입력"}
+                className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle((w.data as any).descStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("desc");
+                }}
+              />
+            )}
+          </div>
+
+          <div className="self-stretch flex flex-col justify-start items-start gap-10">
+            {rows.map((row, rowIndex) => (
+              <div
+                key={rowIndex}
+                className="self-stretch inline-flex justify-center items-stretch gap-9 flex-wrap"
+              >
+                {row.map((item: any, i: number) => {
+                  const itemIndex = rowIndex * itemsPerRow + i;
+                  return (
+                    <div
+                      key={item.id || itemIndex}
+                      className="flex-1 min-w-[280px] max-w-96 px-6 py-8 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_12px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                    >
+                      <SafeHtml
+                        html={(item as any).subTitle || "( 서브타이틀 )"}
+                        className="text-center justify-start text-시안-mode-Primary50 text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                        style={getElementStyle(
+                          (item as any).subTitleStyle,
+                          viewport,
+                        )}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.(
+                            "itemSubTitle",
+                            item.id || itemIndex.toString(),
+                          );
+                        }}
+                      />
+
+                      <div className="w-24 h-24 relative bg-시안-mode-gray5 rounded-[50px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
+                        <UniversalMedia
+                          url={
+                            item.icon &&
+                            item.icon !== "/images/template/icon_default.png"
+                              ? item.icon
+                              : "/images/template/icon_default.png"
+                          }
+                          alt="icon"
+                          className="w-16 h-16 object-contain"
+                          style={getElementStyle(item.iconStyle, viewport)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "itemIcon",
+                              item.id || itemIndex.toString(),
+                            );
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex flex-col justify-start items-center gap-2">
+                        <SafeHtml
+                          html={item.title || "프로그램 특징"}
+                          className="justify-start text-시안-mode-gray95 text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                          style={getElementStyle(item.titleStyle, viewport)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "itemTitle",
+                              item.id || itemIndex.toString(),
+                            );
+                          }}
+                        />
+                        <SafeHtml
+                          html={item.desc || "프로그램 특징 내용 입력"}
+                          className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                          style={getElementStyle(item.descStyle, viewport)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "itemDesc",
+                              item.id || itemIndex.toString(),
+                            );
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (currentLayout === "4") {
+    const items = w.data.items || [];
+    const itemsPerRow = 3;
+    const rows: any[][] = [];
+    for (let i = 0; i < items.length; i += itemsPerRow) {
+      rows.push(items.slice(i, i + itemsPerRow));
+    }
+
+    return (
+      <section style={style} className="w-full">
+        <div
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("style");
+          }}
+        >
+          <div className="flex flex-col justify-start items-center">
+            {!w.data.subTitleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.subTitle || "( 서브타이틀 )"}
+                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subTitle");
+                }}
+              />
+            )}
+            {!w.data.titleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.title || "타이틀명 입력"}
+                className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                style={getElementStyle(w.data.titleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              />
+            )}
+            {!(w.data as any).descStyle?.isHidden && (
+              <SafeHtml
+                html={(w.data as any).desc || "이민 프로그램명 입력"}
+                className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle((w.data as any).descStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("desc");
+                }}
+              />
+            )}
+          </div>
+
+          <div className="self-stretch flex flex-col justify-start items-start gap-6">
+            {rows.map((row, rowIndex) => (
+              <div
+                key={rowIndex}
+                className="self-stretch inline-flex justify-center items-center gap-5 flex-wrap"
+              >
+                {row.map((item: any, i: number) => {
+                  const itemIndex = rowIndex * itemsPerRow + i;
+                  return (
+                    <div
+                      key={item.id || itemIndex}
+                      className="flex-1 min-w-[260px] max-w-96 p-6 bg-시안-mode-gray5 rounded-2xl flex justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                    >
+                      <div className="inline-flex flex-col justify-start items-start gap-2 flex-1 min-w-0">
+                        <SafeHtml
+                          html={item.title || "프로그램 특징"}
+                          className="justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                          style={getElementStyle(item.titleStyle, viewport)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "itemTitle",
+                              item.id || itemIndex.toString(),
+                            );
+                          }}
+                        />
+                        <SafeHtml
+                          html={item.desc || "프로그램 특징 내용 입력"}
+                          className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                          style={getElementStyle(item.descStyle, viewport)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "itemDesc",
+                              item.id || itemIndex.toString(),
+                            );
+                          }}
+                        />
+                      </div>
+
+                      <div className="w-24 h-24 shrink-0 relative bg-white rounded-[50px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
+                        <UniversalMedia
+                          url={
+                            item.icon &&
+                            item.icon !== "/images/template/icon_default.png"
+                              ? item.icon
+                              : "/images/template/icon_default.png"
+                          }
+                          alt="icon"
+                          className="w-16 h-16 object-contain"
+                          style={getElementStyle(item.iconStyle, viewport)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "itemIcon",
+                              item.id || itemIndex.toString(),
+                            );
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (currentLayout === "5") {
+    const items = w.data.items || [];
+    const itemsPerRow = 3;
+    const rows: any[][] = [];
+    for (let i = 0; i < items.length; i += itemsPerRow) {
+      rows.push(items.slice(i, i + itemsPerRow));
+    }
+
+    return (
+      <section style={style} className="w-full">
+        <div
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("style");
+          }}
+        >
+          <div className="flex flex-col justify-start items-center">
+            {!w.data.subTitleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.subTitle || "( 서브타이틀 )"}
+                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subTitle");
+                }}
+              />
+            )}
+            {!w.data.titleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.title || "타이틀명 입력"}
+                className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                style={getElementStyle(w.data.titleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              />
+            )}
+            {!(w.data as any).descStyle?.isHidden && (
+              <SafeHtml
+                html={(w.data as any).desc || "이민 프로그램명 입력"}
+                className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={getElementStyle((w.data as any).descStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("desc");
+                }}
+              />
+            )}
+          </div>
+
+          <div className="self-stretch flex flex-col justify-start items-start gap-10">
+            {rows.map((row, rowIndex) => (
+              <div
+                key={rowIndex}
+                className="self-stretch inline-flex justify-center items-center gap-9 flex-wrap"
+              >
+                {row.map((item: any, i: number) => {
+                  const itemIndex = rowIndex * itemsPerRow + i;
+                  return (
+                    <div
+                      key={item.id || itemIndex}
+                      className="flex-1 min-w-[260px] max-w-96 p-6 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_16px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-start gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                    >
+                      <div className="self-stretch inline-flex justify-between items-start">
+                        <div className="inline-flex flex-col justify-start items-start">
+                          <SafeHtml
+                            html={(item as any).subTitle || "( 서브타이틀 )"}
+                            className="text-center justify-start text-시안-mode-Primary50 text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                            style={getElementStyle(
+                              (item as any).subTitleStyle,
+                              viewport,
+                            )}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "itemSubTitle",
+                                item.id || itemIndex.toString(),
+                              );
+                            }}
+                          />
+                          <SafeHtml
+                            html={item.title || "프로그램 특징"}
+                            className="justify-start text-시안-mode-gray95 text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                            style={getElementStyle(item.titleStyle, viewport)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "itemTitle",
+                                item.id || itemIndex.toString(),
+                              );
+                            }}
+                          />
+                        </div>
+
+                        <div className="w-14 h-14 relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
+                          <UniversalMedia
+                            url={
+                              item.icon &&
+                              item.icon !== "/images/template/icon_default.png"
+                                ? item.icon
+                                : "/images/template/icon_default.png"
+                            }
+                            alt="icon"
+                            className="w-10 h-10 object-contain"
+                            style={getElementStyle(item.iconStyle, viewport)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "itemIcon",
+                                item.id || itemIndex.toString(),
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <SafeHtml
+                        html={item.desc || "프로그램 특징 내용 입력"}
+                        className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded w-full"
+                        style={getElementStyle(item.descStyle, viewport)}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.(
+                            "itemDesc",
+                            item.id || itemIndex.toString(),
+                          );
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section style={style} className="w-full py-10 text-center">
+      아이콘 리스트 레이아웃 {currentLayout} (준비 중)
+    </section>
+  );
+};

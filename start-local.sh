@@ -1,0 +1,376 @@
+#!/bin/bash
+
+set -e
+
+# 색상 정의
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# 프로젝트 루트 디렉토리
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# 프로젝트 이름 (컨테이너 prefix)
+PROJECT_NAME="namuem"
+
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+log_debug() {
+    echo -e "${CYAN}[DEBUG]${NC} $1"
+}
+
+# 포트가 사용 중인지 확인
+is_port_in_use() {
+    local port=$1
+
+    # 1. lsof로 시스템에서 포트 사용 확인
+    if lsof -i ":$port" -sTCP:LISTEN > /dev/null 2>&1; then
+        return 0
+    fi
+
+    # 2. Docker 컨테이너에서 포트 사용 확인
+    local docker_ports
+    docker_ports=$(docker ps --format '{{.Ports}}' 2>/dev/null || true)
+    if [ -n "$docker_ports" ]; then
+        if echo "$docker_ports" | grep -qE "[:.]$port->"; then
+            return 0
+        fi
+    fi
+
+    # 3. netstat으로도 확인
+    if command -v netstat > /dev/null 2>&1; then
+        if netstat -an 2>/dev/null | grep -E "[:.]$port[[:space:]]" | grep -q "LISTEN"; then
+            return 0
+        fi
+    fi
+
+    return 1
+}
+
+# Docker 컨테이너가 사용 중인 포트 목록 추출
+get_docker_used_ports() {
+    docker ps --format '{{.Ports}}' 2>/dev/null | \
+        grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+->|:::[0-9]+->|:[0-9]+->' | \
+        grep -oE '[0-9]+(-|$)' | \
+        grep -oE '^[0-9]+' | \
+        sort -u
+}
+
+# Docker 컨테이너가 사용 중인 포트 목록 출력
+show_docker_ports() {
+    log_info "Scanning Docker container ports..."
+
+    local containers=$(docker ps --format '{{.Names}}\t{{.Ports}}' 2>/dev/null | grep -v "^$" || true)
+
+    if [ -n "$containers" ]; then
+        log_warning "Currently running Docker containers and their ports:"
+        echo ""
+        printf "  ${YELLOW}%-30s %s${NC}\n" "CONTAINER" "HOST PORTS"
+        printf "  %-30s %s\n" "------------------------------" "----------"
+
+        while IFS=$'\t' read -r name ports; do
+            local host_ports=$(echo "$ports" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+->|:::[0-9]+->|:[0-9]+->' | \
+                grep -oE '[0-9]+(-|$)' | grep -oE '^[0-9]+' | sort -u | tr '\n' ' ')
+            if [ -n "$host_ports" ]; then
+                printf "  %-30s %s\n" "$name" "$host_ports"
+            else
+                printf "  %-30s %s\n" "$name" "(no host ports)"
+            fi
+        done <<< "$containers"
+        echo ""
+
+        local all_ports=$(get_docker_used_ports | tr '\n' ', ' | sed 's/,$//')
+        if [ -n "$all_ports" ]; then
+            log_warning "Ports already in use by Docker: $all_ports"
+        fi
+        echo ""
+    else
+        log_info "No Docker containers currently running"
+        echo ""
+    fi
+}
+
+# 사용 가능한 포트 찾기
+find_available_port() {
+    local start_port=$1
+    local port=$start_port
+    local max_port=$((start_port + 100))
+    local skipped_ports=""
+
+    while [ $port -lt $max_port ]; do
+        if ! is_port_in_use $port; then
+            if [ -n "$skipped_ports" ]; then
+                echo -e "  ${YELLOW}(skipped in-use: ${skipped_ports})${NC}" >&2
+            fi
+            echo $port
+            return 0
+        fi
+        if [ -z "$skipped_ports" ]; then
+            skipped_ports="$port"
+        else
+            skipped_ports="$skipped_ports, $port"
+        fi
+        port=$((port + 1))
+    done
+
+    log_error "No available port found in range $start_port-$max_port" >&2
+    return 1
+}
+
+# .env 파일에서 값 읽기
+read_env_value() {
+    local key=$1
+    local env_file="$SCRIPT_DIR/.env"
+    if [ -f "$env_file" ]; then
+        grep "^${key}=" "$env_file" | tail -1 | cut -d'=' -f2-
+    fi
+}
+
+# .env 파일에 포트 업데이트 (포트가 변경된 경우에만)
+update_env_ports() {
+    local env_file="$SCRIPT_DIR/.env"
+    local env_backup="$SCRIPT_DIR/.env.backup"
+    local frontend_env_file="$SCRIPT_DIR/fe/.env.local"
+
+    if [ ! -f "$env_file" ]; then
+        log_warning ".env file not found, skipping port injection"
+        return 0
+    fi
+
+    local env_api_port=$(read_env_value "NODE_EXPOSE_PORT")
+    local env_web_port=$(read_env_value "REACT_EXPOSE_PORT")
+
+    # 포트가 .env와 동일하면 업데이트 불필요
+    if [ "$env_api_port" = "$API_PORT" ] && [ "$env_web_port" = "$WEB_PORT" ]; then
+        log_info ".env ports unchanged, skipping update"
+    else
+        # 백업 생성
+        cp "$env_file" "$env_backup"
+
+        log_info "Updating .env file with assigned ports..."
+
+        sed -i.tmp "s|^REACT_EXPOSE_PORT=.*|REACT_EXPOSE_PORT=$WEB_PORT|" "$env_file"
+        sed -i.tmp "s|^NODE_EXPOSE_PORT=.*|NODE_EXPOSE_PORT=$API_PORT|" "$env_file"
+        sed -i.tmp "s|^API_URL=.*|API_URL=http://localhost:$API_PORT|" "$env_file"
+
+        rm -f "$env_file.tmp"
+
+        log_success ".env file updated (backup: .env.backup)"
+    fi
+
+    # fe/.env.local 파일 생성/업데이트
+    log_info "Updating fe/.env.local with API port..."
+    cat > "$frontend_env_file" << EOF
+# Auto-generated by start-local.sh
+NEXT_PUBLIC_API_URL=http://localhost:$API_PORT
+NEXT_PUBLIC_SITE_ID=likeweb
+NEXT_PUBLIC_MAINT_NAME=나무이민
+NEXT_PUBLIC_ENCRYPTION_KEY=LnsSEX1tg3A3OMD4/qdtbapFwF3abNfA84xUJ2M/1mw=
+EOF
+    log_success "fe/.env.local updated (API_PORT=$API_PORT)"
+}
+
+# 포트 설정 (.env 우선, 충돌 시 자동 할당)
+setup_ports() {
+    log_info "Checking ports..."
+    echo ""
+
+    # Docker 컨테이너 포트 현황 출력
+    show_docker_ports
+
+    # .env에서 설정된 포트 읽기
+    local env_api_port=$(read_env_value "NODE_EXPOSE_PORT")
+    local env_web_port=$(read_env_value "REACT_EXPOSE_PORT")
+
+    # API 포트: .env 값 우선, 충돌 시 자동 할당
+    if [ -n "$env_api_port" ] && ! is_port_in_use "$env_api_port"; then
+        export API_PORT=$env_api_port
+        log_success "API port $API_PORT from .env is available"
+    else
+        if [ -n "$env_api_port" ]; then
+            log_warning "API port $env_api_port from .env is in use, finding alternative..."
+        fi
+        export API_PORT=$(find_available_port "${env_api_port:-3022}")
+        if [ -z "$API_PORT" ]; then
+            log_error "Could not find available API port"
+            exit 1
+        fi
+    fi
+
+    # Web 포트: .env 값 우선, 충돌 시 자동 할당
+    if [ -n "$env_web_port" ] && ! is_port_in_use "$env_web_port" && [ "$env_web_port" != "$API_PORT" ]; then
+        export WEB_PORT=$env_web_port
+        log_success "Web port $WEB_PORT from .env is available"
+    else
+        if [ -n "$env_web_port" ]; then
+            log_warning "Web port $env_web_port from .env is in use, finding alternative..."
+        fi
+        export WEB_PORT=$(find_available_port "${env_web_port:-3023}")
+        if [ "$WEB_PORT" -eq "$API_PORT" ]; then
+            WEB_PORT=$(find_available_port $((API_PORT + 1)))
+        fi
+        if [ -z "$WEB_PORT" ]; then
+            log_error "Could not find available Web port"
+            exit 1
+        fi
+    fi
+
+    echo ""
+    log_success "Ports assigned:"
+    echo -e "  ${GREEN}→${NC} API: $API_PORT (Express.js)"
+    echo -e "  ${GREEN}→${NC} Web: $WEB_PORT (Next.js)"
+    echo ""
+
+    # .env 파일에 포트 주입 (변경된 경우에만)
+    update_env_ports
+}
+
+# 프로세스 종료 핸들러
+cleanup() {
+    log_info "Shutting down..."
+
+    log_info "Stopping Docker containers..."
+    docker compose down 2>/dev/null || true
+
+    exit 0
+}
+
+trap cleanup SIGINT SIGTERM
+
+# 메인 실행
+main() {
+    log_info "Starting ${PROJECT_NAME} Docker development environment..."
+
+    # 0. 기존 namuem 컨테이너 정리
+    log_info "Cleaning up existing ${PROJECT_NAME} containers..."
+    local existing_containers=$(docker ps -aq --filter "name=${PROJECT_NAME}" 2>/dev/null)
+    if [ -n "$existing_containers" ]; then
+        docker stop $existing_containers > /dev/null 2>&1 || true
+        docker rm $existing_containers > /dev/null 2>&1 || true
+        log_success "Existing containers removed"
+    fi
+
+    # 1. 포트 설정
+    setup_ports
+
+    # 2. Docker Compose로 전체 스택 실행 (포그라운드)
+    echo ""
+    log_success "Starting all services in Docker (foreground)..."
+    echo ""
+    echo -e "  ${GREEN}→${NC} API: http://localhost:$API_PORT (Express.js)"
+    echo -e "  ${GREEN}→${NC} Web: http://localhost:$WEB_PORT (Next.js)"
+    echo ""
+    log_info "Press Ctrl+C to stop all services"
+    echo ""
+
+    docker compose up --build
+
+    # 종료되면 정리
+    cleanup
+}
+
+# Docker 전체 스택 실행 (백그라운드)
+docker_all() {
+    log_info "Starting full Docker stack (detached)..."
+
+    # 포트 설정 (.env 업데이트 포함)
+    setup_ports
+
+    docker compose up -d --build
+
+    echo ""
+    log_success "All services started!"
+    log_info "API: http://localhost:$API_PORT"
+    log_info "Web: http://localhost:$WEB_PORT"
+}
+
+# 모든 namuem 컨테이너 중지
+stop_all() {
+    log_info "Stopping all ${PROJECT_NAME} containers..."
+
+    local containers=$(docker ps -aq --filter "name=${PROJECT_NAME}" 2>/dev/null)
+    if [ -n "$containers" ]; then
+        docker stop $containers > /dev/null 2>&1 || true
+        docker rm $containers > /dev/null 2>&1 || true
+        log_success "All ${PROJECT_NAME} containers stopped and removed"
+    else
+        log_info "No ${PROJECT_NAME} containers found"
+    fi
+
+    docker compose down 2>/dev/null || true
+}
+
+# 실행 중인 namuem 컨테이너 상태 확인
+show_status() {
+    log_info "Checking ${PROJECT_NAME} container status..."
+    echo ""
+
+    local containers=$(docker ps --filter "name=${PROJECT_NAME}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null)
+    if [ -n "$containers" ] && [ "$(echo "$containers" | wc -l)" -gt 1 ]; then
+        echo "$containers"
+    else
+        log_info "No ${PROJECT_NAME} containers are running"
+    fi
+}
+
+# 도움말
+show_help() {
+    echo "Usage: $0 [command]"
+    echo ""
+    echo "Commands:"
+    echo "  (none)    Start all services in Docker (foreground, default)"
+    echo "  docker    Start all services in Docker (detached/background)"
+    echo "  stop      Stop all ${PROJECT_NAME} Docker containers"
+    echo "  status    Show running ${PROJECT_NAME} containers"
+    echo "  help      Show this help message"
+    echo ""
+    echo "Port Assignment:"
+    echo "  - Scans all running Docker containers for used ports"
+    echo "  - Checks system ports (lsof, netstat)"
+    echo "  - Automatically assigns unused ports"
+    echo "  - Updates .env file with assigned ports (backup created as .env.backup)"
+    echo "  - Default starting ports: API=3022, Web=3023"
+    echo ""
+    echo "Examples:"
+    echo "  $0           # Start development environment"
+    echo "  $0 docker    # Start in background"
+    echo "  $0 status    # Check running containers"
+    echo "  $0 stop      # Stop all containers"
+}
+
+# 실행
+case "${1:-}" in
+    docker)
+        docker_all
+        ;;
+    stop)
+        stop_all
+        ;;
+    status)
+        show_status
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        main
+        ;;
+esac

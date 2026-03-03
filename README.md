@@ -1,0 +1,13 @@
+### 환경설정 
+.env 파일 수정
+APP_ENV = production / development 
+
+# 도커 컨테이너 포트 설정 
+REACT_V1_PORT=3028
+REACT_V2_PORT=3030
+
+NODE_V1_PORT=3029
+NODE_V2_PORT=3031
+
+REACT_CONTAINER_PORT=3000
+NODE_CONTAINER_PORT=3000

@@ -1,0 +1,64 @@
+services:
+    react-app:
+        build:
+            context: ./fe
+            dockerfile: Dockerfile
+            target: ${APP_ENV}
+            args:
+                NEXT_PUBLIC_API_URL: ${API_URL}
+                NEXT_PUBLIC_SITE_ID: ${NEXT_PUBLIC_SITE_ID}
+                NEXT_PUBLIC_MAINT_NAME: ${NEXT_PUBLIC_MAINT_NAME}
+                NEXT_PUBLIC_ENCRYPTION_KEY: ${NEXT_PUBLIC_ENCRYPTION_KEY}
+        restart: always
+        ports:
+            - "${REACT_EXPOSE_PORT}:${REACT_CONTAINER_PORT}"
+        volumes:
+            - ./fe:/app
+            - namuem_fe_node_modules:/app/node_modules
+            - /app/.next
+        environment:
+            - NODE_ENV=${APP_ENV}
+            - TZ=Asia/Seoul
+        env_file:
+            - ./.env
+        networks:
+            - namuem_net
+        command: >
+            sh -c "
+              if [ \"$APP_ENV\" = \"production\" ]; then
+                node .next/standalone/server.js;
+              else
+                npm run dev;
+              fi"
+
+    node-app:
+        build:
+            context: ./be
+            dockerfile: Dockerfile
+            target: ${APP_ENV}
+        restart: always
+        ports:
+            - "${NODE_EXPOSE_PORT}:${NODE_CONTAINER_PORT}"
+        volumes:
+            - ./be:/app
+            - namuem_be_node_modules:/app/node_modules
+        environment:
+            - TZ=Asia/Seoul
+            - NODE_ENV=${APP_ENV}
+        env_file:
+            - ./.env
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        dns:
+            - 8.8.8.8
+            - 8.8.4.4
+        networks:
+            - namuem_net
+
+volumes:
+    namuem_fe_node_modules:
+    namuem_be_node_modules:
+
+networks:
+    namuem_net:
+        driver: bridge
