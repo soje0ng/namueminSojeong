@@ -61,6 +61,7 @@ export const getElementStyle = (
       : undefined,
     maxWidth: "100%",
     cursor: "pointer",
+    display: (style as any).isHidden ? "none" : undefined,
   } as React.CSSProperties;
 
   Object.keys(result).forEach(
@@ -130,14 +131,7 @@ export const SafeHtml: React.FC<{
   // Remove inline styles from the HTML content so that the outer style prop takes precedence
   const cleanHtml = React.useMemo(() => {
     if (!html || typeof html !== "string") return "";
-    // Remove font-size from style attributes but keep other styles to allow colors/decorations
-    return html.replace(
-      /(style\s*=\s*["'])([^"']*?)(["'])/gi,
-      (match, prefix, content, suffix) => {
-        const cleanContent = content.replace(/font-size\s*:[^;]+;?/gi, "");
-        return `${prefix}${cleanContent}${suffix}`;
-      },
-    );
+    return html;
   }, [html]);
 
   // Edit mode + empty content = show placeholder
@@ -343,7 +337,12 @@ export const UniversalMedia: React.FC<{
     ...style,
     position: "relative",
     overflow: "hidden",
-    display: style?.width && style.width !== "100%" ? "inline-block" : "block",
+    display:
+      style?.display === "none"
+        ? "none"
+        : style?.width && style.width !== "100%"
+          ? "inline-block"
+          : "block",
     maxWidth: "100%",
     // If it's a video and no height is provided, use aspect-video
     aspectRatio:

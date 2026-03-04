@@ -14,8 +14,10 @@ export const TITLE_TEXT_DEFAULTS = {
   subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
   title: "타이틀 문구를 적는 곳입니다.",
   titleStyle: { fontSize: "48px", fontWeight: "700", color: "#111827" },
-  quoteLeft: "/images/placeholder/icon-quote.jpg",
-  quoteRight: "/images/placeholder/icon-quote.jpg",
+  quoteLeftUrl: "/images/placeholder/icon-quote.jpg",
+  quoteRightUrl: "/images/placeholder/icon-quote.jpg",
+  quoteLeftWhiteUrl: "/images/placeholder/icon-quote.jpg",
+  quoteRightWhiteUrl: "/images/placeholder/icon-quote.jpg",
 };
 
 export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
@@ -43,11 +45,11 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer overflow-hidden transition-all hover:ring-2 hover:ring-blue-400"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("quoteLeft");
+                  onElementSelect?.("quoteLeftUrl");
                 }}
               >
                 <UniversalMedia
-                  url={data.quoteLeft || "/images/placeholder/icon-quote.jpg"}
+                  url={data.quoteLeftUrl}
                   className="w-full h-full object-contain"
                   alt="Left Content Image"
                 />
@@ -71,7 +73,10 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                   <SafeHtml
                     html={data.subTitle || "이민 프로그램명 입력"}
                     className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all mt-2 cursor-text break-keep"
-                    style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
+                    style={{
+                      ...getElementStyle(data.subTitleStyle, viewport),
+                      color: "#285DE1",
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("subTitle");
@@ -85,11 +90,11 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer overflow-hidden transition-all hover:ring-2 hover:ring-blue-400"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("quoteRight");
+                  onElementSelect?.("quoteRightUrl");
                 }}
               >
                 <UniversalMedia
-                  url={data.quoteRight || "/images/placeholder/icon-quote.jpg"}
+                  url={data.quoteRightUrl}
                   className="w-full h-full object-contain"
                   alt="Right Content Image"
                 />
@@ -131,11 +136,11 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer overflow-hidden transition-all hover:ring-2 hover:ring-white/50"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("quoteLeft");
+                  onElementSelect?.("quoteLeftWhiteUrl");
                 }}
               >
                 <UniversalMedia
-                  url={data.quoteLeft || "/images/placeholder/icon-quote.jpg"}
+                  url={data.quoteLeftWhiteUrl}
                   className="w-full h-full object-contain"
                   alt="Left Content Image"
                 />
@@ -147,11 +152,12 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                     <SafeHtml
                       html={
                         data.title ||
-                        "자녀를 미국에서 교육시키는 이유는<br/>세계 대학 순위가 증명하고 있습니다."
+                        "자녀를 미국에서 교육시키는 이유는<br/>世界 대학 순위가 증명하고 있습니다."
                       }
                       className="text-white text-3xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded cursor-text transition-all"
                       style={{
                         ...getElementStyle(data.titleStyle, viewport),
+                        color: "#ffffff",
                         backgroundColor: "transparent",
                       }}
                       onDoubleClick={(e) => {
@@ -170,6 +176,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                     className="text-center justify-start text-white/90 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded transition-all mt-4 cursor-text break-keep"
                     style={{
                       ...getElementStyle(data.subTitleStyle, viewport),
+                      color: "#ffffff",
                       backgroundColor: "transparent",
                     }}
                     onDoubleClick={(e) => {
@@ -185,11 +192,11 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer overflow-hidden transition-all hover:ring-2 hover:ring-white/50"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("quoteRight");
+                  onElementSelect?.("quoteRightWhiteUrl");
                 }}
               >
                 <UniversalMedia
-                  url={data.quoteRight || "/images/placeholder/icon-quote.jpg"}
+                  url={data.quoteRightWhiteUrl}
                   className="w-full h-full object-contain"
                   alt="Right Content Image"
                 />
@@ -214,7 +221,10 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={data.subTitle || "타이틀명 입력"}
                 className="text-center justify-start text-시안-mode-gray90 text-xl xl:text-2xl font-bold leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
+                style={{
+                  ...getElementStyle(data.subTitleStyle, viewport),
+                  color: "#285DE1",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -268,7 +278,10 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-blue-500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
+                  style={{
+                    ...getElementStyle(data.subTitleStyle, viewport),
+                    color: "#285DE1",
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");

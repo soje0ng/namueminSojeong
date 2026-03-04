@@ -304,7 +304,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     };
   } else if (itemId) {
     let arrayName = "items";
-    if (widget.type === "process") arrayName = "steps";
+    if (widget.type === "process" || widget.type === "processCard")
+      arrayName = "steps";
     else if (widget.type === "tabCarousel") arrayName = "tabs";
     else if (widget.type === "textSplit" && data.variant === "image-left-list")
       arrayName = "listItems";
@@ -313,13 +314,133 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         arrayName = "items";
       else arrayName = "blocks";
     } else if (widget.type === "textStructure") {
-      const layout = data.layout || "1";
-      if (layout === "4") arrayName = "cases";
-      else if (layout === "6" || layout === "layout6") arrayName = "sections6";
-      else if (layout === "7" || layout === "layout7") arrayName = "sections7";
-      else if (layout === "8" || layout === "layout8") arrayName = "sections8";
-      else if (layout === "11" || layout === "layout11")
+      const layoutVal = data.layout || "1";
+      if (layoutVal === "4") arrayName = "cases";
+      else if (layoutVal === "6" || layoutVal === "layout6")
+        arrayName = "sections6";
+      else if (layoutVal === "7" || layoutVal === "layout7")
+        arrayName = "sections7";
+      else if (layoutVal === "8" || layoutVal === "layout8")
+        arrayName = "sections8";
+      else if (layoutVal === "11" || layoutVal === "layout11") {
+        if (
+          [
+            "itemNumber",
+            "itemTitle",
+            "itemDesc",
+            "itemIcon",
+            "sectionImage",
+          ].includes(elementKey)
+        ) {
+          // Find which section and which item the element belongs to
+          // sectionImage is direct in section, others are in section.items
+          const sections =
+            data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
+          if (elementKey === "sectionImage") {
+            const section = sections.find((s: any) => s.id === itemId);
+            if (section) {
+              textValue = section.imageUrl || "";
+              onTextChange = (val) => {
+                const updated = sections.map((s: any) =>
+                  s.id === itemId ? { ...s, imageUrl: val } : s,
+                );
+                updateWidgetData(widget.id, { sections11: updated });
+              };
+              // No need for further item processing
+              return;
+            }
+          } else if (elementKey === "image" && itemId?.startsWith("s11img_")) {
+            // [Multi-Image Grid Support for Layout 11]
+            // itemId: s11img_{sectionId}_{imgIdx}
+            const [, sectionId, imgIdxStr] = itemId.split("_");
+            const imgIdx = parseInt(imgIdxStr);
+            const sections =
+              data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
+            const section = sections.find((s: any) => s.id === sectionId);
+            if (section) {
+              const images = section.images || [
+                section.imageUrl || "/images/template/text_structure_img11.png",
+              ];
+              textValue = images[imgIdx] || "";
+              onTextChange = (val) => {
+                const newImages = [...images];
+                newImages[imgIdx] = val;
+                const updatedSections = sections.map((s: any) =>
+                  s.id === sectionId ? { ...s, images: newImages } : s,
+                );
+                updateWidgetData(widget.id, { sections11: updatedSections });
+              };
+              return;
+            }
+          } else {
+            // For nested items in sections
+            for (const section of sections) {
+              if (section.items) {
+                const item = section.items.find((it: any) => it.id === itemId);
+                if (item) {
+                  const targetPropMap: Record<string, string> = {
+                    itemNumber: "number",
+                    itemTitle: "title",
+                    itemDesc: "desc",
+                    itemIcon: "icon",
+                  };
+                  const stylePropMap: Record<string, string> = {
+                    itemNumber: "numberStyle",
+                    itemTitle: "titleStyle",
+                    itemDesc: "descStyle",
+                    itemIcon: "iconStyle",
+                  };
+                  const targetProp = targetPropMap[elementKey];
+                  const styleProp = stylePropMap[elementKey];
+
+                  textValue = item[targetProp] || "";
+                  styleKey = styleProp;
+                  styleValue = item[styleProp] || {};
+
+                  onTextChange = (val) => {
+                    const updatedSections = sections.map((s: any) => {
+                      if (s.id === section.id) {
+                        const updatedItems = s.items.map((it: any) =>
+                          it.id === itemId ? { ...it, [targetProp]: val } : it,
+                        );
+                        return { ...s, items: updatedItems };
+                      }
+                      return s;
+                    });
+                    updateWidgetData(widget.id, {
+                      sections11: updatedSections,
+                    });
+                  };
+                  onStyleChange = (k, v) => {
+                    const updatedSections = sections.map((s: any) => {
+                      if (s.id === section.id) {
+                        const updatedItems = s.items.map((it: any) =>
+                          it.id === itemId
+                            ? {
+                                ...it,
+                                [styleProp]: {
+                                  ...(it[styleProp] || {}),
+                                  [k]: v,
+                                },
+                              }
+                            : it,
+                        );
+                        return { ...s, items: updatedItems };
+                      }
+                      return s;
+                    });
+                    updateWidgetData(widget.id, {
+                      sections11: updatedSections,
+                    });
+                  };
+                  return;
+                }
+              }
+            }
+          }
+        }
         arrayName = "sections11";
+      }
     }
 
     let item = findItem(data[arrayName] || [], itemId);
@@ -397,7 +518,20 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             : "text"
                           : itemTextProp;
 
-        textValue = item[targetProp] || "";
+        const getDefaultItemText = () => {
+          if (widget.type === "process") {
+            if (targetProp === "title") return "프로그램 특징";
+          }
+          if (elementKey === "itemTitle" || targetProp === "title")
+            return "타이틀명 입력";
+          if (elementKey === "itemText" || targetProp === "text")
+            return "항목 텍스트";
+          return "";
+        };
+        textValue =
+          item[targetProp] !== undefined
+            ? item[targetProp]
+            : getDefaultItemText();
 
         // Banner 2 Exception: buttonText is in main data, not item
         if (
@@ -574,7 +708,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       ) {
         // Normalize key for data access
         const propName =
-          elementKey === "itemIcon"
+          elementKey === "itemIcon" || elementKey === "iconUrl"
             ? "iconUrl"
             : elementKey === "itemImage"
               ? "image"
@@ -682,7 +816,20 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         onStyleChange = (k, v) => updateStyle(styleKey, k, v);
     }
   } else {
-    textValue = data[elementKey] || "";
+    const getRootDefaultText = () => {
+      const keyLower = elementKey.toLowerCase();
+      if (keyLower.includes("subtitle")) return "( 서브타이틀 )";
+      if (keyLower.includes("title")) return "타이틀명 입력";
+      if (keyLower.includes("desc") || keyLower.includes("content"))
+        return widget.type === "process" ||
+          widget.type === "processCard" ||
+          widget.type === "textStructure"
+          ? "이민 프로그램명 입력"
+          : "설명 내용을 입력하세요";
+      return "";
+    };
+    textValue =
+      data[elementKey] !== undefined ? data[elementKey] : getRootDefaultText();
     // Convention: property 'mainTitle' -> style 'mainTitleStyle'
     styleKey =
       elementKey === "contentTitle"
@@ -738,8 +885,81 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     if (styleValue.width === undefined)
       styleValue = { ...styleValue, width: "100%" };
   }
+  // Inject sensible defaults so inputs are never completely blank.
+  const getFallbackStyles = () => {
+    const keyLower = elementKey.toLowerCase();
+    const isTitle =
+      keyLower.includes("title") ||
+      keyLower.includes("question") ||
+      keyLower === "number";
+    const isDesc =
+      keyLower.includes("desc") ||
+      keyLower.includes("answer") ||
+      keyLower.includes("text");
+    const isLabel =
+      keyLower.includes("label") ||
+      keyLower.includes("tag") ||
+      keyLower.includes("badge");
 
-  const displayValue = textValue.replace(/<br\s*\/?>/gi, "\n");
+    let fontSize = "";
+    let fontWeight = "";
+    let color = "";
+
+    if (isTitle) {
+      fontSize = "24px";
+      fontWeight = "700";
+      color = "#111111";
+    } else if (isDesc) {
+      fontSize = "16px";
+      fontWeight = "400";
+      color = "#666666";
+    } else if (isLabel) {
+      fontSize = "14px";
+      fontWeight = "700";
+      color = "#ffffff";
+    }
+
+    if (widget.type === "process") {
+      if (isTitle) color = "#000000";
+      if (elementKey === "number") {
+        fontSize = "20px";
+        fontWeight = "700";
+        color = "#285DE1";
+      }
+    }
+
+    return { fontSize, fontWeight, color };
+  };
+
+  if (!isMediaKey && elementKey !== "bannerButton") {
+    const fb = getFallbackStyles();
+    styleValue = {
+      ...styleValue,
+      fontSize: styleValue.fontSize || fb.fontSize || "16px",
+      fontWeight: styleValue.fontWeight || fb.fontWeight || "400",
+      color: styleValue.color || fb.color || "#000000",
+    };
+  }
+
+  const getPlaceholderText = () => {
+    if (isMediaKey) {
+      if (widget.type === "process" || widget.type === "processCard")
+        return "/images/template/like_cat.jpg";
+      return "/images/template/img1.png";
+    }
+    const keyLower = elementKey.toLowerCase();
+    if (keyLower.includes("subtitle")) return "( 서브타이틀 )";
+    if (keyLower.includes("title")) return "타이틀명 입력";
+    if (keyLower.includes("desc") || keyLower.includes("content"))
+      return "설명 내용을 입력하세요";
+    if (keyLower.includes("itemText") || keyLower.includes("text"))
+      return "항목 텍스트";
+    return "텍스트를 입력하세요...";
+  };
+
+  const currentPlaceholder = getPlaceholderText();
+
+  const displayValue = textValue ? textValue.replace(/<br\s*\/?>/gi, "\n") : "";
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4 duration-200">
@@ -1228,11 +1448,103 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
               <input
                 type="text"
-                className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium"
-                value={textValue}
+                className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                value={textValue || ""}
                 onChange={(e) => onTextChange(e.target.value)}
-                placeholder="이미지 또는 영상(유튜브/비메오/MP4) 주소를 입력하세요"
+                placeholder={currentPlaceholder}
               />
+
+              {/* 비교 카드: 배경색 선택 UI */}
+              {widget.type === "comparisonCard" &&
+                elementKey === "imageUrl" && (
+                  <>
+                    <div className="flex items-center gap-2 py-1">
+                      <div className="h-px bg-gray-100 flex-1"></div>
+                      <span className="text-[10px] font-bold text-gray-300 uppercase">
+                        또는 배경색 선택
+                      </span>
+                      <div className="h-px bg-gray-100 flex-1"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide">
+                        배경 색상
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          className="w-12 h-10 rounded-lg cursor-pointer border border-gray-100 p-0.5 bg-white shrink-0"
+                          value={(() => {
+                            const items = (widget.data as any).items || [];
+                            const it = items.find((i: any) => i.id === itemId);
+                            return it?.titleStyle?.backgroundColor || "#ffffff";
+                          })()}
+                          onChange={(e) => {
+                            const color = e.target.value;
+                            const items = (widget.data as any).items || [];
+                            const newItems = items.map((it: any) =>
+                              it.id !== itemId
+                                ? it
+                                : {
+                                    ...it,
+                                    titleStyle: {
+                                      ...(it.titleStyle || {}),
+                                      backgroundColor: color,
+                                    },
+                                  },
+                            );
+                            updateWidgetData(widget.id, { items: newItems });
+                          }}
+                        />
+                        <input
+                          type="text"
+                          className="flex-1 bg-gray-50 border-none p-2.5 rounded-lg text-sm font-mono outline-none text-gray-700"
+                          value={(() => {
+                            const items = (widget.data as any).items || [];
+                            const it = items.find((i: any) => i.id === itemId);
+                            return it?.titleStyle?.backgroundColor || "";
+                          })()}
+                          onChange={(e) => {
+                            const color = e.target.value;
+                            const items = (widget.data as any).items || [];
+                            const newItems = items.map((it: any) =>
+                              it.id !== itemId
+                                ? it
+                                : {
+                                    ...it,
+                                    titleStyle: {
+                                      ...(it.titleStyle || {}),
+                                      backgroundColor: color,
+                                    },
+                                  },
+                            );
+                            updateWidgetData(widget.id, { items: newItems });
+                          }}
+                          placeholder="#ffffff"
+                        />
+                        <button
+                          onClick={() => {
+                            const items = (widget.data as any).items || [];
+                            const newItems = items.map((it: any) => {
+                              if (it.id !== itemId) return it;
+                              const newStyle = { ...(it.titleStyle || {}) };
+                              delete newStyle.backgroundColor;
+                              return { ...it, titleStyle: newStyle };
+                            });
+                            updateWidgetData(widget.id, { items: newItems });
+                          }}
+                          className="shrink-0 text-[10px] bg-gray-100 hover:bg-red-50 hover:text-red-500 px-2.5 py-2 rounded-lg font-bold transition-colors"
+                        >
+                          초기화
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-gray-400">
+                        * 이미지 URL이 있으면 이미지가 우선 적용됩니다. 색상만
+                        사용하려면 이미지 URL을 비워주세요.
+                      </p>
+                    </div>
+                  </>
+                )}
+
               {isVideoUrl(textValue) && (
                 <div className="flex gap-3 pt-2 animate-in fade-in slide-in-from-top-1 duration-200">
                   {/* AutoPlay Toggle */}
@@ -1409,6 +1721,33 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   </div>
                 </div>
               )}
+
+            {/* Image/Media Visibility Toggle */}
+            <div className="pt-4 border-t border-gray-100 mb-4">
+              <div className="flex items-center justify-between bg-gray-50/50 p-3 rounded-xl border border-gray-100">
+                <div>
+                  <p className="text-xs font-bold text-gray-700">이미지 표시</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">
+                    화면에서 이 이미지를 노출할지 설정합니다.
+                  </p>
+                </div>
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onStyleChange("isHidden", !styleValue.isHidden);
+                  }}
+                  className={`w-11 h-6 rounded-full relative transition-colors cursor-pointer ${
+                    !styleValue.isHidden ? "bg-blue-600" : "bg-gray-300"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                      !styleValue.isHidden ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Image Size / Fill Controls - Hidden for Video and CardList Widget as requested */}
             {widget.type !== "video" && widget.type !== "cardList" && (
@@ -1703,7 +2042,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 const val = e.target.value.replace(/\n/g, "<br/>");
                 onTextChange(val);
               }}
-              placeholder="텍스트를 입력하세요..."
+              placeholder={currentPlaceholder}
             />
             <div className="mt-2 pl-2 space-y-1">
               <p className="text-xs text-blue-400/80 font-medium">

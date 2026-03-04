@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 
-export type Section11Type = "text" | "leftImage" | "features" | "banner";
+export type Section11Type = "text" | "image" | "features" | "banner";
 
 export interface Section11FeatItem {
   id: string;
@@ -27,8 +27,9 @@ export interface Section11Item {
   // text
   subTitle?: string;
   content?: string;
-  // leftImage
-  imageUrl?: string;
+  // image
+  columns?: number;
+  images?: string[];
   imageHeight?: string;
   // features
   items?: Section11FeatItem[];
@@ -39,16 +40,23 @@ export interface Section11Item {
 
 const SECTION_LABELS: Record<Section11Type, string> = {
   text: "텍스트 영역",
-  leftImage: "이미지 영역",
+  image: "이미지 영역",
   features: "프로그램 특징",
   banner: "배너 영역",
 };
 
 const SECTION_COLORS: Record<Section11Type, string> = {
   text: "bg-gray-100 text-gray-700",
-  leftImage: "bg-blue-100 text-blue-700",
+  image: "bg-blue-100 text-blue-700",
   features: "bg-orange-100 text-orange-700",
   banner: "bg-purple-100 text-purple-700",
+};
+
+const HEIGHT_MAP: Record<number, string> = {
+  1: "480",
+  2: "358",
+  3: "280",
+  4: "240",
 };
 
 function createDefaultSection(type: Section11Type): Section11Item {
@@ -61,12 +69,13 @@ function createDefaultSection(type: Section11Type): Section11Item {
       content: "내용을 입력하세요.",
     };
   }
-  if (type === "leftImage") {
+  if (type === "image") {
     return {
       id,
-      type: "leftImage",
-      imageUrl: "/images/placeholder/section-image.jpg",
-      imageHeight: "358",
+      type: "image",
+      columns: 1,
+      images: ["/images/placeholder/section-image.jpg"],
+      imageHeight: "480",
     };
   }
   if (type === "features") {
@@ -135,6 +144,22 @@ const TextStructure11Manager: React.FC<Props> = ({
   const addSection = (type: Section11Type) => {
     update([...sections, createDefaultSection(type)]);
     setShowAddPicker(false);
+  };
+
+  const updateImageCount = (section: Section11Item, cols: number) => {
+    const current = section.images || [];
+    const placeholder = "/images/placeholder/section-image.jpg";
+    let images: string[];
+    if (cols > current.length) {
+      images = [...current, ...Array(cols - current.length).fill(placeholder)];
+    } else {
+      images = current.slice(0, cols);
+    }
+    updateSection(section.id, {
+      columns: cols,
+      images,
+      imageHeight: HEIGHT_MAP[cols] || "358",
+    });
   };
 
   const updateFeatItem = (
@@ -227,6 +252,28 @@ const TextStructure11Manager: React.FC<Props> = ({
                 </button>
               </div>
 
+              {/* 열 수 선택 (이미지 타입일 때 항상 표시) */}
+              {section.type === "image" && (
+                <div className="flex items-center gap-2 px-2 pb-2 bg-gray-50/80">
+                  <span className="text-[10px] text-gray-400 shrink-0">열 수</span>
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4].map((col) => (
+                      <button
+                        key={col}
+                        className={`w-7 h-5 text-[10px] font-bold rounded transition-all ${
+                          (section.columns || 1) === col
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-100"
+                        }`}
+                        onClick={() => updateImageCount(section, col)}
+                      >
+                        {col}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Expanded content */}
               {isExpanded && (
                 <div className="p-3 space-y-3 border-t border-gray-100 bg-white">
@@ -266,8 +313,8 @@ const TextStructure11Manager: React.FC<Props> = ({
                     </>
                   )}
 
-                  {/* LEFT IMAGE */}
-                  {section.type === "leftImage" && (
+                  {/* IMAGE */}
+                  {section.type === "image" && (
                     <>
                       <div className="flex items-center gap-2">
                         <label className="text-xs text-gray-500 w-16 shrink-0">
@@ -278,7 +325,7 @@ const TextStructure11Manager: React.FC<Props> = ({
                           min={80}
                           max={800}
                           className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={parseInt(section.imageHeight || "358") || 358}
+                          value={parseInt(section.imageHeight || "480") || 480}
                           onChange={(e) =>
                             updateSection(section.id, {
                               imageHeight: e.target.value,
@@ -287,34 +334,38 @@ const TextStructure11Manager: React.FC<Props> = ({
                         />
                         <span className="text-[10px] text-gray-400">px</span>
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold">
-                          이미지
-                        </label>
-                        <div className="flex gap-1.5">
-                          <input
-                            type="text"
-                            className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                            placeholder="이미지 URL"
-                            value={section.imageUrl || ""}
-                            onChange={(e) =>
-                              updateSection(section.id, {
-                                imageUrl: e.target.value,
-                              })
-                            }
-                          />
-                          <ImgUploadPop
-                            button={
-                              <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
-                                <ImageIcon size={12} />
-                              </button>
-                            }
-                            onSelect={(url) =>
-                              updateSection(section.id, { imageUrl: url })
-                            }
-                          />
+                      {(section.images || []).map((img, imgIdx) => (
+                        <div key={imgIdx} className="space-y-1">
+                          <label className="text-[10px] text-gray-400 font-semibold">
+                            이미지 {imgIdx + 1}
+                          </label>
+                          <div className="flex gap-1.5">
+                            <input
+                              type="text"
+                              className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                              placeholder="이미지 URL"
+                              value={img}
+                              onChange={(e) => {
+                                const imgs = [...(section.images || [])];
+                                imgs[imgIdx] = e.target.value;
+                                updateSection(section.id, { images: imgs });
+                              }}
+                            />
+                            <ImgUploadPop
+                              button={
+                                <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
+                                  <ImageIcon size={12} />
+                                </button>
+                              }
+                              onSelect={(url) => {
+                                const imgs = [...(section.images || [])];
+                                imgs[imgIdx] = url;
+                                updateSection(section.id, { images: imgs });
+                              }}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </>
                   )}
 
@@ -483,7 +534,7 @@ const TextStructure11Manager: React.FC<Props> = ({
         {showAddPicker && (
           <div className="absolute bottom-full left-0 right-0 mb-1.5 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-10 grid grid-cols-2 gap-1.5">
             {(
-              ["text", "leftImage", "features", "banner"] as Section11Type[]
+              ["text", "image", "features", "banner"] as Section11Type[]
             ).map((type) => (
               <button
                 key={type}

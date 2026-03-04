@@ -469,7 +469,16 @@ const Builder: React.FC<BuilderProps> = ({
       // Add Row
       const colCount = data.headers.length;
       const newRow = Array(colCount).fill("새 내용");
-      updateWidgetData(widget.id, { rows: [...data.rows, newRow] });
+      const updates: any = { rows: [...data.rows, newRow] };
+
+      // Also update comparisonRows if they exist (for Layout 3, 4)
+      if (data.comparisonRows) {
+        const compColCount = (data.comparisonHeaders || data.headers).length;
+        const newCompRow = Array(compColCount).fill("구분");
+        updates.comparisonRows = [...data.comparisonRows, newCompRow];
+      }
+
+      updateWidgetData(widget.id, updates);
       return;
     }
 
@@ -706,30 +715,80 @@ const Builder: React.FC<BuilderProps> = ({
   // Table Specific Helpers
   const addTableCol = (widget: Widget) => {
     const data = (widget as any).data;
-    const newHeaders = [...data.headers, "새 열"];
-    const newRows = data.rows.map((row: string[]) => [...row, "내용"]);
-    updateWidgetData(widget.id, { headers: newHeaders, rows: newRows });
+    const updates: any = {};
+
+    // Update standard headers/rows
+    updates.headers = [...data.headers, "새 열"];
+    updates.rows = data.rows.map((row: string[]) => [...row, "내용"]);
+
+    // Update comparison fields if they exist (Layout 3, 4)
+    if (data.comparisonHeaders) {
+      updates.comparisonHeaders = [...data.comparisonHeaders, "새 열"];
+    }
+    if (data.comparisonRows) {
+      updates.comparisonRows = data.comparisonRows.map((row: string[]) => [
+        ...row,
+        "구분",
+      ]);
+    }
+
+    updateWidgetData(widget.id, updates);
   };
 
   const removeTableRow = (widget: Widget) => {
     const data = (widget as any).data;
-    if (data.rows.length <= 1) return;
-    const newRows = [...data.rows];
-    newRows.pop();
-    updateWidgetData(widget.id, { rows: newRows });
+    const updates: any = {};
+
+    if (data.rows && data.rows.length > 1) {
+      const newRows = [...data.rows];
+      newRows.pop();
+      updates.rows = newRows;
+    }
+
+    if (data.comparisonRows && data.comparisonRows.length > 1) {
+      const newCompRows = [...data.comparisonRows];
+      newCompRows.pop();
+      updates.comparisonRows = newCompRows;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      updateWidgetData(widget.id, updates);
+    }
   };
 
   const removeTableCol = (widget: Widget) => {
     const data = (widget as any).data;
-    if (data.headers.length <= 1) return;
-    const newHeaders = [...data.headers];
-    newHeaders.pop();
-    const newRows = data.rows.map((row: string[]) => {
-      const r = [...row];
-      r.pop();
-      return r;
-    });
-    updateWidgetData(widget.id, { headers: newHeaders, rows: newRows });
+    const updates: any = {};
+
+    if (data.headers && data.headers.length > 1) {
+      const newHeaders = [...data.headers];
+      newHeaders.pop();
+      updates.headers = newHeaders;
+
+      updates.rows = data.rows.map((row: string[]) => {
+        const r = [...row];
+        r.pop();
+        return r;
+      });
+    }
+
+    if (data.comparisonHeaders && data.comparisonHeaders.length > 1) {
+      const newCompHeaders = [...data.comparisonHeaders];
+      newCompHeaders.pop();
+      updates.comparisonHeaders = newCompHeaders;
+
+      if (data.comparisonRows) {
+        updates.comparisonRows = data.comparisonRows.map((row: string[]) => {
+          const r = [...row];
+          r.pop();
+          return r;
+        });
+      }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      updateWidgetData(widget.id, updates);
+    }
   };
 
   const handleItemReorder = (
@@ -1097,6 +1156,7 @@ const Builder: React.FC<BuilderProps> = ({
               label: "프로세스 카드",
               color: "text-purple-700",
             },
+            { type: "stripBanner", label: "띠배너", color: "text-green-700" },
             { type: "faq", label: "FAQ", color: "text-green-700" },
             { type: "table", label: "테이블", color: "text-green-700" },
           ].map((btn) => (

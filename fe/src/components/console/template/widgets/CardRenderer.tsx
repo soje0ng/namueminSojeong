@@ -131,7 +131,12 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
             className={`relative overflow-hidden group shadow-sm cursor-pointer w-full hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
             style={{ borderRadius: cardBorderRadius, aspectRatio }}
           >
-            <div className="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden bg-black/5">
+            <div
+              className="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden bg-black/5"
+              style={{
+                display: item.imageStyle?.isHidden ? "none" : undefined,
+              }}
+            >
               <UniversalMedia
                 url={item.image || "/images/template/img1.png"}
                 className="w-auto h-auto max-w-full max-h-full transition-transform duration-700 group-hover:scale-105 object-contain"
@@ -152,13 +157,13 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
 
             <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-start text-white text-left overflow-hidden">
               <div className="flex-1 flex flex-col gap-1 min-h-0">
-                {item.tag && (
+                {!item.tagStyle?.isHidden && item.tag && (
                   <SafeHtml
                     html={item.tag}
                     className="tracking-wider font-bold opacity-90 shrink-0"
                     style={{
-                      ...getElementStyle(item.tagStyle, viewport as any),
                       color: "#ffffff",
+                      ...getElementStyle(item.tagStyle, viewport as any),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -166,30 +171,34 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
                     }}
                   />
                 )}
-                <SafeHtml
-                  html={item.title}
-                  className="font-extrabold line-clamp-3 leading-tight shrink-0"
-                  style={{
-                    ...getElementStyle(item.titleStyle, viewport as any),
-                    color: "#ffffff",
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("itemTitle", item.id);
-                  }}
-                />
-                <SafeHtml
-                  html={item.desc}
-                  className="line-clamp-4 opacity-80 overflow-hidden"
-                  style={{
-                    ...getElementStyle(item.descStyle, viewport as any),
-                    color: "#ffffff",
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("itemDesc", item.id);
-                  }}
-                />
+                {!item.titleStyle?.isHidden && (
+                  <SafeHtml
+                    html={item.title}
+                    className="font-extrabold line-clamp-3 leading-tight shrink-0"
+                    style={{
+                      color: "#ffffff",
+                      ...getElementStyle(item.titleStyle, viewport as any),
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemTitle", item.id);
+                    }}
+                  />
+                )}
+                {!item.descStyle?.isHidden && (
+                  <SafeHtml
+                    html={item.desc}
+                    className="line-clamp-4 opacity-80 overflow-hidden"
+                    style={{
+                      color: "#ffffff",
+                      ...getElementStyle(item.descStyle, viewport as any),
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemDesc", item.id);
+                    }}
+                  />
+                )}
               </div>
 
               <div className="mt-4 flex justify-end shrink-0">
@@ -210,27 +219,31 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
             className="bg-white p-8 border border-시안-mode-gray10 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col min-h-[220px]"
             style={{ borderRadius: cardBorderRadius }}
           >
-            <SafeHtml
-              html={item.title}
-              className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-              style={getElementStyle(item.titleStyle, viewport as any)}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("itemTitle", item.id);
-              }}
-            />
-            <SafeHtml
-              html={item.desc}
-              className="text-시안-mode-gray50 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded line-clamp-3"
-              style={getElementStyle(item.descStyle, viewport as any)}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("itemDesc", item.id);
-              }}
-            />
+            {!item.titleStyle?.isHidden && (
+              <SafeHtml
+                html={item.title}
+                className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                style={getElementStyle(item.titleStyle, viewport as any)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("itemTitle", item.id);
+                }}
+              />
+            )}
+            {!item.descStyle?.isHidden && (
+              <SafeHtml
+                html={item.desc}
+                className="text-시안-mode-gray50 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded line-clamp-3"
+                style={getElementStyle(item.descStyle, viewport as any)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("itemDesc", item.id);
+                }}
+              />
+            )}
 
             <div className="mt-auto flex items-center justify-between">
-              {item.label && (
+              {!item.labelStyle?.isHidden && item.label && (
                 <div
                   className="bg-[#2B82FF] text-white px-4 py-1.5 text-sm font-bold cursor-pointer"
                   style={getElementStyle(item.labelStyle, viewport as any)}
@@ -267,7 +280,10 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
         <div className="flex flex-col group text-left h-full">
           <div
             className="relative mb-4 overflow-hidden flex justify-center items-center h-auto"
-            style={{ borderRadius: cardBorderRadius }}
+            style={{
+              borderRadius: cardBorderRadius,
+              display: item.imageStyle?.isHidden ? "none" : undefined,
+            }}
           >
             <UniversalMedia
               url={item.image || "/images/template/img1.png"}
@@ -278,7 +294,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
                 onElementSelect?.("itemImage", item.id);
               }}
             />
-            {item.label && (
+            {!item.labelStyle?.isHidden && item.label && (
               <div
                 className="absolute top-4 left-4 p-[6px_12px] bg-[#104893] text-white font-bold text-[11px] shadow-sm"
                 style={getElementStyle(item.labelStyle, viewport as any)}
@@ -293,7 +309,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
           </div>
 
           <div className="flex flex-col gap-1">
-            {item.tag && (
+            {!item.tagStyle?.isHidden && item.tag && (
               <SafeHtml
                 html={item.tag}
                 className="text-[#059669] font-medium"
@@ -304,16 +320,18 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
                 }}
               />
             )}
-            <SafeHtml
-              html={item.title}
-              className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded leading-snug"
-              style={getElementStyle(item.titleStyle, viewport as any)}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("itemTitle", item.id);
-              }}
-            />
-            {item.author && (
+            {!item.titleStyle?.isHidden && (
+              <SafeHtml
+                html={item.title}
+                className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded leading-snug"
+                style={getElementStyle(item.titleStyle, viewport as any)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("itemTitle", item.id);
+                }}
+              />
+            )}
+            {!item.authorStyle?.isHidden && item.author && (
               <SafeHtml
                 html={item.author}
                 className="text-시안-mode-gray50 text-sm"

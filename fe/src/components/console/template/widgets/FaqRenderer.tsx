@@ -68,7 +68,10 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={{ ...getElementStyle(w.data.subTitleStyle, viewport), color: "#285DE1" }}
+                style={{
+                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  color: "#285DE1",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -115,7 +118,7 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
                         onClick={(e) => toggleFaq(item.id, e)}
                       >
                         <div
-                          className={`w-14 h-14 flex justify-center items-center gap-2.5 shrink-0 transition-all ${isOpen ? "bg-시안-mode-Primary50" : "bg-시안-mode-Primary5 outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50"}`}
+                          className={`w-14 h-14 rounded-full flex justify-center items-center gap-2.5 shrink-0 transition-all ${isOpen ? "bg-시안-mode-Primary50" : "bg-시안-mode-Primary5 outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50"}`}
                         >
                           <div
                             className={`text-center justify-start text-3xl font-bold font-['Pretendard'] leading-10 ${isOpen ? "text-시안-mode-gray0" : "text-[#285DE1]"}`}

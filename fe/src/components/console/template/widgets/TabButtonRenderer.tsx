@@ -100,7 +100,10 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
+                  style={{
+                    ...getElementStyle(data.subTitleStyle, viewport),
+                    color: "#285DE1",
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -182,7 +185,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   return (
                     <div
                       key={item.id}
-                      className={`flex-1 min-w-[288px] px-4 py-3 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
+                      className={`flex-1 min-w-[288px] px-4 py-3 border-t border-b border-transparent flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
                         !hasCustomBg
                           ? "bg-gradient-to-r from-blue-400 to-blue-600"
                           : ""

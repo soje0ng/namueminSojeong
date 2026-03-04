@@ -121,22 +121,24 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
           </div>
         );
       case "image":
-        <div
-          key={item.id}
-          className="relative overflow-hidden group cursor-pointer flex justify-center items-center"
-        >
-          <UniversalMedia
-            url={item.url || "/images/template/banner_img1.jpg"}
-            alt="content"
-            className="w-full h-auto object-contain transition-transform"
-            style={blockStyle}
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-              onElementSelect?.("blockUrl", item.id);
-            }}
-          />
-          <div className="absolute inset-0 group-hover:outline-dashed group-hover:outline-2 group-hover:outline-blue-400 pointer-events-none" />
-        </div>;
+        return (
+          <div
+            key={item.id}
+            className="relative overflow-hidden group cursor-pointer flex justify-center items-center"
+          >
+            <UniversalMedia
+              url={item.url}
+              alt="content"
+              className="w-full h-auto object-contain transition-transform"
+              style={blockStyle}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("blockUrl", item.id);
+              }}
+            />
+            <div className="absolute inset-0 group-hover:outline-dashed group-hover:outline-2 group-hover:outline-blue-400 pointer-events-none" />
+          </div>
+        );
       case "video":
         return (
           <div
@@ -144,11 +146,11 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
             className="relative aspect-[16/9] overflow-hidden shadow-sm group"
           >
             <UniversalMedia
-              url={item.url || "https://www.youtube.com/watch?v=jicErY0RiMg"}
+              url={item.url}
               autoPlay={item.autoPlay}
               muted={item.muted}
               style={{ width: "100%", height: "100%" }}
-              onDoubleClick={(e) => {
+              onDoubleClick={(e: any) => {
                 e.stopPropagation();
                 onElementSelect?.("blockUrl", item.id);
               }}
@@ -166,10 +168,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
         <div className="mx-auto w-full max-w-[1920px]">
           <div className="w-full h-auto flex justify-center items-center overflow-hidden">
             <UniversalMedia
-              url={
-                w.data.topImage ||
-                "https://selenaimin.likeweb.co.kr/images/banner_img3.jpg"
-              }
+              url={w.data.topImage}
               alt="banner"
               className="w-full h-auto object-contain cursor-pointer"
               onDoubleClick={(e) => {
@@ -270,7 +269,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <div className="flex size-[100px] items-center justify-center rounded-full md:size-[120px] shrink-0 overflow-hidden cursor-pointer flex justify-center items-center h-auto">
                     <UniversalMedia
-                      url={item.icon || "/images/template/icon.png"}
+                      url={item.icon}
                       alt="Service"
                       className="w-full h-auto object-contain"
                       style={getElementStyle(item.iconStyle, viewport as any)}

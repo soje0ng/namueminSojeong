@@ -83,6 +83,8 @@ const getWidgetName = (type: WidgetType) => {
     imageCard: "이미지 카드",
     comparisonCard: "비교 카드",
     processCard: "프로세스 카드",
+    stripBanner: "띠배너",
+    faq: "FAQ",
     table: "테이블",
   };
   return names[type] || type;
@@ -210,6 +212,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               "comparisonCard",
               "processCard",
               "stripBanner",
+              "faq",
               "table",
             ].includes(widget.type) && (
               <div className="space-y-4">
@@ -272,7 +275,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                       ? 3
                                       : widget.type === "comparisonCard"
                                         ? 2
-                                        : 1,
+                                        : widget.type === "stripBanner"
+                                          ? 2
+                                          : 1,
                   }).map((_, i) => (
                     <option key={i + 1} value={`${i + 1}`}>
                       {widget.type === "table"
@@ -283,6 +288,37 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     </option>
                   ))}
                 </select>
+
+                {/* 테이블 02: 좌우 반전 토글 */}
+                {widget.type === "table" &&
+                  ((widget.data as any).layout === "2" ||
+                    (widget.data as any).variant === "table02") && (
+                    <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded-lg">
+                      <label className="text-sm text-gray-700">
+                        테이블/이미지 좌우 반전
+                      </label>
+                      <button
+                        className={`relative w-10 h-5 rounded-full transition-colors ${
+                          (widget.data as any).reverseLayout
+                            ? "bg-blue-500"
+                            : "bg-gray-300"
+                        }`}
+                        onClick={() => {
+                          updateWidgetData(widget.id, {
+                            reverseLayout: !(widget.data as any).reverseLayout,
+                          });
+                        }}
+                      >
+                        <span
+                          className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                            (widget.data as any).reverseLayout
+                              ? "translate-x-5"
+                              : "translate-x-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
               </div>
             )}
 
@@ -1394,6 +1430,73 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                   </div>
                                 </div>
 
+                                {/* Text Structure Dynamic Sections Specific Controls */}
+                                {widget.type === "textStructure" &&
+                                  (item.type === "image" ||
+                                    item.type === "leftImage") && (
+                                    <div className="flex flex-col gap-1 px-1 mt-1 border-t pt-2 border-gray-100">
+                                      <span className="text-[9px] font-black text-blue-600 pl-1 uppercase tracking-tighter flex items-center gap-1">
+                                        <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
+                                        Image Columns (Grid)
+                                      </span>
+                                      <div className="grid grid-cols-4 gap-1 mt-1">
+                                        {["1", "2", "3", "4"].map((num) => (
+                                          <button
+                                            key={num}
+                                            onClick={() => {
+                                              const sections =
+                                                (widget.data as any)[
+                                                  listArrayName!
+                                                ] || [];
+                                              const updated = sections.map(
+                                                (s: any) =>
+                                                  s.id === item.id
+                                                    ? {
+                                                        ...s,
+                                                        columns: parseInt(num),
+                                                        // Ensure images array has enough slots
+                                                        images:
+                                                          s.images?.length >=
+                                                          parseInt(num)
+                                                            ? s.images.slice(
+                                                                0,
+                                                                parseInt(num),
+                                                              )
+                                                            : [
+                                                                ...(s.images ||
+                                                                  []),
+                                                                ...Array(
+                                                                  parseInt(
+                                                                    num,
+                                                                  ) -
+                                                                    (s.images
+                                                                      ?.length ||
+                                                                      0),
+                                                                ).fill(
+                                                                  "/images/placeholder/section-image.jpg",
+                                                                ),
+                                                              ],
+                                                      }
+                                                    : s,
+                                              );
+                                              updateWidgetData(widget.id, {
+                                                [listArrayName!]: updated,
+                                              });
+                                            }}
+                                            className={`py-1 rounded text-[10px] font-bold transition-all border ${
+                                              (item.columns?.toString() ||
+                                                "1") === num
+                                                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                                                : "bg-white text-gray-500 border-gray-200 hover:border-blue-300 hover:text-blue-500"
+                                            }`}
+                                          >
+                                            {num}열
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
                                 {/* Text Section Specific Controls */}
                                 {widget.type === "textSection" &&
                                   item.type === "heading" && (
@@ -2176,7 +2279,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               "imageCarousel",
               "infoBanner",
               "process",
-              "titleBanner",
               "imageTitle3",
             ].includes(widget.type) && (
               <div className="space-y-2">

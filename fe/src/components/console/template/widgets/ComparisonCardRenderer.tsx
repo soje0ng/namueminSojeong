@@ -149,24 +149,17 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                       style={{ height: "auto" }}
                     >
                       <UniversalMedia
-                        url={
-                          item.iconUrl ||
-                          item.icon ||
-                          item.image ||
-                          (idx === 0
-                            ? "/images/placeholder/card-lg.jpg"
-                            : "/images/placeholder/section-image.jpg")
-                        }
-                        className="w-full h-auto object-contain"
+                        url={item.iconUrl || item.icon || item.image}
+                        className="w-full"
                         alt="comparison image"
                         style={{
                           width: "100%",
                           height: "auto",
-                          maxHeight: "100%",
+                          objectFit: "cover",
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
-                          onElementSelect?.("icon", item.id);
+                          onElementSelect?.("iconUrl", item.id);
                         }}
                       />
                     </div>
@@ -415,17 +408,17 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   style={{ height: "auto" }}
                 >
                   <UniversalMedia
-                    url={
-                      items[0]?.iconUrl ||
-                      items[0]?.icon ||
-                      items[0]?.image ||
-                      "/images/placeholder/section-image.jpg"
-                    }
-                    className="w-full h-auto object-contain"
+                    url={items[0]?.iconUrl || items[0]?.icon || items[0]?.image}
+                    className="w-full"
                     alt="left comparison image"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      objectFit: "cover",
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("icon", items[0]?.id);
+                      onElementSelect?.("iconUrl", items[0]?.id);
                     }}
                   />
                 </div>
@@ -612,17 +605,17 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   style={{ height: "auto" }}
                 >
                   <UniversalMedia
-                    url={
-                      items[1]?.iconUrl ||
-                      items[1]?.icon ||
-                      items[1]?.image ||
-                      "/images/placeholder/section-image.jpg"
-                    }
-                    className="w-full h-auto object-contain"
+                    url={items[1]?.iconUrl || items[1]?.icon || items[1]?.image}
+                    className="w-full"
                     alt="right comparison image"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      objectFit: "cover",
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("icon", items[1]?.id);
+                      onElementSelect?.("iconUrl", items[1]?.id);
                     }}
                   />
                 </div>

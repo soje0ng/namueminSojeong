@@ -17,6 +17,7 @@ import { TAB_BUTTON_DEFAULTS } from "@/components/console/template/widgets/TabBu
 import { TEXT_STRUCTURE_DEFAULTS } from "@/components/console/template/widgets/TextStructureRenderer";
 import { IMAGE_CARD_DEFAULTS } from "@/components/console/template/widgets/ImageCardRenderer";
 import { COMPARISON_CARD_DEFAULTS } from "@/components/console/template/widgets/ComparisonCardRenderer";
+import { STRIP_BANNER_DEFAULTS } from "@/components/console/template/widgets/StripBannerRenderer";
 
 /**
  * 위젯 타입에 따른 기본 데이터를 생성합니다.
@@ -192,6 +193,13 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
         id: widgetId,
         type,
         data: { ...COMPARISON_CARD_DEFAULTS },
+      } as any;
+
+    case "stripBanner":
+      return {
+        id: widgetId,
+        type,
+        data: { ...STRIP_BANNER_DEFAULTS },
       } as any;
 
     default:
