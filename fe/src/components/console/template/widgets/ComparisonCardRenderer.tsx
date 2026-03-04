@@ -16,7 +16,7 @@ export const COMPARISON_CARD_DEFAULTS = {
     fontSize: "36px",
     fontSizeMobile: "28px",
     fontWeight: "700",
-    color: "#111111",
+    color: "#131416",
   },
   subTitle: "( 서브타이틀 )",
   subTitleStyle: { fontSize: "20px", color: "#285DE1", fontWeight: "500" },
@@ -24,13 +24,13 @@ export const COMPARISON_CARD_DEFAULTS = {
   descStyle: { fontSize: "20px", color: "#6D7882", fontWeight: "500" },
   middleTitle: "비교 head명",
   middleTitleStyle: { fontSize: "30px", color: "#ffffff", fontWeight: "500" },
-  rowLabelStyle: { fontSize: "20px", color: "#111111", fontWeight: "600" },
+  rowLabelStyle: { fontSize: "20px", color: "#131416", fontWeight: "600" },
   items: [
     {
       id: "1",
       iconUrl: "/images/placeholder/card-lg.jpg",
       title: "프로그램 특징",
-      titleStyle: { fontSize: "30px", fontWeight: "700", color: "#111111" },
+      titleStyle: { fontSize: "30px", fontWeight: "700", color: "#131416" },
       desc: "프로그램 특징 내용 입력\n프로그램 특징 내용 입력\n프로그램 특징 내용 입력",
       descStyle: { fontSize: "20px", color: "#6D7882", fontWeight: "400" },
     },
@@ -105,7 +105,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.title || "타이틀명 입력"}
                   className="justify-start font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    color: "#111111",
+                    color: "#131416",
                     fontSize: "36px",
                     fontWeight: "700",
                     ...getElementStyle(data.titleStyle, viewport as any),
@@ -192,7 +192,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                           html={item.title || "프로그램 특징"}
                           className={`justify-start font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text`}
                           style={{
-                            color: idx === 0 ? "#111111" : "#ffffff",
+                            color: idx === 0 ? "#131416" : "#ffffff",
                             fontSize: "30px",
                             fontWeight: "700",
                             ...getElementStyle(
@@ -333,7 +333,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.title || "타이틀명 입력"}
                   className="justify-start font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
                   style={{
-                    color: "#111111",
+                    color: "#131416",
                     fontSize: "36px",
                     fontWeight: "700",
                     ...getElementStyle(data.titleStyle, viewport as any),
@@ -535,7 +535,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                             }
                             className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all break-keep"
                             style={{
-                              color: "#111111",
+                              color: "#131416",
                               fontSize: "20px",
                               fontWeight: "600",
                               ...getElementStyle(

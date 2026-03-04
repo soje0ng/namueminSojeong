@@ -15,12 +15,12 @@ export const TITLE_BANNER_DEFAULTS = {
   subTitleStyle: { color: "#285DE1", fontSize: "20px", fontWeight: "700" }, // blue-600
   title:
     "2026년 <span style='color: #285DE1'>미국 투자이민,</span><br/>꼭 알아야 할 3가지 핵심 트렌드",
-  titleStyle: { color: "#111111", fontSize: "48px", fontWeight: "700" },
+  titleStyle: { color: "#131416", fontSize: "48px", fontWeight: "700" },
   desc: "설명을 쓰는 곳입니다.",
   descStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
   textContentTitle: "서브 타이틀 입력",
   textContentTitleStyle: {
-    color: "#111111",
+    color: "#131416",
     fontSize: "24px",
     fontWeight: "500",
   },
@@ -49,10 +49,15 @@ export const TITLE_BANNER_DEFAULTS = {
   quoteLeftUrl: "/images/placeholder/icon-quote.jpg",
   quoteRightUrl: "/images/placeholder/icon-quote.jpg",
   layout3SmallTitle: "1명당 유학 비용 30억원의 시대, 가장 합리적인 선택!",
-  layout3SmallTitleStyle: { color: "#111111", fontSize: "24px", fontWeight: "500" },
+  layout3SmallTitleStyle: {
+    color: "#131416",
+    fontSize: "24px",
+    fontWeight: "500",
+  },
   layout3Title: "학부모 영주권 프로그램",
-  layout3TitleStyle: { color: "#111111", fontSize: "48px", fontWeight: "700" },
-  layout3Desc: "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램",
+  layout3TitleStyle: { color: "#131416", fontSize: "48px", fontWeight: "700" },
+  layout3Desc:
+    "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램",
   layout3DescStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
   layout: "1",
 };
@@ -341,7 +346,6 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div className="self-stretch px-14 pt-28 pb-14 inline-flex flex-col justify-start items-center gap-10 w-full">
-
             {/* 상단: 따옴표 + 텍스트 */}
             <div className="inline-flex justify-start items-start gap-14">
               {/* 좌측 따옴표 이미지 */}
@@ -362,7 +366,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               {/* 텍스트 그룹 */}
               <div className="inline-flex flex-col justify-start items-center gap-2">
                 <SafeHtml
-                  html={data.layout3SmallTitle || "1명당 유학 비용 30억원의 시대, 가장 합리적인 선택!"}
+                  html={
+                    data.layout3SmallTitle ||
+                    "1명당 유학 비용 30억원의 시대, 가장 합리적인 선택!"
+                  }
                   className="text-center justify-start text-gray-95 text-2xl font-medium font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
                   style={getElementStyle(data.layout3SmallTitleStyle, viewport)}
                   onDoubleClick={(e) => {
@@ -380,7 +387,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }}
                 />
                 <SafeHtml
-                  html={data.layout3Desc || "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램"}
+                  html={
+                    data.layout3Desc ||
+                    "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램"
+                  }
                   className="text-center justify-start text-gray-50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
                   style={getElementStyle(data.layout3DescStyle, viewport)}
                   onDoubleClick={(e) => {
@@ -417,7 +427,6 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               />
             </div>
-
           </div>
         </div>
       </section>

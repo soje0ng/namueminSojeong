@@ -138,7 +138,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             <div className="self-stretch h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
               <UniversalMedia
                 className="w-full h-auto object-contain"
-                url={w.data.image}
+                url={w.data.image || ""}
                 alt="Table Image"
                 style={{
                   ...getElementStyle(w.data.imageStyle, viewport as any),
@@ -297,7 +297,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             <div className="self-stretch h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
               <UniversalMedia
                 className="w-full h-auto object-contain"
-                url={w.data.image}
+                url={w.data.image || ""}
                 alt="Table Image"
                 style={{
                   ...getElementStyle(w.data.imageStyle, viewport as any),
@@ -320,7 +320,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                         (w.data as any).headerCellStyles?.[i]
                           ?.backgroundColor ??
                         headerStyle?.backgroundColor ??
-                        (i === 0 ? "#F9FAFB" : i === 1 ? "#111827" : "#00C2FF"),
+                        (i === 0 ? "#E6E8EA" : i === 1 ? "#131416" : "#275DE0"),
                       borderRadius: 8,
                     }}
                     onDoubleClick={(e) => {
@@ -330,7 +330,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <SafeHtml
                       html={headerText}
-                      className={`text-center justify-start ${i === 0 ? "text-시안-mode-gray95" : "text-시안-mode-gray0"} text-xl font-bold font-['Pretendard'] leading-8`}
+                      className={`text-center justify-start ${i === 0 ? "text-[#131416]" : "text-[#FFFFFF]"} text-xl font-bold font-['Pretendard'] leading-8`}
                       style={{ ...headerStyle, backgroundColor: "transparent" }}
                     />
                   </div>
@@ -351,7 +351,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                           (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
                             ?.backgroundColor ??
                           bodyStyle?.backgroundColor ??
-                          (cIdx === 0 || cIdx === 1 ? "#F9FAFB" : "#E5F9FF"),
+                          (cIdx === 0 || cIdx === 1 ? "#F6F7FB" : "#DDEFFE"),
                         borderRadius: 8,
                       }}
                       onDoubleClick={(e) => {
@@ -361,7 +361,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <SafeHtml
                         html={cell}
-                        className={`text-center justify-start ${cIdx === 2 ? "text-[#285DE1]" : "text-시안-mode-gray50"} text-xl font-medium font-['Pretendard'] leading-8`}
+                        className={`text-center justify-start text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8`}
                         style={{ ...bodyStyle, backgroundColor: "transparent" }}
                       />
                     </div>
@@ -513,7 +513,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <div className="flex-1 self-stretch h-auto xl:h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
                 <UniversalMedia
                   className="w-full h-auto object-contain"
-                  url={w.data.image}
+                  url={w.data.image || ""}
                   alt="Table Image"
                   style={getElementStyle(w.data.imageStyle, viewport as any)}
                   onDoubleClick={(e) => {
