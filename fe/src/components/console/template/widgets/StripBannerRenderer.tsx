@@ -4,23 +4,27 @@ import { getElementStyle, SafeHtml, UniversalMedia } from "./WidgetUtils";
 
 export const STRIP_BANNER_DEFAULTS = {
   layout: "1",
-  title: "띠배너 타이틀을 입력하세요",
-  desc: "띠배너 설명을 입력하세요",
+  title: "이미 수많은 가정이 학부모 영주권 프로그램으로",
+  desc: "수십억 원을 절감하며 자녀가 IVY 리그에 합격했습니다!",
   imageUrl: "/images/placeholder/strip-banner.jpg",
   buttonText: "자세히 보기",
   buttonUrl: "#",
-  backgroundColor: "#1e40af", // User explicitly mentioned a blue-ish color, let's use a standard tailwind blue as default
-  textColor: "#1f2937",
+  backgroundColor: "#295E92",
+  textColor: "#ffffff",
   targetUrl: "",
   titleStyle: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    color: "#1f2937",
+    fontSize: "32px",
+    fontWeight: "500",
+    color: "#ffffff",
+    lineHeight: "150%",
+    letterSpacing: "-0.64px",
   },
   descStyle: {
-    fontSize: "16px",
-    fontWeight: "normal",
-    color: "#4b5563",
+    fontSize: "32px",
+    fontWeight: "700",
+    color: "#ffffff",
+    lineHeight: "150%",
+    letterSpacing: "-0.64px",
   },
   imageStyle: {
     width: "100%",
@@ -39,8 +43,9 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
   const layout = data.layout || "1";
 
   const sectionStyle: React.CSSProperties = {
-    backgroundColor: data.backgroundColor || "#f8f9fa",
-    color: data.textColor || "#1f2937",
+    backgroundColor:
+      widget.style?.backgroundColor || data.backgroundColor || "#295E92",
+    color: data.textColor || "#ffffff",
     paddingTop: widget.style?.paddingTop || "40px",
     paddingBottom: widget.style?.paddingBottom || "40px",
   };
@@ -64,7 +69,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
               {!data.titleStyle?.isHidden && (
                 <SafeHtml
                   html={data.title}
-                  className="justify-start text-white text-2xl xl:text-3xl font-medium font-['Pretendard'] leading-snug xl:leading-[48px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text"
+                  className="justify-start font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text transition-all"
                   style={getElementStyle(data.titleStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.preventDefault();
@@ -76,7 +81,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
               {!data.descStyle?.isHidden && (
                 <SafeHtml
                   html={data.desc}
-                  className="justify-start text-white text-2xl xl:text-3xl font-bold font-['Pretendard'] leading-snug xl:leading-[48px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text"
+                  className="justify-start font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text transition-all"
                   style={getElementStyle(data.descStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.preventDefault();

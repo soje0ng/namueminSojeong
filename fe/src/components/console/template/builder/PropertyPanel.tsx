@@ -725,7 +725,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                               : widget.type === "bannerSection" &&
                                   (widget.data as any).variant === "banner3"
                                 ? "#21568E"
-                                : "#ffffff")
+                                : widget.type === "stripBanner"
+                                  ? "#295E92"
+                                  : "#ffffff")
                         }
                         onChange={(e) =>
                           updateWidgetStyle(widget.id, {
@@ -744,7 +746,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                               : widget.type === "bannerSection" &&
                                   (widget.data as any).variant === "banner3"
                                 ? "#21568E"
-                                : "#ffffff")}
+                                : widget.type === "stripBanner"
+                                  ? "#295E92"
+                                  : "#ffffff")}
                       </span>
                     </div>
                   ) : (

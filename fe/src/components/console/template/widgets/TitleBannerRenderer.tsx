@@ -256,34 +256,33 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
             className="w-full"
           >
             <div className="inline-flex flex-col justify-start items-start gap-3">
-              <div
-                className="justify-start text-시안-mode-Primary70 text-xl font-medium font-['Pretendard'] leading-5"
+              <SafeHtml
+                html={data.subTitle || "Program Name."}
+                className="justify-start text-시안-mode-Primary70 text-xl font-medium font-['Pretendard'] leading-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                style={getElementStyle(data.subTitleStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
                 }}
-              >
-                Program Name.
-              </div>
-              <div
-                className="justify-start text-gray-95 text-5xl font-bold font-['Pretendard'] leading-[72px]"
+              />
+              <SafeHtml
+                html={data.title || "타이틀명 입력"}
+                className="justify-start text-gray-95 text-5xl font-bold font-['Pretendard'] leading-[72px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                style={getElementStyle(data.titleStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
                 }}
-              >
-                타이틀명 입력
-              </div>
-              <div
-                style={{ color: "#6b7280" }}
-                className="self-stretch justify-start text-xl font-medium font-['Pretendard'] leading-8"
+              />
+              <SafeHtml
+                html={data.desc || "서브타이틀 입력 영역"}
+                className="self-stretch justify-start text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                style={{ color: "#6b7280", ...getElementStyle(data.descStyle, viewport) }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
                 }}
-              >
-                서브타이틀 입력 영역
-              </div>
+              />
             </div>
             <div
               style={{
@@ -306,29 +305,25 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               />
               <div className="flex-1 inline-flex flex-col justify-center items-start gap-2">
-                <div
-                  className="self-stretch justify-start text-gray-95 text-2xl font-medium font-['Pretendard'] leading-9"
+                <SafeHtml
+                  html={data.textContentTitle || "서브 타이틀 입력"}
+                  className="self-stretch justify-start text-gray-95 text-2xl font-medium font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                  style={getElementStyle(data.textContentTitleStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("textContentTitle");
                   }}
-                >
-                  서브 타이틀 입력
-                </div>
+                />
                 <div className="w-14 h-px bg-gray-10"></div>
-                <div
-                  style={{ color: "#6b7280" }}
-                  className="self-stretch justify-start text-xl font-medium font-['Pretendard'] leading-8"
+                <SafeHtml
+                  html={data.textContent || "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다."}
+                  className="self-stretch justify-start text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                  style={{ color: "#6b7280", ...getElementStyle(data.textContentStyle, viewport) }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("textContent");
                   }}
-                >
-                  웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한
-                  렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상
-                  개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱,
-                  태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.
-                </div>
+                />
               </div>
             </div>
           </div>
