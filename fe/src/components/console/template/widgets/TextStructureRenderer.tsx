@@ -255,16 +255,19 @@ export const TEXT_STRUCTURE_9_DEFAULT_SECTIONS = [
         id: "f9-1",
         title: "첫째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
+        iconUrl: "/images/template/icon_arrow.png",
       },
       {
         id: "f9-2",
         title: "둘째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
+        iconUrl: "/images/template/icon_arrow.png",
       },
       {
         id: "f9-3",
         title: "셋째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
+        iconUrl: "/images/template/icon_arrow.png",
       },
     ],
   },
@@ -300,18 +303,21 @@ export const TEXT_STRUCTURE_11_DEFAULT_SECTIONS = [
         number: "01.",
         title: "프로그램 특징",
         desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
+        icon: "/images/template/icon_program_thumb.png",
       },
       {
         id: "f11-2",
         number: "02.",
         title: "프로그램 특징",
         desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
+        icon: "/images/template/icon_program_thumb.png",
       },
       {
         id: "f11-3",
         number: "03.",
         title: "프로그램 특징",
         desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
+        icon: "/images/template/icon_program_thumb.png",
       },
     ],
   },
@@ -419,16 +425,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           onElementSelect?.("items", i.toString());
                         }}
                       >
-                        <div className="w-8 h-8 bg-시안-mode-Primary5 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
-                          <div
-                            data-property-1="Regular"
-                            className="w-6 h-6 relative rounded-xl"
-                          >
-                            <div className="w-6 h-6 left-0 top-0 absolute flex justify-center items-center">
-                              <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-시안-mode-Primary50"></div>
-                            </div>
-                          </div>
-                        </div>
+                        <img
+                          src={item.iconUrl || "/images/template/icon_bullet.png"}
+                          alt="icon"
+                          className="object-contain cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all shrink-0"
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("itemIconUrl", item.id || i.toString());
+                          }}
+                        />
                         <div className="inline-flex flex-col justify-start items-start gap-2 text-left">
                           {!isTitleHidden && (
                             <SafeHtml
@@ -1864,11 +1869,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                   }}
                                 />
                               )}
-                              <div className="w-6 h-6 relative shrink-0">
-                                <div className="w-6 h-6 left-0 top-0 absolute">
-                                  <div className="w-2.5 h-3 left-[7px] top-[6px] absolute bg-시안-mode-gray95"></div>
-                                </div>
-                              </div>
+                              <img
+                                src={item.iconUrl || "/images/template/icon_arrow.png"}
+                                alt="icon"
+                                className="object-contain cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all shrink-0"
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("itemIconUrl", item.id || i.toString());
+                                }}
+                              />
                               {!isDescHidden && (
                                 <SafeHtml
                                   html={
@@ -2083,25 +2092,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             className="self-stretch pt-4 bg-시안-mode-gray0 border-t border-시안-mode-gray95 inline-flex justify-start items-center gap-6"
                           >
                             {/* 아이콘 영역 */}
-                            <div
-                              className="w-28 h-28 relative bg-시안-mode-gray5 rounded-[60px] shrink-0 overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                            <img
+                              src={item.icon || "/images/template/icon_program_thumb.png"}
+                              alt="icon"
+                              className="w-[120px] h-[120px] object-contain cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all shrink-0"
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("itemIcon", item.id);
                               }}
-                            >
-                              {item.icon ? (
-                                <img
-                                  src={item.icon}
-                                  alt=""
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-시안-mode-Primary50 via-시안-mode-subColor30 to-시안-mode-subColor50 rounded-lg opacity-80" />
-                                </div>
-                              )}
-                            </div>
+                            />
 
                             {/* 텍스트 */}
                             <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">

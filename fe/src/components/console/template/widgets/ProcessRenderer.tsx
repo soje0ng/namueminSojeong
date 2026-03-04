@@ -655,33 +655,35 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       key={step.id || idx}
                       className="relative w-full flex flex-col justify-start items-center gap-3"
                     >
-                      <div
-                        className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer relative flex justify-center items-center aspect-video w-full rounded-t-lg"
-                        style={{
-                          display: step.iconStyle?.isHidden
-                            ? "none"
-                            : undefined,
-                        }}
-                      >
-                        <UniversalMedia
-                          url={step.icon}
-                          className="w-full h-full object-cover"
-                          alt="step icon"
-                          style={getElementStyle(
-                            step.iconStyle as any,
-                            viewport as any,
-                          )}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("icon", step.id);
+                      <div className="relative w-full">
+                        <div
+                          className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center aspect-video w-full rounded-t-lg"
+                          style={{
+                            display: step.iconStyle?.isHidden
+                              ? "none"
+                              : undefined,
                           }}
-                        />
-                        {/* Arrow logic */}
-                        {idx !== arr.length - 1 && (
+                        >
+                          <UniversalMedia
+                            url={step.icon}
+                            className="w-full h-full object-cover"
+                            alt="step icon"
+                            style={getElementStyle(
+                              step.iconStyle as any,
+                              viewport as any,
+                            )}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("icon", step.id);
+                            }}
+                          />
+                        </div>
+                        {/* Arrow logic - Attached to left edge of current card to render OVER previous card */}
+                        {idx !== 0 && (
                           <>
                             {/* PC (xl) Arrow */}
-                            {!isLastInRow && (
-                              <div className="hidden xl:flex absolute top-1/2 -right-2.5 translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-10 pointer-events-none">
+                            {idx % pcCols !== 0 && (
+                              <div className="hidden xl:flex absolute top-1/2 -left-5 -translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-20 pointer-events-none">
                                 <img
                                   src="/images/template/arrow.png"
                                   alt="next"
@@ -690,8 +692,8 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                               </div>
                             )}
                             {/* Tablet (md) Arrow */}
-                            {(idx + 1) % 2 !== 0 && (
-                              <div className="hidden md:flex xl:hidden absolute top-1/2 -right-2.5 translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-10 pointer-events-none">
+                            {idx % 2 !== 0 && (
+                              <div className="hidden md:flex xl:hidden absolute top-1/2 -left-5 -translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-20 pointer-events-none">
                                 <img
                                   src="/images/template/arrow.png"
                                   alt="next"
