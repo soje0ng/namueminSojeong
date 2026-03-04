@@ -200,6 +200,9 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
         id: widgetId,
         type,
         data: { ...STRIP_BANNER_DEFAULTS },
+        style: {
+          backgroundColor: STRIP_BANNER_DEFAULTS.backgroundColor,
+        },
       } as any;
 
     default:
