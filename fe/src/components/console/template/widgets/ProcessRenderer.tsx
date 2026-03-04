@@ -97,6 +97,16 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
   const isComparisonCard =
     typeStr === "comparisonCard" && (layout === "1" || layout === "layout1");
 
+  const pcCols = w.data.itemsPerRow || 3;
+  const gridColsClass =
+    pcCols === 4
+      ? "xl:grid-cols-4"
+      : pcCols === 3
+        ? "xl:grid-cols-3"
+        : pcCols === 2
+          ? "xl:grid-cols-2"
+          : "xl:grid-cols-1";
+
   if (isComparisonCard) {
     return (
       <section
@@ -312,13 +322,15 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 2. Body Area: Steps Grid Layout 2 */}
-            <div className="self-stretch flex justify-center items-start gap-y-12 flex-wrap content-center mt-6">
+            <div
+              className={`self-stretch w-full grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-y-12 mt-6`}
+            >
               {(() => {
                 const stepsArr = data.steps || (data as any).items || [];
                 return stepsArr.map((step: any, idx: number) => (
                   <div
                     key={step.id || idx}
-                    className="flex-1 min-w-[280px] flex flex-col justify-start items-center gap-6"
+                    className="w-full flex flex-col justify-start items-center gap-6"
                   >
                     <div
                       className="w-40 h-40 rounded-full bg-slate-50 flex justify-center items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
@@ -474,7 +486,9 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 2. Body Area: Steps Grid Layout 3 */}
-            <div className="self-stretch w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
+            <div
+              className={`self-stretch w-full grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-10`}
+            >
               {(data.steps || (data as any).items || []).map(
                 (step: any, idx: number) => (
                   <div
@@ -628,15 +642,22 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 2. Body Area (Steps Grid with Arrows) */}
-            <div className="self-stretch inline-flex justify-center items-center gap-5 flex-wrap content-center">
+            <div
+              className={`self-stretch w-full grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-x-5 gap-y-10`}
+            >
               {(data.steps || (data as any).items || []).map(
-                (step: any, idx: number) => (
-                  <React.Fragment key={step.id || idx}>
-                    <div className="flex-1 min-w-64 inline-flex flex-col justify-center items-center gap-3">
+                (step: any, idx: number) => {
+                  const arr = data.steps || (data as any).items || [];
+                  const isLastInRow =
+                    (idx + 1) % pcCols === 0 || idx === arr.length - 1;
+                  return (
+                    <div
+                      key={step.id || idx}
+                      className="relative w-full flex flex-col justify-start items-center gap-3"
+                    >
                       <div
-                        className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center h-auto"
+                        className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center aspect-video w-full rounded-t-lg"
                         style={{
-                          height: "auto",
                           display: step.iconStyle?.isHidden
                             ? "none"
                             : undefined,
@@ -644,7 +665,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       >
                         <UniversalMedia
                           url={step.icon}
-                          className="w-full h-auto object-contain"
+                          className="w-full h-full object-cover"
                           alt="step icon"
                           style={getElementStyle(
                             step.iconStyle as any,
@@ -702,21 +723,20 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                           }}
                         />
                       )}
-                    </div>
 
-                    {/* Arrow logic */}
-                    {idx <
-                      (data.steps || (data as any).items || []).length - 1 && (
-                      <div className="w-10 h-10 flex items-center justify-center">
-                        <img
-                          src="/images/template/arrow.png"
-                          alt="next"
-                          className="w-10 h-10 object-contain opacity-40"
-                        />
-                      </div>
-                    )}
-                  </React.Fragment>
-                ),
+                      {/* Arrow logic */}
+                      {!isLastInRow && (
+                        <div className="hidden xl:flex absolute top-[calc(50%-4rem)] -translate-y-1/2 -right-[1.25rem] w-8 h-8 items-center justify-center translate-x-1/2 z-10 pointer-events-none">
+                          <img
+                            src="/images/template/arrow.png"
+                            alt="next"
+                            className="w-10 h-10 object-contain opacity-40"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                },
               )}
             </div>
           </div>

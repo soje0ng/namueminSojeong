@@ -81,6 +81,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     {
       id: "ts-1",
       icon: "task_alt",
+      iconUrl: "/images/template/icon_checkbox.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
       desc: "프로그램 특징 내용 입력",
@@ -89,6 +90,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     {
       id: "ts-2",
       icon: "task_alt",
+      iconUrl: "/images/template/icon_checkbox.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
       desc: "프로그램 특징 내용 입력",
@@ -97,6 +99,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     {
       id: "ts-3",
       icon: "task_alt",
+      iconUrl: "/images/template/icon_checkbox.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
       desc: "프로그램 특징 내용 입력",
@@ -105,6 +108,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     {
       id: "ts-4",
       icon: "task_alt",
+      iconUrl: "/images/template/icon_checkbox.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
       desc: "프로그램 특징 내용 입력",

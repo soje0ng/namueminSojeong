@@ -421,7 +421,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               </div>
             )}
 
-            {["iconCard", "process"].includes(widget.type) &&
+            {["iconCard", "process", "processCard"].includes(widget.type) &&
               viewport === "desktop" && (
                 <div className="space-y-2 mt-2">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
