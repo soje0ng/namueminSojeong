@@ -801,6 +801,28 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   )}
                 </div>
 
+                {widget.type === "stripBanner" && (
+                  <div className="space-y-2 mt-4">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                      전체 섹션 클릭 링크 (새 창)
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100"
+                      placeholder="https://example.com"
+                      value={(widget.data as any).targetUrl || ""}
+                      onChange={(e) =>
+                        updateWidgetData(widget.id, {
+                          targetUrl: e.target.value,
+                        })
+                      }
+                    />
+                    <p className="text-[10px] text-gray-400 pl-1 mt-1">
+                      * 입력 시 전체 섹션을 클릭하면 새 창으로 이동합니다.
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
                     상하여백
