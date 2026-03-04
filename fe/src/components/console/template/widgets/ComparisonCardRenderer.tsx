@@ -490,50 +490,40 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   </div>
                 )}
                 <div className="self-stretch flex flex-col justify-start items-start">
-                  {(items[0]?.desc || "\n\n")
-                    .split("\n")
-                    .map((_: any, lIdx: number) => {
-                      const dynRowLabelStyle =
-                        data[`rowLabel${lIdx}Style`] ||
-                        data.rowLabelStyle ||
-                        {};
-
-                      if (dynRowLabelStyle?.isHidden) return null;
-
-                      return (
-                        <div
-                          key={lIdx}
-                          className="self-stretch py-3 border-b border-시안-mode-gray1 inline-flex justify-center items-center gap-2.5"
+                  {leftDescItems.map((descItem, lIdx) => {
+                    const dynRowLabelStyle =
+                      data[`rowLabel${lIdx}Style`] || data.rowLabelStyle || {};
+                    if (dynRowLabelStyle?.isHidden) return null;
+                    return (
+                      <div
+                        key={descItem.id}
+                        className="self-stretch py-3 border-b border-시안-mode-gray1 inline-flex justify-center items-center gap-2.5"
+                        style={{
+                          backgroundColor:
+                            getElementStyle(dynRowLabelStyle, viewport as any)
+                              .backgroundColor || undefined,
+                        }}
+                      >
+                        <SafeHtml
+                          html={
+                            data.rowLabels?.[lIdx] || "프로그램 특징 내용 입력"
+                          }
+                          className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all break-keep"
                           style={{
-                            backgroundColor:
-                              getElementStyle(dynRowLabelStyle, viewport as any)
-                                .backgroundColor || undefined,
+                            color: "#131416",
+                            fontSize: "20px",
+                            fontWeight: "600",
+                            ...getElementStyle(dynRowLabelStyle, viewport as any),
+                            backgroundColor: "transparent",
                           }}
-                        >
-                          <SafeHtml
-                            html={
-                              data.rowLabels?.[lIdx] ||
-                              "프로그램 특징 내용 입력"
-                            }
-                            className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all break-keep"
-                            style={{
-                              color: "#131416",
-                              fontSize: "20px",
-                              fontWeight: "600",
-                              ...getElementStyle(
-                                dynRowLabelStyle,
-                                viewport as any,
-                              ),
-                              backgroundColor: "transparent",
-                            }}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.("rowLabel", String(lIdx));
-                            }}
-                          />
-                        </div>
-                      );
-                    })}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("rowLabel", String(lIdx));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

@@ -24,6 +24,7 @@ import { reorderItems, updateItemInArray } from "@/utils/template/itemUtils";
 import { usePopupStore } from "@/store/console/usePopupStore";
 import TextStructure6Manager from "./TextStructure6Manager";
 import TextStructure7Manager from "./TextStructure7Manager";
+import ComparisonDescManager from "./ComparisonDescManager";
 import TextStructure8Manager from "./TextStructure8Manager";
 import TextStructure11Manager from "./TextStructure11Manager";
 import {
@@ -161,6 +162,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     listArrayName = "items";
   else if ((widget.data as any).listItems) listArrayName = "listItems";
   else if ((widget.data as any).blocks) listArrayName = "blocks";
+
+  // comparisonCard는 좌/우 개별 desc 관리 사용 → 기존 items 구조 관리 숨김
+  if (widget.type === "comparisonCard") listArrayName = null;
 
   // 텍스트 구조 레이아웃 6/7은 sections 전용 구조 관리 사용 → 기존 항목 목록 숨김
   if (
@@ -2514,10 +2518,42 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             </div>
           )}
 
+        {/* comparisonCard 좌/우 desc 항목 관리 패널 */}
+        {selectedElementKey &&
+          widget.type === "comparisonCard" &&
+          (selectedElementKey === "leftDescItems" ||
+            selectedElementKey === "rightDescItems") && (
+            <ComparisonDescManager
+              widgetId={widget.id}
+              side={selectedElementKey === "leftDescItems" ? "left" : "right"}
+              descItems={
+                (widget.data as any)[selectedElementKey] ||
+                (selectedElementKey === "leftDescItems"
+                  ? [
+                      { id: "l1", text: "프로그램 특징 내용 입력" },
+                      { id: "l2", text: "프로그램 특징 내용 입력" },
+                      { id: "l3", text: "프로그램 특징 내용 입력" },
+                    ]
+                  : [
+                      { id: "r1", text: "프로그램 특징 내용 입력" },
+                      { id: "r2", text: "프로그램 특징 내용 입력" },
+                      { id: "r3", text: "프로그램 특징 내용 입력" },
+                    ])
+              }
+              updateWidgetData={updateWidgetData}
+              onBack={() => setSelectedElementKey(null)}
+            />
+          )}
+
         {/* 섹션 하위 요소 설정 패널 */}
         {selectedElementKey &&
           !selectedElementKey.startsWith("s6img_") &&
-          !selectedElementKey.startsWith("s6banner_") && (
+          !selectedElementKey.startsWith("s6banner_") &&
+          !(
+            widget.type === "comparisonCard" &&
+            (selectedElementKey === "leftDescItems" ||
+              selectedElementKey === "rightDescItems")
+          ) && (
             <ElementEditor
               widget={widget}
               elementKey={selectedElementKey}

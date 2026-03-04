@@ -312,22 +312,23 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 2. Body Area: Steps Grid Layout 2 */}
-            <div className="self-stretch inline-flex justify-center items-center gap-10 flex-wrap content-center">
-              {(data.steps || (data as any).items || []).map(
-                (step: any, idx: number) => (
+            <div className="self-stretch flex justify-center items-start gap-y-12 flex-wrap content-center mt-6">
+              {(() => {
+                const stepsArr = data.steps || (data as any).items || [];
+                return stepsArr.map((step: any, idx: number) => (
                   <div
                     key={step.id || idx}
-                    className="flex-1 min-w-64 inline-flex flex-col justify-center items-center gap-3"
+                    className="flex-1 min-w-[280px] flex flex-col justify-start items-center gap-6"
                   >
                     <div
-                      className="w-40 h-auto bg-시안-mode-gray5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative border border-시안-mode-gray1/50"
+                      className="w-40 h-40 rounded-full bg-slate-50 flex justify-center items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
                       style={{
                         display: step.iconStyle?.isHidden ? "none" : undefined,
                       }}
                     >
                       <UniversalMedia
                         url={step.icon}
-                        className="w-full h-auto"
+                        className="w-full h-full object-cover"
                         alt="step icon"
                         style={getElementStyle(
                           step.iconStyle as any,
@@ -339,14 +340,21 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         }}
                       />
                     </div>
-                    <div className="self-stretch border-t border-white flex flex-col justify-start items-center gap-3">
-                      <div className="self-stretch inline-flex justify-start items-center gap-2">
-                        <div className="flex-1 h-px bg-zinc-300"></div>
+
+                    <div className="w-full flex flex-col justify-start items-center">
+                      <div className="w-full relative py-2 flex justify-center items-center">
+                        <div
+                          className="absolute top-1/2 -translate-y-1/2 h-px bg-zinc-300 z-0"
+                          style={{
+                            left: idx === 0 ? "50%" : 0,
+                            right: idx === stepsArr.length - 1 ? "50%" : 0,
+                          }}
+                        ></div>
                         {!step.numberStyle?.isHidden && (
-                          <div className="px-4 py-1 bg-시안-mode-Primary50 rounded-[30px] flex justify-center items-center gap-2.5">
+                          <div className="px-5 py-1 bg-[#285DE1] rounded-full inline-flex justify-center items-center gap-2.5 relative z-10 ring-8 ring-white">
                             <SafeHtml
                               html={step.number || `0${idx + 1}`}
-                              className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                              className="justify-start text-white text-lg md:text-xl font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text min-w-[1.5rem] text-center"
                               style={getElementStyle(
                                 step.numberStyle,
                                 viewport as any,
@@ -358,13 +366,13 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             />
                           </div>
                         )}
-                        <div className="flex-1 h-px bg-zinc-300"></div>
                       </div>
-                      <div className="flex flex-col justify-start items-center gap-2">
+
+                      <div className="flex flex-col justify-start items-center gap-2 mt-4 px-6 w-full">
                         {!step.titleStyle?.isHidden && (
                           <SafeHtml
                             html={step.title || "과정명 01"}
-                            className="justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                            className="justify-center text-center text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
                             style={getElementStyle(
                               step.titleStyle,
                               viewport as any,
@@ -378,7 +386,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {!step.descStyle?.isHidden && (
                           <SafeHtml
                             html={step.desc || "내용 입력 01"}
-                            className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
+                            className="text-center justify-center text-gray-500 text-base font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
                             style={getElementStyle(
                               step.descStyle,
                               viewport as any,
@@ -392,8 +400,8 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       </div>
                     </div>
                   </div>
-                ),
-              )}
+                ));
+              })()}
             </div>
           </div>
         </div>
