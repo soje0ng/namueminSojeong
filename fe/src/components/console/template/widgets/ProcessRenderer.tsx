@@ -656,7 +656,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       className="relative w-full flex flex-col justify-start items-center gap-3"
                     >
                       <div
-                        className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center aspect-video w-full rounded-t-lg"
+                        className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer relative flex justify-center items-center aspect-video w-full rounded-t-lg"
                         style={{
                           display: step.iconStyle?.isHidden
                             ? "none"
@@ -676,6 +676,31 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             onElementSelect?.("icon", step.id);
                           }}
                         />
+                        {/* Arrow logic */}
+                        {idx !== arr.length - 1 && (
+                          <>
+                            {/* PC (xl) Arrow */}
+                            {!isLastInRow && (
+                              <div className="hidden xl:flex absolute top-1/2 -right-2.5 translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-10 pointer-events-none">
+                                <img
+                                  src="/images/template/arrow.png"
+                                  alt="next"
+                                  className="w-full h-full object-contain opacity-40 max-w-none"
+                                />
+                              </div>
+                            )}
+                            {/* Tablet (md) Arrow */}
+                            {(idx + 1) % 2 !== 0 && (
+                              <div className="hidden md:flex xl:hidden absolute top-1/2 -right-2.5 translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-10 pointer-events-none">
+                                <img
+                                  src="/images/template/arrow.png"
+                                  alt="next"
+                                  className="w-full h-full object-contain opacity-40 max-w-none"
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                       <div className="inline-flex justify-start items-center gap-3">
                         {!step.numberStyle?.isHidden && (
@@ -722,17 +747,6 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             onElementSelect?.("stepDesc", step.id);
                           }}
                         />
-                      )}
-
-                      {/* Arrow logic */}
-                      {!isLastInRow && (
-                        <div className="hidden xl:flex absolute top-[calc(50%-4rem)] -translate-y-1/2 -right-[1.25rem] w-8 h-8 items-center justify-center translate-x-1/2 z-10 pointer-events-none">
-                          <img
-                            src="/images/template/arrow.png"
-                            alt="next"
-                            className="w-10 h-10 object-contain opacity-40"
-                          />
-                        </div>
                       )}
                     </div>
                   );

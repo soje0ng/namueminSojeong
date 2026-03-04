@@ -823,11 +823,22 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           onElementSelect?.("items", i.toString());
                         }}
                       >
-                        {/* Icon Box */}
-                        <div className="w-6 h-6 relative bg-blue-100 rounded-full flex items-center justify-center">
-                          {/* Custom icon placeholder mirroring original HTML icon structure */}
-                          <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-white rounded-sm bg-blue-500"></div>
-                        </div>
+                        {/* 체크박스 이미지 */}
+                        <img
+                          src={
+                            item.iconUrl ||
+                            "/images/template/icon_checkbox.png"
+                          }
+                          alt="icon"
+                          className="object-contain cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "itemIconUrl",
+                              item.id || i.toString(),
+                            );
+                          }}
+                        />
 
                         <div className="flex flex-col justify-center items-center gap-1 text-center">
                           {!isTitleHidden && (
