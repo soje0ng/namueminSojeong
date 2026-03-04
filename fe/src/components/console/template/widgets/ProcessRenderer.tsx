@@ -474,12 +474,12 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 2. Body Area: Steps Grid Layout 3 */}
-            <div className="self-stretch inline-flex justify-start items-start gap-10 flex-wrap">
+            <div className="self-stretch w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
               {(data.steps || (data as any).items || []).map(
                 (step: any, idx: number) => (
                   <div
                     key={step.id || idx}
-                    className="flex-1 min-w-[300px] bg-시안-mode-gray0 border-t border-시안-mode-gray95 inline-flex flex-col justify-start items-start"
+                    className="w-full bg-시안-mode-gray0 border-t border-시안-mode-gray95 inline-flex flex-col justify-start items-start"
                   >
                     <div
                       className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
