@@ -9,6 +9,17 @@ import {
   formatUnit,
 } from "./WidgetUtils";
 
+const DEFAULT_LEFT_DESC_ITEMS = [
+  { id: "l1", text: "프로그램 특징 내용 입력" },
+  { id: "l2", text: "프로그램 특징 내용 입력" },
+  { id: "l3", text: "프로그램 특징 내용 입력" },
+];
+const DEFAULT_RIGHT_DESC_ITEMS = [
+  { id: "r1", text: "프로그램 특징 내용 입력" },
+  { id: "r2", text: "프로그램 특징 내용 입력" },
+  { id: "r3", text: "프로그램 특징 내용 입력" },
+];
+
 export const COMPARISON_CARD_DEFAULTS = {
   layout: "1",
   title: "타이틀명 입력",
@@ -25,6 +36,8 @@ export const COMPARISON_CARD_DEFAULTS = {
   middleTitle: "비교 head명",
   middleTitleStyle: { fontSize: "30px", color: "#ffffff", fontWeight: "500" },
   rowLabelStyle: { fontSize: "20px", color: "#131416", fontWeight: "600" },
+  leftDescItems: DEFAULT_LEFT_DESC_ITEMS,
+  rightDescItems: DEFAULT_RIGHT_DESC_ITEMS,
   items: [
     {
       id: "1",
@@ -58,6 +71,10 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
   if (layout === "1" || layout === "layout1") {
     const items =
       data.items?.length >= 2 ? data.items : COMPARISON_CARD_DEFAULTS.items;
+    const leftDescItems: { id: string; text: string }[] =
+      data.leftDescItems || DEFAULT_LEFT_DESC_ITEMS;
+    const rightDescItems: { id: string; text: string }[] =
+      data.rightDescItems || DEFAULT_RIGHT_DESC_ITEMS;
 
     return (
       <section
@@ -209,58 +226,40 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                       </div>
                     )}
                     <div
-                      className="self-stretch flex flex-col justify-start items-start w-full"
-                      style={{ gap: "0px" }}
+                      className="self-stretch flex flex-col justify-start items-start w-full group/desc relative hover:outline-dashed hover:outline-2 hover:outline-blue-300 cursor-pointer"
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.(
+                          idx === 0 ? "leftDescItems" : "rightDescItems",
+                        );
+                      }}
                     >
-                      {[1, 2, 3].map((num) => {
-                        const fallbackLines = (
-                          item.desc ||
-                          "프로그램 특징 내용 입력\n프로그램 특징 내용 입력\n프로그램 특징 내용 입력"
-                        ).split("\n");
-                        const defaultDesc =
-                          fallbackLines[num - 1] || "프로그램 특징 내용 입력";
-                        const descVal =
-                          item[`desc${num}`] !== undefined
-                            ? item[`desc${num}`]
-                            : defaultDesc;
-                        const dynamicDescStyle =
-                          item[`desc${num}Style`] || item.descStyle;
-
-                        if (dynamicDescStyle?.isHidden) return null;
-
-                        return (
+                      <span className="absolute top-1 right-1 hidden group-hover/desc:flex items-center bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 pointer-events-none">
+                        항목 관리
+                      </span>
+                      {(idx === 0 ? leftDescItems : rightDescItems).map(
+                        (descItem) => (
                           <div
-                            key={num}
+                            key={descItem.id}
                             className="self-stretch py-3 border-b border-시안-mode-gray10 inline-flex justify-center items-center gap-2.5"
-                            style={{
-                              backgroundColor:
-                                getElementStyle(
-                                  dynamicDescStyle,
-                                  viewport as any,
-                                ).backgroundColor || undefined,
-                            }}
                           >
                             <SafeHtml
-                              html={descVal}
-                              className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text w-full transition-all"
+                              html={descItem.text || "프로그램 특징 내용 입력"}
+                              className="text-center justify-start font-['Pretendard'] leading-8 w-full"
                               style={{
                                 color: "#6D7882",
                                 fontSize: "20px",
                                 fontWeight: "400",
                                 ...getElementStyle(
-                                  dynamicDescStyle,
+                                  item.descStyle,
                                   viewport as any,
                                 ),
                                 backgroundColor: "transparent",
                               }}
-                              onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                onElementSelect?.(`itemDesc${num}`, item.id);
-                              }}
                             />
                           </div>
-                        );
-                      })}
+                        ),
+                      )}
                     </div>
                   </div>
                   {idx === 0 && (
@@ -286,6 +285,10 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
   if (layout === "2" || layout === "layout2") {
     const items =
       data.items?.length >= 2 ? data.items : COMPARISON_CARD_DEFAULTS.items;
+    const leftDescItems: { id: string; text: string }[] =
+      data.leftDescItems || DEFAULT_LEFT_DESC_ITEMS;
+    const rightDescItems: { id: string; text: string }[] =
+      data.rightDescItems || DEFAULT_RIGHT_DESC_ITEMS;
 
     return (
       <section
@@ -422,55 +425,34 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                     }}
                   />
                 </div>
-                <div className="self-stretch flex flex-col justify-start items-start w-full">
-                  {[1, 2, 3].map((num) => {
-                    const fallbackLines = (
-                      items[0]?.desc ||
-                      "프로그램 특징 내용 입력\n프로그램 특징 내용 입력\n프로그램 특징 내용 입력"
-                    ).split("\n");
-                    const defaultDesc =
-                      fallbackLines[num - 1] || "프로그램 특징 내용 입력";
-                    const descVal =
-                      items[0]?.[`desc${num}`] !== undefined
-                        ? items[0]?.[`desc${num}`]
-                        : defaultDesc;
-
-                    const dynamicDescStyle =
-                      items[0]?.[`desc${num}Style`] || items[0]?.descStyle;
-
-                    if (dynamicDescStyle?.isHidden) return null;
-
-                    return (
-                      <div
-                        key={num}
-                        className="self-stretch py-3 border-b border-시안-mode-gray10 inline-flex justify-center items-center gap-2.5"
+                <div
+                  className="self-stretch flex flex-col justify-start items-start w-full group/desc relative hover:outline-dashed hover:outline-2 hover:outline-blue-300 cursor-pointer"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("leftDescItems");
+                  }}
+                >
+                  <span className="absolute top-1 right-1 hidden group-hover/desc:flex items-center bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 pointer-events-none">
+                    항목 관리
+                  </span>
+                  {leftDescItems.map((descItem) => (
+                    <div
+                      key={descItem.id}
+                      className="self-stretch py-3 border-b border-시안-mode-gray10 inline-flex justify-center items-center gap-2.5"
+                    >
+                      <SafeHtml
+                        html={descItem.text || "프로그램 특징 내용 입력"}
+                        className="text-center justify-start font-['Pretendard'] leading-8 w-full"
                         style={{
-                          backgroundColor:
-                            getElementStyle(dynamicDescStyle, viewport as any)
-                              .backgroundColor || undefined,
+                          color: "#6D7882",
+                          fontSize: "20px",
+                          fontWeight: "400",
+                          ...getElementStyle(items[0]?.descStyle, viewport as any),
+                          backgroundColor: "transparent",
                         }}
-                      >
-                        <SafeHtml
-                          html={descVal}
-                          className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text w-full transition-all"
-                          style={{
-                            color: "#6D7882",
-                            fontSize: "20px",
-                            fontWeight: "400",
-                            ...getElementStyle(
-                              dynamicDescStyle,
-                              viewport as any,
-                            ),
-                            backgroundColor: "transparent",
-                          }}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(`itemDesc${num}`, items[0]?.id);
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -619,55 +601,34 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                     }}
                   />
                 </div>
-                <div className="self-stretch flex flex-col justify-start items-start w-full">
-                  {[1, 2, 3].map((num) => {
-                    const fallbackLines = (
-                      items[1]?.desc ||
-                      "프로그램 특징 내용 입력\n프로그램 특징 내용 입력\n프로그램 특징 내용 입력"
-                    ).split("\n");
-                    const defaultDesc =
-                      fallbackLines[num - 1] || "프로그램 특징 내용 입력";
-                    const descVal =
-                      items[1]?.[`desc${num}`] !== undefined
-                        ? items[1]?.[`desc${num}`]
-                        : defaultDesc;
-
-                    const dynamicDescStyle =
-                      items[1]?.[`desc${num}Style`] || items[1]?.descStyle;
-
-                    if (dynamicDescStyle?.isHidden) return null;
-
-                    return (
-                      <div
-                        key={num}
-                        className="self-stretch py-3 border-b border-시안-mode-gray10 inline-flex justify-center items-center gap-2.5"
+                <div
+                  className="self-stretch flex flex-col justify-start items-start w-full group/desc relative hover:outline-dashed hover:outline-2 hover:outline-blue-300 cursor-pointer"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("rightDescItems");
+                  }}
+                >
+                  <span className="absolute top-1 right-1 hidden group-hover/desc:flex items-center bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 pointer-events-none">
+                    항목 관리
+                  </span>
+                  {rightDescItems.map((descItem) => (
+                    <div
+                      key={descItem.id}
+                      className="self-stretch py-3 border-b border-시안-mode-gray10 inline-flex justify-center items-center gap-2.5"
+                    >
+                      <SafeHtml
+                        html={descItem.text || "프로그램 특징 내용 입력"}
+                        className="text-center justify-start font-['Pretendard'] leading-8 w-full"
                         style={{
-                          backgroundColor:
-                            getElementStyle(dynamicDescStyle, viewport as any)
-                              .backgroundColor || undefined,
+                          color: "#6D7882",
+                          fontSize: "20px",
+                          fontWeight: "400",
+                          ...getElementStyle(items[1]?.descStyle, viewport as any),
+                          backgroundColor: "transparent",
                         }}
-                      >
-                        <SafeHtml
-                          html={descVal}
-                          className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text w-full transition-all"
-                          style={{
-                            color: "#6D7882",
-                            fontSize: "20px",
-                            fontWeight: "400",
-                            ...getElementStyle(
-                              dynamicDescStyle,
-                              viewport as any,
-                            ),
-                            backgroundColor: "transparent",
-                          }}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(`itemDesc${num}`, items[1]?.id);
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

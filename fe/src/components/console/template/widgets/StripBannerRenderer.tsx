@@ -32,6 +32,35 @@ export const STRIP_BANNER_DEFAULTS = {
     borderRadius: "12px",
     objectFit: "cover",
   },
+  layout2SubTitle: "( 서브타이틀 )",
+  layout2SubTitleStyle: {
+    color: "#ffffff",
+    fontSize: "20px",
+    fontWeight: "500",
+    lineHeight: "32px",
+  },
+  layout2Title: "타이틀명 입력",
+  layout2TitleStyle: {
+    color: "#ffffff",
+    fontSize: "36px",
+    fontWeight: "700",
+    lineHeight: "60px",
+  },
+  layout2Desc: "이민 프로그램명 입력",
+  layout2DescStyle: {
+    color: "#ffffff",
+    fontSize: "20px",
+    fontWeight: "500",
+    lineHeight: "32px",
+  },
+  layout2ButtonText: "자세히 보기",
+  layout2ButtonTextStyle: {
+    color: "#ffffff",
+    fontSize: "20px",
+    fontWeight: "700",
+    lineHeight: "32px",
+  },
+  layout2ImageUrl: "https://placehold.co/680x400",
 };
 
 export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
@@ -126,43 +155,117 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
     return content;
   }
 
-  // Layout 2: Centered Text with background image
+  // Layout 2
+  const defaultBg2Color = "#01355F";
+  const bg2Color =
+    widget.style?.backgroundColor && widget.style.backgroundColor !== "#295E92"
+      ? widget.style.backgroundColor
+      : defaultBg2Color;
+
   const content = (
     <section
+      className="w-full relative overflow-hidden"
       style={{
-        ...sectionStyle,
-        backgroundImage: `url(${data.imageUrl})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        paddingTop: widget.style?.paddingTop || "0px",
+        paddingBottom: widget.style?.paddingBottom || "0px",
       }}
-      className="w-full relative overflow-hidden py-20"
     >
-      <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none"></div>
-      <div className="mx-auto w-full max-w-[1920px] px-5 xl:px-72 relative z-10 flex flex-col items-center justify-center text-center gap-6">
-        {!data.titleStyle?.isHidden && (
-          <SafeHtml
-            html={data.title}
-            className="justify-center text-white text-3xl md:text-5xl font-bold break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text"
-            style={getElementStyle(data.titleStyle, viewport)}
+      <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+        <div
+          className="self-stretch h-auto xl:h-96 rounded-[20px] inline-flex flex-col xl:flex-row justify-start items-start overflow-hidden w-full"
+          style={{ backgroundColor: bg2Color }}
+        >
+          <div
+            className="flex-1 self-stretch h-60 xl:h-auto overflow-hidden shrink-0 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 relative"
             onDoubleClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onElementSelect?.("title");
+              onElementSelect?.("layout2ImageUrl");
             }}
-          />
-        )}
-        {!data.descStyle?.isHidden && (
-          <SafeHtml
-            html={data.desc}
-            className="justify-center text-white/90 text-xl md:text-2xl break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text"
-            style={getElementStyle(data.descStyle, viewport)}
-            onDoubleClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onElementSelect?.("desc");
-            }}
-          />
-        )}
+          >
+            <UniversalMedia
+              className="w-full h-full object-cover absolute inset-0"
+              url={data.layout2ImageUrl || "https://placehold.co/680x400"}
+              alt="Banner Image"
+            />
+          </div>
+          <div className="flex-1 self-stretch p-8 xl:p-14 inline-flex flex-col justify-between items-start w-full">
+            <div className="self-stretch flex flex-col justify-center items-start w-full">
+              {!data.layout2SubTitleStyle?.isHidden && (
+                <SafeHtml
+                  html={data.layout2SubTitle || "( 서브타이틀 )"}
+                  className="text-center justify-start font-medium font-['Pretendard'] break-keep cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                  style={getElementStyle(
+                    data.layout2SubTitleStyle ||
+                      STRIP_BANNER_DEFAULTS.layout2SubTitleStyle,
+                    viewport,
+                  )}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onElementSelect?.("layout2SubTitle");
+                  }}
+                />
+              )}
+              {!data.layout2TitleStyle?.isHidden && (
+                <SafeHtml
+                  html={data.layout2Title || "타이틀명 입력"}
+                  className="justify-start font-bold font-['Pretendard'] break-keep cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                  style={getElementStyle(
+                    data.layout2TitleStyle ||
+                      STRIP_BANNER_DEFAULTS.layout2TitleStyle,
+                    viewport,
+                  )}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onElementSelect?.("layout2Title");
+                  }}
+                />
+              )}
+              {!data.layout2DescStyle?.isHidden && (
+                <SafeHtml
+                  html={data.layout2Desc || "이민 프로그램명 입력"}
+                  className="text-center justify-start font-medium font-['Pretendard'] break-keep cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                  style={getElementStyle(
+                    data.layout2DescStyle ||
+                      STRIP_BANNER_DEFAULTS.layout2DescStyle,
+                    viewport,
+                  )}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onElementSelect?.("layout2Desc");
+                  }}
+                />
+              )}
+            </div>
+
+            <div className="h-12 py-1 rounded-3xl inline-flex justify-start items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity mt-6 xl:mt-0">
+              {!data.layout2ButtonTextStyle?.isHidden && (
+                <SafeHtml
+                  html={data.layout2ButtonText || "자세히 보기"}
+                  className="justify-start font-bold font-['Pretendard'] break-keep cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                  style={getElementStyle(
+                    data.layout2ButtonTextStyle ||
+                      STRIP_BANNER_DEFAULTS.layout2ButtonTextStyle,
+                    viewport,
+                  )}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onElementSelect?.("layout2ButtonText");
+                  }}
+                />
+              )}
+              <div className="w-6 h-6 flex justify-center items-center gap-2.5">
+                <div className="w-6 h-6 relative">
+                  <div className="w-2.5 h-2 left-[7px] top-[7.63px] absolute outline outline-2 outline-offset-[-1px] outline-시안-mode-Primary10"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
