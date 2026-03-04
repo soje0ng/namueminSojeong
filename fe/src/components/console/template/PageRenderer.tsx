@@ -20,6 +20,7 @@ import {
   TabButtonRenderer,
   TextStructureRenderer,
   ImageCardRenderer,
+  StripBannerRenderer,
 } from "./Widgets";
 import { ComparisonCardRenderer } from "./widgets/ComparisonCardRenderer";
 
@@ -75,6 +76,8 @@ const renderWidget = (
       return <ComparisonCardRenderer key={widget.id} {...props} />;
     case "textStructure":
       return <TextStructureRenderer key={widget.id} {...props} />;
+    case "stripBanner":
+      return <StripBannerRenderer key={widget.id} {...props} />;
     default:
       return (
         <div

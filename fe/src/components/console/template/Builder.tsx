@@ -31,6 +31,7 @@ import { TitleTextRenderer } from "./widgets/TitleTextRenderer";
 import { TabButtonRenderer } from "./widgets/TabButtonRenderer";
 import { TextStructureRenderer } from "./widgets/TextStructureRenderer";
 import { ComparisonCardRenderer } from "./widgets/ComparisonCardRenderer";
+import { StripBannerRenderer } from "./widgets/StripBannerRenderer";
 import { isVideoUrl } from "./widgets/WidgetUtils";
 import {
   Trash2,
@@ -1401,6 +1402,15 @@ const Builder: React.FC<BuilderProps> = ({
                     )}
                     {w.type === "faq" && (
                       <FaqRenderer
+                        widget={w}
+                        viewport={viewport}
+                        onElementSelect={(k: any, i?: any) =>
+                          handleElementSelect(section.id, w.id, k, i)
+                        }
+                      />
+                    )}
+                    {w.type === "stripBanner" && (
+                      <StripBannerRenderer
                         widget={w}
                         viewport={viewport}
                         onElementSelect={(k: any, i?: any) =>

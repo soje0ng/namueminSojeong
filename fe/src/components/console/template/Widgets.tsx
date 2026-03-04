@@ -16,3 +16,4 @@ export * from "./widgets/TitleTextRenderer";
 export * from "./widgets/TabButtonRenderer";
 export * from "./widgets/TextStructureRenderer";
 export * from "./widgets/ImageCardRenderer";
+export * from "./widgets/StripBannerRenderer";

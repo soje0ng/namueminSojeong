@@ -416,15 +416,6 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   onElementSelect?.("layout3Image");
                 }}
               />
-              <div className="w-full h-96 left-0 top-0 absolute bg-gradient-to-b from-black/0 to-시안-mode-subColor30/60 pointer-events-none" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                <span className="text-gray-0 text-7xl font-normal font-['Tenor_Sans'] leading-[96px] [text-shadow:_0px_0px_8px_rgb(0_0_0_/_0.25)]">
-                  Green Card Program
-                </span>
-                <span className="text-gray-0 text-6xl font-normal font-['Tenor_Sans'] leading-[72px] [text-shadow:_0px_0px_8px_rgb(0_0_0_/_0.25)]">
-                  for Parents
-                </span>
-              </div>
             </div>
 
           </div>
