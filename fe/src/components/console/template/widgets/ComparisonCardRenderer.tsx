@@ -16,27 +16,31 @@ export const COMPARISON_CARD_DEFAULTS = {
     fontSize: "36px",
     fontSizeMobile: "28px",
     fontWeight: "700",
+    color: "#111111",
   },
   subTitle: "( 서브타이틀 )",
-  subTitleStyle: { fontSize: "20px" },
+  subTitleStyle: { fontSize: "20px", color: "#285DE1", fontWeight: "500" },
   desc: "이민 프로그램명 입력",
-  descStyle: { fontSize: "20px", color: "#666666" },
+  descStyle: { fontSize: "20px", color: "#6D7882", fontWeight: "500" },
+  middleTitle: "비교 head명",
+  middleTitleStyle: { fontSize: "30px", color: "#ffffff", fontWeight: "500" },
+  rowLabelStyle: { fontSize: "20px", color: "#111111", fontWeight: "600" },
   items: [
     {
       id: "1",
       iconUrl: "/images/placeholder/card-lg.jpg",
       title: "프로그램 특징",
-      titleStyle: { fontSize: "30px", fontWeight: "500", color: "#666666" },
+      titleStyle: { fontSize: "30px", fontWeight: "700", color: "#111111" },
       desc: "프로그램 특징 내용 입력\n프로그램 특징 내용 입력\n프로그램 특징 내용 입력",
-      descStyle: { fontSize: "20px" },
+      descStyle: { fontSize: "20px", color: "#6D7882", fontWeight: "400" },
     },
     {
       id: "2",
       iconUrl: "/images/placeholder/section-image.jpg",
       title: "프로그램 특징",
-      titleStyle: { fontSize: "30px", fontWeight: "500", color: "#ffffff" },
+      titleStyle: { fontSize: "30px", fontWeight: "700", color: "#ffffff" },
       desc: "프로그램 특징 내용 입력\n프로그램 특징 내용 입력\n프로그램 특징 내용 입력",
-      descStyle: { fontSize: "20px" },
+      descStyle: { fontSize: "20px", color: "#6D7882", fontWeight: "400" },
     },
   ],
 };
@@ -79,12 +83,17 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
             }}
           >
             {/* Header Area */}
-            <div className="flex flex-col justify-start items-center">
+            <div className="flex flex-col justify-start items-center gap-3">
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{
+                    color: "#285DE1",
+                    fontSize: "20px",
+                    fontWeight: "500",
+                    ...getElementStyle(data.subTitleStyle, viewport as any),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -94,8 +103,13 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
               {!data.titleStyle?.isHidden && (
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
-                  className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.titleStyle, viewport as any)}
+                  className="justify-start font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{
+                    color: "#111111",
+                    fontSize: "36px",
+                    fontWeight: "700",
+                    ...getElementStyle(data.titleStyle, viewport as any),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -105,8 +119,13 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
               {!data.descStyle?.isHidden && (
                 <SafeHtml
                   html={data.desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.descStyle, viewport as any)}
+                  className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{
+                    color: "#6D7882",
+                    fontSize: "20px",
+                    fontWeight: "500",
+                    ...getElementStyle(data.descStyle, viewport as any),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -117,7 +136,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* Comparison Area */}
             <div
-              className="self-stretch inline-flex justify-center items-center flex-wrap xl:flex-nowrap"
+              className={`self-stretch inline-flex justify-center items-center flex-wrap xl:flex-nowrap ${!!data.reverseLayout ? "xl:flex-row-reverse flex-col-reverse" : "flex-row"}`}
               style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "56px" }}
             >
               {items.slice(0, 2).map((item: any, idx: number) => (
@@ -126,8 +145,8 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                     className={`flex-1 inline-flex flex-col justify-center items-center w-full ${idx === 0 ? "max-w-[440px]" : "max-w-[560px]"}`}
                   >
                     <div
-                      className={`${idx === 0 ? "w-full max-w-96 min-h-60" : "w-full max-w-[560px] min-h-60"} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative`}
-                      style={{ height: data.imageHeight || "320px" }}
+                      className="self-stretch w-full hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center"
+                      style={{ height: "auto" }}
                     >
                       <UniversalMedia
                         url={
@@ -138,38 +157,66 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                             ? "/images/placeholder/card-lg.jpg"
                             : "/images/placeholder/section-image.jpg")
                         }
-                        className="w-full h-full object-cover"
+                        className="w-full h-auto object-contain"
                         alt="comparison image"
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          maxHeight: "100%",
+                        }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("icon", item.id);
                         }}
                       />
                     </div>
-                    <div
-                      style={{
-                        backgroundImage:
-                          idx === 1
-                            ? "linear-gradient(to bottom right, #3b82f6, #2dd4bf, #22c55e)"
-                            : "none",
-                      }}
-                      className={`self-stretch py-5 ${idx === 0 ? "bg-시안-mode-gray5" : ""} inline-flex justify-center items-center gap-2.5`}
-                    >
-                      <SafeHtml
-                        html={item.title || "프로그램 특징"}
-                        className={`justify-start ${idx === 0 ? "text-시안-mode-gray7" : "text-시안-mode-gray0"} text-3xl font-bold font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text`}
-                        style={getElementStyle(
-                          item.titleStyle,
-                          viewport as any,
-                        )}
+                    {!item.titleStyle?.isHidden && (
+                      <div
+                        style={{
+                          backgroundColor:
+                            getElementStyle(item.titleStyle, viewport as any)
+                              .backgroundColor || undefined,
+                          backgroundImage: item.imageUrl
+                            ? `url(${item.imageUrl})`
+                            : idx === 1 &&
+                                !getElementStyle(
+                                  item.titleStyle,
+                                  viewport as any,
+                                ).backgroundColor
+                              ? "linear-gradient(to bottom right, #3b82f6, #2dd4bf, #22c55e)"
+                              : "none",
+                          backgroundSize: "contain",
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "center",
+                        }}
+                        className={`self-stretch py-5 ${idx === 0 ? "bg-시안-mode-gray5" : ""} inline-flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
-                          onElementSelect?.("itemTitle", item.id);
+                          onElementSelect?.("imageUrl", item.id);
                         }}
-                      />
-                    </div>
+                      >
+                        <SafeHtml
+                          html={item.title || "프로그램 특징"}
+                          className={`justify-start font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text`}
+                          style={{
+                            color: idx === 0 ? "#111111" : "#ffffff",
+                            fontSize: "30px",
+                            fontWeight: "700",
+                            ...getElementStyle(
+                              item.titleStyle,
+                              viewport as any,
+                            ),
+                            backgroundColor: "transparent",
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("itemTitle", item.id);
+                          }}
+                        />
+                      </div>
+                    )}
                     <div
-                      className="self-stretch flex flex-col justify-start items-start"
+                      className="self-stretch flex flex-col justify-start items-start w-full"
                       style={{ gap: "0px" }}
                     >
                       {[1, 2, 3].map((num) => {
@@ -183,18 +230,36 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                           item[`desc${num}`] !== undefined
                             ? item[`desc${num}`]
                             : defaultDesc;
+                        const dynamicDescStyle =
+                          item[`desc${num}Style`] || item.descStyle;
+
+                        if (dynamicDescStyle?.isHidden) return null;
+
                         return (
                           <div
                             key={num}
                             className="self-stretch py-3 border-b border-시안-mode-gray10 inline-flex justify-center items-center gap-2.5"
+                            style={{
+                              backgroundColor:
+                                getElementStyle(
+                                  dynamicDescStyle,
+                                  viewport as any,
+                                ).backgroundColor || undefined,
+                            }}
                           >
                             <SafeHtml
                               html={descVal}
-                              className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
-                              style={getElementStyle(
-                                item.descStyle,
-                                viewport as any,
-                              )}
+                              className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text w-full transition-all"
+                              style={{
+                                color: "#6D7882",
+                                fontSize: "20px",
+                                fontWeight: "400",
+                                ...getElementStyle(
+                                  dynamicDescStyle,
+                                  viewport as any,
+                                ),
+                                backgroundColor: "transparent",
+                              }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.(`itemDesc${num}`, item.id);
@@ -206,7 +271,15 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                     </div>
                   </div>
                   {idx === 0 && (
-                    <div className="hidden xl:block w-px self-stretch bg-시안-mode-gray2"></div>
+                    <div
+                      className="hidden xl:block shrink-0"
+                      style={{
+                        background: "var(--gray-20, #CDD1D5)",
+                        width: "1px",
+                        alignSelf: "stretch",
+                        margin: "0 20px",
+                      }}
+                    ></div>
                   )}
                 </React.Fragment>
               ))}
@@ -245,12 +318,17 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
             }}
           >
             {/* Header Area */}
-            <div className="flex flex-col justify-start items-center">
+            <div className="flex flex-col justify-start items-center gap-3">
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
+                  style={{
+                    color: "#285DE1",
+                    fontSize: "20px",
+                    fontWeight: "500",
+                    ...getElementStyle(data.subTitleStyle, viewport as any),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -260,8 +338,13 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
               {!data.titleStyle?.isHidden && (
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
-                  className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
-                  style={getElementStyle(data.titleStyle, viewport as any)}
+                  className="justify-start font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
+                  style={{
+                    color: "#111111",
+                    fontSize: "36px",
+                    fontWeight: "700",
+                    ...getElementStyle(data.titleStyle, viewport as any),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -271,8 +354,13 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
               {!data.descStyle?.isHidden && (
                 <SafeHtml
                   html={data.desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
-                  style={getElementStyle(data.descStyle, viewport as any)}
+                  className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
+                  style={{
+                    color: "#6D7882",
+                    fontSize: "20px",
+                    fontWeight: "500",
+                    ...getElementStyle(data.descStyle, viewport as any),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -283,19 +371,39 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* Comparison Area */}
             <div
-              className="self-stretch border-t border-시안-mode-gray95 inline-flex justify-center items-start overflow-hidden flex-wrap xl:flex-nowrap"
+              className={`self-stretch border-t border-시안-mode-gray95 inline-flex justify-center items-start overflow-hidden flex-wrap xl:flex-nowrap ${!!data.reverseLayout ? "xl:flex-row-reverse" : "flex-row"}`}
               style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "0px" }}
             >
               {/* Left Item */}
               <div className="flex-1 inline-flex flex-col justify-center items-center w-full">
-                <div className="self-stretch py-3 border-b border-시안-mode-gray1 inline-flex justify-center items-center gap-2.5">
+                <div
+                  className="self-stretch py-3 border-b border-시안-mode-gray1 inline-flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
+                  style={{
+                    backgroundImage: items[0]?.imageUrl
+                      ? `url(${items[0].imageUrl})`
+                      : "none",
+                    backgroundSize: "contain",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center",
+                    backgroundColor:
+                      getElementStyle(items[0]?.titleStyle, viewport as any)
+                        .backgroundColor || undefined,
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("imageUrl", items[0]?.id);
+                  }}
+                >
                   <SafeHtml
                     html={items[0]?.title || "프로그램 특징"}
-                    className="justify-start text-시안-mode-gray50 text-3xl font-bold font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text"
-                    style={getElementStyle(
-                      items[0]?.titleStyle,
-                      viewport as any,
-                    )}
+                    className="justify-start font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text"
+                    style={{
+                      color: "#6D7882",
+                      fontSize: "30px",
+                      fontWeight: "700",
+                      ...getElementStyle(items[0]?.titleStyle, viewport as any),
+                      backgroundColor: "transparent",
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("itemTitle", items[0]?.id);
@@ -303,8 +411,8 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   />
                 </div>
                 <div
-                  className="self-stretch hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
-                  style={{ height: data.imageHeight || "320px" }}
+                  className="self-stretch hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center h-auto"
+                  style={{ height: "auto" }}
                 >
                   <UniversalMedia
                     url={
@@ -313,7 +421,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                       items[0]?.image ||
                       "/images/placeholder/section-image.jpg"
                     }
-                    className="w-full h-full object-cover"
+                    className="w-full h-auto object-contain"
                     alt="left comparison image"
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -333,18 +441,35 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                       items[0]?.[`desc${num}`] !== undefined
                         ? items[0]?.[`desc${num}`]
                         : defaultDesc;
+
+                    const dynamicDescStyle =
+                      items[0]?.[`desc${num}Style`] || items[0]?.descStyle;
+
+                    if (dynamicDescStyle?.isHidden) return null;
+
                     return (
                       <div
                         key={num}
                         className="self-stretch py-3 border-b border-시안-mode-gray10 inline-flex justify-center items-center gap-2.5"
+                        style={{
+                          backgroundColor:
+                            getElementStyle(dynamicDescStyle, viewport as any)
+                              .backgroundColor || undefined,
+                        }}
                       >
                         <SafeHtml
                           html={descVal}
-                          className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text w-full"
-                          style={getElementStyle(
-                            items[0]?.descStyle,
-                            viewport as any,
-                          )}
+                          className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text w-full transition-all"
+                          style={{
+                            color: "#6D7882",
+                            fontSize: "20px",
+                            fontWeight: "400",
+                            ...getElementStyle(
+                              dynamicDescStyle,
+                              viewport as any,
+                            ),
+                            backgroundColor: "transparent",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(`itemDesc${num}`, items[0]?.id);
@@ -358,57 +483,124 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
 
               {/* Middle Label Column */}
               <div className="hidden xl:inline-flex bg-시안-mode-gray5 flex-col justify-center items-start self-stretch">
-                <div className="w-60 flex-1 py-3 bg-시안-mode-subColor50 outline outline-1 outline-offset-[-1px] outline-시안-mode-gray1 inline-flex justify-center items-center gap-2.5">
-                  <SafeHtml
-                    html={data.middleTitle || "비교 head명"}
-                    className="text-center justify-start text-시안-mode-gray0 text-3xl font-medium font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded cursor-text transition-all break-keep"
-                    style={getElementStyle(
-                      data.middleTitleStyle || {},
-                      viewport as any,
-                    )}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("middleTitle");
+                {!data.middleTitleStyle?.isHidden && (
+                  <div
+                    className="w-60 flex-1 py-3 bg-시안-mode-subColor50 outline outline-1 outline-offset-[-1px] outline-시안-mode-gray1 inline-flex justify-center items-center gap-2.5"
+                    style={{
+                      backgroundColor:
+                        getElementStyle(
+                          data.middleTitleStyle || {},
+                          viewport as any,
+                        ).backgroundColor || undefined,
                     }}
-                  />
-                </div>
+                  >
+                    <SafeHtml
+                      html={data.middleTitle || "비교 head명"}
+                      className="text-center justify-start font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded cursor-text transition-all break-keep"
+                      style={{
+                        color: "#ffffff",
+                        fontSize: "30px",
+                        fontWeight: "500",
+                        ...getElementStyle(
+                          data.middleTitleStyle || {},
+                          viewport as any,
+                        ),
+                        backgroundColor: "transparent",
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("middleTitle");
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="self-stretch flex flex-col justify-start items-start">
                   {(items[0]?.desc || "\n\n")
                     .split("\n")
-                    .map((_: any, lIdx: number) => (
-                      <div
-                        key={lIdx}
-                        className="self-stretch py-3 border-b border-시안-mode-gray1 inline-flex justify-center items-center gap-2.5"
-                      >
-                        <SafeHtml
-                          html={
-                            data.rowLabels?.[lIdx] || "프로그램 특징 내용 입력"
-                          }
-                          className="text-center justify-start text-시안-mode-gray95 text-xl font-semibold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all break-keep"
-                          style={getElementStyle(
-                            data.rowLabelStyle || {},
-                            viewport as any,
-                          )}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("rowLabel", String(lIdx));
+                    .map((_: any, lIdx: number) => {
+                      const dynRowLabelStyle =
+                        data[`rowLabel${lIdx}Style`] ||
+                        data.rowLabelStyle ||
+                        {};
+
+                      if (dynRowLabelStyle?.isHidden) return null;
+
+                      return (
+                        <div
+                          key={lIdx}
+                          className="self-stretch py-3 border-b border-시안-mode-gray1 inline-flex justify-center items-center gap-2.5"
+                          style={{
+                            backgroundColor:
+                              getElementStyle(dynRowLabelStyle, viewport as any)
+                                .backgroundColor || undefined,
                           }}
-                        />
-                      </div>
-                    ))}
+                        >
+                          <SafeHtml
+                            html={
+                              data.rowLabels?.[lIdx] ||
+                              "프로그램 특징 내용 입력"
+                            }
+                            className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all break-keep"
+                            style={{
+                              color: "#111111",
+                              fontSize: "20px",
+                              fontWeight: "600",
+                              ...getElementStyle(
+                                dynRowLabelStyle,
+                                viewport as any,
+                              ),
+                              backgroundColor: "transparent",
+                            }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("rowLabel", String(lIdx));
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
 
               {/* Right Item */}
               <div className="flex-1 inline-flex flex-col justify-center items-center w-full">
-                <div className="self-stretch py-3 bg-시안-mode-subColor10 border-b border-시안-mode-gray1 inline-flex justify-center items-center gap-2.5">
+                <div
+                  className="self-stretch py-3 bg-시안-mode-subColor10 border-b border-시안-mode-gray1 inline-flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
+                  style={{
+                    backgroundImage: items[1]?.imageUrl
+                      ? `url(${items[1].imageUrl})`
+                      : getElementStyle(items[1]?.titleStyle, viewport as any)
+                            .backgroundColor
+                        ? "none"
+                        : !items[1]?.imageUrl &&
+                            !getElementStyle(
+                              items[1]?.titleStyle,
+                              viewport as any,
+                            ).backgroundColor
+                          ? "linear-gradient(to bottom right, #3b82f6, #2dd4bf, #22c55e)"
+                          : "none",
+                    backgroundSize: "contain",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center",
+                    backgroundColor:
+                      getElementStyle(items[1]?.titleStyle, viewport as any)
+                        .backgroundColor || undefined,
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("imageUrl", items[1]?.id);
+                  }}
+                >
                   <SafeHtml
                     html={items[1]?.title || "프로그램 특징"}
-                    className="justify-start text-시안-mode-subColor50 text-3xl font-bold font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text"
-                    style={getElementStyle(
-                      items[1]?.titleStyle,
-                      viewport as any,
-                    )}
+                    className="justify-start font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text"
+                    style={{
+                      color: "#285DE1",
+                      fontSize: "30px",
+                      fontWeight: "700",
+                      ...getElementStyle(items[1]?.titleStyle, viewport as any),
+                      backgroundColor: "transparent",
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("itemTitle", items[1]?.id);
@@ -416,8 +608,8 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   />
                 </div>
                 <div
-                  className="self-stretch hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
-                  style={{ height: data.imageHeight || "320px" }}
+                  className="self-stretch hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center h-auto"
+                  style={{ height: "auto" }}
                 >
                   <UniversalMedia
                     url={
@@ -426,7 +618,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                       items[1]?.image ||
                       "/images/placeholder/section-image.jpg"
                     }
-                    className="w-full h-full object-cover"
+                    className="w-full h-auto object-contain"
                     alt="right comparison image"
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -446,18 +638,35 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                       items[1]?.[`desc${num}`] !== undefined
                         ? items[1]?.[`desc${num}`]
                         : defaultDesc;
+
+                    const dynamicDescStyle =
+                      items[1]?.[`desc${num}Style`] || items[1]?.descStyle;
+
+                    if (dynamicDescStyle?.isHidden) return null;
+
                     return (
                       <div
                         key={num}
                         className="self-stretch py-3 border-b border-시안-mode-gray10 inline-flex justify-center items-center gap-2.5"
+                        style={{
+                          backgroundColor:
+                            getElementStyle(dynamicDescStyle, viewport as any)
+                              .backgroundColor || undefined,
+                        }}
                       >
                         <SafeHtml
                           html={descVal}
-                          className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text w-full"
-                          style={getElementStyle(
-                            items[1]?.descStyle,
-                            viewport as any,
-                          )}
+                          className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text w-full transition-all"
+                          style={{
+                            color: "#6D7882",
+                            fontSize: "20px",
+                            fontWeight: "400",
+                            ...getElementStyle(
+                              dynamicDescStyle,
+                              viewport as any,
+                            ),
+                            backgroundColor: "transparent",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(`itemDesc${num}`, items[1]?.id);

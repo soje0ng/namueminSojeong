@@ -461,6 +461,7 @@ export interface IconCardWidget extends BaseWidget {
     }[];
     layout?: "horizontal" | "vertical";
     itemsPerRow?: number;
+    rowGap?: number;
   };
 }
 

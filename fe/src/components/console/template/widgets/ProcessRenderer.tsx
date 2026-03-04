@@ -120,8 +120,8 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport as any), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -166,12 +166,18 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                     className={`flex-1 inline-flex flex-col justify-center items-center w-full ${idx === 0 ? "max-w-[440px]" : "max-w-[560px]"}`}
                   >
                     <div
-                      className={`${idx === 0 ? "w-96" : "w-full"} h-80 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative`}
+                      className={`${idx === 0 ? "w-96" : "w-full"} h-auto hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative`}
                     >
                       <UniversalMedia
-                        url={step.icon || "/images/placeholder/section-image.jpg"}
-                        className="w-full h-full object-cover"
+                        url={
+                          step.icon || "/images/placeholder/section-image.jpg"
+                        }
+                        className="w-full h-auto object-contain"
                         alt="step icon"
+                        style={getElementStyle(
+                          step.imageStyle,
+                          viewport as any,
+                        )}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("icon", step.id);
@@ -265,8 +271,8 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport as any), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -308,11 +314,15 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                     key={step.id || idx}
                     className="flex-1 min-w-64 inline-flex flex-col justify-center items-center gap-3"
                   >
-                    <div className="w-40 h-40 bg-시안-mode-gray5 rounded-[80px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative border border-시안-mode-gray1/50">
+                    <div className="w-40 h-auto bg-시안-mode-gray5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative border border-시안-mode-gray1/50">
                       <UniversalMedia
                         url={step.icon || "/images/template/like_cat.jpg"}
-                        className="w-full h-full object-cover"
+                        className="w-full h-auto"
                         alt="step icon"
+                        style={getElementStyle(
+                          step.imageStyle,
+                          viewport as any,
+                        )}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("icon", step.id);
@@ -322,47 +332,53 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                     <div className="self-stretch border-t border-white flex flex-col justify-start items-center gap-3">
                       <div className="self-stretch inline-flex justify-start items-center gap-2">
                         <div className="flex-1 h-px bg-zinc-300"></div>
-                        <div className="px-4 py-1 bg-시안-mode-Primary50 rounded-[30px] flex justify-center items-center gap-2.5">
+                        {!step.numberStyle?.isHidden && (
+                          <div className="px-4 py-1 bg-시안-mode-Primary50 rounded-[30px] flex justify-center items-center gap-2.5">
+                            <SafeHtml
+                              html={step.number || `0${idx + 1}`}
+                              className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                              style={getElementStyle(
+                                step.numberStyle,
+                                viewport as any,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("number", step.id);
+                              }}
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 h-px bg-zinc-300"></div>
+                      </div>
+                      <div className="flex flex-col justify-start items-center gap-2">
+                        {!step.titleStyle?.isHidden && (
                           <SafeHtml
-                            html={step.number || `0${idx + 1}`}
-                            className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                            html={step.title || "과정명 01"}
+                            className="justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                             style={getElementStyle(
-                              step.numberStyle,
+                              step.titleStyle,
                               viewport as any,
                             )}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.("number", step.id);
+                              onElementSelect?.("stepTitle", step.id);
                             }}
                           />
-                        </div>
-                        <div className="flex-1 h-px bg-zinc-300"></div>
-                      </div>
-                      <div className="flex flex-col justify-start items-center gap-2">
-                        <SafeHtml
-                          html={step.title || "과정명 01"}
-                          className="justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                          style={getElementStyle(
-                            step.titleStyle,
-                            viewport as any,
-                          )}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("stepTitle", step.id);
-                          }}
-                        />
-                        <SafeHtml
-                          html={step.desc || "내용 입력 01"}
-                          className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
-                          style={getElementStyle(
-                            step.descStyle,
-                            viewport as any,
-                          )}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("stepDesc", step.id);
-                          }}
-                        />
+                        )}
+                        {!step.descStyle?.isHidden && (
+                          <SafeHtml
+                            html={step.desc || "내용 입력 01"}
+                            className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
+                            style={getElementStyle(
+                              step.descStyle,
+                              viewport as any,
+                            )}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("stepDesc", step.id);
+                            }}
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -404,8 +420,8 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport as any), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -447,10 +463,13 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                     key={step.id || idx}
                     className="flex-1 min-w-[300px] bg-시안-mode-gray0 border-t border-시안-mode-gray95 inline-flex flex-col justify-start items-start"
                   >
-                    <div className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative" style={{ height: (data as any).imageHeight || "160px" }}>
+                    <div
+                      className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
+                      style={{ height: "auto" }}
+                    >
                       <UniversalMedia
                         url={step.icon || "/images/template/like_cat.jpg"}
-                        className="w-full h-full object-cover"
+                        className="w-full h-auto object-contain"
                         alt="step icon"
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -461,44 +480,53 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                     <div className="self-stretch pt-4 border-t border-시안-mode-gray95 flex flex-col justify-start items-start gap-3">
                       <div className="flex flex-col justify-start items-start">
                         <div className="inline-flex justify-start items-center gap-2">
-                          <SafeHtml
-                            html={step.number || `0${idx + 1}.`}
-                            className="text-center justify-start text-시안-mode-Primary50 text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                            style={getElementStyle(
-                              step.numberStyle,
-                              viewport as any,
-                            )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.("number", step.id);
-                            }}
-                          />
-                          <SafeHtml
-                            html={step.title || "프로그램 특징"}
-                            className="justify-start text-zinc-950 text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                            style={getElementStyle(
-                              step.titleStyle,
-                              viewport as any,
-                            )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.("stepTitle", step.id);
-                            }}
-                          />
+                          {!step.numberStyle?.isHidden && (
+                            <SafeHtml
+                              html={step.number || `0${idx + 1}.`}
+                              className="text-center justify-start text-[#285DE1] text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={getElementStyle(
+                                step.numberStyle,
+                                viewport as any,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("number", step.id);
+                              }}
+                            />
+                          )}
+                          {!step.titleStyle?.isHidden && (
+                            <SafeHtml
+                              html={step.title || "프로그램 특징"}
+                              className="justify-start text-zinc-950 text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={getElementStyle(
+                                step.titleStyle,
+                                viewport as any,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("stepTitle", step.id);
+                              }}
+                            />
+                          )}
                         </div>
                       </div>
-                      <SafeHtml
-                        html={
-                          step.desc ||
-                          "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
-                        }
-                        className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={getElementStyle(step.descStyle, viewport as any)}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("stepDesc", step.id);
-                        }}
-                      />
+                      {!step.descStyle?.isHidden && (
+                        <SafeHtml
+                          html={
+                            step.desc ||
+                            "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
+                          }
+                          className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                          style={getElementStyle(
+                            step.descStyle,
+                            viewport as any,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("stepDesc", step.id);
+                          }}
+                        />
+                      )}
                     </div>
                   </div>
                 ),
@@ -539,8 +567,8 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport as any), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -580,10 +608,13 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 (step: any, idx: number) => (
                   <React.Fragment key={step.id || idx}>
                     <div className="flex-1 min-w-64 inline-flex flex-col justify-center items-center gap-3">
-                      <div className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative" style={{ height: (data as any).imageHeight || "176px" }}>
+                      <div
+                        className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center h-auto"
+                        style={{ height: "auto" }}
+                      >
                         <UniversalMedia
                           url={step.icon || "/images/template/like_cat.jpg"}
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto object-contain"
                           alt="step icon"
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -592,57 +623,64 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         />
                       </div>
                       <div className="inline-flex justify-start items-center gap-3">
-                        <div className="px-4 py-1 bg-시안-mode-Primary50 rounded-[30px] flex justify-center items-center gap-2.5">
+                        {!step.numberStyle?.isHidden && (
+                          <div className="px-4 py-1 bg-시안-mode-Primary50 rounded-[30px] flex justify-center items-center gap-2.5">
+                            <SafeHtml
+                              html={step.number || `0${idx + 1}`}
+                              className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                              style={getElementStyle(
+                                step.numberStyle,
+                                viewport as any,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("number", step.id);
+                              }}
+                            />
+                          </div>
+                        )}
+                        {!step.titleStyle?.isHidden && (
                           <SafeHtml
-                            html={step.number || `0${idx + 1}`}
-                            className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                            html={step.title || "과정명 01"}
+                            className="justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                             style={getElementStyle(
-                              step.numberStyle,
+                              step.titleStyle,
                               viewport as any,
                             )}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.("number", step.id);
+                              onElementSelect?.("stepTitle", step.id);
                             }}
                           />
-                        </div>
+                        )}
+                      </div>
+                      {!step.descStyle?.isHidden && (
                         <SafeHtml
-                          html={step.title || "과정명 01"}
-                          className="justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                          html={step.desc || "내용 입력 01"}
+                          className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
                           style={getElementStyle(
-                            step.titleStyle,
+                            step.descStyle,
                             viewport as any,
                           )}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
-                            onElementSelect?.("stepTitle", step.id);
+                            onElementSelect?.("stepDesc", step.id);
                           }}
                         />
-                      </div>
-                      <SafeHtml
-                        html={step.desc || "내용 입력 01"}
-                        className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
-                        style={getElementStyle(step.descStyle, viewport as any)}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("stepDesc", step.id);
-                        }}
-                      />
+                      )}
                     </div>
 
                     {/* Arrow logic */}
-                    <div
-                      className={`w-10 h-10 relative ${
-                        idx ===
-                        (data.steps || (data as any).items || []).length - 1
-                          ? "opacity-0"
-                          : ""
-                      }`}
-                    >
-                      <div className="w-10 h-10 left-0 top-0 absolute">
-                        <div className="w-4 h-3.5 left-[11.67px] top-[12.71px] absolute outline outline-4 outline-offset-[-2px] outline-시안-mode-gray2"></div>
+                    {idx <
+                      (data.steps || (data as any).items || []).length - 1 && (
+                      <div className="w-10 h-10 flex items-center justify-center">
+                        <img
+                          src="/images/template/arrow.png"
+                          alt="next"
+                          className="w-10 h-10 object-contain opacity-40"
+                        />
                       </div>
-                    </div>
+                    )}
                   </React.Fragment>
                 ),
               )}
@@ -706,30 +744,15 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   return (
                     <React.Fragment key={step.id}>
                       <div
-                        className={`relative group bg-white border border-시안-mode-gray10 p-8 rounded-[30px] shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col ${isNumber ? "items-center text-center" : "items-start text-left"}`}
+                        className={`relative group bg-white border border-시안-mode-gray10 p-8 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col ${isNumber ? "items-center text-center" : "items-start text-left"}`}
                         style={{ width: itemWidthStyle }}
                       >
                         {/* 1. Header Area: Differentiated by variant */}
                         {isNumber ? (
                           /* Emphasis Variant: STEP Capsule Badge */
-                          <div
-                            className="mb-6 px-4 py-1.5 bg-blue-600 text-white rounded-none font-black tracking-widest text-[14px] md:text-[16px] transition-all cursor-pointer shadow-md shadow-blue-200 ring-4 ring-blue-50"
-                            style={getElementStyle(
-                              step.numberStyle,
-                              viewport as any,
-                            )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.("number", step.id);
-                            }}
-                          >
-                            STEP. {step.number || idx + 1}
-                          </div>
-                        ) : (
-                          /* Normal/Vertical Variant: Small Badge & Background Number */
-                          <>
+                          !step.numberStyle?.isHidden && (
                             <div
-                              className="inline-flex items-center justify-center min-w-[56px] h-[32px] px-3 bg-[#EEF2FF] text-[#2563EB] rounded-full font-black tracking-tight text-[14px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer shadow-sm border border-blue-100/50 mb-4"
+                              className="mb-6 px-4 py-1.5 bg-blue-600 text-white font-black tracking-widest text-[14px] md:text-[16px] transition-all cursor-pointer shadow-md shadow-blue-200 ring-4 ring-blue-50"
                               style={getElementStyle(
                                 step.numberStyle,
                                 viewport as any,
@@ -739,8 +762,27 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                                 onElementSelect?.("number", step.id);
                               }}
                             >
-                              {step.number || `0${idx + 1}`}
+                              STEP. {step.number || idx + 1}
                             </div>
+                          )
+                        ) : (
+                          /* Normal/Vertical Variant: Small Badge & Background Number */
+                          <>
+                            {!step.numberStyle?.isHidden && (
+                              <div
+                                className="inline-flex items-center justify-center min-w-[56px] h-[32px] px-3 bg-[#EEF2FF] text-[#2563EB] font-black tracking-tight text-[14px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer shadow-sm border border-blue-100/50 mb-4"
+                                style={getElementStyle(
+                                  step.numberStyle,
+                                  viewport as any,
+                                )}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("number", step.id);
+                                }}
+                              >
+                                {step.number || `0${idx + 1}`}
+                              </div>
+                            )}
                             <div className="absolute -bottom-2 -right-2 text-8xl font-black text-시안-mode-gray40/5 select-none pointer-events-none italic group-hover:text-blue-500/10 transition-colors uppercase">
                               {step.number || idx + 1}
                             </div>
@@ -750,7 +792,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {/* 2. Image Area (Common toggle) */}
                         {w.data.showImage !== false && (
                           <div
-                            className={`w-full mb-6 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded-none overflow-hidden${isNumber ? " max-w-[140px]" : ""}`}
+                            className={`w-full mb-6 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden${isNumber ? " max-w-[140px]" : ""}`}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("icon", step.id);
@@ -760,6 +802,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                               url={step.icon || "/images/template/like_cat.jpg"}
                               className="w-full h-auto block mx-auto hover:scale-110 transition-transform duration-500"
                               alt="step icon"
+                              style={getElementStyle(
+                                step.iconStyle as any,
+                                viewport as any,
+                              )}
                             />
                           </div>
                         )}
@@ -801,7 +847,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                                     key={lIdx}
                                     className="flex items-start gap-2 text-시안-mode-gray60 leading-snug"
                                   >
-                                    <div className="mt-0.5 bg-blue-100 rounded-full p-0.5 text-blue-600 shrink-0">
+                                    <div className="mt-0.5 bg-blue-100 p-0.5 text-blue-600 shrink-0">
                                       <Check size={10} strokeWidth={4} />
                                     </div>
                                     <span
@@ -832,7 +878,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {/* 4. Bottom Label (Only for Number variant) */}
                         {isNumber && (
                           <div
-                            className={`mt-auto w-full py-3 text-white text-[13px] md:text-[14px] font-bold hover:brightness-110 transition-all cursor-pointer shadow-lg active:scale-95 text-center${!step.labelStyle?.backgroundColor ? " bg-blue-600 shadow-blue-100" : ""}${!step.labelStyle?.borderRadius ? " rounded-full" : ""}`}
+                            className={`mt-auto w-full py-3 text-white text-[13px] md:text-[14px] font-bold hover:brightness-110 transition-all cursor-pointer shadow-lg active:scale-95 text-center${!step.labelStyle?.backgroundColor ? " bg-blue-600 shadow-blue-100" : ""}`}
                             style={getElementStyle(
                               step.labelStyle,
                               viewport as any,

@@ -22,7 +22,7 @@ export const TABLE_DEFAULTS = {
     color: "#111827",
   },
   subTitle: "( 서브타이틀 )",
-  subTitleStyle: { fontSize: "20px", color: "#00C2FF" },
+  subTitleStyle: { fontSize: "20px", color: "#285DE1" },
   desc: "이민 프로그램명 입력",
   descStyle: { fontSize: "20px", color: "#6B7280" },
   headers: ["내역", "내역", "내역"],
@@ -95,7 +95,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
                     ...getElementStyle(w.data.subTitleStyle, viewport as any),
                     backgroundColor: "transparent",
@@ -135,12 +135,15 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 />
               )}
             </div>
-            <div className="self-stretch h-96 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden">
+            <div className="self-stretch h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
               <UniversalMedia
-                className="w-full h-full object-cover"
+                className="w-full h-auto object-contain"
                 url={w.data.image || "/images/placeholder/wide-image.jpg"}
                 alt="Table Image"
-                style={getElementStyle(w.data.imageStyle, viewport as any)}
+                style={{
+                  ...getElementStyle(w.data.imageStyle, viewport as any),
+                  height: "auto",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("image");
@@ -154,10 +157,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 {tableHeaders.map((headerText, i) => (
                   <div
                     key={i}
-                    className={`${i === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 rounded-lg flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                    className={`${i === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                     style={{
                       backgroundColor:
-                        headerStyle?.backgroundColor || "#F9FAFB",
+                        (w.data as any).headerCellStyles?.[i]?.backgroundColor ??
+                        headerStyle?.backgroundColor ??
+                        "#F9FAFB",
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -177,18 +182,19 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {tableRows.map((row, rIdx) => (
                 <div
                   key={rIdx}
-                  className={`self-stretch rounded-lg inline-flex justify-start items-center overflow-hidden w-full`}
-                  style={{
-                    backgroundColor:
-                      bodyStyle?.backgroundColor ||
-                      (rIdx % 2 === 0 ? "#F9FAFB" : "transparent"),
-                  }}
+                  className={`self-stretch inline-flex justify-start items-center overflow-hidden w-full`}
+                  style={{ borderBottom: "1px solid #E5E7EB" }}
                 >
                   {row.map((cell, cIdx) => (
                     <div
                       key={cIdx}
-                      className={`${cIdx === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 rounded-lg flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-                      style={{ backgroundColor: "transparent" }}
+                      className={`${cIdx === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                      style={{
+                        backgroundColor:
+                          (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]?.backgroundColor ??
+                          bodyStyle?.backgroundColor ??
+                          (rIdx % 2 === 0 ? "#F9FAFB" : "transparent"),
+                      }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("tableCell", `${rIdx}-${cIdx}`);
@@ -196,7 +202,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <SafeHtml
                         html={cell}
-                        className={`text-center justify-start ${cIdx === 0 ? "text-시안-mode-Primary50" : "text-시안-mode-gray50"} text-xl font-medium font-['Pretendard'] leading-8`}
+                        className={`text-center justify-start ${cIdx === 0 ? "text-[#285DE1]" : "text-시안-mode-gray50"} text-xl font-medium font-['Pretendard'] leading-8`}
                         style={{ ...bodyStyle, backgroundColor: "transparent" }}
                       />
                     </div>
@@ -246,7 +252,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
                     ...getElementStyle(w.data.subTitleStyle, viewport as any),
                     backgroundColor: "transparent",
@@ -286,12 +292,15 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 />
               )}
             </div>
-            <div className="self-stretch h-auto min-h-[10rem] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden">
+            <div className="self-stretch h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
               <UniversalMedia
-                className="w-full h-full object-cover"
+                className="w-full h-auto object-contain"
                 url={w.data.image || "/images/placeholder/wide-image.jpg"}
                 alt="Table Image"
-                style={getElementStyle(w.data.imageStyle, viewport as any)}
+                style={{
+                  ...getElementStyle(w.data.imageStyle, viewport as any),
+                  height: "auto",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("image");
@@ -303,11 +312,13 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 {tableHeaders.map((headerText, i) => (
                   <div
                     key={i}
-                    className={`${i === 0 ? "w-24 xl:w-60" : i === 1 ? "flex-1" : "flex-1"} p-4 rounded-lg flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                    className={`${i === 0 ? "w-24 xl:w-60" : i === 1 ? "flex-1" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                     style={{
                       backgroundColor:
-                        headerStyle?.backgroundColor ||
+                        (w.data as any).headerCellStyles?.[i]?.backgroundColor ??
+                        headerStyle?.backgroundColor ??
                         (i === 0 ? "#F9FAFB" : i === 1 ? "#111827" : "#00C2FF"),
+                      borderRadius: 8,
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -331,11 +342,13 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   {row.map((cell, cIdx) => (
                     <div
                       key={cIdx}
-                      className={`${cIdx === 0 ? "w-24 xl:w-60" : cIdx === 1 ? "flex-1" : "flex-1"} p-4 rounded-lg flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                      className={`${cIdx === 0 ? "w-24 xl:w-60" : cIdx === 1 ? "flex-1" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                       style={{
                         backgroundColor:
-                          bodyStyle?.backgroundColor ||
+                          (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]?.backgroundColor ??
+                          bodyStyle?.backgroundColor ??
                           (cIdx === 0 || cIdx === 1 ? "#F9FAFB" : "#E5F9FF"),
+                        borderRadius: 8,
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -344,7 +357,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <SafeHtml
                         html={cell}
-                        className={`text-center justify-start ${cIdx === 2 ? "text-시안-mode-Primary50" : "text-시안-mode-gray50"} text-xl font-medium font-['Pretendard'] leading-8`}
+                        className={`text-center justify-start ${cIdx === 2 ? "text-[#285DE1]" : "text-시안-mode-gray50"} text-xl font-medium font-['Pretendard'] leading-8`}
                         style={{ ...bodyStyle, backgroundColor: "transparent" }}
                       />
                     </div>
@@ -381,7 +394,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={getElementStyle(w.data.subTitleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -437,7 +450,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={i}
                         className={`flex-1 p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${i !== w.data.headers.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
-                        style={{ backgroundColor: headerStyle.backgroundColor }}
+                        style={{ backgroundColor: (w.data as any).headerCellStyles?.[i]?.backgroundColor ?? headerStyle.backgroundColor }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("tableHeader", i.toString());
@@ -463,7 +476,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                         <div
                           key={cIdx}
                           className={`flex-1 self-stretch p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${cIdx !== row.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
-                          style={{ backgroundColor: bodyStyle.backgroundColor }}
+                          style={{ backgroundColor: (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]?.backgroundColor ?? bodyStyle.backgroundColor }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("tableCell", `${rIdx}-${cIdx}`);
@@ -483,9 +496,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   ))}
                 </div>
               </div>
-              <div className="flex-1 self-stretch h-64 xl:h-96 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden">
+              <div className="flex-1 self-stretch h-auto xl:h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
                 <UniversalMedia
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                   url={w.data.image || "/images/placeholder/section-image.jpg"}
                   alt="Table Image"
                   style={getElementStyle(w.data.imageStyle, viewport as any)}
@@ -673,7 +686,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
-                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                 style={getElementStyle(w.data.subTitleStyle, viewport as any)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
@@ -705,12 +718,15 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             )}
           </div>
 
-          <div className="self-stretch h-auto min-h-[10rem] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden">
+          <div className="self-stretch h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
             <UniversalMedia
-              className="w-full h-full object-cover"
+              className="w-full h-auto object-contain"
               url={w.data.image || "/images/placeholder/wide-image.jpg"}
               alt="Table Image"
-              style={getElementStyle(w.data.imageStyle, viewport as any)}
+              style={{
+                ...getElementStyle(w.data.imageStyle, viewport as any),
+                height: "auto",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("image");
@@ -725,7 +741,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 <div
                   key={i}
                   className={`flex-1 p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${i !== w.data.headers.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
-                  style={{ backgroundColor: headerStyle.backgroundColor }}
+                  style={{ backgroundColor: (w.data as any).headerCellStyles?.[i]?.backgroundColor ?? headerStyle.backgroundColor }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("tableHeader", i.toString());
@@ -750,7 +766,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   <div
                     key={cIdx}
                     className={`flex-1 self-stretch p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${cIdx !== row.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
-                    style={{ backgroundColor: bodyStyle.backgroundColor }}
+                    style={{ backgroundColor: (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]?.backgroundColor ?? bodyStyle.backgroundColor }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("tableCell", `${rIdx}-${cIdx}`);

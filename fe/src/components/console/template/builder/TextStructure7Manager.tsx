@@ -137,7 +137,8 @@ const TextStructure7Manager: React.FC<Props> = ({
     } else {
       images = current.slice(0, cols);
     }
-    updateSection(section.id, { columns: cols, images });
+    const heightMap: Record<number, string> = { 1: "480", 2: "384", 3: "280", 4: "240" };
+    updateSection(section.id, { columns: cols, images, imageHeight: heightMap[cols] || "280" });
   };
 
   return (

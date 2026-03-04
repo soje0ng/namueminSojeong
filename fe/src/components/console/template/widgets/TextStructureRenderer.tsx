@@ -12,7 +12,7 @@ import {
 export const TEXT_STRUCTURE_DEFAULTS = {
   layout: "1",
   subTitle: "( 서브타이틀 )",
-  subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#3b82f6" },
+  subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
   title: "타이틀명 입력",
   titleStyle: { fontSize: "36px", fontWeight: "700", color: "#111827" },
   desc: "이민 프로그램명 입력",
@@ -190,6 +190,95 @@ export const TEXT_STRUCTURE_7_DEFAULT_SECTIONS = [
   },
 ];
 
+export const TEXT_STRUCTURE_8_DEFAULT_SECTIONS = [
+  {
+    id: "s8-img-1",
+    type: "image",
+    imageUrl: "/images/placeholder/wide-image.jpg",
+    imageHeight: "288",
+  },
+  {
+    id: "s8-text-1",
+    type: "text",
+    subTitle: "서브 타이틀 입력",
+    content:
+      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
+  },
+  {
+    id: "s8-feat-1",
+    type: "features",
+    items: [
+      {
+        id: "f8-1",
+        title: "첫째. 타이틀",
+        desc: "설명 텍스트를 입력하세요.",
+      },
+      {
+        id: "f8-2",
+        title: "둘째. 타이틀",
+        desc: "설명 텍스트를 입력하세요.",
+      },
+      {
+        id: "f8-3",
+        title: "셋째. 타이틀",
+        desc: "설명 텍스트를 입력하세요.",
+      },
+    ],
+  },
+  {
+    id: "s8-basic-1",
+    type: "basicText",
+    content:
+      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
+  },
+];
+
+export const TEXT_STRUCTURE_11_DEFAULT_SECTIONS = [
+  {
+    id: "s11-text-1",
+    type: "text",
+    subTitle: "서브 타이틀 입력",
+    content:
+      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
+  },
+  {
+    id: "s11-img-1",
+    type: "leftImage",
+    imageUrl: "/images/placeholder/section-image.jpg",
+    imageHeight: "358",
+  },
+  {
+    id: "s11-feat-1",
+    type: "features",
+    items: [
+      {
+        id: "f11-1",
+        number: "01.",
+        title: "프로그램 특징",
+        desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
+      },
+      {
+        id: "f11-2",
+        number: "02.",
+        title: "프로그램 특징",
+        desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
+      },
+      {
+        id: "f11-3",
+        number: "03.",
+        title: "프로그램 특징",
+        desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
+      },
+    ],
+  },
+  {
+    id: "s11-banner-1",
+    type: "banner",
+    bannerSubTitle: "배너명 입력하는 부분",
+    bannerDesc: "배너명에 대한 설명하는 부분의 텍스트 박스 부분",
+  },
+];
+
 export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
   widget,
   onElementSelect,
@@ -222,7 +311,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 <img
                   src={data.imageUrl || "https://placehold.co/560x460"}
                   alt="Structure Image"
-                  className="w-full object-cover"
+                  className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}
                 />
               </div>
@@ -232,8 +321,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   {!data.subTitleStyle?.isHidden && (
                     <SafeHtml
                       html={data.subTitle || "( 서브타이틀 )"}
-                      className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                      style={getElementStyle(data.subTitleStyle, viewport)}
+                      className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                      style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("subTitle");
@@ -268,47 +357,58 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   )}
                 </div>
                 <div className="self-stretch flex flex-col justify-start items-start gap-4">
-                  {(data.items || []).map((item: any, i: number) => (
-                    <div
-                      key={item.id || i}
-                      className="self-stretch inline-flex justify-start items-center gap-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("items", i.toString());
-                      }}
-                    >
-                      <div className="w-8 h-8 bg-시안-mode-Primary5 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
-                        <div
-                          data-property-1="Regular"
-                          className="w-6 h-6 relative rounded-xl"
-                        >
-                          <div className="w-6 h-6 left-0 top-0 absolute flex justify-center items-center">
-                            <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-시안-mode-Primary50"></div>
+                  {(data.items || []).map((item: any, i: number) => {
+                    const isTitleHidden = item.titleStyle?.isHidden;
+                    const isDescHidden = item.descStyle?.isHidden;
+
+                    if (isTitleHidden && isDescHidden) return null;
+
+                    return (
+                      <div
+                        key={item.id || i}
+                        className="self-stretch inline-flex justify-start items-center gap-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.("items", i.toString());
+                        }}
+                      >
+                        <div className="w-8 h-8 bg-시안-mode-Primary5 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
+                          <div
+                            data-property-1="Regular"
+                            className="w-6 h-6 relative rounded-xl"
+                          >
+                            <div className="w-6 h-6 left-0 top-0 absolute flex justify-center items-center">
+                              <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-시안-mode-Primary50"></div>
+                            </div>
                           </div>
                         </div>
+                        <div className="inline-flex flex-col justify-start items-start gap-2 text-left">
+                          {!isTitleHidden && (
+                            <SafeHtml
+                              html={item.title || "프로그램 특징"}
+                              className="justify-start text-zinc-950 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={getElementStyle(item.titleStyle, viewport)}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("itemTitle", item.id);
+                              }}
+                            />
+                          )}
+                          {!isDescHidden && (
+                            <SafeHtml
+                              html={item.desc || "프로그램 특징 내용 입력"}
+                              className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={getElementStyle(item.descStyle, viewport)}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("itemDesc", item.id);
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
-                      <div className="inline-flex flex-col justify-start items-start gap-2 text-left">
-                        <SafeHtml
-                          html={item.title || "프로그램 특징"}
-                          className="justify-start text-zinc-950 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                          style={getElementStyle(item.titleStyle, viewport)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("itemTitle", item.id);
-                          }}
-                        />
-                        <SafeHtml
-                          html={item.desc || "프로그램 특징 내용 입력"}
-                          className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                          style={getElementStyle(item.descStyle, viewport)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("itemDesc", item.id);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -337,8 +437,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -390,9 +490,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   src={data.bgImageUrl || "/images/placeholder/bg-image.jpg"}
                   alt="Background Overlay"
                 />
-                <div className="self-stretch flex-1 relative overflow-hidden flex justify-center items-center">
+                <div className="self-stretch flex-1 relative overflow-hidden flex justify-center items-center h-auto">
                   <img
-                    className="w-full relative object-cover"
+                    className="w-full relative object-contain h-auto"
                     src={data.imageUrl || "https://placehold.co/580x384"}
                     alt="Main Content Image"
                     style={getElementStyle(data.imageStyle, viewport)}
@@ -468,7 +568,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     className="w-full xl:w-[600px] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl shrink-0"
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.(`cases-${i}`, "imageUrl");
+                      onElementSelect?.("imageUrl", i.toString());
                     }}
                   >
                     <img
@@ -476,7 +576,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         c.imageUrl || "/images/placeholder/section-image.jpg"
                       }
                       alt={`Case ${i + 1} Image`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-auto object-contain"
                     />
                   </div>
                   <div
@@ -485,52 +585,68 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     } py-10 xl:py-0 inline-flex flex-col justify-start items-start gap-10 w-full`}
                   >
                     <div className="self-stretch pt-0 xl:pt-10 flex flex-col justify-center items-start w-full">
-                      <SafeHtml
-                        html={c.subTitle || `Case 0${i + 1}`}
-                        className="text-center justify-start text-시안-mode-Primary70 text-xl font-bold font-['Pretendard'] leading-5 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("caseSubTitle", i.toString());
-                        }}
-                      />
-                      <SafeHtml
-                        html={c.title || "케이스 타이틀 입력"}
-                        className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("caseTitle", i.toString());
-                        }}
-                      />
+                      {!c.subTitleStyle?.isHidden && (
+                        <SafeHtml
+                          html={c.subTitle || `Case 0${i + 1}`}
+                          className="text-center justify-start text-시안-mode-Primary70 text-xl font-bold font-['Pretendard'] leading-5 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                          style={getElementStyle(
+                            c.subTitleStyle,
+                            viewport as any,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("subTitle", i.toString());
+                          }}
+                        />
+                      )}
+                      {!c.titleStyle?.isHidden && (
+                        <SafeHtml
+                          html={c.title || "케이스 타이틀 입력"}
+                          className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                          style={getElementStyle(c.titleStyle, viewport as any)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("title", i.toString());
+                          }}
+                        />
+                      )}
                     </div>
                     <div className="self-stretch flex flex-col justify-start items-start gap-4 w-full">
                       {(c.features || []).map(
-                        (feature: string, fIdx: number) => (
-                          <div
-                            key={fIdx}
-                            className="self-stretch inline-flex justify-start items-center gap-5"
-                          >
-                            <div className="w-8 h-8 bg-시안-mode-Primary5 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
-                              <div className="w-6 h-6 relative rounded-xl">
-                                <div className="w-6 h-6 left-0 top-0 absolute flex justify-center items-center">
-                                  <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-시안-mode-Primary50"></div>
+                        (feature: string, fIdx: number) => {
+                          if (c.featureStyle?.isHidden) return null;
+                          return (
+                            <div
+                              key={fIdx}
+                              className="self-stretch inline-flex justify-start items-center gap-5"
+                            >
+                              <div className="w-8 h-8 bg-시안-mode-Primary5 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
+                                <div className="w-6 h-6 relative rounded-xl">
+                                  <div className="w-6 h-6 left-0 top-0 absolute flex justify-center items-center">
+                                    <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-시안-mode-Primary50"></div>
+                                  </div>
                                 </div>
                               </div>
+                              <div className="inline-flex flex-col justify-start items-start gap-2">
+                                <SafeHtml
+                                  html={feature}
+                                  className="justify-start text-zinc-950 text-xl font-medium font-['Pretendard'] leading-8 break-keep text-left hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                                  style={getElementStyle(
+                                    c.featureStyle,
+                                    viewport as any,
+                                  )}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.(
+                                      `casesFeature`,
+                                      `${i}-${fIdx}`,
+                                    );
+                                  }}
+                                />
+                              </div>
                             </div>
-                            <div className="inline-flex flex-col justify-start items-start gap-2">
-                              <SafeHtml
-                                html={feature}
-                                className="justify-start text-zinc-950 text-xl font-medium font-['Pretendard'] leading-8 break-keep text-left hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                                onDoubleClick={(e) => {
-                                  e.stopPropagation();
-                                  onElementSelect?.(
-                                    `casesFeature`,
-                                    `${i}-${fIdx}`,
-                                  );
-                                }}
-                              />
-                            </div>
-                          </div>
-                        ),
+                          );
+                        },
                       )}
                     </div>
                     <div className="self-stretch inline-flex justify-center xl:justify-start items-center gap-3 flex-wrap">
@@ -540,7 +656,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           className="p-6 bg-시안-mode-gray0 rounded-2xl outline outline-1 outline-offset-[-1px] outline-시안-mode-gray20 inline-flex flex-col justify-center items-center gap-5"
                         >
                           <UniversalMedia
-                            className="w-24 h-24 rounded-[600px] object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                            className="w-24 h-24 rounded-[600px] object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
                             url={avatar || "/images/placeholder/avatar.jpg"}
                             alt={`Avatar ${aIdx + 1}`}
                             onDoubleClick={(e) => {
@@ -580,7 +696,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     <SafeHtml
                       html={data.subTitle || "( 서브타이틀 )"}
                       className="text-center justify-start text-blue-500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                      style={getElementStyle(data.subTitleStyle, viewport)}
+                      style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("subTitle");
@@ -620,68 +736,76 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   className="self-stretch flex flex-row justify-start items-start flex-wrap mt-10"
                   style={{ gap: `${data.itemGap ?? 20}px` }}
                 >
-                  {(data.items || []).map((item: any, i: number) => (
-                    <div
-                      key={item.id || i}
-                      className="px-6 py-10 bg-white rounded-2xl outline outline-1 outline-offset-[-1px] outline-시안-mode-gray20 flex flex-col justify-center items-center gap-3 hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
-                      style={{
-                        width:
-                          (data.itemColumns ?? 1) === 2
-                            ? `calc(50% - ${(data.itemGap ?? 20) / 2}px)`
-                            : "100%",
-                      }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("items", i.toString());
-                      }}
-                    >
-                      {/* Icon Box */}
-                      <div className="w-6 h-6 relative bg-blue-100 rounded-full flex items-center justify-center">
-                        {/* Custom icon placeholder mirroring original HTML icon structure */}
-                        <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-white rounded-sm bg-blue-500"></div>
-                      </div>
+                  {(data.items || []).map((item: any, i: number) => {
+                    const isTitleHidden = item.titleStyle?.isHidden;
+                    const isDescHidden = item.descStyle?.isHidden;
 
-                      <div className="flex flex-col justify-center items-center gap-1 text-center">
-                        <SafeHtml
-                          html={item.title || "프로그램 특징"}
-                          className="justify-start text-zinc-950 text-xl xl:text-2xl font-bold leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                          style={getElementStyle(item.titleStyle, viewport)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemTitle",
-                              item.id || i.toString(),
-                            );
-                          }}
-                        />
-                        <SafeHtml
-                          html={item.desc || "프로그램 특징 내용 입력"}
-                          className="justify-start text-시안-mode-gray500 text-base xl:text-lg font-normal leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                          style={getElementStyle(item.descStyle, viewport)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemDesc",
-                              item.id || i.toString(),
-                            );
-                          }}
-                        />
+                    if (isTitleHidden && isDescHidden) return null;
+
+                    return (
+                      <div
+                        key={item.id || i}
+                        className="px-6 py-10 bg-white rounded-2xl outline outline-1 outline-offset-[-1px] outline-시안-mode-gray20 flex flex-col justify-center items-center gap-3 hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                        style={{
+                          width:
+                            (data.itemColumns ?? 1) === 2
+                              ? `calc(50% - ${(data.itemGap ?? 20) / 2}px)`
+                              : "100%",
+                        }}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.("items", i.toString());
+                        }}
+                      >
+                        {/* Icon Box */}
+                        <div className="w-6 h-6 relative bg-blue-100 rounded-full flex items-center justify-center">
+                          {/* Custom icon placeholder mirroring original HTML icon structure */}
+                          <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-white rounded-sm bg-blue-500"></div>
+                        </div>
+
+                        <div className="flex flex-col justify-center items-center gap-1 text-center">
+                          {!isTitleHidden && (
+                            <SafeHtml
+                              html={item.title || "프로그램 특징"}
+                              className="justify-start text-zinc-950 text-xl xl:text-2xl font-bold leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={getElementStyle(item.titleStyle, viewport)}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  "itemTitle",
+                                  item.id || i.toString(),
+                                );
+                              }}
+                            />
+                          )}
+                          {!isDescHidden && (
+                            <SafeHtml
+                              html={item.desc || "프로그램 특징 내용 입력"}
+                              className="justify-start text-시안-mode-gray500 text-base xl:text-lg font-normal leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={getElementStyle(item.descStyle, viewport)}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  "itemDesc",
+                                  item.id || i.toString(),
+                                );
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Right Column (Image) */}
               <div
-                className={`w-full xl:w-[560px] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden shrink-0${!data.imageStyle?.height ? " h-[300px] xl:h-[560px]" : ""}`}
+                className={`w-full xl:w-[560px] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden shrink-0 flex justify-center items-center h-auto`}
                 style={{
-                  height: data.imageStyle?.height
-                    ? formatUnit(data.imageStyle.height)
-                    : undefined,
                   borderRadius: data.imageStyle?.borderRadius
                     ? formatUnit(data.imageStyle.borderRadius)
                     : "16px",
+                  minHeight: "0px",
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
@@ -691,12 +815,12 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 <img
                   src={data.imageUrl || "/images/placeholder/section-image.jpg"}
                   alt="Structure Image"
-                  className="w-full h-full"
+                  className="w-full h-auto object-contain"
                   style={{
                     objectFit:
                       (data.imageStyle
                         ?.objectFit as React.CSSProperties["objectFit"]) ||
-                      "cover",
+                      "contain",
                   }}
                 />
               </div>
@@ -721,8 +845,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -788,12 +912,12 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       {images.map((img: string, imgIdx: number) => (
                         <div
                           key={imgIdx}
-                          className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl w-full"
-                          style={{ height: imgH }}
+                          className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl w-full flex justify-center items-center h-auto"
+                          style={{ height: "auto" }}
                         >
                           <UniversalMedia
                             url={img}
-                            className="w-full h-full object-cover"
+                            className="w-full h-auto object-contain"
                             alt=""
                             onDoubleClick={(e) => {
                               e.stopPropagation();
@@ -816,24 +940,34 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       key={section.id}
                       className="self-stretch flex flex-col justify-start items-start gap-2"
                     >
-                      <SafeHtml
-                        html={section.subTitle || "서브 타이틀 입력"}
-                        className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                        style={getElementStyle(section.subTitleStyle, viewport)}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.(`sectionSubTitle`, section.id);
-                        }}
-                      />
-                      <SafeHtml
-                        html={section.content || "내용을 입력하세요."}
-                        className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                        style={getElementStyle(section.contentStyle, viewport)}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.(`sectionContent`, section.id);
-                        }}
-                      />
+                      {!section.subTitleStyle?.isHidden && (
+                        <SafeHtml
+                          html={section.subTitle || "서브 타이틀 입력"}
+                          className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                          style={getElementStyle(
+                            section.subTitleStyle,
+                            viewport,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(`sectionSubTitle`, section.id);
+                          }}
+                        />
+                      )}
+                      {!section.contentStyle?.isHidden && (
+                        <SafeHtml
+                          html={section.content || "내용을 입력하세요."}
+                          className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                          style={getElementStyle(
+                            section.contentStyle,
+                            viewport,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(`sectionContent`, section.id);
+                          }}
+                        />
+                      )}
                     </div>
                   );
                 }
@@ -845,53 +979,63 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       key={section.id}
                       className="self-stretch flex flex-col justify-center items-center gap-5 w-full"
                     >
-                      <SafeHtml
-                        html={section.newsletterSubTitle || "서브 타이틀 입력"}
-                        className="self-stretch text-center justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                        style={getElementStyle(
-                          section.newsletterSubTitleStyle,
-                          viewport,
-                        )}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.(
-                            `sectionNewsletterSubTitle`,
-                            section.id,
-                          );
-                        }}
-                      />
+                      {!section.newsletterSubTitleStyle?.isHidden && (
+                        <SafeHtml
+                          html={
+                            section.newsletterSubTitle || "서브 타이틀 입력"
+                          }
+                          className="self-stretch text-center justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                          style={getElementStyle(
+                            section.newsletterSubTitleStyle,
+                            viewport,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              `sectionNewsletterSubTitle`,
+                              section.id,
+                            );
+                          }}
+                        />
+                      )}
                       <div className="self-stretch flex flex-col xl:flex-row justify-start items-start gap-14 w-full">
                         <div className="flex-1 text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text">
-                          <SafeHtml
-                            html={section.leftContent || "내용을 입력하세요."}
-                            style={getElementStyle(
-                              section.leftContentStyle,
-                              viewport,
-                            )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(
-                                `sectionNewsletterLeft`,
-                                section.id,
-                              );
-                            }}
-                          />
+                          {!section.leftContentStyle?.isHidden && (
+                            <SafeHtml
+                              html={section.leftContent || "내용을 입력하세요."}
+                              style={getElementStyle(
+                                section.leftContentStyle,
+                                viewport,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  `sectionNewsletterLeft`,
+                                  section.id,
+                                );
+                              }}
+                            />
+                          )}
                         </div>
                         <div className="flex-1 text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text">
-                          <SafeHtml
-                            html={section.rightContent || "내용을 입력하세요."}
-                            style={getElementStyle(
-                              section.rightContentStyle,
-                              viewport,
-                            )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(
-                                `sectionNewsletterRight`,
-                                section.id,
-                              );
-                            }}
-                          />
+                          {!section.rightContentStyle?.isHidden && (
+                            <SafeHtml
+                              html={
+                                section.rightContent || "내용을 입력하세요."
+                              }
+                              style={getElementStyle(
+                                section.rightContentStyle,
+                                viewport,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  `sectionNewsletterRight`,
+                                  section.id,
+                                );
+                              }}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -918,30 +1062,34 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         }}
                       />
                       <div className="flex-1 self-stretch px-5 md:px-10 py-5 inline-flex flex-col justify-center items-start gap-3">
-                        <SafeHtml
-                          html={section.bannerSubTitle || "서브 타이틀 입력"}
-                          className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                          style={getElementStyle(
-                            section.bannerSubTitleStyle,
-                            viewport,
-                          )}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(`bannerSubTitle`, section.id);
-                          }}
-                        />
-                        <SafeHtml
-                          html={section.bannerDesc || "내용을 입력하세요."}
-                          className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                          style={getElementStyle(
-                            section.bannerDescStyle,
-                            viewport,
-                          )}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(`bannerDesc`, section.id);
-                          }}
-                        />
+                        {!section.bannerSubTitleStyle?.isHidden && (
+                          <SafeHtml
+                            html={section.bannerSubTitle || "서브 타이틀 입력"}
+                            className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                            style={getElementStyle(
+                              section.bannerSubTitleStyle,
+                              viewport,
+                            )}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`bannerSubTitle`, section.id);
+                            }}
+                          />
+                        )}
+                        {!section.bannerDescStyle?.isHidden && (
+                          <SafeHtml
+                            html={section.bannerDesc || "내용을 입력하세요."}
+                            className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                            style={getElementStyle(
+                              section.bannerDescStyle,
+                              viewport,
+                            )}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`bannerDesc`, section.id);
+                            }}
+                          />
+                        )}
                       </div>
                     </div>
                   );
@@ -970,8 +1118,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -1061,16 +1209,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         {images.map((img: string, imgIdx: number) => (
                           <div
                             key={imgIdx}
-                            className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl w-full flex justify-center items-center"
+                            className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl w-full flex justify-center items-center h-auto"
                             style={{
-                              height: section.imageHeight
-                                ? `${section.imageHeight}px`
-                                : undefined,
+                              height: "auto",
                             }}
                           >
                             <UniversalMedia
                               url={img}
-                              className="w-full object-cover"
+                              className="w-full h-auto object-contain"
                               alt=""
                               style={getElementStyle(
                                 section.imageStyle,
@@ -1252,6 +1398,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "8") {
+    const sections8 = data.sections8 || TEXT_STRUCTURE_8_DEFAULT_SECTIONS;
     return (
       <section
         style={style}
@@ -1264,8 +1411,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -1296,99 +1443,130 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               )}
             </div>
 
-            {/* 이미지 + 텍스트 + 아이템 리스트 + 푸터 텍스트 */}
-            <div className="self-stretch flex flex-col justify-center items-center gap-6">
-              {/* 이미지 */}
-              <div
-                className="self-stretch h-72 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("image");
-                }}
-              >
-                <img
-                  src={data.imageUrl || "/images/placeholder/wide-image.jpg"}
-                  alt="Structure Image"
-                  className="w-full h-full object-cover"
-                  style={getElementStyle(data.imageStyle, viewport)}
-                />
-              </div>
-
-              {/* 서브타이틀 + 본문 */}
-              <div className="self-stretch flex flex-col justify-start items-center gap-2">
-                <SafeHtml
-                  html={data.textContentSubTitle || "서브 타이틀 입력"}
-                  className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("textContentSubTitle");
-                  }}
-                />
-                <SafeHtml
-                  html={
-                    data.textContent ||
-                    "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
-                  }
-                  className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("textContent");
-                  }}
-                />
-              </div>
-
-              {/* 아이템 리스트 */}
-              <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                {(data.items || []).map((item: any, i: number) => (
-                  <div
-                    key={item.id || i}
-                    className="self-stretch p-4 bg-시안-mode-gray5 inline-flex justify-start items-center gap-5"
-                  >
-                    {/* 타이틀 */}
-                    <SafeHtml
-                      html={item.title || `첫째. 타이틀`}
-                      className="w-40 justify-start text-시안-mode-Primary50 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text shrink-0"
-                      style={getElementStyle(item.titleStyle, viewport)}
+            {/* 동적 섹션 */}
+            <div className="self-stretch flex flex-col justify-center items-center gap-6 w-full">
+              {sections8.map((section: any) => {
+                /* ── IMAGE ── */
+                if (section.type === "image") {
+                  return (
+                    <div
+                      key={section.id}
+                      className="self-stretch relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-xl flex justify-center items-center h-auto"
+                      style={{ height: "auto" }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("itemTitle", item.id || i.toString());
+                        onElementSelect?.("image", `s8img_${section.id}`);
                       }}
-                    />
-                    {/* 구분선 아이콘 */}
-                    <div className="w-6 h-6 relative shrink-0">
-                      <div className="w-6 h-6 left-0 top-0 absolute">
-                        <div className="w-2.5 h-3 left-[7px] top-[6px] absolute bg-시안-mode-gray95"></div>
-                      </div>
+                    >
+                      <img
+                        src={
+                          section.imageUrl ||
+                          "/images/placeholder/wide-image.jpg"
+                        }
+                        alt="Structure Image"
+                        className="w-full h-auto object-contain"
+                      />
                     </div>
-                    {/* 설명 */}
+                  );
+                }
+
+                /* ── TEXT ── */
+                if (section.type === "text") {
+                  return (
+                    <div
+                      key={section.id}
+                      className="self-stretch flex flex-col justify-start items-start gap-2"
+                    >
+                      <SafeHtml
+                        html={section.subTitle || "서브 타이틀 입력"}
+                        className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                        style={{ ...getElementStyle(section.subTitleStyle, viewport), color: "#285DE1" }}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.("sectionSubTitle", section.id);
+                        }}
+                      />
+                      <SafeHtml
+                        html={section.content || "내용을 입력하세요."}
+                        className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                        style={getElementStyle(section.contentStyle, viewport)}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.("sectionContent", section.id);
+                        }}
+                      />
+                    </div>
+                  );
+                }
+
+                /* ── FEATURES ── */
+                if (section.type === "features") {
+                  return (
+                    <div
+                      key={section.id}
+                      className="self-stretch flex flex-col justify-start items-start gap-2"
+                    >
+                      {(section.items || []).map((item: any, i: number) => {
+                        const isTitleHidden = item.titleStyle?.isHidden;
+                        const isDescHidden = item.descStyle?.isHidden;
+                        if (isTitleHidden && isDescHidden) return null;
+
+                        return (
+                          <div
+                            key={item.id || i}
+                            className="self-stretch p-4 bg-시안-mode-gray5 inline-flex justify-start items-center gap-5"
+                          >
+                            {!isTitleHidden && (
+                              <SafeHtml
+                                html={item.title || `첫째. 타이틀`}
+                                className="w-40 justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 shrink-0 break-keep"
+                                style={getElementStyle(
+                                  item.titleStyle,
+                                  viewport,
+                                )}
+                              />
+                            )}
+                            <div className="w-6 h-6 relative shrink-0">
+                              <div className="w-6 h-6 left-0 top-0 absolute">
+                                <div className="w-2.5 h-3 left-[7px] top-[6px] absolute bg-시안-mode-gray95"></div>
+                              </div>
+                            </div>
+                            {!isDescHidden && (
+                              <SafeHtml
+                                html={item.desc || "설명을 입력하세요."}
+                                className="flex-1 justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep"
+                                style={getElementStyle(
+                                  item.descStyle,
+                                  viewport,
+                                )}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+
+                /* ── BASIC TEXT ── */
+                if (section.type === "basicText") {
+                  if (section.contentStyle?.isHidden) return null;
+                  return (
                     <SafeHtml
-                      html={
-                        item.desc ||
-                        "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
-                      }
-                      className="flex-1 justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                      style={getElementStyle(item.descStyle, viewport)}
+                      key={section.id}
+                      html={section.content || "내용을 입력하세요."}
+                      className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                      style={getElementStyle(section.contentStyle, viewport)}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("itemDesc", item.id || i.toString());
+                        onElementSelect?.("sectionBasicText", section.id);
                       }}
                     />
-                  </div>
-                ))}
-              </div>
-
-              {/* 푸터 텍스트 */}
-              <SafeHtml
-                html={
-                  data.footerDesc ||
-                  "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
+                  );
                 }
-                className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("footerDesc");
-                }}
-              />
+
+                return null;
+              })}
             </div>
           </div>
         </div>
@@ -1404,12 +1582,18 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
-            <div className="flex flex-col justify-start items-center w-full">
+            <div
+              className="flex flex-col justify-start items-center w-full cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all"
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("header");
+              }}
+            >
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -1426,7 +1610,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <SafeHtml
                     html={data.title || "타이틀명 입력"}
-                    className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
+                    className="justify-start text-gray-95 text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
                     style={getElementStyle(data.titleStyle, viewport)}
                   />
                 </div>
@@ -1434,7 +1618,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               {!data.descStyle?.isHidden && (
                 <SafeHtml
                   html={data.desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="text-center justify-start text-gray-50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(data.descStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -1443,31 +1627,121 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 />
               )}
             </div>
-            <div
-              className="flex-1 w-full xl:w-auto self-stretch relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl"
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("image");
-              }}
-            >
-              <img
-                src={data.imageUrl || "/images/placeholder/section-image.jpg"}
-                alt="Structure Image"
-                className="w-full h-full object-cover"
-                style={getElementStyle(data.imageStyle, viewport)}
-              />
-            </div>
-            {!data.textContentStyle?.isHidden && (
-              <SafeHtml
-                html={data.textContent || "내용을 입력하세요."}
-                className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getElementStyle(data.textContentStyle, viewport)}
+
+            <div className="self-stretch inline-flex flex-col xl:flex-row justify-center items-center gap-14 w-full">
+              <div
+                className="w-full xl:flex-1 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl shrink-0 flex justify-center items-center h-auto"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("textContent");
+                  onElementSelect?.("imageUrl");
                 }}
-              />
-            )}
+              >
+                <img
+                  className="w-full h-auto object-contain"
+                  src={data.imageUrl || "https://placehold.co/650x644"}
+                  alt="Text Structure 9 Image"
+                  style={getElementStyle(data.imageStyle, viewport)}
+                />
+              </div>
+
+              <div className="flex-1 inline-flex flex-col justify-start items-start gap-6 w-full">
+                <div className="self-stretch flex flex-col justify-start items-center gap-2">
+                  {!data.contentTitleStyle?.isHidden && (
+                    <SafeHtml
+                      html={data.contentTitle || "서브 타이틀 입력"}
+                      className="self-stretch justify-start text-gray-95 text-2xl font-medium font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                      style={getElementStyle(data.contentTitleStyle, viewport)}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("contentTitle");
+                      }}
+                    />
+                  )}
+                  {!data.contentSubTitleStyle?.isHidden && (
+                    <SafeHtml
+                      html={
+                        data.contentSubTitle ||
+                        "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
+                      }
+                      className="self-stretch justify-start text-gray-50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep text-left"
+                      style={getElementStyle(
+                        data.contentSubTitleStyle,
+                        viewport,
+                      )}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("contentSubTitle");
+                      }}
+                    />
+                  )}
+                </div>
+
+                <div className="self-stretch flex flex-col justify-start items-start gap-2 w-full">
+                  {(data.items || []).map((item: any, i: number) => {
+                    const isTitleHidden = item.titleStyle?.isHidden;
+                    const isDescHidden = item.descStyle?.isHidden;
+                    if (isTitleHidden && isDescHidden) return null;
+
+                    return (
+                      <div
+                        key={item.id || i}
+                        className="self-stretch p-4 bg-gray-5 inline-flex justify-start items-center gap-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.("items", i.toString());
+                        }}
+                      >
+                        {!isTitleHidden && (
+                          <SafeHtml
+                            html={item.title || "첫째. 타이틀"}
+                            className="w-40 justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 shrink-0 break-keep"
+                            style={getElementStyle(item.titleStyle, viewport)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("itemTitle", item.id);
+                            }}
+                          />
+                        )}
+                        <div className="w-6 h-6 relative shrink-0">
+                          <div className="w-6 h-6 left-0 top-0 absolute flex items-center justify-center">
+                            <div className="w-2.5 h-3 bg-gray-95"></div>
+                          </div>
+                        </div>
+                        {!isDescHidden && (
+                          <SafeHtml
+                            html={
+                              item.desc ||
+                              "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
+                            }
+                            className="flex-1 justify-start text-gray-50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                            style={getElementStyle(item.descStyle, viewport)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("itemDesc", item.id);
+                            }}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {!data.contentDescStyle?.isHidden && (
+                  <SafeHtml
+                    html={
+                      data.contentDesc ||
+                      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
+                    }
+                    className="self-stretch justify-start text-gray-50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep text-left"
+                    style={getElementStyle(data.contentDescStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("contentDesc");
+                    }}
+                  />
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1475,6 +1749,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "11") {
+    const sections11 = data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
     return (
       <section
         style={style}
@@ -1487,8 +1762,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport)}
+                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -1519,147 +1794,185 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               )}
             </div>
 
-            {/* 서브타이틀 + 본문 텍스트 블록 */}
-            <div className="self-stretch flex flex-col justify-start items-center gap-2">
-              <SafeHtml
-                html={data.textContentSubTitle || "서브 타이틀 입력"}
-                className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("textContentSubTitle");
-                }}
-              />
-              <SafeHtml
-                html={
-                  data.textContent ||
-                  "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
-                }
-                className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("textContent");
-                }}
-              />
-            </div>
-
-            {/* 이미지 + 아이템 리스트 2열 */}
-            <div className="self-stretch inline-flex flex-col xl:flex-row justify-center items-center gap-14">
-              {/* 이미지 */}
-              <div
-                className="flex-1 self-stretch min-h-[200px] xl:min-h-[358px] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-              >
-                <img
-                  src={data.imageUrl || "/images/placeholder/section-image.jpg"}
-                  alt="Structure Image"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* 아이템 리스트 */}
-              <div className="flex-1 inline-flex flex-col justify-start items-start gap-10">
-                {(data.items || []).map((item: any, i: number) => (
-                  <div
-                    key={item.id || i}
-                    className="self-stretch pt-4 bg-시안-mode-gray0 border-t border-시안-mode-gray95 inline-flex justify-start items-center gap-6 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("items", i.toString());
-                    }}
-                  >
-                    {/* 아이콘 영역 */}
+            {/* 동적 섹션 */}
+            <div className="self-stretch flex flex-col justify-center items-center gap-10 w-full">
+              {sections11.map((section: any) => {
+                /* ── TEXT ── */
+                if (section.type === "text") {
+                  return (
                     <div
-                      className="w-28 h-28 relative bg-시안-mode-gray5 rounded-[60px] shrink-0 overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("icon", item.id || i.toString());
-                      }}
+                      key={section.id}
+                      className="self-stretch flex flex-col justify-start items-start gap-2"
                     >
-                      {item.icon ? (
-                        <img
-                          src={item.icon}
-                          alt=""
-                          className="w-full h-full object-cover"
+                      {!section.subTitleStyle?.isHidden && (
+                        <SafeHtml
+                          html={section.subTitle || "서브 타이틀 입력"}
+                          className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                          style={getElementStyle(
+                            section.subTitleStyle,
+                            viewport,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("sectionSubTitle", section.id);
+                          }}
                         />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <div className="w-8 h-8 bg-gradient-to-br from-시안-mode-Primary50 via-시안-mode-subColor30 to-시안-mode-subColor50 rounded-lg opacity-80" />
-                        </div>
+                      )}
+                      {!section.contentStyle?.isHidden && (
+                        <SafeHtml
+                          html={section.content || "내용을 입력하세요."}
+                          className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                          style={getElementStyle(
+                            section.contentStyle,
+                            viewport,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("sectionContent", section.id);
+                          }}
+                        />
                       )}
                     </div>
+                  );
+                }
 
-                    {/* 텍스트 */}
-                    <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">
-                      <div className="flex flex-col justify-start items-start">
-                        <SafeHtml
-                          html={item.number || `0${i + 1}.`}
-                          className="text-center justify-start text-시안-mode-Primary50 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemNumber",
-                              item.id || i.toString(),
-                            );
-                          }}
-                        />
-                        <SafeHtml
-                          html={item.title || "프로그램 특징"}
-                          className="justify-start text-zinc-950 text-3xl font-bold font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                          style={getElementStyle(item.titleStyle, viewport)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemTitle",
-                              item.id || i.toString(),
-                            );
-                          }}
-                        />
-                      </div>
-                      <SafeHtml
-                        html={
-                          item.desc ||
-                          "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
+                /* ── LEFT IMAGE ── */
+                if (section.type === "leftImage") {
+                  return (
+                    <div
+                      key={section.id}
+                      className="self-stretch relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl flex justify-center items-center h-auto"
+                      style={{
+                        height: "auto",
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("image", `s11img_${section.id}`);
+                      }}
+                    >
+                      <img
+                        src={
+                          section.imageUrl ||
+                          "/images/placeholder/section-image.jpg"
                         }
-                        className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                        style={getElementStyle(item.descStyle, viewport)}
+                        alt="Structure Image"
+                        className="w-full h-auto object-contain"
+                      />
+                    </div>
+                  );
+                }
+
+                /* ── FEATURES ── */
+                if (section.type === "features") {
+                  return (
+                    <div
+                      key={section.id}
+                      className="self-stretch inline-flex flex-col justify-start items-start gap-10"
+                    >
+                      {(section.items || []).map((item: any, i: number) => {
+                        const isTitleHidden = item.titleStyle?.isHidden;
+                        const isDescHidden = item.descStyle?.isHidden;
+                        if (isTitleHidden && isDescHidden) return null;
+
+                        return (
+                          <div
+                            key={item.id || i}
+                            className="self-stretch pt-4 bg-시안-mode-gray0 border-t border-시안-mode-gray95 inline-flex justify-start items-center gap-6"
+                          >
+                            {/* 아이콘 영역 */}
+                            <div className="w-28 h-28 relative bg-시안-mode-gray5 rounded-[60px] shrink-0 overflow-hidden">
+                              {item.icon ? (
+                                <img
+                                  src={item.icon}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-시안-mode-Primary50 via-시안-mode-subColor30 to-시안-mode-subColor50 rounded-lg opacity-80" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* 텍스트 */}
+                            <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">
+                              <div className="flex flex-col justify-start items-start">
+                                <SafeHtml
+                                  html={item.number || `0${i + 1}.`}
+                                  className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep"
+                                />
+                                {!isTitleHidden && (
+                                  <SafeHtml
+                                    html={item.title || "프로그램 특징"}
+                                    className="justify-start text-zinc-950 text-3xl font-bold font-['Pretendard'] leading-10 break-keep"
+                                    style={getElementStyle(
+                                      item.titleStyle,
+                                      viewport,
+                                    )}
+                                  />
+                                )}
+                              </div>
+                              {!isDescHidden && (
+                                <SafeHtml
+                                  html={
+                                    item.desc ||
+                                    "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
+                                  }
+                                  className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep"
+                                  style={getElementStyle(
+                                    item.descStyle,
+                                    viewport,
+                                  )}
+                                />
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+
+                /* ── BANNER ── */
+                if (section.type === "banner") {
+                  return (
+                    <div
+                      key={section.id}
+                      className="self-stretch px-5 xl:px-10 py-6 bg-시안-mode-gray5 rounded-2xl flex flex-col justify-start items-center gap-3"
+                    >
+                      <SafeHtml
+                        html={section.bannerSubTitle || "배너명 입력하는 부분"}
+                        className="text-center justify-start text-[#285DE1] text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                        style={getElementStyle(
+                          section.bannerSubTitleStyle,
+                          viewport,
+                        )}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
-                          onElementSelect?.(
-                            "itemDesc",
-                            item.id || i.toString(),
-                          );
+                          onElementSelect?.("bannerSubTitle", section.id);
+                        }}
+                      />
+                      <SafeHtml
+                        html={
+                          section.bannerDesc ||
+                          "배너명에 대한 설명하는 부분의 텍스트 박스 부분"
+                        }
+                        className="self-stretch text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                        style={getElementStyle(
+                          section.bannerDescStyle,
+                          viewport,
+                        )}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.("bannerDesc", section.id);
                         }}
                       />
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 하단 배너 */}
-            <div className="self-stretch px-5 xl:px-10 py-6 bg-시안-mode-gray5 rounded-2xl flex flex-col justify-start items-center gap-3">
-              <SafeHtml
-                html={data.bottomSubTitle || "배너명 입력하는 부분"}
-                className="text-center justify-start text-시안-mode-Primary50 text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("bottomSubTitle");
-                }}
-              />
-              <SafeHtml
-                html={
-                  data.bottomDesc ||
-                  "배너명에 대한 설명하는 부분의 텍스트 박스 부분"
+                  );
                 }
-                className="self-stretch text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("bottomDesc");
-                }}
-              />
+
+                return null;
+              })}
             </div>
           </div>
         </div>

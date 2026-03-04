@@ -11,7 +11,7 @@ import {
 export const TITLE_TEXT_DEFAULTS = {
   layout: "1",
   subTitle: "이민 프로그램명 입력",
-  subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+  subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
   title: "타이틀 문구를 적는 곳입니다.",
   titleStyle: { fontSize: "48px", fontWeight: "700", color: "#111827" },
   quoteLeft: "/images/placeholder/icon-quote.jpg",
@@ -71,7 +71,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                   <SafeHtml
                     html={data.subTitle || "이민 프로그램명 입력"}
                     className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all mt-2 cursor-text break-keep"
-                    style={getElementStyle(data.subTitleStyle, viewport)}
+                    style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("subTitle");
@@ -214,7 +214,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={data.subTitle || "타이틀명 입력"}
                 className="text-center justify-start text-시안-mode-gray90 text-xl xl:text-2xl font-bold leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getElementStyle(data.subTitleStyle, viewport)}
+                style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -268,7 +268,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-blue-500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport)}
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");

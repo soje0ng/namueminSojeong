@@ -9,6 +9,14 @@ import {
   UniversalMedia,
 } from "./WidgetUtils";
 
+const getGridColsClass = (itemsPerRow?: number, defaultCols: number = 3) => {
+  const cols = itemsPerRow || defaultCols;
+  if (cols === 1) return "grid-cols-1";
+  if (cols === 2) return "grid-cols-1 xl:grid-cols-2";
+  if (cols === 4) return "grid-cols-1 md:grid-cols-2 xl:grid-cols-4";
+  return "grid-cols-1 xl:grid-cols-3";
+};
+
 export const ICON_CARD_DEFAULTS = {
   variant: "box",
   title: "좌측타이틀영역",
@@ -103,8 +111,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
-                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={{
+                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  color: "#285DE1",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -135,16 +146,17 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             )}
           </div>
 
-          <div className="self-stretch flex flex-col justify-start items-start w-full">
-            <div className="self-stretch cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all overflow-hidden w-full">
+          <div className="self-stretch flex flex-col justify-start items-start w-full relative">
+            <div className="self-stretch cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all overflow-hidden w-full flex justify-center items-center relative z-0">
               <UniversalMedia
-                className="self-stretch w-full object-cover"
+                className="self-stretch w-full h-auto object-contain"
                 url={
-                  (w.data as any).imageUrl || "/images/placeholder/wide-image.jpg"
+                  (w.data as any).imageUrl ||
+                  "/images/template/icon_card_banner.png"
                 }
                 alt="banner image"
                 style={{
-                  height: (w.data as any).imageHeight || "320px",
+                  height: "auto",
                   ...getElementStyle((w.data as any).imageStyle, viewport),
                 }}
                 onDoubleClick={(e) => {
@@ -154,7 +166,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               />
             </div>
             <div
-              className="self-stretch px-5 xl:px-14 inline-flex justify-start items-start flex-wrap content-start -mt-20 relative z-10"
+              className={`self-stretch px-5 xl:px-14 grid ${getGridColsClass(w.data.itemsPerRow)} -mt-20 relative z-10`}
               style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
             >
               {(w.data.items || []).map((item: any, i: number) => (
@@ -164,7 +176,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                     backgroundImage:
                       "linear-gradient(to bottom right, #f8fafc, #eff6ff)",
                   }}
-                  className="flex-1 min-w-80 p-6 rounded-2xl outline outline-1 outline-offset-[-1px] outline-시안-mode-gray10 inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                  className="flex-1 min-w-80 p-6 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all relative z-20"
                 >
                   <SafeHtml
                     html={item.title || "프로그램 특징"}
@@ -175,7 +187,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                       onElementSelect?.("itemTitle", item.id || i.toString());
                     }}
                   />
-                  <div className="w-14 h-14 relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center p-1">
+                  <div className="w-14 h-14 relative z-20 bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center p-1">
                     <UniversalMedia
                       url={
                         item.icon &&
@@ -224,8 +236,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
-                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={{
+                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  color: "#285DE1",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -257,7 +272,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           <div
-            className="self-stretch px-5 xl:px-14 bg-시안-mode-gray5 rounded-[20px] inline-flex justify-center items-center overflow-hidden flex-wrap"
+            className={`self-stretch px-5 xl:px-14 bg-시안-mode-gray5 rounded-[20px] grid ${getGridColsClass(w.data.itemsPerRow, 4)} overflow-hidden`}
             style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "0px" }}
           >
             {(w.data.items || []).map((item: any, i: number) => (
@@ -286,7 +301,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 <div className="flex flex-col justify-center items-center gap-2">
                   <SafeHtml
                     html={item.title || "프로그램 특징"}
-                    className="text-center justify-start text-시안-mode-Primary50 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                    className="text-center justify-start text-[#285DE1] text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
                     style={getElementStyle(item.titleStyle, viewport)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -313,7 +328,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
   if (currentLayout === "3") {
     const items = w.data.items || [];
-    const itemsPerRow = 3;
+    const itemsPerRow = w.data.itemsPerRow || 3;
     const rows: any[][] = [];
     for (let i = 0; i < items.length; i += itemsPerRow) {
       rows.push(items.slice(i, i + itemsPerRow));
@@ -332,8 +347,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
-                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={{
+                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  color: "#285DE1",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -364,11 +382,15 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             )}
           </div>
 
-          <div className="self-stretch flex flex-col justify-start items-start gap-10">
+          <div
+            className="self-stretch flex flex-col justify-start items-start"
+            style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "40px" }}
+          >
             {rows.map((row, rowIndex) => (
               <div
                 key={rowIndex}
-                className="self-stretch inline-flex justify-center items-stretch gap-9 flex-wrap"
+                className="self-stretch inline-flex justify-center items-stretch flex-wrap"
+                style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "36px" }}
               >
                 {row.map((item: any, i: number) => {
                   const itemIndex = rowIndex * itemsPerRow + i;
@@ -379,7 +401,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <SafeHtml
                         html={(item as any).subTitle || "( 서브타이틀 )"}
-                        className="text-center justify-start text-시안-mode-Primary50 text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                        className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
                         style={getElementStyle(
                           (item as any).subTitleStyle,
                           viewport,
@@ -453,7 +475,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
   if (currentLayout === "4") {
     const items = w.data.items || [];
-    const itemsPerRow = 3;
+    const itemsPerRow = w.data.itemsPerRow || 3;
     const rows: any[][] = [];
     for (let i = 0; i < items.length; i += itemsPerRow) {
       rows.push(items.slice(i, i + itemsPerRow));
@@ -472,8 +494,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
-                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={{
+                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  color: "#285DE1",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -504,11 +529,15 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             )}
           </div>
 
-          <div className="self-stretch flex flex-col justify-start items-start gap-6">
+          <div
+            className="self-stretch flex flex-col justify-start items-start"
+            style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "24px" }}
+          >
             {rows.map((row, rowIndex) => (
               <div
                 key={rowIndex}
-                className="self-stretch inline-flex justify-center items-center gap-5 flex-wrap"
+                className="self-stretch inline-flex justify-center items-center flex-wrap"
+                style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
               >
                 {row.map((item: any, i: number) => {
                   const itemIndex = rowIndex * itemsPerRow + i;
@@ -577,7 +606,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
   if (currentLayout === "5") {
     const items = w.data.items || [];
-    const itemsPerRow = 3;
+    const itemsPerRow = w.data.itemsPerRow || 3;
     const rows: any[][] = [];
     for (let i = 0; i < items.length; i += itemsPerRow) {
       rows.push(items.slice(i, i + itemsPerRow));
@@ -596,8 +625,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
-                className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={{
+                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  color: "#285DE1",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -628,11 +660,15 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             )}
           </div>
 
-          <div className="self-stretch flex flex-col justify-start items-start gap-10">
+          <div
+            className="self-stretch flex flex-col justify-start items-start"
+            style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "40px" }}
+          >
             {rows.map((row, rowIndex) => (
               <div
                 key={rowIndex}
-                className="self-stretch inline-flex justify-center items-center gap-9 flex-wrap"
+                className="self-stretch inline-flex justify-center items-center flex-wrap"
+                style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "36px" }}
               >
                 {row.map((item: any, i: number) => {
                   const itemIndex = rowIndex * itemsPerRow + i;
@@ -645,7 +681,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         <div className="inline-flex flex-col justify-start items-start">
                           <SafeHtml
                             html={(item as any).subTitle || "( 서브타이틀 )"}
-                            className="text-center justify-start text-시안-mode-Primary50 text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                            className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
                             style={getElementStyle(
                               (item as any).subTitleStyle,
                               viewport,
@@ -711,6 +747,106 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 })}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (currentLayout === "6") {
+    return (
+      <section style={style} className="w-full">
+        <div
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("style");
+          }}
+        >
+          <div className="flex flex-col justify-start items-center">
+            {!w.data.subTitleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.subTitle || "( 서브타이틀 )"}
+                className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                style={{
+                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  color: "#285DE1",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subTitle");
+                }}
+              />
+            )}
+            {!w.data.titleStyle?.isHidden && (
+              <SafeHtml
+                html={w.data.title || "타이틀명 입력"}
+                className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                style={getElementStyle(w.data.titleStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              />
+            )}
+            {!(w.data as any).descStyle?.isHidden && (
+              <SafeHtml
+                html={(w.data as any).desc || "이민 프로그램명 입력"}
+                className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep mt-2"
+                style={getElementStyle((w.data as any).descStyle, viewport)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("desc");
+                }}
+              />
+            )}
+          </div>
+
+          <div
+            className="self-stretch flex flex-col justify-start items-start"
+            style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "24px" }}
+          >
+            <div
+              className={`self-stretch grid ${getGridColsClass(w.data.itemsPerRow)}`}
+              style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
+            >
+              {(w.data.items || []).map((item: any, idx: number) => (
+                <div
+                  key={item.id || idx}
+                  className="flex-1 min-w-[260px] max-w-96 px-6 py-10 bg-시안-mode-gray0 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("items", item.id);
+                  }}
+                >
+                  <div className="w-6 h-6 relative bg-시안-mode-Primary30 rounded-xl">
+                    <div className="w-6 h-6 left-0 top-0 absolute">
+                      <div className="w-3 h-2.5 left-[5.75px] top-[5.87px] absolute outline outline-2 outline-offset-[-1px] outline-시안-mode-gray0"></div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-center items-center gap-1">
+                    <SafeHtml
+                      html={item.title || "프로그램 특징"}
+                      className="justify-start text-zinc-950 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text"
+                      style={getElementStyle(item.titleStyle, viewport)}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("itemTitle", item.id);
+                      }}
+                    />
+                    <SafeHtml
+                      html={item.desc || "프로그램 특징 내용 입력"}
+                      className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text text-center"
+                      style={getElementStyle(item.descStyle, viewport)}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("itemDesc", item.id);
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

@@ -137,11 +137,10 @@ export const GridCardRenderer: React.FC<
                       style={{
                         width: "100%",
                         height: "auto",
-                        objectFit: "cover",
-                        ...getElementStyle(item.imageStyle),
+                        ...getElementStyle(item.imageStyle, viewport as any),
                       }}
                       alt={item.title}
-                      className="rounded-[24px]"
+                      className=""
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("image", item.id);
@@ -150,7 +149,7 @@ export const GridCardRenderer: React.FC<
                     {item.label && (
                       <SafeHtml
                         html={item.label}
-                        className="absolute top-4 left-4 p-[6px_12px] bg-[#104893] text-white font-bold text-[16px] rounded-lg shadow-sm hover:outline-dashed hover:outline-2 hover:outline-white/50 cursor-text"
+                        className="absolute top-4 left-4 p-[6px_12px] bg-[#104893] text-white font-bold text-[16px] shadow-sm hover:outline-dashed hover:outline-2 hover:outline-white/50 cursor-text"
                         style={getElementStyle(
                           item.labelStyle,
                           viewport as any,

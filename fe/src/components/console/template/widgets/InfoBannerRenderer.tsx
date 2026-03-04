@@ -11,7 +11,7 @@ import {
 export const INFO_BANNER_DEFAULTS = {
   layout: "1",
   subTitle: "Program Name.",
-  subTitleStyle: { fontSize: "18px", fontWeight: "400", color: "#FFFFFF" },
+  subTitleStyle: { fontSize: "18px", fontWeight: "400", color: "#285DE1" },
   title: "타이틀명 입력",
   titleStyle: { fontSize: "48px", fontWeight: "700", color: "#FFFFFF" },
   desc: "이민 프로그램명 입력",
@@ -78,10 +78,19 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div className="self-stretch py-14 flex flex-col justify-start items-center gap-10">
             {/* Background Container Box - [RESTORED] Original Gradient UI */}
             <div
-              className="self-stretch w-full min-h-[600px] px-5 sm:px-10 xl:px-72 py-20 bg-gradient-to-br from-blue-500 via-teal-400 to-green-500 flex flex-col xl:flex-row justify-between items-center xl:items-start gap-10 xl:gap-20 hover:outline-dashed hover:outline-2 hover:outline-blue-300 transition-all cursor-pointer overflow-hidden z-0"
+              className={`self-stretch w-full min-h-[600px] px-5 sm:px-10 xl:px-72 py-20 flex flex-col xl:flex-row justify-between items-center xl:items-start gap-10 xl:gap-20 hover:outline-dashed hover:outline-2 hover:outline-blue-300 transition-all cursor-pointer overflow-hidden z-0 ${!data.imageUrl ? "bg-gradient-to-br from-blue-500 via-teal-400 to-green-500" : ""}`}
+              style={{
+                backgroundColor: style?.backgroundColor,
+                backgroundImage: data.imageUrl
+                  ? `url(${data.imageUrl})`
+                  : style?.backgroundImage,
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
-                onElementSelect?.("style");
+                onElementSelect?.("imageUrl");
               }}
             >
               {/* Left Column Text & Feature Row */}
@@ -193,17 +202,14 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
               </div>
 
-              {/* Right Image */}
               <div
-                className={`w-full xl:w-[560px] shrink-0 cursor-pointer hover:ring-4 hover:ring-white transition-all rounded-2xl overflow-hidden shadow-[24px_12px_16px_0px_rgba(0,0,0,0.20)] z-10${data.imageHeight ? "" : " h-auto aspect-square xl:aspect-[5/4]"}`}
-                style={
-                  data.imageHeight ? { height: data.imageHeight } : undefined
-                }
+                className={`w-full xl:w-[560px] shrink-0 cursor-pointer hover:ring-4 hover:ring-white transition-all rounded-2xl overflow-hidden shadow-[24px_12px_16px_0px_rgba(0,0,0,0.20)] z-10 flex justify-center items-center`}
+                style={{ height: "auto" }}
               >
                 <UniversalMedia
                   url={data.imageUrl || "/images/placeholder/section-image.jpg"}
                   alt="banner"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -228,13 +234,16 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10">
             <div className="self-stretch p-5 bg-시안-mode-gray5 rounded-[20px] flex flex-col xl:flex-row justify-start items-start gap-14 shadow-sm w-full">
               <div
-                className="w-full xl:w-[600px] h-auto shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-2xl overflow-hidden"
-                style={{ minHeight: data.imageHeight || "412px" }}
+                className="w-full xl:w-[600px] relative shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-2xl overflow-hidden flex justify-center items-center h-auto"
+                style={{
+                  height: "auto",
+                  minHeight: "0px",
+                }}
               >
                 <UniversalMedia
                   url={data.imageUrl || "/images/placeholder/section-image.jpg"}
                   alt="banner"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -251,7 +260,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         data.subTitle || "버지니아 해안 리조트 건설 프로젝트"
                       }
                       className="justify-start text-blue-600 text-xl font-bold leading-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                      style={getElementStyle(data.subTitleStyle, viewport)}
+                      style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("subTitle");
@@ -356,11 +365,11 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center w-full">
             {/* Top Header Section with overhanging image/card */}
             <div className="self-stretch flex flex-col justify-start items-end w-full">
-              <div className="w-full h-auto min-h-[400px] xl:h-96 shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-xl overflow-hidden">
+              <div className="w-full h-auto shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-xl overflow-hidden flex justify-center items-center">
                 <UniversalMedia
                   url={data.imageUrl || "/images/placeholder/wide-image.jpg"}
                   alt="banner"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -378,7 +387,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         <SafeHtml
                           html={data.subTitle || "( 서브타이틀 )"}
                           className="justify-start text-blue-500 text-xl font-bold leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                          style={getElementStyle(data.subTitleStyle, viewport)}
+                          style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("subTitle");
@@ -405,7 +414,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                           <UniversalMedia
                             url={data.items[0].image || data.items[0].iconUrl}
                             alt={data.items[0].title || "Icon"}
-                            className="w-full h-full object-cover rounded-full"
+                            className="w-full h-auto object-contain rounded-full"
                             style={getElementStyle(
                               data.items[0].iconStyle,
                               viewport,
@@ -543,11 +552,11 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   />
                 )}
               </div>
-              <div className="w-full xl:w-[620px] h-auto lg:h-96 shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all shadow-[8px_8px_20px_0px_rgba(0,0,0,0.12)] rounded-3xl xl:rounded-l-none xl:rounded-tr-[40px] xl:rounded-bl-[40px] z-0 overflow-hidden">
+              <div className="w-full xl:w-[620px] h-auto shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all shadow-[8px_8px_20px_0px_rgba(0,0,0,0.12)] rounded-3xl xl:rounded-l-none xl:rounded-tr-[40px] xl:rounded-bl-[40px] z-0 overflow-hidden flex justify-center items-center">
                 <UniversalMedia
                   url={data.imageUrl || "/images/placeholder/section-image.jpg"}
                   alt="banner"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -572,10 +581,19 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div className="self-stretch py-14 flex flex-col justify-start items-center w-full">
             {/* Top Gradient Header Box - [RESTORED] Original Gradient UI */}
             <div
-              className="self-stretch px-5 xl:px-72 py-20 xl:py-28 bg-gradient-to-br from-blue-500 via-teal-400 to-green-500 flex flex-col justify-start items-start gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-200"
+              className={`self-stretch px-5 xl:px-72 py-20 xl:py-28 flex flex-col justify-start items-start gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-200 ${!data.imageUrl ? "bg-gradient-to-br from-blue-500 via-teal-400 to-green-500" : ""}`}
+              style={{
+                backgroundColor: style?.backgroundColor,
+                backgroundImage: data.imageUrl
+                  ? `url(${data.imageUrl})`
+                  : style?.backgroundImage,
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
-                onElementSelect?.("style");
+                onElementSelect?.("imageUrl");
               }}
             >
               <div className="w-full max-w-[1360px] mx-auto flex flex-col justify-center items-start">
@@ -583,7 +601,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   <SafeHtml
                     html={data.subTitle || "( 서브타이틀 )"}
                     className="justify-start text-white text-lg font-medium leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded transition-all cursor-text break-keep"
-                    style={getElementStyle(data.subTitleStyle, viewport)}
+                    style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("subTitle");
@@ -591,15 +609,19 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   />
                 )}
                 {!data.titleStyle?.isHidden && (
-                  <SafeHtml
-                    html={data.title || "타이틀명 입력"}
-                    className="justify-start text-white text-4xl font-bold leading-[60px] break-keep w-full mt-2 mb-2 hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded transition-all cursor-text w-full"
-                    style={getElementStyle(data.titleStyle, viewport)}
+                  <div
+                    className="hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded transition-all cursor-text w-full mt-2 mb-2"
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("title");
                     }}
-                  />
+                  >
+                    <SafeHtml
+                      html={data.title || "타이틀명 입력"}
+                      className="justify-start text-white text-4xl font-bold leading-[60px] break-keep w-full"
+                      style={getElementStyle(data.titleStyle, viewport)}
+                    />
+                  </div>
                 )}
                 {!data.descStyle?.isHidden && (
                   <SafeHtml
@@ -624,14 +646,14 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     key={item.id}
                     className="w-full sm:w-80 outline outline-1 outline-시안-mode-gray20 outline-offset-[-1px] inline-flex flex-col justify-center items-center gap-4 overflow-hidden bg-white pb-6 shadow-sm hover:shadow-md transition-all rounded-b-2xl"
                   >
-                    <div className="self-stretch h-44 relative overflow-hidden cursor-pointer w-full hover:ring-2 hover:ring-blue-400 group">
+                    <div className="self-stretch h-auto relative overflow-hidden cursor-pointer w-full group flex justify-center items-center">
                       <UniversalMedia
                         url={
                           item.image ||
                           item.iconUrl ||
                           "/images/placeholder/card-sm.jpg"
                         }
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
                         alt="video thumbnail"
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -668,11 +690,11 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               </div>
 
               {/* Right Large Image */}
-              <div className="w-full xl:w-[620px] h-auto lg:h-96 shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-2xl overflow-hidden shadow-sm">
+              <div className="w-full xl:w-[620px] h-auto shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-2xl overflow-hidden shadow-sm flex justify-center items-center">
                 <UniversalMedia
                   url={data.imageUrl || "/images/placeholder/section-image.jpg"}
                   alt="banner"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();

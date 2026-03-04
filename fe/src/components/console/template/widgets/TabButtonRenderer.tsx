@@ -5,12 +5,13 @@ import {
   getElementStyle,
   SafeHtml,
   WidgetRendererProps,
+  formatUnit,
 } from "./WidgetUtils";
 
 export const TAB_BUTTON_DEFAULTS = {
   layout: "1",
   subTitle: "( 서브타이틀 )",
-  subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#3b82f6" },
+  subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
   title: "타이틀명 입력",
   titleStyle: { fontSize: "36px", fontWeight: "700", color: "#111827" },
   desc: "이민 프로그램명 입력",
@@ -98,8 +99,8 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-blue-500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport)}
+                  className="text-center justify-start text-[#285DE1] text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -137,13 +138,24 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* Tab Container */}
-            <div className="self-stretch inline-flex justify-start items-start flex-wrap content-start w-full">
+            <div
+              className="self-stretch inline-flex justify-start items-start flex-wrap content-start w-full"
+              style={{
+                gap: w.style?.gap
+                  ? formatUnit(w.style.gap)
+                  : data.itemGap
+                    ? formatUnit(data.itemGap)
+                    : undefined,
+              }}
+            >
               {(data.items || []).map((item: any, i: number) => {
                 if (!item) return null;
-                const isActive =
-                  item.active ||
-                  (i === 0 &&
-                    !(data.items || []).some((x: any) => x && x.active));
+                const isEditing = !!onElementSelect;
+                const isActive = isEditing
+                  ? !!item.active
+                  : item.active ||
+                    (i === 0 &&
+                      !(data.items || []).some((x: any) => x && x.active));
 
                 const itemStyle = item.style
                   ? getElementStyle(item.style, viewport)
@@ -152,19 +164,33 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   ? getElementStyle(item.titleStyle, viewport)
                   : {};
 
+                // Extract background props from titleStyle → apply to container, not text
+                const {
+                  backgroundColor: titleBg,
+                  backgroundImage: titleBgImg,
+                  ...textOnlyStyle
+                } = titleStyle;
+
+                // Container background: item.style takes priority, titleStyle as fallback
+                const containerBg = item.style?.backgroundColor || titleBg;
+                const containerBgImg = item.style?.backgroundImage
+                  ? `url(${item.style.backgroundImage})`
+                  : titleBgImg;
+                const hasCustomBg = !!(containerBg || containerBgImg);
+
                 if (isActive) {
                   return (
                     <div
                       key={item.id}
-                      className={`flex-1 min-w-[288px] px-4 py-3 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 rounded-sm cursor-pointer transition-all ${
-                        !item.style?.backgroundColor &&
-                        !item.style?.backgroundImage
+                      className={`flex-1 min-w-[288px] px-4 py-3 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
+                        !hasCustomBg
                           ? "bg-gradient-to-r from-blue-400 to-blue-600"
                           : ""
                       }`}
                       style={{
                         ...itemStyle,
-                        backgroundColor: item.style?.backgroundColor,
+                        backgroundColor: containerBg,
+                        backgroundImage: containerBgImg,
                       }}
                     >
                       <SafeHtml
@@ -172,7 +198,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                         className={`flex-1 text-center justify-start text-lg xl:text-xl font-medium leading-8 break-keep ${
                           !item.titleStyle?.color ? "text-white" : ""
                         } hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded`}
-                        style={titleStyle}
+                        style={textOnlyStyle}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("itemTitle", item.id);
@@ -185,15 +211,13 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                 return (
                   <div
                     key={item.id}
-                    className={`flex-1 min-w-[288px] px-4 py-3 border-t border-b border-시안-mode-gray20 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 rounded-sm cursor-pointer transition-all ${
-                      !item.style?.backgroundColor &&
-                      !item.style?.backgroundImage
-                        ? "bg-white"
-                        : ""
+                    className={`flex-1 min-w-[288px] px-4 py-3 border-t border-b border-시안-mode-gray20 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
+                      !hasCustomBg ? "bg-white" : ""
                     }`}
                     style={{
                       ...itemStyle,
-                      backgroundColor: item.style?.backgroundColor,
+                      backgroundColor: containerBg,
+                      backgroundImage: containerBgImg,
                     }}
                   >
                     <SafeHtml
@@ -201,7 +225,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                       className={`flex-1 text-center justify-start text-lg xl:text-xl font-medium leading-8 break-keep ${
                         !item.titleStyle?.color ? "text-시안-mode-gray50" : ""
                       } hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded`}
-                      style={titleStyle}
+                      style={textOnlyStyle}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("itemTitle", item.id);

@@ -6,15 +6,18 @@ import {
   SafeHtml,
   UniversalMedia,
   WidgetRendererProps,
+  formatUnit,
+  getImageUrl,
 } from "./WidgetUtils";
 
 export const TITLE_BANNER_DEFAULTS = {
-  subTitle: "Program Name.",
-  subTitleStyle: { color: "#0ea5e9", fontSize: "20px", fontWeight: "700" },
-  title: "타이틀명 입력",
+  subTitle: "버지니아 해안 리조트 건설 프로젝트",
+  subTitleStyle: { color: "#285DE1", fontSize: "20px", fontWeight: "700" }, // blue-600
+  title:
+    "2026년 <span style='color: #285DE1'>미국 투자이민,</span><br/>꼭 알아야 할 3가지 핵심 트렌드",
   titleStyle: { color: "#111111", fontSize: "48px", fontWeight: "700" },
-  desc: "서브타이틀 입력 영역",
-  descStyle: { color: "#6D7882", fontSize: "20px", fontWeight: "500" },
+  desc: "설명을 쓰는 곳입니다.",
+  descStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
   textContentTitle: "서브 타이틀 입력",
   textContentTitleStyle: {
     color: "#111111",
@@ -23,20 +26,23 @@ export const TITLE_BANNER_DEFAULTS = {
   },
   textContent:
     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
-  textContentStyle: { color: "#6D7882", fontSize: "20px", fontWeight: "500" },
-  image: "/images/placeholder/hero-image.jpg",
+  textContentStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
+  feature1Image: "/images/template/icon_program.png",
   feature1Title: "프로그램 특징",
-  feature1TitleStyle: { color: "#0ea5e9", fontSize: "24px", fontWeight: "700" },
+  feature1TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature1Desc: "프로그램 특징 내용 입력",
-  feature1DescStyle: { color: "#6D7882", fontSize: "18px", fontWeight: "400" },
+  feature1DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+  feature2Image: "/images/template/icon_program.png",
   feature2Title: "프로그램 특징",
-  feature2TitleStyle: { color: "#0ea5e9", fontSize: "24px", fontWeight: "700" },
+  feature2TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature2Desc: "프로그램 특징 내용 입력",
-  feature2DescStyle: { color: "#6D7882", fontSize: "18px", fontWeight: "400" },
+  feature2DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+  feature3Image: "/images/template/icon_program.png",
   feature3Title: "프로그램 특징",
-  feature3TitleStyle: { color: "#0ea5e9", fontSize: "24px", fontWeight: "700" },
+  feature3TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature3Desc: "프로그램 특징 내용 입력",
-  feature3DescStyle: { color: "#6D7882", fontSize: "18px", fontWeight: "400" },
+  feature3DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+  backgroundImage: "/images/template/titlebanner_banckground.png",
   layout: "1",
 };
 
@@ -50,65 +56,63 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   const data = w.data;
   const layout = String(data.layout || "1");
 
-  /* ─────────────────────────────────────────── 레이아웃 1 ─── */
+  /* ─────────────────────────────────────────── 레이아웃 1 (구조 원복) ─── */
   if (layout === "1") {
     return (
       <section
-        style={style}
+        style={{
+          ...style,
+          backgroundImage: `url(${data.backgroundImage || "/images/template/titlebanner_banckground.png"})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
         className="w-full relative overflow-hidden transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
         onDoubleClick={(e) => {
           e.stopPropagation();
-          onElementSelect?.("style");
+          onElementSelect?.("backgroundImage");
         }}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="w-full pl-72 py-14 relative inline-flex justify-start items-center gap-20">
-            <div className="w-[818px] h-[800px] left-[694px] top-[-52px] absolute opacity-5 bg-zinc-800"></div>
+          <div className="self-stretch pl-72 py-14 inline-flex justify-start items-center gap-20">
             <div className="flex-1 h-[575px] inline-flex flex-col justify-between items-start">
               {/* 상단 텍스트 그룹 */}
               <div className="flex flex-col justify-start items-start gap-3">
-                {/* 서브타이틀 */}
+                {/* 버지니아 해안 리조트 건설 프로젝트 */}
                 <SafeHtml
-                  className="justify-start font-['Pretendard'] leading-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                  style={{
-                    color: "#0ea5e9",
-                    fontSize: "20px",
-                    fontWeight: "700",
-                    ...getElementStyle(data.subTitleStyle, viewport),
-                  }}
+                  className="justify-start text-blue-600 text-xl font-bold font-['Pretendard'] leading-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  style={{ ...getElementStyle(data.subTitleStyle, viewport), color: "#285DE1" }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
                   }}
                   html={data.subTitle || "버지니아 해안 리조트 건설 프로젝트"}
                 />
-                {/* 타이틀 */}
-                <SafeHtml
-                  className="justify-start font-['Pretendard'] leading-[72px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                  style={{
-                    color: "#111111",
-                    fontSize: "48px",
-                    fontWeight: "700",
-                    ...getElementStyle(data.titleStyle, viewport),
-                  }}
+                {/* 타이틀 영역 */}
+                <div
+                  className="justify-start hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
                   }}
-                  html={
-                    data.title ||
-                    '<span>2026년 </span><span style="color:#0ea5e9">미국 투자이민,<br/></span><span>꼭 알아야 할 3가지 핵심 트렌드</span>'
-                  }
-                />
-                {/* 설명 */}
+                >
+                  <SafeHtml
+                    className="font-['Pretendard'] leading-[72px]"
+                    style={{
+                      fontSize: "48px",
+                      fontWeight: "700",
+                      ...getElementStyle(data.titleStyle, viewport),
+                    }}
+                    html={
+                      data.title ||
+                      `<span class="text-gray-950 font-bold">2026년 </span><span class="text-[#285DE1] font-bold">미국 투자이민,<br/></span><span class="text-gray-950 font-bold">꼭 알아야 할 3가지 핵심 트렌드</span>`
+                    }
+                  />
+                </div>
+                {/* 설명을 쓰는 곳입니다. */}
                 <SafeHtml
-                  className="justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                  style={{
-                    color: "#6D7882",
-                    fontSize: "20px",
-                    fontWeight: "500",
-                    ...getElementStyle(data.descStyle, viewport),
-                  }}
+                  className="justify-start text-gray-500 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  style={getElementStyle(data.descStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -117,17 +121,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 />
               </div>
 
-              {/* 하단 콘텐츠 그룹 */}
+              {/* 하단 특징 및 본문 그룹 */}
               <div className="self-stretch flex flex-col justify-start items-start gap-5">
-                {/* 텍스트 콘텐츠 */}
                 <SafeHtml
-                  className="self-stretch justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                  style={{
-                    color: "#6D7882",
-                    fontSize: "20px",
-                    fontWeight: "400",
-                    ...getElementStyle(data.textContentStyle, viewport),
-                  }}
+                  className="self-stretch justify-start text-gray-500 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  style={getElementStyle(data.textContentStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("textContent");
@@ -138,212 +136,109 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }
                 />
 
-                {/* 피처 3개 */}
                 <div className="self-stretch inline-flex justify-center items-start">
-                  {/* Feature 1 */}
-                  <div className="flex-1 max-w-96 border-r border-gray-10 inline-flex flex-col justify-start items-center gap-4">
-                    <div className="w-24 h-24 bg-gray-5 rounded-[50px] overflow-hidden">
-                      <UniversalMedia
-                        className="w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                        url={data.feature1Image || "/images/placeholder/icon-feature.jpg"}
-                        style={getElementStyle(
-                          (data as any).feature1ImageStyle,
-                          viewport,
-                        )}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature1Image");
-                        }}
-                      />
-                    </div>
-                    <div className="flex flex-col justify-start items-center gap-2">
-                      <SafeHtml
-                        className="text-center justify-start font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          color: "#0ea5e9",
-                          fontSize: "24px",
-                          fontWeight: "700",
-                          ...getElementStyle(
-                            (data as any).feature1TitleStyle,
-                            viewport,
-                          ),
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature1Title");
-                        }}
-                        html={data.feature1Title || "프로그램 특징"}
-                      />
-                      <SafeHtml
-                        className="text-center justify-start font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          color: "#6D7882",
-                          fontSize: "18px",
-                          fontWeight: "400",
-                          ...getElementStyle(
-                            (data as any).feature1DescStyle,
-                            viewport,
-                          ),
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature1Desc");
-                        }}
-                        html={data.feature1Desc || "프로그램 특징 내용 입력"}
-                      />
-                    </div>
-                  </div>
+                  {[1, 2, 3].map((idx) => {
+                    const fImg = (data as any)[
+                      `feature${idx}Image` ||
+                        "/images/template/icon_program.png"
+                    ];
+                    const fTitle = (data as any)[
+                      `feature${idx}Title` || "프로그램 특징"
+                    ];
+                    const fDesc = (data as any)[
+                      `feature${idx}Desc` || "프로그램 특징 내용 입력"
+                    ];
+                    const fTitleStyle = (data as any)[
+                      `feature${idx}TitleStyle`
+                    ];
+                    const fDescStyle = (data as any)[`feature${idx}DescStyle`];
+                    const isLast = idx === 3;
 
-                  {/* Feature 2 */}
-                  <div className="flex-1 max-w-96 border-r border-gray-10 inline-flex flex-col justify-start items-center gap-4">
-                    <div className="w-24 h-24 bg-gray-5 rounded-[50px] overflow-hidden">
-                      <UniversalMedia
-                        className="w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                        url={data.feature2Image || "/images/placeholder/icon-feature.jpg"}
-                        style={getElementStyle(
-                          (data as any).feature2ImageStyle,
-                          viewport,
-                        )}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature2Image");
-                        }}
-                      />
-                    </div>
-                    <div className="flex flex-col justify-start items-center gap-2">
-                      <SafeHtml
-                        className="text-center justify-start font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          color: "#0ea5e9",
-                          fontSize: "24px",
-                          fontWeight: "700",
-                          ...getElementStyle(
-                            (data as any).feature2TitleStyle,
-                            viewport,
-                          ),
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature2Title");
-                        }}
-                        html={data.feature2Title || "프로그램 특징"}
-                      />
-                      <SafeHtml
-                        className="text-center justify-start font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          color: "#6D7882",
-                          fontSize: "18px",
-                          fontWeight: "400",
-                          ...getElementStyle(
-                            (data as any).feature2DescStyle,
-                            viewport,
-                          ),
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature2Desc");
-                        }}
-                        html={data.feature2Desc || "프로그램 특징 내용 입력"}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Feature 3 */}
-                  <div className="flex-1 max-w-96 inline-flex flex-col justify-start items-center gap-4">
-                    <div className="w-24 h-24 bg-gray-5 rounded-[50px] overflow-hidden">
-                      <UniversalMedia
-                        className="w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                        url={data.feature3Image || "/images/placeholder/icon-feature.jpg"}
-                        style={getElementStyle(
-                          (data as any).feature3ImageStyle,
-                          viewport,
-                        )}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature3Image");
-                        }}
-                      />
-                    </div>
-                    <div className="flex flex-col justify-start items-center gap-2">
-                      <SafeHtml
-                        className="text-center justify-start font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          color: "#0ea5e9",
-                          fontSize: "24px",
-                          fontWeight: "700",
-                          ...getElementStyle(
-                            (data as any).feature3TitleStyle,
-                            viewport,
-                          ),
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature3Title");
-                        }}
-                        html={data.feature3Title || "프로그램 특징"}
-                      />
-                      <SafeHtml
-                        className="text-center justify-start font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          color: "#6D7882",
-                          fontSize: "18px",
-                          fontWeight: "400",
-                          ...getElementStyle(
-                            (data as any).feature3DescStyle,
-                            viewport,
-                          ),
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("feature3Desc");
-                        }}
-                        html={data.feature3Desc || "프로그램 특징 내용 입력"}
-                      />
-                    </div>
-                  </div>
+                    return (
+                      <div
+                        key={idx}
+                        className={`flex-1 max-w-96 ${!isLast ? "border-r border-gray-200" : ""} inline-flex flex-col justify-start items-center gap-4`}
+                      >
+                        <div className="w-24 h-24 relative bg-gray-50 rounded-[50px] overflow-hidden flex items-center justify-center">
+                          <UniversalMedia
+                            className="w-14 h-14 object-contain"
+                            url={fImg || "/images/template/icon_program.png"}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`feature${idx}Image`);
+                            }}
+                          />
+                        </div>
+                        <div className="flex flex-col justify-start items-center gap-2">
+                          <SafeHtml
+                            className="text-center justify-start text-[#0369a1] text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                            style={getElementStyle(fTitleStyle, viewport)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`feature${idx}Title`);
+                            }}
+                            html={fTitle || "프로그램 특징"}
+                          />
+                          <SafeHtml
+                            className="text-center justify-start text-gray-500 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                            style={getElementStyle(fDescStyle, viewport)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`feature${idx}Desc`);
+                            }}
+                            html={fDesc || "프로그램 특징 내용 입력"}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
-
-            {/* 이미지 */}
-            <div className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all rounded-tl-2xl rounded-bl-2xl overflow-hidden">
-              <UniversalMedia
-                className="w-[820px] h-[575px] object-cover"
-                url={data.image || "/images/placeholder/hero-image.jpg"}
-                alt="banner"
-                style={getElementStyle(data.imageStyle, viewport)}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("image");
-                }}
-              />
-            </div>
+            <UniversalMedia
+              className="w-[820px] h-[575px] rounded-tl-2xl rounded-bl-2xl object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+              url={getImageUrl(
+                data.imageStyle,
+                viewport,
+                data.image || "/images/placeholder/hero-img.jpg",
+              )}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("image");
+              }}
+            />
           </div>
         </div>
       </section>
     );
   }
 
-  /* ─────────────────────────────────────────── 레이아웃 2 ─── */
+  /* ─────────────────────────────────────────── 레이아웃 2 (기존 유지) ─── */
   if (layout === "2") {
     return (
       <section
-        style={style}
+        style={{
+          ...style,
+          backgroundImage: data.backgroundImage
+            ? `url(${data.backgroundImage})`
+            : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
         className="w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
         onDoubleClick={(e) => {
           e.stopPropagation();
-          onElementSelect?.("style");
+          onElementSelect?.("backgroundImage");
         }}
       >
-        <div className="w-full max-w-[1920px] mx-auto px-72 py-14 flex justify-between items-start">
-          {/* 좌측 텍스트 */}
-          <div className="inline-flex flex-col justify-start items-start gap-3">
-            {/* Program Name */}
+        <div className="w-full max-w-[1920px] mx-auto px-72 py-14 flex flex-col xl:flex-row justify-between items-start gap-10">
+          <div className="inline-flex flex-col justify-start items-start gap-3 flex-1">
             <SafeHtml
               html={data.subTitle || "Program Name."}
-              className="justify-start font-['Pretendard'] leading-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+              className="justify-start font-['Pretendard'] leading-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
               style={{
-                color: "#0ea5e9",
+                color: "#285DE1",
                 fontSize: "20px",
                 fontWeight: "500",
                 ...getElementStyle(data.subTitleStyle, viewport),
@@ -353,10 +248,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 onElementSelect?.("subTitle");
               }}
             />
-            {/* 타이틀 */}
             <SafeHtml
               html={data.title || "타이틀명 입력"}
-              className="justify-start font-['Pretendard'] leading-[72px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+              className="justify-start font-['Pretendard'] leading-[72px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
               style={{
                 color: "#111111",
                 fontSize: "48px",
@@ -368,10 +262,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 onElementSelect?.("title");
               }}
             />
-            {/* 서브타이틀 */}
             <SafeHtml
               html={data.desc || "서브타이틀 입력 영역"}
-              className="self-stretch justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+              className="self-stretch justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
               style={{
                 color: "#6D7882",
                 fontSize: "20px",
@@ -385,11 +278,14 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
             />
           </div>
 
-          {/* 우측 이미지 + 텍스트 */}
-          <div className="w-[800px] flex justify-center items-end gap-10">
+          <div className="flex-1 flex flex-col xl:flex-row justify-center items-end gap-10">
             <UniversalMedia
-              url={data.image || "/images/placeholder/hero-portrait.jpg"}
-              className="w-96 h-96 rounded-tl-[60px] object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+              url={getImageUrl(
+                data.imageStyle,
+                viewport,
+                data.image || "/images/placeholder/hero-img.jpg",
+              )}
+              className="w-full xl:w-96 h-auto object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer rounded-2xl"
               style={getElementStyle(data.imageStyle, viewport)}
               onDoubleClick={(e) => {
                 e.stopPropagation();
@@ -397,10 +293,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               }}
             />
             <div className="flex-1 inline-flex flex-col justify-center items-start gap-2">
-              {/* 서브 타이틀 */}
               <SafeHtml
                 html={data.textContentTitle || "서브 타이틀 입력"}
-                className="self-stretch justify-start font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                className="self-stretch justify-start font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                 style={{
                   color: "#111111",
                   fontSize: "24px",
@@ -412,14 +307,13 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   onElementSelect?.("textContentTitle");
                 }}
               />
-              <div className="w-14 h-px bg-gray-10"></div>
-              {/* 본문 텍스트 */}
+              <div className="w-14 h-px bg-gray-300"></div>
               <SafeHtml
                 html={
                   data.textContent ||
                   "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
                 }
-                className="self-stretch justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                className="self-stretch justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                 style={{
                   color: "#6D7882",
                   fontSize: "20px",
@@ -438,30 +332,37 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
     );
   }
 
-  /* ─────────────────────────────────────────── 레이아웃 3 ─── */
+  /* ─────────────────────────────────────────── 레이아웃 3 (기존 유지) ─── */
   if (layout === "3") {
     return (
       <section
-        style={style}
+        style={{
+          ...style,
+          backgroundImage: data.backgroundImage
+            ? `url(${data.backgroundImage})`
+            : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
         className="w-full relative overflow-hidden transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
         onDoubleClick={(e) => {
           e.stopPropagation();
-          onElementSelect?.("style");
+          onElementSelect?.("backgroundImage");
         }}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div className="w-full px-72 pt-28 pb-14 flex flex-col justify-center items-center gap-10">
             <div className="flex justify-center items-center gap-14 w-full">
-              <div className="w-12 h-10 bg-gradient-to-r from-시안-mode-Primary30 to-시안-mode-Primary70"></div>
+              <div className="w-12 h-10 bg-blue-500"></div>
               <div className="flex flex-col justify-center items-center gap-2">
-                {/* 서브타이틀 */}
                 <SafeHtml
-                  className="text-center justify-start font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                  className="text-center justify-start font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                   style={{
                     color: "#111111",
                     fontSize: "24px",
                     fontWeight: "500",
-                    ...getElementStyle(data.subTitleStyle, viewport),
+                    ...getElementStyle((data as any).subTitleStyle, viewport),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -469,58 +370,57 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }}
                   html={
                     data.subTitle ||
-                    "1명당 유학 비용 30억원의 시대, 가장 합리적인 선택!"
+                    "더 나은 미래를 건설하는 가장 효율적인 파트너"
                   }
                 />
-                {/* 타이틀 */}
-                <SafeHtml
-                  className="text-center justify-start font-['Pretendard'] leading-[72px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                  style={{
-                    color: "#111111",
-                    fontSize: "48px",
-                    fontWeight: "700",
-                    ...getElementStyle(data.titleStyle, viewport),
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("title");
-                  }}
-                  html={data.title || "학부모 영주권 프로그램"}
-                />
-                {/* 설명 */}
-                <SafeHtml
-                  className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                  style={{
-                    color: "#6D7882",
-                    fontSize: "20px",
-                    fontWeight: "500",
-                    ...getElementStyle(data.descStyle, viewport),
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("desc");
-                  }}
-                  html={
-                    data.desc ||
-                    "까다로운 자금 출처 없이 국내에서 <br/>온가족이 미국 영주권을 취득할 수 있는 프로그램"
-                  }
-                />
+                <div className="w-14 h-px bg-gray-300"></div>
               </div>
-              <div className="w-12 h-10 origin-top-left rotate-180 bg-gradient-to-r from-시안-mode-Primary30 to-시안-mode-Primary70"></div>
             </div>
-            {/* 이미지 */}
-            <div className="w-full h-96 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all rounded overflow-hidden">
-              <UniversalMedia
-                className="w-full h-full object-cover"
-                style={getElementStyle(data.imageStyle, viewport)}
-                url={data.image || "/images/placeholder/wide-image.jpg"}
-                alt="banner"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("image");
-                }}
-              />
-            </div>
+            <SafeHtml
+              className="text-center justify-start font-['Pretendard'] leading-[72px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+              style={{
+                color: "#111111",
+                fontSize: "48px",
+                fontWeight: "700",
+                ...getElementStyle(data.titleStyle, viewport),
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("title");
+              }}
+              html={data.title || "타이틀명 입력"}
+            />
+            <UniversalMedia
+              className="w-[820px] h-auto object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+              url={getImageUrl(
+                data.imageStyle,
+                viewport,
+                data.image || "/images/placeholder/hero-img.jpg",
+              )}
+              alt="banner"
+              style={getElementStyle(data.imageStyle, viewport)}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("image");
+              }}
+            />
+            <SafeHtml
+              className="max-w-[720px] text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+              style={{
+                color: "#6D7882",
+                fontSize: "20px",
+                fontWeight: "500",
+                ...getElementStyle(data.descStyle, viewport),
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("desc");
+              }}
+              html={
+                data.desc ||
+                "우리는 혁신적인 기술력과 정직한 시공을 바탕으로 최적의 건축 솔루션을 제공합니다."
+              }
+            />
           </div>
         </div>
       </section>
@@ -530,12 +430,14 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   return (
     <section
       style={style}
-      className="w-full py-20 bg-시안-mode-gray5 flex items-center justify-center"
+      className="w-full relative py-20 bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        onElementSelect?.("backgroundImage");
+      }}
     >
       <div className="text-center font-bold text-gray-400">
-        <p className="text-xl text-시안-mode-gray50">
-          타이틀 배너 디자인 대기중
-        </p>
+        <p className="text-xl">타이틀 배너 디자인 대기중</p>
         <p className="text-sm mt-2 font-mono bg-white px-3 py-1 inline-block shadow-sm">
           레이아웃 {layout}
         </p>

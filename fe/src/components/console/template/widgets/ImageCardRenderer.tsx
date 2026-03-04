@@ -73,7 +73,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                color: "#285DE1",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -101,7 +104,24 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
 
           {/* Grid Area */}
           <div className="self-stretch flex flex-col justify-start items-start gap-6 w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-6 w-full">
+            <div
+              className={`grid ${
+                w.data.itemsPerRow === "1"
+                  ? "grid-cols-1"
+                  : w.data.itemsPerRow === "3"
+                    ? "grid-cols-1 xl:grid-cols-3"
+                    : w.data.itemsPerRow === "4"
+                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+                      : "grid-cols-1 xl:grid-cols-2"
+              } w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-x-10 gap-y-6"}`}
+              style={{
+                gap: w.style?.gap
+                  ? formatUnit(w.style.gap)
+                  : w.data.rowGap
+                    ? formatUnit(w.data.rowGap)
+                    : undefined,
+              }}
+            >
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
                   key={item.id || idx}
@@ -153,7 +173,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                color: "#285DE1",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -181,7 +204,24 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
 
           {/* Grid Area */}
           <div className="self-stretch flex flex-col justify-start items-start gap-6 w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 w-full">
+            <div
+              className={`grid ${
+                w.data.itemsPerRow === "1"
+                  ? "grid-cols-1"
+                  : w.data.itemsPerRow === "3"
+                    ? "grid-cols-1 xl:grid-cols-3"
+                    : w.data.itemsPerRow === "4"
+                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+                      : "grid-cols-1 lg:grid-cols-2"
+              } w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-10"}`}
+              style={{
+                gap: w.style?.gap
+                  ? formatUnit(w.style.gap)
+                  : w.data.rowGap
+                    ? formatUnit(w.data.rowGap)
+                    : undefined,
+              }}
+            >
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
                   key={item.id || idx}
@@ -235,7 +275,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                color: "#285DE1",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -263,7 +306,24 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
 
           {/* Grid Area */}
           <div className="self-stretch flex flex-col justify-start items-start gap-5 w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
+            <div
+              className={`grid ${
+                w.data.itemsPerRow === "1"
+                  ? "grid-cols-1"
+                  : w.data.itemsPerRow === "3"
+                    ? "grid-cols-1 xl:grid-cols-3"
+                    : w.data.itemsPerRow === "4"
+                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+                      : "grid-cols-1 lg:grid-cols-2"
+              } w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-5"}`}
+              style={{
+                gap: w.style?.gap
+                  ? formatUnit(w.style.gap)
+                  : w.data.rowGap
+                    ? formatUnit(w.data.rowGap)
+                    : undefined,
+              }}
+            >
               {(w.data.items || []).map((item: any, idx: number) => {
                 // desc 필드를 \n이나 <br/> 기준으로 나눠서 특징 리스트 생성 (기본 3개)
                 const descLines = (item.desc || "프로그램 특징 내용 입력")
@@ -326,7 +386,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         <SafeHtml
                           html={item.subTitle || "( 서브타이틀 )"}
                           className="text-center justify-start text-시안-mode-Primary50 text-lg font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                          style={getElementStyle(item.subTitleStyle, viewport)}
+                          style={{
+                            ...getElementStyle(item.subTitleStyle, viewport),
+                            color: "#285DE1",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("itemSubTitle", item.id);
@@ -426,7 +489,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                color: "#285DE1",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -453,7 +519,24 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           {/* Grid Area */}
-          <div className="self-stretch inline-flex justify-start items-start gap-5 flex-wrap content-start w-full">
+          <div
+            className={`self-stretch grid ${
+              w.data.itemsPerRow === "1"
+                ? "grid-cols-1"
+                : w.data.itemsPerRow === "3"
+                  ? "grid-cols-1 xl:grid-cols-3"
+                  : w.data.itemsPerRow === "4"
+                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+                    : "grid-cols-1 lg:grid-cols-2"
+            } justify-start items-start content-start w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-5"}`}
+            style={{
+              gap: w.style?.gap
+                ? formatUnit(w.style.gap)
+                : w.data.rowGap
+                  ? formatUnit(w.data.rowGap)
+                  : undefined,
+            }}
+          >
             {(w.data.items || []).map((item: any, idx: number) => {
               const descLines = (item.desc || "프로그램 특징 내용 입력")
                 .split(/<br\s*\/?>|\n/gi)
@@ -515,7 +598,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       <SafeHtml
                         html={item.subTitle || "( 서브타이틀 )"}
                         className="text-center justify-start text-시안-mode-Primary50 text-lg font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                        style={getElementStyle(item.subTitleStyle, viewport)}
+                        style={{
+                          ...getElementStyle(item.subTitleStyle, viewport),
+                          color: "#285DE1",
+                        }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("itemSubTitle", item.id);
@@ -647,7 +733,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         <SafeHtml
                           html={item.subTitle || "( 서브타이틀 )"}
                           className="text-center justify-start text-시안-mode-Primary50 text-lg font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                          style={getElementStyle(item.subTitleStyle, viewport)}
+                          style={{
+                            ...getElementStyle(item.subTitleStyle, viewport),
+                            color: "#285DE1",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("itemSubTitle", item.id);
@@ -739,7 +828,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                color: "#285DE1",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");

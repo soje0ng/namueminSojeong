@@ -24,9 +24,13 @@ import { reorderItems, updateItemInArray } from "@/utils/template/itemUtils";
 import { usePopupStore } from "@/store/console/usePopupStore";
 import TextStructure6Manager from "./TextStructure6Manager";
 import TextStructure7Manager from "./TextStructure7Manager";
+import TextStructure8Manager from "./TextStructure8Manager";
+import TextStructure11Manager from "./TextStructure11Manager";
 import {
   TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_7_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
 
 export interface PropertyPanelProps {
@@ -1056,6 +1060,50 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     </div>
                   ) : listArrayName ? (
                     <>
+                      {/* 카드 전체 배열 설정 (구조관리 섹션 상단) */}
+                      {widget.type === "imageCard" &&
+                        ["1", "2", "3", "4", "5"].includes(
+                          (widget.data as any).layout || "1",
+                        ) && (
+                          <div className="flex flex-col gap-1.5 p-3 bg-blue-50/50 border border-blue-100 rounded-xl mb-4 shadow-sm">
+                            <label className="text-[10px] font-black text-blue-600 uppercase tracking-wider flex items-center gap-1">
+                              <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
+                              전체 배열 설정 (한 줄에 보여줄 개수)
+                            </label>
+                            <div className="grid grid-cols-4 gap-1">
+                              {(["4", "5"].includes(
+                                (widget.data as any).layout || "1",
+                              )
+                                ? ["1", "2"]
+                                : ["1", "2", "3", "4"]
+                              ).map((num) => (
+                                <button
+                                  key={num}
+                                  onClick={() =>
+                                    updateWidgetData(widget.id, {
+                                      itemsPerRow: num,
+                                    })
+                                  }
+                                  className={`py-2 rounded-lg text-xs font-bold transition-all border ${
+                                    ((widget.data as any).itemsPerRow ||
+                                      ((widget.data as any).layout === "1"
+                                        ? "3"
+                                        : (widget.data as any).layout === "4"
+                                          ? "2"
+                                          : (widget.data as any).layout === "5"
+                                            ? "2"
+                                            : "4")) === num
+                                      ? "bg-blue-500 text-white border-blue-600 shadow-md transform scale-105"
+                                      : "bg-white text-gray-500 border-gray-200 hover:border-blue-300 hover:text-blue-500"
+                                  }`}
+                                >
+                                  {num}열
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                       {widget.type === "video" ? (
                         <div className="flex gap-2">
                           <button
@@ -1223,6 +1271,47 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     </select>
                                   )}
 
+                                  {widget.type === "tabButton" && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const allItems =
+                                          (widget.data as any).items || [];
+                                        const newActive = !item.active;
+                                        updateWidgetData(widget.id, {
+                                          items: allItems.map((it: any) => {
+                                            const willBeActive =
+                                              it.id === item.id
+                                                ? newActive
+                                                : false;
+                                            return {
+                                              ...it,
+                                              active: willBeActive,
+                                              titleStyle: {
+                                                ...(it.titleStyle || {}),
+                                                color: willBeActive
+                                                  ? "#ffffff"
+                                                  : "#6b7280",
+                                              },
+                                            };
+                                          }),
+                                        });
+                                      }}
+                                      className={`shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded-full transition-all ${
+                                        item.active
+                                          ? "bg-blue-500 text-white"
+                                          : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                                      }`}
+                                      title={
+                                        item.active
+                                          ? "활성 (ON)"
+                                          : "비활성 (OFF)"
+                                      }
+                                    >
+                                      {item.active ? "ON" : "OFF"}
+                                    </button>
+                                  )}
+
                                   <div className="flex-1 flex items-center gap-1 min-w-0">
                                     <input
                                       className="flex-1 min-w-0 text-[11px] font-bold text-gray-700 bg-transparent border-none outline-none focus:ring-0 p-0.5"
@@ -1385,6 +1474,32 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                             item.image !== undefined
                                               ? "image"
                                               : "url",
+                                            e.target.value,
+                                          ),
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                )}
+
+                                {/* TabButton Link URL */}
+                                {widget.type === "tabButton" && (
+                                  <div className="flex items-center gap-1 px-1">
+                                    <span className="text-[8px] font-bold text-gray-400 shrink-0">
+                                      URL
+                                    </span>
+                                    <input
+                                      className="w-full text-[9px] text-gray-400 bg-gray-50 border-none outline-none focus:ring-0 px-1.5 py-0.5 rounded"
+                                      placeholder="Link URL..."
+                                      value={item.link || ""}
+                                      onChange={(e) =>
+                                        updateWidgetData(widget.id, {
+                                          [listArrayName!]: updateItemInArray(
+                                            (widget.data as any)[
+                                              listArrayName!
+                                            ],
+                                            item.id,
+                                            "link",
                                             e.target.value,
                                           ),
                                         })
@@ -1602,6 +1717,199 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     </div>
                                   </div>
                                 )}
+
+                                {/* 배지 상세 스타일 편집 (더블클릭 시 노출) */}
+                                {widget.type === "imageCard" &&
+                                  selectedElementKey?.startsWith("itemBadge") &&
+                                  isSelected && (
+                                    <div className="flex flex-col gap-2 px-1 mt-2 p-3 bg-blue-50/50 rounded-xl border border-blue-200/50 shadow-sm animate-in fade-in slide-in-from-top-1">
+                                      {(() => {
+                                        const badgeNum =
+                                          selectedElementKey.replace(
+                                            "itemBadge",
+                                            "",
+                                          );
+                                        const badgeStyle =
+                                          (item as any)[
+                                            `badgeStyle${badgeNum}`
+                                          ] || {};
+                                        return (
+                                          <div className="flex flex-col gap-2">
+                                            <div className="flex items-center justify-between mb-1">
+                                              <span className="text-[10px] font-black text-blue-700 uppercase tracking-tighter flex items-center gap-1">
+                                                <div className="w-1 h-3 bg-blue-500 rounded-full"></div>
+                                                Badge {badgeNum} 스타일
+                                              </span>
+                                              <div className="flex gap-2">
+                                                <div className="flex items-center gap-1 bg-white border border-gray-200 rounded px-1.5 py-1">
+                                                  <span className="text-[8px] text-gray-400 font-bold">
+                                                    BG
+                                                  </span>
+                                                  <input
+                                                    type="color"
+                                                    className="w-4 h-4 p-0 border-0 cursor-pointer bg-transparent"
+                                                    value={
+                                                      badgeStyle.backgroundColor ||
+                                                      (badgeNum === "1"
+                                                        ? "#285DE1"
+                                                        : "#F8FAFC")
+                                                    }
+                                                    onChange={(e) =>
+                                                      updateWidgetData(
+                                                        widget.id,
+                                                        {
+                                                          [listArrayName!]:
+                                                            updateItemInArray(
+                                                              items,
+                                                              item.id,
+                                                              `badgeStyle${badgeNum}`,
+                                                              {
+                                                                ...badgeStyle,
+                                                                backgroundColor:
+                                                                  e.target
+                                                                    .value,
+                                                              },
+                                                            ),
+                                                        },
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                                <div className="flex items-center gap-1 bg-white border border-gray-200 rounded px-1.5 py-1">
+                                                  <span className="text-[8px] text-gray-400 font-bold">
+                                                    TXT
+                                                  </span>
+                                                  <input
+                                                    type="color"
+                                                    className="w-4 h-4 p-0 border-0 cursor-pointer bg-transparent"
+                                                    value={
+                                                      badgeStyle.color ||
+                                                      (badgeNum === "1"
+                                                        ? "#FFFFFF"
+                                                        : "#131416")
+                                                    }
+                                                    onChange={(e) =>
+                                                      updateWidgetData(
+                                                        widget.id,
+                                                        {
+                                                          [listArrayName!]:
+                                                            updateItemInArray(
+                                                              items,
+                                                              item.id,
+                                                              `badgeStyle${badgeNum}`,
+                                                              {
+                                                                ...badgeStyle,
+                                                                color:
+                                                                  e.target
+                                                                    .value,
+                                                              },
+                                                            ),
+                                                        },
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-2">
+                                              <div className="flex flex-col gap-1">
+                                                <span className="text-[8px] font-bold text-gray-400 pl-1 uppercase">
+                                                  Size
+                                                </span>
+                                                <select
+                                                  className="text-[10px] bg-white border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-300"
+                                                  value={
+                                                    badgeStyle.fontSize ||
+                                                    "16px"
+                                                  }
+                                                  onChange={(e) =>
+                                                    updateWidgetData(
+                                                      widget.id,
+                                                      {
+                                                        [listArrayName!]:
+                                                          updateItemInArray(
+                                                            items,
+                                                            item.id,
+                                                            `badgeStyle${badgeNum}`,
+                                                            {
+                                                              ...badgeStyle,
+                                                              fontSize:
+                                                                e.target.value,
+                                                            },
+                                                          ),
+                                                      },
+                                                    )
+                                                  }
+                                                >
+                                                  {[
+                                                    "12px",
+                                                    "13px",
+                                                    "14px",
+                                                    "15px",
+                                                    "16px",
+                                                    "17px",
+                                                    "18px",
+                                                    "20px",
+                                                  ].map((sz) => (
+                                                    <option key={sz} value={sz}>
+                                                      {sz}
+                                                    </option>
+                                                  ))}
+                                                </select>
+                                              </div>
+                                              <div className="flex flex-col gap-1">
+                                                <span className="text-[8px] font-bold text-gray-400 pl-1 uppercase">
+                                                  Weight
+                                                </span>
+                                                <select
+                                                  className="text-[10px] bg-white border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-300"
+                                                  value={
+                                                    badgeStyle.fontWeight ||
+                                                    "600"
+                                                  }
+                                                  onChange={(e) =>
+                                                    updateWidgetData(
+                                                      widget.id,
+                                                      {
+                                                        [listArrayName!]:
+                                                          updateItemInArray(
+                                                            items,
+                                                            item.id,
+                                                            `badgeStyle${badgeNum}`,
+                                                            {
+                                                              ...badgeStyle,
+                                                              fontWeight:
+                                                                e.target.value,
+                                                            },
+                                                          ),
+                                                      },
+                                                    )
+                                                  }
+                                                >
+                                                  <option value="400">
+                                                    Regular
+                                                  </option>
+                                                  <option value="500">
+                                                    Medium
+                                                  </option>
+                                                  <option value="600">
+                                                    Semibold
+                                                  </option>
+                                                  <option value="700">
+                                                    Bold
+                                                  </option>
+                                                  <option value="800">
+                                                    ExtraBold
+                                                  </option>
+                                                </select>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })()}
+                                    </div>
+                                  )}
 
                                 {widget.type === "imageCard" && (
                                   <div className="flex flex-col gap-1 px-1 mt-1">
@@ -1829,6 +2137,30 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     sections={
                       (widget as any).data.sections7 ||
                       TEXT_STRUCTURE_7_DEFAULT_SECTIONS
+                    }
+                    updateWidgetData={updateWidgetData}
+                  />
+                )}
+
+                {/* 레이아웃 8 전용: 동적 섹션 구조 관리 */}
+                {((widget as any).data.layout || "1") === "8" && (
+                  <TextStructure8Manager
+                    widgetId={widget.id}
+                    sections={
+                      (widget as any).data.sections8 ||
+                      TEXT_STRUCTURE_8_DEFAULT_SECTIONS
+                    }
+                    updateWidgetData={updateWidgetData}
+                  />
+                )}
+
+                {/* 레이아웃 11 전용: 동적 섹션 구조 관리 */}
+                {((widget as any).data.layout || "1") === "11" && (
+                  <TextStructure11Manager
+                    widgetId={widget.id}
+                    sections={
+                      (widget as any).data.sections11 ||
+                      TEXT_STRUCTURE_11_DEFAULT_SECTIONS
                     }
                     updateWidgetData={updateWidgetData}
                   />

@@ -11,56 +11,48 @@ import {
 } from "lucide-react";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 
-export type Section6Type = "image" | "text" | "newsletter" | "stripBanner";
+export type Section11Type = "text" | "leftImage" | "features" | "banner";
 
-export interface Section6Item {
+export interface Section11FeatItem {
   id: string;
-  type: Section6Type;
-  // image
-  columns?: number;
-  images?: string[];
-  imageHeight?: string;
+  icon?: string;
+  number?: string;
+  title: string;
+  desc: string;
+}
+
+export interface Section11Item {
+  id: string;
+  type: Section11Type;
   // text
   subTitle?: string;
   content?: string;
-  // newsletter
-  newsletterSubTitle?: string;
-  leftContent?: string;
-  rightContent?: string;
-  // stripBanner
+  // leftImage
   imageUrl?: string;
+  imageHeight?: string;
+  // features
+  items?: Section11FeatItem[];
+  // banner
   bannerSubTitle?: string;
   bannerDesc?: string;
 }
 
-const SECTION_LABELS: Record<Section6Type, string> = {
-  image: "이미지 영역",
-  text: "기본 텍스트",
-  newsletter: "뉴스레터 텍스트",
-  stripBanner: "띠배너",
+const SECTION_LABELS: Record<Section11Type, string> = {
+  text: "텍스트 영역",
+  leftImage: "이미지 영역",
+  features: "프로그램 특징",
+  banner: "배너 영역",
 };
 
-const SECTION_COLORS: Record<Section6Type, string> = {
-  image: "bg-blue-100 text-blue-700",
+const SECTION_COLORS: Record<Section11Type, string> = {
   text: "bg-gray-100 text-gray-700",
-  newsletter: "bg-green-100 text-green-700",
-  stripBanner: "bg-purple-100 text-purple-700",
+  leftImage: "bg-blue-100 text-blue-700",
+  features: "bg-orange-100 text-orange-700",
+  banner: "bg-purple-100 text-purple-700",
 };
 
-function createDefaultSection(type: Section6Type): Section6Item {
-  const id = `s6-${type}-${Date.now()}`;
-  if (type === "image") {
-    return {
-      id,
-      type: "image",
-      columns: 2,
-      images: [
-        "/images/placeholder/section-image.jpg",
-        "/images/placeholder/section-image.jpg",
-      ],
-      imageHeight: "384",
-    };
-  }
+function createDefaultSection(type: Section11Type): Section11Item {
+  const id = `s11-${type}-${Date.now()}`;
   if (type === "text") {
     return {
       id,
@@ -69,32 +61,49 @@ function createDefaultSection(type: Section6Type): Section6Item {
       content: "내용을 입력하세요.",
     };
   }
-  if (type === "newsletter") {
+  if (type === "leftImage") {
     return {
       id,
-      type: "newsletter",
-      newsletterSubTitle: "서브 타이틀 입력",
-      leftContent: "왼쪽 내용을 입력하세요.",
-      rightContent: "오른쪽 내용을 입력하세요.",
+      type: "leftImage",
+      imageUrl: "/images/placeholder/section-image.jpg",
+      imageHeight: "358",
     };
   }
-  // stripBanner
+  if (type === "features") {
+    return {
+      id,
+      type: "features",
+      items: [
+        {
+          id: `f11-${Date.now()}-1`,
+          number: "01.",
+          title: "프로그램 특징",
+          desc: "설명 텍스트를 입력하세요.",
+        },
+        {
+          id: `f11-${Date.now()}-2`,
+          number: "02.",
+          title: "프로그램 특징",
+          desc: "설명 텍스트를 입력하세요.",
+        },
+      ],
+    };
+  }
   return {
     id,
-    type: "stripBanner",
-    imageUrl: "/images/placeholder/strip-banner.jpg",
-    bannerSubTitle: "서브 타이틀 입력",
-    bannerDesc: "내용을 입력하세요.",
+    type: "banner",
+    bannerSubTitle: "배너명 입력하는 부분",
+    bannerDesc: "배너 설명 텍스트를 입력하세요.",
   };
 }
 
 interface Props {
   widgetId: string;
-  sections: Section6Item[];
+  sections: Section11Item[];
   updateWidgetData: (id: string, data: any) => void;
 }
 
-const TextStructure6Manager: React.FC<Props> = ({
+const TextStructure11Manager: React.FC<Props> = ({
   widgetId,
   sections,
   updateWidgetData,
@@ -102,11 +111,11 @@ const TextStructure6Manager: React.FC<Props> = ({
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddPicker, setShowAddPicker] = useState(false);
 
-  const update = (newSections: Section6Item[]) => {
-    updateWidgetData(widgetId, { sections6: newSections });
+  const update = (newSections: Section11Item[]) => {
+    updateWidgetData(widgetId, { sections11: newSections });
   };
 
-  const updateSection = (id: string, patch: Partial<Section6Item>) => {
+  const updateSection = (id: string, patch: Partial<Section11Item>) => {
     update(sections.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   };
 
@@ -123,22 +132,43 @@ const TextStructure6Manager: React.FC<Props> = ({
     if (expandedId === id) setExpandedId(null);
   };
 
-  const addSection = (type: Section6Type) => {
+  const addSection = (type: Section11Type) => {
     update([...sections, createDefaultSection(type)]);
     setShowAddPicker(false);
   };
 
-  const updateImageCount = (section: Section6Item, cols: number) => {
-    const current = section.images || [];
-    const placeholder = "/images/placeholder/section-image.jpg";
-    let images: string[];
-    if (cols > current.length) {
-      images = [...current, ...Array(cols - current.length).fill(placeholder)];
-    } else {
-      images = current.slice(0, cols);
-    }
-    const heightMap: Record<number, string> = { 1: "480", 2: "384", 3: "280", 4: "240" };
-    updateSection(section.id, { columns: cols, images, imageHeight: heightMap[cols] || "280" });
+  const updateFeatItem = (
+    sectionId: string,
+    itemIdx: number,
+    field: string,
+    val: string,
+  ) => {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+    const items = [...(section.items || [])];
+    items[itemIdx] = { ...items[itemIdx], [field]: val };
+    updateSection(sectionId, { items });
+  };
+
+  const addFeatItem = (sectionId: string) => {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+    const items = [...(section.items || [])];
+    const num = String(items.length + 1).padStart(2, "0") + ".";
+    items.push({
+      id: `f11-${Date.now()}`,
+      number: num,
+      title: "프로그램 특징",
+      desc: "설명을 입력하세요.",
+    });
+    updateSection(sectionId, { items });
+  };
+
+  const deleteFeatItem = (sectionId: string, itemIdx: number) => {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+    const items = (section.items || []).filter((_, i) => i !== itemIdx);
+    updateSection(sectionId, { items });
   };
 
   return (
@@ -147,7 +177,6 @@ const TextStructure6Manager: React.FC<Props> = ({
         구조 관리
       </label>
 
-      {/* Section list */}
       <div className="space-y-1.5">
         {sections.map((section, idx) => {
           const isExpanded = expandedId === section.id;
@@ -156,7 +185,7 @@ const TextStructure6Manager: React.FC<Props> = ({
               key={section.id}
               className="border border-gray-200 rounded-xl overflow-hidden"
             >
-              {/* Header row — type badge + actions (항상 동일 구조) */}
+              {/* Header row */}
               <div className="flex items-center gap-1 p-2 bg-gray-50/80">
                 <span
                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${SECTION_COLORS[section.type]}`}
@@ -198,88 +227,10 @@ const TextStructure6Manager: React.FC<Props> = ({
                 </button>
               </div>
 
-              {/* Column selector sub-row — 이미지 섹션 전용 */}
-              {section.type === "image" && (
-                <div className="flex items-center gap-2 px-2 pb-2 bg-gray-50/80">
-                  <span className="text-[10px] text-gray-400 shrink-0">열 수</span>
-                  <div className="flex gap-0.5">
-                    {[1, 2, 3, 4].map((col) => (
-                      <button
-                        key={col}
-                        className={`w-7 h-5 text-[10px] font-bold rounded transition-all ${
-                          (section.columns || 2) === col
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-100"
-                        }`}
-                        onClick={() => updateImageCount(section, col)}
-                      >
-                        {col}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Expanded content */}
               {isExpanded && (
                 <div className="p-3 space-y-3 border-t border-gray-100 bg-white">
-                  {/* IMAGE */}
-                  {section.type === "image" && (
-                    <>
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-500 w-16 shrink-0">
-                          이미지 높이
-                        </label>
-                        <input
-                          type="number"
-                          min={80}
-                          max={800}
-                          className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={parseInt(section.imageHeight || "384") || 384}
-                          onChange={(e) =>
-                            updateSection(section.id, {
-                              imageHeight: e.target.value,
-                            })
-                          }
-                        />
-                        <span className="text-[10px] text-gray-400">px</span>
-                      </div>
-                      {(section.images || []).map((img, imgIdx) => (
-                        <div key={imgIdx} className="space-y-1">
-                          <label className="text-[10px] text-gray-400 font-semibold">
-                            이미지 {imgIdx + 1}
-                          </label>
-                          <div className="flex gap-1.5">
-                            <input
-                              type="text"
-                              className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                              placeholder="이미지 URL"
-                              value={img}
-                              onChange={(e) => {
-                                const imgs = [...(section.images || [])];
-                                imgs[imgIdx] = e.target.value;
-                                updateSection(section.id, { images: imgs });
-                              }}
-                            />
-                            <ImgUploadPop
-                              button={
-                                <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
-                                  <ImageIcon size={12} />
-                                </button>
-                              }
-                              onSelect={(url) => {
-                                const imgs = [...(section.images || [])];
-                                imgs[imgIdx] = url;
-                                updateSection(section.id, { images: imgs });
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  )}
-
-                  {/* BASIC TEXT */}
+                  {/* TEXT */}
                   {section.type === "text" && (
                     <>
                       <div className="space-y-1">
@@ -315,63 +266,30 @@ const TextStructure6Manager: React.FC<Props> = ({
                     </>
                   )}
 
-                  {/* NEWSLETTER TEXT */}
-                  {section.type === "newsletter" && (
+                  {/* LEFT IMAGE */}
+                  {section.type === "leftImage" && (
                     <>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold">
-                          서브타이틀
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs text-gray-500 w-16 shrink-0">
+                          이미지 높이
                         </label>
                         <input
-                          type="text"
-                          className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={section.newsletterSubTitle || ""}
+                          type="number"
+                          min={80}
+                          max={800}
+                          className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
+                          value={parseInt(section.imageHeight || "358") || 358}
                           onChange={(e) =>
                             updateSection(section.id, {
-                              newsletterSubTitle: e.target.value,
+                              imageHeight: e.target.value,
                             })
                           }
                         />
+                        <span className="text-[10px] text-gray-400">px</span>
                       </div>
                       <div className="space-y-1">
                         <label className="text-[10px] text-gray-400 font-semibold">
-                          왼쪽 내용
-                        </label>
-                        <textarea
-                          className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
-                          rows={3}
-                          value={section.leftContent || ""}
-                          onChange={(e) =>
-                            updateSection(section.id, {
-                              leftContent: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold">
-                          오른쪽 내용
-                        </label>
-                        <textarea
-                          className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
-                          rows={3}
-                          value={section.rightContent || ""}
-                          onChange={(e) =>
-                            updateSection(section.id, {
-                              rightContent: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {/* STRIP BANNER */}
-                  {section.type === "stripBanner" && (
-                    <>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold">
-                          배너 이미지
+                          이미지
                         </label>
                         <div className="flex gap-1.5">
                           <input
@@ -397,9 +315,126 @@ const TextStructure6Manager: React.FC<Props> = ({
                           />
                         </div>
                       </div>
+                    </>
+                  )}
+
+                  {/* FEATURES */}
+                  {section.type === "features" && (
+                    <div className="space-y-2">
+                      {(section.items || []).map((item, itemIdx) => (
+                        <div
+                          key={item.id || itemIdx}
+                          className="p-2 bg-gray-50 rounded-lg space-y-1.5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-gray-400 font-semibold">
+                              항목 {itemIdx + 1}
+                            </span>
+                            <button
+                              onClick={() =>
+                                deleteFeatItem(section.id, itemIdx)
+                              }
+                              className="p-0.5 rounded text-red-400 hover:text-red-600"
+                            >
+                              <Trash2 size={10} />
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            className="w-full bg-white border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                            placeholder="번호 (예: 01.)"
+                            value={item.number || ""}
+                            onChange={(e) =>
+                              updateFeatItem(
+                                section.id,
+                                itemIdx,
+                                "number",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <input
+                            type="text"
+                            className="w-full bg-white border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                            placeholder="타이틀"
+                            value={item.title || ""}
+                            onChange={(e) =>
+                              updateFeatItem(
+                                section.id,
+                                itemIdx,
+                                "title",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <textarea
+                            className="w-full bg-white border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
+                            rows={2}
+                            placeholder="설명"
+                            value={item.desc || ""}
+                            onChange={(e) =>
+                              updateFeatItem(
+                                section.id,
+                                itemIdx,
+                                "desc",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-gray-400">
+                              아이콘 이미지 (선택)
+                            </label>
+                            <div className="flex gap-1.5">
+                              <input
+                                type="text"
+                                className="flex-1 bg-white border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                                placeholder="아이콘 URL"
+                                value={item.icon || ""}
+                                onChange={(e) =>
+                                  updateFeatItem(
+                                    section.id,
+                                    itemIdx,
+                                    "icon",
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                              <ImgUploadPop
+                                button={
+                                  <button className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
+                                    <ImageIcon size={10} />
+                                  </button>
+                                }
+                                onSelect={(url) =>
+                                  updateFeatItem(
+                                    section.id,
+                                    itemIdx,
+                                    "icon",
+                                    url,
+                                  )
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => addFeatItem(section.id)}
+                        className="w-full flex items-center justify-center gap-1 p-1.5 rounded-lg border border-dashed border-gray-300 text-[10px] font-semibold text-gray-400 hover:border-blue-300 hover:text-blue-500 transition-all"
+                      >
+                        <Plus size={10} />
+                        항목 추가
+                      </button>
+                    </div>
+                  )}
+
+                  {/* BANNER */}
+                  {section.type === "banner" && (
+                    <>
                       <div className="space-y-1">
                         <label className="text-[10px] text-gray-400 font-semibold">
-                          제목
+                          배너 제목
                         </label>
                         <input
                           type="text"
@@ -414,7 +449,7 @@ const TextStructure6Manager: React.FC<Props> = ({
                       </div>
                       <div className="space-y-1">
                         <label className="text-[10px] text-gray-400 font-semibold">
-                          설명
+                          배너 설명
                         </label>
                         <textarea
                           className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
@@ -448,12 +483,7 @@ const TextStructure6Manager: React.FC<Props> = ({
         {showAddPicker && (
           <div className="absolute bottom-full left-0 right-0 mb-1.5 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-10 grid grid-cols-2 gap-1.5">
             {(
-              [
-                "image",
-                "text",
-                "newsletter",
-                "stripBanner",
-              ] as Section6Type[]
+              ["text", "leftImage", "features", "banner"] as Section11Type[]
             ).map((type) => (
               <button
                 key={type}
@@ -470,4 +500,4 @@ const TextStructure6Manager: React.FC<Props> = ({
   );
 };
 
-export default TextStructure6Manager;
+export default TextStructure11Manager;

@@ -32,7 +32,7 @@ export const CARD_LIST_DEFAULTS = {
     {
       id: "1",
       image: "/images/template/img1.png",
-      imageStyle: { borderRadius: "24px" },
+      imageStyle: { borderRadius: "0px" },
       title: "콘텐츠 비즈니스 <br/>설계자들 2024",
       titleStyle: { fontSize: "20px", fontWeight: "700" },
       desc: "새로운 시대를 이끄는 기획자들의 비결",
@@ -45,7 +45,7 @@ export const CARD_LIST_DEFAULTS = {
         color: "#ffffff",
         fontSize: "16px",
         fontWeight: "700",
-        borderRadius: "4px",
+        borderRadius: "0px",
       },
       author: "새로운 시대를 이끄는 기획자들의 비결",
       authorStyle: { fontSize: "18px", color: "#666666" },
@@ -54,7 +54,7 @@ export const CARD_LIST_DEFAULTS = {
     {
       id: "2",
       image: "/images/template/img2.png",
-      imageStyle: { borderRadius: "24px" },
+      imageStyle: { borderRadius: "0px" },
       title: "콘텐츠 비즈니스 <br/>설계자들 2024",
       titleStyle: { fontSize: "20px", fontWeight: "700" },
       desc: "새로운 시대를 이끄는 기획자들의 비결",
@@ -67,7 +67,7 @@ export const CARD_LIST_DEFAULTS = {
         color: "#ffffff",
         fontSize: "16px",
         fontWeight: "700",
-        borderRadius: "4px",
+        borderRadius: "0px",
       },
       author: "새로운 시대를 이끄는 기획자들의 비결",
       authorStyle: { fontSize: "18px", color: "#666666" },
@@ -76,7 +76,7 @@ export const CARD_LIST_DEFAULTS = {
     {
       id: "3",
       image: "/images/template/img3.png",
-      imageStyle: { borderRadius: "24px" },
+      imageStyle: { borderRadius: "0px" },
       title: "콘텐츠 비즈니스 <br/>설계자들 2024",
       titleStyle: { fontSize: "20px", fontWeight: "700" },
       desc: "새로운 시대를 이끄는 기획자들의 비결",
@@ -121,7 +121,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
 
   const renderCard = (item: any) => {
     const itemImageStyle = getElementStyle(item.imageStyle, viewport as any);
-    const cardBorderRadius = item.imageStyle?.borderRadius || "24px";
+    const cardBorderRadius = item.imageStyle?.borderRadius || "inherit";
 
     const cardContent = () => {
       if (w.data.variant === "bg-image") {
@@ -131,15 +131,22 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
             className={`relative overflow-hidden group shadow-sm cursor-pointer w-full hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
             style={{ borderRadius: cardBorderRadius, aspectRatio }}
           >
-            <UniversalMedia
-              url={item.image || "/images/template/img1.png"}
-              className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-110"
-              style={{ objectFit: "cover", width: "100%", height: "100%" }}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("itemImage", item.id);
-              }}
-            />
+            <div className="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden bg-black/5">
+              <UniversalMedia
+                url={item.image || "/images/template/img1.png"}
+                className="w-auto h-auto max-w-full max-h-full transition-transform duration-700 group-hover:scale-105 object-contain"
+                style={{
+                  width: "auto",
+                  height: "auto",
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("itemImage", item.id);
+                }}
+              />
+            </div>
             {/* Readability Gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/60 group-hover:from-black/70 transition-all duration-500" />
 
@@ -186,7 +193,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
               </div>
 
               <div className="mt-4 flex justify-end shrink-0">
-                <div className="w-10 h-10 md:w-12 md:h-12 border-2 border-white/40 rounded-full flex items-center justify-center group-hover:bg-white group-hover:border-white transition-all group-hover:scale-110">
+                <div className="w-10 h-10 md:w-12 md:h-12 border-2 border-white/40 flex items-center justify-center group-hover:bg-white group-hover:border-white transition-all group-hover:scale-110">
                   <span className="material-symbols-outlined text-white group-hover:text-black text-[20px] md:text-[24px]">
                     arrow_outward
                   </span>
@@ -225,7 +232,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
             <div className="mt-auto flex items-center justify-between">
               {item.label && (
                 <div
-                  className="bg-[#2B82FF] text-white px-4 py-1.5 rounded-lg text-sm font-bold cursor-pointer"
+                  className="bg-[#2B82FF] text-white px-4 py-1.5 text-sm font-bold cursor-pointer"
                   style={getElementStyle(item.labelStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -256,17 +263,16 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
         );
       }
 
-      // Image Card (Default)
       return (
         <div className="flex flex-col group text-left h-full">
           <div
-            className="relative mb-4 overflow-hidden"
+            className="relative mb-4 overflow-hidden flex justify-center items-center h-auto"
             style={{ borderRadius: cardBorderRadius }}
           >
             <UniversalMedia
               url={item.image || "/images/template/img1.png"}
-              className="w-full aspect-[4/3] transition-transform duration-500 group-hover:scale-105"
-              style={{ objectFit: "cover", width: "100%", height: "100%" }}
+              className="w-full h-auto transition-transform duration-500 group-hover:scale-105 object-contain"
+              style={{ width: "100%", height: "auto" }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("itemImage", item.id);
@@ -274,7 +280,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
             />
             {item.label && (
               <div
-                className="absolute top-4 left-4 p-[6px_12px] bg-[#104893] text-white font-bold text-[11px] rounded-lg shadow-sm"
+                className="absolute top-4 left-4 p-[6px_12px] bg-[#104893] text-white font-bold text-[11px] shadow-sm"
                 style={getElementStyle(item.labelStyle, viewport as any)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();

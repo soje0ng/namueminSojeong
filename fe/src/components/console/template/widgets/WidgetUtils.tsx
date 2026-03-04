@@ -44,7 +44,7 @@ export const getElementStyle = (
       ? formatUnit(style.fontSizeMobile)
       : formatUnit(style.fontSize);
 
-  return {
+  const result = {
     fontSize,
     fontWeight: style.fontWeight,
     color: style.color,
@@ -62,6 +62,35 @@ export const getElementStyle = (
     maxWidth: "100%",
     cursor: "pointer",
   } as React.CSSProperties;
+
+  Object.keys(result).forEach(
+    (key) => (result as any)[key] === undefined && delete (result as any)[key],
+  );
+
+  return result;
+};
+
+/**
+ * getImageUrl helper to handle responsive image sources
+ */
+export const getImageUrl = (
+  style?: ElementStyle,
+  viewport: "mobile" | "tablet" | "desktop" = "desktop",
+  defaultUrl: string = "https://placehold.co/600x400",
+) => {
+  if (!style) return defaultUrl;
+
+  const styleAny = style as any;
+
+  // 1. Mobile view: Only use srcMobile if it exists.
+  if (viewport === "mobile") {
+    if (styleAny.srcMobile) return styleAny.srcMobile;
+    // Fallback to PC image if mobile image is not set
+    if (styleAny.src) return styleAny.src;
+  }
+
+  // 2. Default/PC view: Use src if it exists, else defaultUrl
+  return styleAny.src || defaultUrl;
 };
 
 // Safe HTML Component with placeholder support for empty content
@@ -69,6 +98,7 @@ export const SafeHtml: React.FC<{
   html?: string;
   className?: string;
   style?: React.CSSProperties;
+  onClick?: (e: React.MouseEvent) => void;
   onDoubleClick?: (e: React.MouseEvent) => void;
   as?: string;
   placeholder?: string;
@@ -76,6 +106,7 @@ export const SafeHtml: React.FC<{
   html,
   className,
   style,
+  onClick,
   onDoubleClick,
   as = "div",
   placeholder = "텍스트를 입력하세요",
@@ -121,14 +152,12 @@ export const SafeHtml: React.FC<{
           minWidth: "100px",
           minHeight: "1em",
         }}
-        onDoubleClick={onDoubleClick}
       >
-        {placeholder}
+        {placeholder || "텍스트를 입력하세요"}
       </Tag>
     );
   }
 
-  // Render mode + empty content = render nothing
   if (isEmpty) {
     return null;
   }
@@ -138,6 +167,7 @@ export const SafeHtml: React.FC<{
       className={className}
       style={style}
       dangerouslySetInnerHTML={{ __html: cleanHtml }}
+      onClick={onClick}
       onDoubleClick={onDoubleClick}
     />
   );
@@ -246,7 +276,7 @@ export const UniversalMedia: React.FC<{
     // Shared media styles for consistent object-fit and full-content scaling
     const mediaStyle: React.CSSProperties = {
       width: "100%",
-      height: style?.height && style.height !== "auto" ? "100%" : "auto",
+      height: style?.height === "auto" ? "auto" : "100%",
       objectFit: (style?.objectFit as any) || "cover",
       borderRadius: style?.borderRadius || "inherit",
       display: "block",

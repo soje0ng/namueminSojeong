@@ -10,8 +10,9 @@ import {
 
 export const IMAGE_AREA_DEFAULTS = {
   layout: "1",
-  image: "/images/placeholder/area-image.jpg",
-  imageStyle: { objectFit: "cover" },
+  imageUrl: "/images/placeholder/area-image.jpg",
+  mobileImageUrl: "/images/placeholder/area-image.jpg",
+  imageStyle: { objectFit: "contain" },
 };
 
 export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
@@ -24,6 +25,13 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
   const data = w.data;
   const layout = data.layout || "1";
 
+  // New logic for simplified image rendering
+  const imageUrl = data.imageUrl || IMAGE_AREA_DEFAULTS.imageUrl;
+  const mobileImageUrl =
+    data.mobileImageUrl || data.imageUrl || IMAGE_AREA_DEFAULTS.mobileImageUrl;
+  const isMobile = viewport === "mobile";
+  const currentImage = isMobile ? mobileImageUrl : imageUrl;
+
   if (layout === "1") {
     return (
       <section
@@ -32,46 +40,31 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div className="self-stretch px-5 lg:px-72 py-14 flex flex-col justify-start items-center gap-10">
+            {/* 
+                이미지 영역 고정 비율 및 높이 제한 전면 해제 
+                이미지 본연의 비율대로 보여지도록 렌더링
+            */}
             <div
-              className="w-full max-w-[1200px] h-auto aspect-square cursor-pointer transition-all overflow-hidden shadow-sm flex flex-col items-center justify-center"
+              className="w-full max-w-[1200px] cursor-pointer transition-all overflow-hidden flex flex-col items-center justify-center"
               style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "0px" }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                // viewport와 관계없이 설정창의 PC/모바일 이미지 필드와 정확히 연동
+                onElementSelect?.(isMobile ? "mobileImageUrl" : "imageUrl");
+              }}
             >
-              {/* 
-                1. PC용 이미지: 
-                   - viewport가 desktop이거나 
-                   - 모바일 이미지가 없는 경우 항상 표시
-              */}
-              {(viewport === "desktop" || !data.mobileImage) && (
-                <UniversalMedia
-                  url={data.image || "/images/placeholder/area-image.jpg"}
-                  alt="banner image (PC)"
-                  className="w-full h-full hover:ring-4 hover:ring-blue-400"
-                  style={getElementStyle(data.imageStyle, viewport)}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("image");
-                  }}
-                />
-              )}
-
-              {/* 
-                2. 모바일용 이미지: 
-                   - viewport가 tablet/mobile이고 
-                   - 모바일 이미지가 등록된 경우에만 표시
-              */}
-              {(viewport === "tablet" || viewport === "mobile") &&
-                data.mobileImage && (
-                  <UniversalMedia
-                    url={data.mobileImage}
-                    alt="banner image (Mobile)"
-                    className="w-full h-full hover:ring-4 hover:ring-blue-400"
-                    style={getElementStyle(data.imageStyle, viewport)}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("mobileImage");
-                    }}
-                  />
-                )}
+              <UniversalMedia
+                url={currentImage}
+                alt={`banner image (${isMobile ? "Mobile" : "PC"})`}
+                className="w-full h-auto hover:ring-4 hover:ring-blue-400"
+                style={{
+                  ...getElementStyle(data.imageStyle, viewport),
+                  height: "auto",
+                  width: "100%",
+                  aspectRatio: "auto",
+                  objectFit: data.imageStyle?.objectFit || "contain",
+                }}
+              />
             </div>
           </div>
         </div>
@@ -83,9 +76,13 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
   return (
     <section
       style={style}
-      className="w-full relative py-20 bg-시안-mode-gray5 flex items-center justify-center"
+      className="w-full relative py-20 bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        onElementSelect?.("backgroundImage");
+      }}
     >
-      <div className="text-center font-bold text-시안-mode-gray40">
+      <div className="text-center font-bold text-gray-400">
         <p className="text-xl">이미지 영역 디자인 대기중</p>
         <p className="text-sm mt-2 font-mono bg-white px-3 py-1 inline-block shadow-sm">
           레이아웃 {layout}

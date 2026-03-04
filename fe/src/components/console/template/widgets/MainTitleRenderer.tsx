@@ -10,7 +10,7 @@ export const MAIN_TITLE_DEFAULTS = {
     mainTitle: "메인 타이틀",
     mainTitleStyle: { fontSize: "60px", fontSizeMobile: "40px", fontWeight: "700", color: "#111111" },
     subTitle: "서브 타이틀",
-    subTitleStyle: { fontSize: "18px", fontSizeMobile: "16px", fontWeight: "500", color: "#666666" }
+    subTitleStyle: { fontSize: "18px", fontSizeMobile: "16px", fontWeight: "500", color: "#285DE1" }
 };
 
 export const MainTitleRenderer: React.FC<WidgetRendererProps> = ({ widget, onElementSelect, viewport = 'desktop' }) => {

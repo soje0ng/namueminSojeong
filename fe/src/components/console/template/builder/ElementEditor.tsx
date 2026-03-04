@@ -17,6 +17,8 @@ import { isVideoUrl } from "../widgets/WidgetUtils";
 import {
   TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_7_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 import { usePopupStore } from "@/store/console/usePopupStore";
@@ -125,14 +127,28 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
     textValue = currentHeaders[idx] || "";
     styleKey = "headerStyle";
-    styleValue = data.headerStyle || {};
+    styleValue = {
+      ...(data.headerStyle || {}),
+      backgroundColor:
+        data.headerCellStyles?.[idx]?.backgroundColor ??
+        (data.headerStyle || {}).backgroundColor,
+    };
     onTextChange = (val) => {
       const newHeaders = [...currentHeaders];
       newHeaders[idx] = val;
       updateWidgetData(widget.id, { [hKey]: newHeaders });
     };
-    onStyleChange = (k, v) =>
-      updateWidgetData(widget.id, { [styleKey]: { ...styleValue, [k]: v } });
+    onStyleChange = (k, v) => {
+      if (k === "backgroundColor") {
+        const current = { ...(data.headerCellStyles || {}) };
+        current[idx] = { ...(current[idx] || {}), backgroundColor: v };
+        updateWidgetData(widget.id, { headerCellStyles: current });
+      } else {
+        updateWidgetData(widget.id, {
+          headerStyle: { ...(data.headerStyle || {}), [k]: v },
+        });
+      }
+    };
   } else if (elementKey === "tableCell") {
     const [r, c] = (itemId || "0-0").split("-").map(Number);
     const isComparison = data.variant === "comparison";
@@ -147,17 +163,32 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           ]
         : []);
 
+    const cellKey = `${r}-${c}`;
     textValue = currentRows[r]?.[c] || "";
     styleKey = "bodyStyle";
-    styleValue = data.bodyStyle || {};
+    styleValue = {
+      ...(data.bodyStyle || {}),
+      backgroundColor:
+        data.cellStyles?.[cellKey]?.backgroundColor ??
+        (data.bodyStyle || {}).backgroundColor,
+    };
     onTextChange = (val) => {
       const newRows = [...currentRows];
       newRows[r] = [...(newRows[r] || [])];
       newRows[r][c] = val;
       updateWidgetData(widget.id, { [rKey]: newRows });
     };
-    onStyleChange = (k, v) =>
-      updateWidgetData(widget.id, { [styleKey]: { ...styleValue, [k]: v } });
+    onStyleChange = (k, v) => {
+      if (k === "backgroundColor") {
+        const current = { ...(data.cellStyles || {}) };
+        current[cellKey] = { ...(current[cellKey] || {}), backgroundColor: v };
+        updateWidgetData(widget.id, { cellStyles: current });
+      } else {
+        updateWidgetData(widget.id, {
+          bodyStyle: { ...(data.bodyStyle || {}), [k]: v },
+        });
+      }
+    };
   } else if (elementKey === "middleTitle") {
     textValue = data.middleTitle || "비교 head명";
     onTextChange = (val) => updateWidgetData(widget.id, { middleTitle: val });
@@ -187,16 +218,21 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       "sectionNewsletterSubTitle",
       "sectionNewsletterLeft",
       "sectionNewsletterRight",
+      "sectionBasicText",
       "bannerSubTitle",
       "bannerDesc",
     ].includes(elementKey) &&
     itemId
   ) {
-    // 레이아웃 6/7 동적 섹션 텍스트 편집 처리
+    // 레이아웃 6/7/8/11 동적 섹션 텍스트 편집 처리
     const sections6: any[] =
       data.sections6 || TEXT_STRUCTURE_6_DEFAULT_SECTIONS;
     const sections7: any[] =
       data.sections7 || TEXT_STRUCTURE_7_DEFAULT_SECTIONS;
+    const sections8: any[] =
+      data.sections8 || TEXT_STRUCTURE_8_DEFAULT_SECTIONS;
+    const sections11: any[] =
+      data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
     let sectionsArr = sections6;
     let sectionsKey = "sections6";
     let section = sections6.find((s: any) => s.id === itemId);
@@ -208,10 +244,27 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         sectionsKey = "sections7";
       }
     }
+    if (!section) {
+      const sec8 = sections8.find((s: any) => s.id === itemId);
+      if (sec8) {
+        section = sec8;
+        sectionsArr = sections8;
+        sectionsKey = "sections8";
+      }
+    }
+    if (!section) {
+      const sec11 = sections11.find((s: any) => s.id === itemId);
+      if (sec11) {
+        section = sec11;
+        sectionsArr = sections11;
+        sectionsKey = "sections11";
+      }
+    }
 
     const textPropMap: Record<string, string> = {
       sectionSubTitle: "subTitle",
       sectionContent: "content",
+      sectionBasicText: "content",
       sectionNewsletterSubTitle: "newsletterSubTitle",
       sectionNewsletterLeft: "leftContent",
       sectionNewsletterRight: "rightContent",
@@ -221,6 +274,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     const stylePropMap: Record<string, string> = {
       sectionSubTitle: "subTitleStyle",
       sectionContent: "contentStyle",
+      sectionBasicText: "contentStyle",
       sectionNewsletterSubTitle: "newsletterSubTitleStyle",
       sectionNewsletterLeft: "leftContentStyle",
       sectionNewsletterRight: "rightContentStyle",
@@ -258,6 +312,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       if (data.variant === "text2" || data.variant === "text3")
         arrayName = "items";
       else arrayName = "blocks";
+    } else if (widget.type === "textStructure") {
+      const layout = data.layout || "1";
+      if (layout === "4") arrayName = "cases";
+      else if (layout === "6" || layout === "layout6") arrayName = "sections6";
+      else if (layout === "7" || layout === "layout7") arrayName = "sections7";
+      else if (layout === "8" || layout === "layout8") arrayName = "sections8";
+      else if (layout === "11" || layout === "layout11")
+        arrayName = "sections11";
     }
 
     let item = findItem(data[arrayName] || [], itemId);
@@ -403,9 +465,32 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               : elementKey === "itemBadge3"
                 ? "badge3"
                 : "featureLabel";
-        textValue = item[badgeProp] || "";
-        styleKey = badgeProp + "Style";
+
+        // 배지 텍스트 기본값 동기화 (렌더러와 동일하게)
+        const badgeDefaultText =
+          elementKey === "itemBadge1"
+            ? "우선심사"
+            : elementKey === "itemBadge2"
+              ? "I-956F"
+              : elementKey === "itemBadge3"
+                ? "높은 고용창출"
+                : "";
+
+        textValue = item[badgeProp] || badgeDefaultText;
+
+        // 배지 스타일 키 교정 (렌더러와 100% 일치: badge1Style -> badgeStyle1)
+        styleKey =
+          elementKey === "itemBadge1"
+            ? "badgeStyle1"
+            : elementKey === "itemBadge2"
+              ? "badgeStyle2"
+              : elementKey === "itemBadge3"
+                ? "badgeStyle3"
+                : "featureLabelStyle";
+
+        // 현재 아이템에서 실제 스타일 객체 로드 (빈칸 문제 해결 핵심)
         styleValue = item[styleKey] || {};
+
         onTextChange = (val) =>
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(
@@ -415,13 +500,16 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               val,
             ),
           });
-        onStyleChange = (k, v) =>
+        onStyleChange = (k, v) => {
+          const currentItem = findItem(data[arrayName] || [], itemId!);
+          const currentStyle = currentItem?.[styleKey] || {};
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
-              ...styleValue,
+              ...currentStyle,
               [k]: v,
             }),
           });
+        };
       } else if (
         elementKey === "stepDesc" ||
         elementKey === "itemDesc" ||
@@ -561,6 +649,32 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               val,
             ),
           });
+      } else {
+        const propName = elementKey;
+        styleKey =
+          propName.includes("image") || propName.includes("url")
+            ? "imageStyle"
+            : propName + "Style";
+
+        textValue = item[propName] || "";
+        styleValue = item[styleKey] || {};
+
+        onTextChange = (val) =>
+          updateWidgetData(widget.id, {
+            [arrayName]: updateItemInArray(
+              data[arrayName],
+              itemId,
+              propName,
+              val,
+            ),
+          });
+        onStyleChange = (k, v) =>
+          updateWidgetData(widget.id, {
+            [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
+              ...styleValue,
+              [k]: v,
+            }),
+          });
       }
 
       // Allow styleOnly updates if not caught above but styleKey is defined
@@ -644,9 +758,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         <h3 className="font-bold text-gray-800">
           {isMediaKey
             ? "이미지/영상 편집"
-            : elementKey === "bannerButton"
-              ? "버튼 편집"
-              : "텍스트 편집"}
+            : elementKey === "itemFeatures"
+              ? "특징 항목 관리"
+              : elementKey === "bannerButton"
+                ? "버튼 편집"
+                : "텍스트 편집"}
         </h3>
       </div>
 
@@ -654,7 +770,200 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       <div>
         {/* Banner Button Link Editor (Exclusive) */}
         {/* Button (Banner/Process Step) Editor */}
-        {elementKey === "bannerButton" || elementKey === "stepLabel" ? (
+        {elementKey === "itemFeatures" && itemId ? (
+          <div className="space-y-4 p-2">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                특징 매니저
+              </label>
+              <button
+                onClick={() => {
+                  let arrayName = "items";
+                  const itemsList = data[arrayName] || [];
+                  const targetItem =
+                    itemsList.find((i: any) => i.id === itemId) || {};
+                  const currentFeatures = targetItem.features || [
+                    {
+                      label: targetItem.featureLabel || "특징 01",
+                      value: "프로그램 특징 내용 입력",
+                    },
+                    {
+                      label: targetItem.featureLabel || "특징 01",
+                      value: "2줄 입력",
+                    },
+                  ];
+                  const newFeatures = [
+                    ...currentFeatures,
+                    { label: "특징", value: "새로운 내용 입력" },
+                  ];
+                  const newItems = itemsList.map((it: any) =>
+                    it.id === itemId ? { ...it, features: newFeatures } : it,
+                  );
+                  updateWidgetData(widget.id, { [arrayName]: newItems });
+                }}
+                className="text-[10px] bg-blue-50 text-blue-600 px-2.5 py-1.5 rounded-lg font-bold hover:bg-blue-100 transition-colors flex items-center gap-1"
+              >
+                + 슬롯 추가
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {(() => {
+                let arrayName = "items";
+                const itemsList = data[arrayName] || [];
+                const targetItem =
+                  itemsList.find((i: any) => i.id === itemId) || {};
+                const features = targetItem.features || [
+                  {
+                    label: targetItem.featureLabel || "특징 01",
+                    value: "프로그램 특징 내용 입력",
+                  },
+                  {
+                    label: targetItem.featureLabel || "특징 01",
+                    value: "2줄 입력",
+                  },
+                ];
+
+                return features.map((feat: any, idx: number) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col gap-2 p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative group animate-in fade-in zoom-in-95 duration-200"
+                  >
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[10px] font-bold text-gray-400">
+                        항목 {idx + 1}
+                      </span>
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {idx > 0 && (
+                          <button
+                            onClick={() => {
+                              const newFeatures = [...features];
+                              [newFeatures[idx - 1], newFeatures[idx]] = [
+                                newFeatures[idx],
+                                newFeatures[idx - 1],
+                              ];
+                              const newItems = itemsList.map((it: any) =>
+                                it.id === itemId
+                                  ? { ...it, features: newFeatures }
+                                  : it,
+                              );
+                              updateWidgetData(widget.id, {
+                                [arrayName]: newItems,
+                              });
+                            }}
+                            className="p-1 bg-gray-50 rounded text-gray-500 hover:text-blue-500 hover:bg-blue-50"
+                            title="위로 이동"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">
+                              arrow_upward
+                            </span>
+                          </button>
+                        )}
+                        {idx < features.length - 1 && (
+                          <button
+                            onClick={() => {
+                              const newFeatures = [...features];
+                              [newFeatures[idx + 1], newFeatures[idx]] = [
+                                newFeatures[idx],
+                                newFeatures[idx + 1],
+                              ];
+                              const newItems = itemsList.map((it: any) =>
+                                it.id === itemId
+                                  ? { ...it, features: newFeatures }
+                                  : it,
+                              );
+                              updateWidgetData(widget.id, {
+                                [arrayName]: newItems,
+                              });
+                            }}
+                            className="p-1 bg-gray-50 rounded text-gray-500 hover:text-blue-500 hover:bg-blue-50"
+                            title="아래로 이동"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">
+                              arrow_downward
+                            </span>
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            const newFeatures = features.filter(
+                              (_: any, i: number) => i !== idx,
+                            );
+                            const newItems = itemsList.map((it: any) =>
+                              it.id === itemId
+                                ? { ...it, features: newFeatures }
+                                : it,
+                            );
+                            updateWidgetData(widget.id, {
+                              [arrayName]: newItems,
+                            });
+                          }}
+                          className="p-1 bg-gray-50 rounded text-gray-500 hover:text-red-500 hover:bg-red-50"
+                          title="삭제"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">
+                            delete
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-gray-400 w-8 shrink-0 text-center">
+                        라벨
+                      </span>
+                      <input
+                        type="text"
+                        value={feat.label || ""}
+                        onChange={(e) => {
+                          const newFeatures = [...features];
+                          newFeatures[idx] = {
+                            ...newFeatures[idx],
+                            label: e.target.value,
+                          };
+                          const newItems = itemsList.map((it: any) =>
+                            it.id === itemId
+                              ? { ...it, features: newFeatures }
+                              : it,
+                          );
+                          updateWidgetData(widget.id, {
+                            [arrayName]: newItems,
+                          });
+                        }}
+                        className="flex-1 min-w-0 w-full bg-gray-50 border border-gray-100 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-100 font-bold text-gray-700 placeholder-gray-300"
+                        placeholder="라벨"
+                      />
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-[10px] font-bold text-gray-400 w-8 shrink-0 pt-2 text-center">
+                        내용
+                      </span>
+                      <textarea
+                        value={feat.value || ""}
+                        onChange={(e) => {
+                          const newFeatures = [...features];
+                          newFeatures[idx] = {
+                            ...newFeatures[idx],
+                            value: e.target.value,
+                          };
+                          const newItems = itemsList.map((it: any) =>
+                            it.id === itemId
+                              ? { ...it, features: newFeatures }
+                              : it,
+                          );
+                          updateWidgetData(widget.id, {
+                            [arrayName]: newItems,
+                          });
+                        }}
+                        className="flex-1 min-w-0 w-full bg-gray-50 border border-gray-100 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-100 resize-none min-h-[50px] text-gray-600 placeholder-gray-300 leading-relaxed"
+                        placeholder="특징 내용을 입력하세요."
+                      />
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+        ) : elementKey === "bannerButton" || elementKey === "stepLabel" ? (
           <div className="space-y-5 p-2">
             {/* 1. Text & Typography Settings */}
             <div className="space-y-2">
@@ -1046,6 +1355,61 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               )}
             </div>
 
+            {/* Widget Specific Options (Layout Swap, Height) */}
+            {(widget.type === "comparisonCard" ||
+              widget.type === "imageCard") &&
+              elementKey === "style" &&
+              !itemId && (
+                <div className="space-y-4 pt-4 border-t border-gray-100">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-500 block uppercase">
+                      추가 옵션
+                    </label>
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="checkbox"
+                        id="card-reverse-layout"
+                        checked={!!data.reverseLayout}
+                        onChange={(e) =>
+                          updateWidgetData(widget.id, {
+                            reverseLayout: e.target.checked,
+                          })
+                        }
+                        className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                      />
+                      <label
+                        htmlFor="card-reverse-layout"
+                        className="text-xs text-gray-600 font-medium cursor-pointer"
+                      >
+                        좌우 레이아웃 위치 바꾸기 (스왑)
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-500 block uppercase">
+                      대표 이미지 영역 높이
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        className="w-full border p-2 rounded text-xs focus:ring-1 focus:ring-blue-500 bg-white pr-8"
+                        value={data.imageHeight || "320px"}
+                        onChange={(e) =>
+                          updateWidgetData(widget.id, {
+                            imageHeight: e.target.value,
+                          })
+                        }
+                        placeholder="예) 320px, 400px"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">
+                        px
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
             {/* Image Size / Fill Controls - Hidden for Video and CardList Widget as requested */}
             {widget.type !== "video" && widget.type !== "cardList" && (
               <div className="space-y-4 pt-4 border-t border-gray-100">
@@ -1341,9 +1705,16 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               }}
               placeholder="텍스트를 입력하세요..."
             />
-            <p className="text-xs text-blue-400/70 mt-2 pl-2">
-              💡 줄바꿈은 엔터(Enter)를 입력하세요.
-            </p>
+            <div className="mt-2 pl-2 space-y-1">
+              <p className="text-xs text-blue-400/80 font-medium">
+                💡 줄바꿈은 엔터(Enter)를 입력하세요.
+              </p>
+              <p className="text-[10px] text-gray-500">
+                ✔️ 일부 디자인 레이아웃(특징 리스트 등)의 경우{" "}
+                <strong>줄바꿈을 기준</strong>으로 개별 특징 항목이 분리되어
+                렌더링 됩니다.
+              </p>
+            </div>
           </>
         )}
       </div>
