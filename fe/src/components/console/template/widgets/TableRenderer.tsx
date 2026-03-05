@@ -735,7 +735,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
           <div className="self-stretch h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
             <UniversalMedia
               className="w-full h-auto object-contain"
-              url={w.data.image}
+              url={w.data.image || ""}
               alt="Table Image"
               style={{
                 ...getElementStyle(w.data.imageStyle, viewport as any),

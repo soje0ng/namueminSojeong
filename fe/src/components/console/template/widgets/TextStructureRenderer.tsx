@@ -21,6 +21,8 @@ export const TEXT_STRUCTURE_DEFAULTS = {
   imageUrl: "/images/placeholder/section-image.jpg",
   imageStyle: { objectFit: "cover", borderRadius: "16px" },
 
+  l4CheckIconUrl: "/images/template/check_bullet.png",
+
   bgImageUrl: "/images/placeholder/bg-image.jpg",
   contentTitle: "USCIS 우선심사 프로젝트<br/>Copper Valley",
   contentSubTitle: "캘리포디나 대형 리조트 건설 프로젝트",
@@ -29,6 +31,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
 
   cases: [
     {
+      id: "case-01",
       subTitle: "Case 01",
       title: "자녀 3명 공립 교육으로<br/>총 50억 원의 교육비 절감!",
       features: [
@@ -38,42 +41,12 @@ export const TEXT_STRUCTURE_DEFAULTS = {
         "첫째 치대, 둘째 로스쿨, 셋째 아트스쿨 진학 성공",
       ],
       avatars: [
-        "/images/placeholder/avatar.jpg",
-        "/images/placeholder/avatar.jpg",
-        "/images/placeholder/avatar.jpg",
+        "/images/template/icon_checkbox.png",
+        "/images/template/icon_checkbox.png",
+        "/images/template/icon_checkbox.png",
       ],
       imageUrl: "/images/placeholder/section-image.jpg",
-    },
-    {
-      subTitle: "Case 02",
-      title: "국내 외고, 국제학교에서<br/>IVY리그 합격까지! ",
-      features: [
-        "부모님 사업 운영으로 미국 출국 불가, 학부모영주권 진행",
-        "첫째는 외고 입학, 둘째는 국제학교 입학",
-        "미국 영주권 대학 입시 혜택으로 IVY리그 합격",
-        "대학 졸업 후 글로벌 기업 취업 성공 ",
-      ],
-      avatars: [
-        "/images/placeholder/avatar.jpg",
-        "/images/placeholder/avatar.jpg",
-      ],
-      imageUrl: "/images/placeholder/section-image.jpg",
-    },
-    {
-      subTitle: "Case 03",
-      title: "초등학교 때 영주권 취득 후<br/>엘리트 코스로 Yale 합격",
-      features: [
-        "초등학교 때 자녀 학부모영주권으로 영주권 획득",
-        "영주권 입시 혜택으로 탑 주니어 보딩스쿨 입학",
-        "명문 보딩스쿨도 영주권으로 쿼터 제한 해결",
-        "명문 코스를 통해 Yale 대학까지 한번에 합격",
-      ],
-      avatars: [
-        "/images/placeholder/avatar.jpg",
-        "/images/placeholder/avatar.jpg",
-        "/images/placeholder/avatar.jpg",
-      ],
-      imageUrl: "/images/placeholder/section-image.jpg",
+      imageOnRight: false,
     },
   ],
 
@@ -81,7 +54,6 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     {
       id: "ts-1",
       icon: "task_alt",
-      iconUrl: "/images/template/icon_checkbox.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
       desc: "프로그램 특징 내용 입력",
@@ -90,7 +62,6 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     {
       id: "ts-2",
       icon: "task_alt",
-      iconUrl: "/images/template/icon_checkbox.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
       desc: "프로그램 특징 내용 입력",
@@ -99,7 +70,6 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     {
       id: "ts-3",
       icon: "task_alt",
-      iconUrl: "/images/template/icon_checkbox.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
       desc: "프로그램 특징 내용 입력",
@@ -108,7 +78,6 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     {
       id: "ts-4",
       icon: "task_alt",
-      iconUrl: "/images/template/icon_checkbox.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
       desc: "프로그램 특징 내용 입력",
@@ -116,6 +85,55 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     },
   ],
 };
+
+export const TEXT_STRUCTURE_5_DEFAULT_SECTIONS = [
+  {
+    id: "s5-img-1",
+    type: "image",
+    columns: 2,
+    images: [
+      "/images/placeholder/section-image.jpg",
+      "/images/placeholder/section-image.jpg",
+    ],
+    imageHeight: "384",
+  },
+  {
+    id: "s5-text-1",
+    type: "text",
+    subTitle: "서브 타이틀 입력",
+    content:
+      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
+  },
+  {
+    id: "s5-checklist-1",
+    type: "checklist",
+    bojoTitle: "보조 타이틀 문구 입력",
+    items: [
+      { id: "cl-1", title: "프로그램 특징", desc: "프로그램 특징 내용 입력" },
+      { id: "cl-2", title: "프로그램 특징", desc: "프로그램 특징 내용 입력" },
+      { id: "cl-3", title: "프로그램 특징", desc: "프로그램 특징 내용 입력" },
+    ],
+  },
+  {
+    id: "s5-labellist-1",
+    type: "labelList",
+    imageUrl: "/images/placeholder/section-image.jpg",
+    items: [
+      { id: "ll-1", label: "라벨명", content: "프로그램 특징 내용 입력" },
+      { id: "ll-2", label: "라벨명", content: "프로그램 특징 내용 입력" },
+      { id: "ll-3", label: "라벨명", content: "프로그램 특징 내용 입력" },
+      { id: "ll-4", label: "라벨명", content: "프로그램 특징 내용 입력" },
+    ],
+  },
+  {
+    id: "s5-banner-1",
+    type: "imageBanner",
+    imageUrl: "/images/placeholder/strip-banner.jpg",
+    bannerSubTitle: "서브 타이틀 입력",
+    bannerDesc:
+      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
+  },
+];
 
 export const TEXT_STRUCTURE_6_DEFAULT_SECTIONS = [
   {
@@ -218,16 +236,19 @@ export const TEXT_STRUCTURE_8_DEFAULT_SECTIONS = [
         id: "f8-1",
         title: "첫째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
+        iconUrl: "/images/template/icon_arrow.png",
       },
       {
         id: "f8-2",
         title: "둘째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
+        iconUrl: "/images/template/icon_arrow.png",
       },
       {
         id: "f8-3",
         title: "셋째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
+        iconUrl: "/images/template/icon_arrow.png",
       },
     ],
   },
@@ -351,23 +372,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             <div
               className={`self-stretch flex flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"} justify-start items-center gap-10 xl:gap-20 w-full`}
             >
-              <div
-                className="w-full xl:w-[560px] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden shrink-0 rounded-2xl flex justify-center items-center"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("image");
-                }}
-              >
-                <img
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
-                  src={data.imageUrl}
-                  alt="Structure Image"
+              <div className="w-full xl:w-[560px] shrink-0 relative flex justify-center items-center h-auto">
+                <UniversalMedia
+                  url={data.imageUrl || "/images/placeholder/section-image.jpg"}
                   className="w-full h-auto object-contain"
+                  alt="Structure Image"
                   style={getElementStyle(data.imageStyle, viewport)}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("imageUrl");
+                  }}
                 />
               </div>
 
@@ -430,16 +444,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           onElementSelect?.("items", i.toString());
                         }}
                       >
-                        <img
-                          src={
+                        <UniversalMedia
+                          url={
                             item.iconUrl || "/images/template/icon_bullet.png"
                           }
+                          className="w-6 h-6 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer shrink-0"
                           alt="icon"
-                          className="object-contain cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all shrink-0"
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(
-                              "itemIconUrl",
+                              "itemIcon",
                               item.id || i.toString(),
                             );
                           }}
@@ -547,27 +561,27 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 className={`w-full xl:w-[700px] px-5 xl:px-14 py-10 relative border-b xl:border-b-0 ${reverseLayout ? "xl:border-l" : "xl:border-r"} border-시안-mode-gray1 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden group/img hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("image");
+                  onElementSelect?.("bgImageUrl");
                 }}
               >
                 <img
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
                   className="w-full h-full xl:w-[960px] xl:h-[800px] left-0 top-0 absolute mix-blend-overlay object-cover"
                   src={data.bgImageUrl}
                   alt="Background Overlay"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("bgImageUrl");
+                  }}
                 />
-                <div className="self-stretch flex-1 relative overflow-hidden flex justify-center items-center h-auto">
+                <div
+                  className="self-stretch flex-1 relative overflow-hidden flex justify-center items-center h-auto"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("imageUrl");
+                  }}
+                >
                   <img
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
-                    className="w-full relative object-contain h-auto"
+                    className="w-full relative object-contain h-auto max-h-full"
                     src={data.imageUrl}
                     alt="Main Content Image"
                     style={getElementStyle(data.imageStyle, viewport)}
@@ -644,118 +658,207 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+            {/* 글로벌 헤더 */}
+            <div className="flex flex-col justify-start items-center">
+              {!data.subTitleStyle?.isHidden && (
+                <div
+                  className="text-center justify-start text-[#275DE0] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("subTitle");
+                  }}
+                >
+                  <SafeHtml
+                    html={data.subTitle || "( 서브타이틀 )"}
+                    style={getElementStyle(data.subTitleStyle, viewport)}
+                  />
+                </div>
+              )}
+              {!data.titleStyle?.isHidden && (
+                <div
+                  className="justify-start text-[#131416] text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep my-1 text-center"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("title");
+                  }}
+                >
+                  <SafeHtml
+                    html={data.title || "타이틀명 입력"}
+                    style={getElementStyle(data.titleStyle, viewport)}
+                  />
+                </div>
+              )}
+              {!data.descStyle?.isHidden && (
+                <div
+                  className="text-center justify-start text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("desc");
+                  }}
+                >
+                  <SafeHtml
+                    html={data.desc || "이민 프로그램명 입력"}
+                    style={getElementStyle(data.descStyle, viewport)}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* 케이스 카드 목록 */}
             {(data.cases || []).map((c: any, i: number) => {
-              const isEven = reverseLayout ? i % 2 !== 0 : i % 2 === 0;
+              const imageOnRight = c.imageOnRight || false;
               return (
                 <div
-                  key={i}
-                  className={`self-stretch p-5 bg-시안-mode-gray5 rounded-[20px] inline-flex flex-col ${
-                    isEven ? "xl:flex-row" : "xl:flex-row-reverse"
-                  } justify-start items-stretch gap-0 w-full`}
+                  key={c.id || i}
+                  className={`self-stretch p-5 bg-[#F6F7FB] rounded-[20px] inline-flex flex-col ${
+                    imageOnRight ? "xl:flex-row-reverse" : "xl:flex-row"
+                  } justify-start items-stretch gap-0 w-full group/card relative mb-10 last:mb-0`}
                 >
+                  {/* 이미지 영역 */}
                   <div
-                    className="w-full xl:w-[600px] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl shrink-0"
+                    className="w-full xl:w-[600px] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl shrink-0 flex items-center"
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("imageUrl", i.toString());
+                      onElementSelect?.("caseImageUrl", c.id || i.toString());
                     }}
                   >
                     <img
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
-                      src={c.imageUrl}
+                      src={c.imageUrl || "https://placehold.co/600x584"}
                       alt={`Case ${i + 1} Image`}
-                      className="w-full h-auto object-contain"
+                      className="w-full h-auto object-contain rounded-2xl"
                     />
                   </div>
+
+                  {/* 텍스트 컨텐츠 */}
                   <div
                     className={`flex-1 ${
-                      isEven ? "xl:pl-14 xl:pr-5" : "xl:pr-14 xl:pl-5"
+                      imageOnRight ? "xl:pr-14 xl:pl-5" : "xl:pl-14 xl:pr-5"
                     } py-10 xl:py-0 inline-flex flex-col justify-start items-start gap-10 w-full`}
                   >
-                    <div className="self-stretch pt-0 xl:pt-10 flex flex-col justify-center items-start w-full">
+                    {/* 케이스 레이블 + 타이틀 */}
+                    <div className="self-stretch pt-0 xl:pt-10 flex flex-col justify-center items-start w-full gap-1">
                       {!c.subTitleStyle?.isHidden && (
-                        <SafeHtml
-                          html={c.subTitle || `Case 0${i + 1}`}
-                          className="text-center justify-start text-시안-mode-Primary70 text-xl font-bold font-['Pretendard'] leading-5 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                          style={getElementStyle(
-                            c.subTitleStyle,
-                            viewport as any,
-                          )}
+                        <div
+                          className="text-center justify-start text-[#295E92] text-xl font-bold font-['Pretendard'] leading-5 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                           onDoubleClick={(e) => {
                             e.stopPropagation();
-                            onElementSelect?.("subTitle", i.toString());
+                            onElementSelect?.(
+                              "caseSubTitle",
+                              c.id || i.toString(),
+                            );
                           }}
-                        />
+                        >
+                          <SafeHtml
+                            html={c.subTitle || `Case 0${i + 1}`}
+                            style={getElementStyle(c.subTitleStyle, viewport)}
+                          />
+                        </div>
                       )}
                       {!c.titleStyle?.isHidden && (
-                        <SafeHtml
-                          html={c.title || "케이스 타이틀 입력"}
-                          className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                          style={getElementStyle(c.titleStyle, viewport as any)}
+                        <div
+                          className="justify-start text-[#131416] text-4xl font-bold font-['Pretendard'] leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
                           onDoubleClick={(e) => {
                             e.stopPropagation();
-                            onElementSelect?.("title", i.toString());
+                            onElementSelect?.(
+                              "caseTitle",
+                              c.id || i.toString(),
+                            );
                           }}
-                        />
+                        >
+                          <SafeHtml
+                            html={c.title || "케이스 타이틀 입력"}
+                            style={getElementStyle(c.titleStyle, viewport)}
+                          />
+                        </div>
                       )}
                     </div>
-                    <div className="self-stretch flex flex-col justify-start items-start gap-4 w-full">
+
+                    {/* 체크리스트 */}
+                    <div
+                      className="self-stretch flex flex-col justify-start items-start gap-4 w-full group/feat relative hover:outline-dashed hover:outline-2 hover:outline-blue-300 rounded cursor-pointer p-1 transition-all"
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        // 이 패널 자체가 아니라 내부 항목을 편집하도록 selection 수정
+                      }}
+                    >
                       {(c.features || []).map(
-                        (feature: string, fIdx: number) => {
-                          if (c.featureStyle?.isHidden) return null;
-                          return (
+                        (feature: string, fIdx: number) => (
+                          <div
+                            key={fIdx}
+                            className="self-stretch inline-flex justify-start items-center gap-5 hover:outline-dashed hover:outline-2 hover:outline-blue-300 rounded cursor-pointer p-1 transition-all"
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "caseFeatureText",
+                                `${c.id || i.toString()}:${fIdx}`,
+                              );
+                            }}
+                          >
                             <div
-                              key={fIdx}
-                              className="self-stretch inline-flex justify-start items-center gap-5"
+                              className="w-8 h-8 flex justify-center items-center shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("l4CheckIconUrl");
+                              }}
                             >
-                              <div className="w-8 h-8 bg-시안-mode-Primary5 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
-                                <div className="w-6 h-6 relative rounded-xl">
-                                  <div className="w-6 h-6 left-0 top-0 absolute flex justify-center items-center">
-                                    <div className="w-3 h-2.5 outline outline-2 outline-offset-[-1px] outline-시안-mode-Primary50"></div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="inline-flex flex-col justify-start items-start gap-2">
-                                <SafeHtml
-                                  html={feature}
-                                  className="justify-start text-zinc-950 text-xl font-medium font-['Pretendard'] leading-8 break-keep text-left hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                                  style={getElementStyle(
-                                    c.featureStyle,
-                                    viewport as any,
-                                  )}
-                                  onDoubleClick={(e) => {
-                                    e.stopPropagation();
-                                    onElementSelect?.(
-                                      `casesFeature`,
-                                      `${i}-${fIdx}`,
-                                    );
-                                  }}
-                                />
-                              </div>
+                              <img
+                                src={
+                                  data.l4CheckIconUrl ||
+                                  "/images/template/check_bullet.png"
+                                }
+                                alt="check"
+                                className="w-full h-full object-contain"
+                              />
                             </div>
-                          );
-                        },
+                            <div className="inline-flex flex-col justify-start items-start gap-2">
+                              <SafeHtml
+                                html={feature}
+                                className="justify-start text-zinc-950 text-xl font-medium font-['Pretendard'] leading-8 break-keep text-left"
+                              />
+                            </div>
+                          </div>
+                        ),
                       )}
                     </div>
-                    <div className="self-stretch inline-flex justify-center xl:justify-start items-center gap-3 flex-wrap">
+
+                    {/* 로고 그리드 (동적 폭) */}
+                    <div
+                      className={`self-stretch w-full grid gap-3 ${
+                        (c.avatars || []).length === 1
+                          ? "grid-cols-1"
+                          : (c.avatars || []).length === 2
+                            ? "grid-cols-2"
+                            : (c.avatars || []).length === 3
+                              ? "grid-cols-3"
+                              : "grid-cols-2 md:grid-cols-4"
+                      } group/logo relative hover:outline-dashed hover:outline-2 hover:outline-blue-300 rounded cursor-pointer p-1 transition-all`}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
                       {(c.avatars || []).map((avatar: string, aIdx: number) => (
                         <div
                           key={aIdx}
-                          className="p-6 bg-시안-mode-gray0 rounded-2xl outline outline-1 outline-offset-[-1px] outline-시안-mode-gray20 inline-flex flex-col justify-center items-center gap-5"
+                          className="w-full flex justify-center items-center p-6 bg-white/50 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#20202020] hover:outline-dashed hover:outline-2 hover:outline-blue-300 cursor-pointer transition-all min-h-[120px]"
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "caseLogoUrl",
+                              `${c.id || i.toString()}:${aIdx}`,
+                            );
+                          }}
                         >
-                          <UniversalMedia
-                            className="w-24 h-24 rounded-[600px] object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                            url={avatar}
-                            alt={`Avatar ${aIdx + 1}`}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(`caseAvatar`, `${i}-${aIdx}`);
+                          <img
+                            className="object-contain"
+                            style={{
+                              ...getElementStyle(c.logoStyle, viewport),
+                              width: "100%",
+                              maxWidth: "140px",
+                              maxHeight: "140px",
                             }}
+                            src={avatar || "https://placehold.co/100x100"}
+                            alt={`Logo ${aIdx + 1}`}
                           />
                         </div>
                       ))}
@@ -764,6 +867,395 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (layout === "5") {
+    const sections5 = data.sections5 || TEXT_STRUCTURE_5_DEFAULT_SECTIONS;
+    return (
+      <section
+        style={style}
+        className="w-full relative overflow-hidden bg-white"
+      >
+        <div className="mx-auto w-full max-w-[1920px] relative">
+          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+            {/* 글로벌 헤더 (중앙 정렬) */}
+            <div className="flex flex-col justify-start items-center w-full gap-1">
+              {!data.l5SubTitleStyle?.isHidden && (
+                <SafeHtml
+                  html={data.l5SubTitle || "( 서브타이틀 )"}
+                  className="text-center text-[#275DE0] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{
+                    ...getElementStyle(data.l5SubTitleStyle, viewport),
+                    color: data.l5SubTitleStyle?.color || "#275DE0",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("l5SubTitle");
+                  }}
+                />
+              )}
+              {!data.l5TitleStyle?.isHidden && (
+                <div
+                  className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full my-1 text-center"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("l5Title");
+                  }}
+                >
+                  <SafeHtml
+                    html={data.l5Title || "타이틀명 입력"}
+                    className="text-[#131416] text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
+                    style={getElementStyle(data.l5TitleStyle, viewport)}
+                  />
+                </div>
+              )}
+              {!data.l5DescStyle?.isHidden && (
+                <SafeHtml
+                  html={data.l5Desc || "이민 프로그램명 입력"}
+                  className="text-center text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={getElementStyle(data.l5DescStyle, viewport)}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("l5Desc");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* 본문: 좌측 사이드 컬럼 + 우측 섹션들 */}
+            <div className="self-stretch border-t border-[#131416] pt-10 flex flex-col xl:flex-row justify-start items-start gap-14 w-full">
+              {/* 좌측 좁은 사이드 컬럼 */}
+              <div className="w-full xl:w-60 inline-flex flex-col justify-start items-start gap-2 shrink-0">
+                {!data.l5SideTitleStyle?.isHidden && (
+                  <SafeHtml
+                    html={data.l5SideTitle || "타이틀명 입력"}
+                    className="text-[#131416] text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
+                    style={getElementStyle(data.l5SideTitleStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("l5SideTitle");
+                    }}
+                  />
+                )}
+                {!data.l5SideDescStyle?.isHidden && (
+                  <SafeHtml
+                    html={data.l5SideDesc || "이민 프로그램명 입력"}
+                    className="text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
+                    style={getElementStyle(data.l5SideDescStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("l5SideDesc");
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* 우측 동적 섹션들 */}
+              <div className="flex-1 inline-flex flex-col justify-start items-start gap-10 w-full min-w-0">
+                {sections5.map((section: any) => {
+                  /* ── IMAGE ── */
+                  if (section.type === "image") {
+                    const cols = section.columns || 2;
+                    const colClass =
+                      cols === 1
+                        ? "grid-cols-1"
+                        : cols === 2
+                          ? "grid-cols-2"
+                          : cols === 3
+                            ? "grid-cols-3"
+                            : "grid-cols-4";
+                    const images: string[] =
+                      section.images ||
+                      Array(cols).fill("/images/placeholder/section-image.jpg");
+                    return (
+                      <div
+                        key={section.id}
+                        className={`grid ${colClass} gap-5 w-full`}
+                      >
+                        {images.map((img: string, imgIdx: number) => (
+                          <div
+                            key={imgIdx}
+                            className="relative overflow-hidden rounded-2xl w-full hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
+                            style={{
+                              height: "auto",
+                            }}
+                          >
+                            <img
+                              src={
+                                img || "/images/placeholder/section-image.jpg"
+                              }
+                              className="w-full h-auto object-cover"
+                              alt=""
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  `image`,
+                                  `s5img_${section.id}_${imgIdx}`,
+                                );
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  /* ── BASIC TEXT ── */
+                  if (section.type === "text") {
+                    return (
+                      <div
+                        key={section.id}
+                        className="self-stretch flex flex-col justify-start items-start gap-2 w-full"
+                      >
+                        {!section.subTitleStyle?.isHidden && (
+                          <SafeHtml
+                            html={section.subTitle || "서브 타이틀 입력"}
+                            className="self-stretch text-[#131416] text-2xl font-medium font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                            style={getElementStyle(
+                              section.subTitleStyle,
+                              viewport,
+                            )}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`sectionSubTitle`, section.id);
+                            }}
+                          />
+                        )}
+                        {!section.contentStyle?.isHidden && (
+                          <SafeHtml
+                            html={section.content || "내용을 입력하세요."}
+                            className="self-stretch text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                            style={getElementStyle(
+                              section.contentStyle,
+                              viewport,
+                            )}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`sectionContent`, section.id);
+                            }}
+                          />
+                        )}
+                      </div>
+                    );
+                  }
+
+                  /* ── CHECKLIST ── */
+                  if (section.type === "checklist") {
+                    const items = (section.items || []) as any[];
+                    const itemCount = items.length;
+                    return (
+                      <div
+                        key={section.id}
+                        className="self-stretch flex flex-col justify-start items-start gap-5 w-full"
+                      >
+                        {!section.bojoTitleStyle?.isHidden && (
+                          <SafeHtml
+                            html={section.bojoTitle || "보조 타이틀 문구 입력"}
+                            className="text-[#275DE0] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`bojoTitle`, section.id);
+                            }}
+                          />
+                        )}
+                        <div
+                          className={`self-stretch w-full ${
+                            itemCount > 2
+                              ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3"
+                              : "flex flex-col gap-3"
+                          }`}
+                        >
+                          {items.map((item: any, itemIdx: number) => (
+                            <div
+                              key={item.id || itemIdx}
+                              className={`${itemCount <= 2 ? "w-full" : ""} flex justify-start items-start gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-2 transition-all cursor-pointer`}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  `s5checkItem`,
+                                  `${section.id}:${itemIdx}`,
+                                );
+                              }}
+                            >
+                              <div className="w-8 h-8 bg-[#EFF7FF] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#275DE0] flex justify-center items-center shrink-0 mt-0.5">
+                                <svg
+                                  width="14"
+                                  height="11"
+                                  viewBox="0 0 14 11"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M1 5.5L5.5 10L13 1"
+                                    stroke="#275DE0"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                              <div className="flex flex-col justify-start items-start gap-1">
+                                <SafeHtml
+                                  html={item.title || "프로그램 특징"}
+                                  className="text-[#09090b] text-xl font-medium font-['Pretendard'] leading-8 break-keep"
+                                />
+                                <SafeHtml
+                                  html={item.desc || "프로그램 특징 내용 입력"}
+                                  className="text-[#6D7882] text-lg font-normal font-['Pretendard'] leading-7 break-keep"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  /* ── LABEL LIST ── */
+                  if (section.type === "labelList") {
+                    const items = (section.items || []) as any[];
+                    return (
+                      <div
+                        key={section.id}
+                        className="self-stretch flex flex-col xl:flex-row justify-start items-start gap-10 w-full"
+                      >
+                        <div className="flex-1 border-t border-[#131416] inline-flex flex-col justify-start items-start min-w-0">
+                          {items.map((item: any, itemIdx: number) => (
+                            <div
+                              key={item.id || itemIdx}
+                              className="self-stretch py-3 border-b border-[#E6E8EA] inline-flex justify-start items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  `s5labelItem`,
+                                  `${section.id}:${itemIdx}`,
+                                );
+                              }}
+                            >
+                              <div className="w-44 flex justify-start items-center gap-3 shrink-0">
+                                <UniversalMedia
+                                  url={
+                                    item.icon ||
+                                    "/images/template/label_feature_icon.png"
+                                  }
+                                  className="w-10 h-10 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer shrink-0"
+                                  alt="icon"
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.(
+                                      "itemIcon",
+                                      `${section.id}:${itemIdx}`,
+                                    );
+                                  }}
+                                />
+                                <SafeHtml
+                                  html={item.label || "라벨명"}
+                                  className="text-[#09090b] text-xl font-medium font-['Pretendard'] leading-8 break-keep"
+                                />
+                              </div>
+                              <SafeHtml
+                                html={item.content || "프로그램 특징 내용 입력"}
+                                className="flex-1 text-[#6D7882] text-lg font-normal font-['Pretendard'] leading-7 break-keep"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <div
+                          className="w-full xl:w-[480px] shrink-0 rounded-2xl overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
+                          style={{ alignSelf: "stretch", minHeight: "240px" }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              `image`,
+                              `s5labelimg_${section.id}`,
+                            );
+                          }}
+                        >
+                          <UniversalMedia
+                            url={
+                              section.imageUrl ||
+                              "/images/placeholder/section-image.jpg"
+                            }
+                            className="w-full object-cover"
+                            alt=""
+                          />
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  /* ── IMAGE BANNER ── */
+                  if (
+                    section.type === "imageBanner" ||
+                    section.type === "stripBanner"
+                  ) {
+                    return (
+                      <div
+                        key={section.id}
+                        className="self-stretch bg-[#F6F7FB] rounded-[20px] flex flex-col xl:flex-row justify-start xl:items-stretch items-center overflow-hidden w-full"
+                      >
+                        <div
+                          className="w-full xl:w-96 h-auto shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden"
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              `image`,
+                              `s5banner_${section.id}`,
+                            );
+                          }}
+                        >
+                          <UniversalMedia
+                            url={
+                              section.imageUrl ||
+                              "/images/placeholder/strip-banner.jpg"
+                            }
+                            className="w-full h-full object-cover"
+                            alt=""
+                          />
+                        </div>
+                        <div className="flex-1 self-stretch px-5 xl:px-10 py-5 inline-flex flex-col justify-center items-start gap-3">
+                          {!section.bannerSubTitleStyle?.isHidden && (
+                            <SafeHtml
+                              html={
+                                section.bannerSubTitle || "서브 타이틀 입력"
+                              }
+                              className="self-stretch text-[#131416] text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                              style={getElementStyle(
+                                section.bannerSubTitleStyle,
+                                viewport,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(`bannerSubTitle`, section.id);
+                              }}
+                            />
+                          )}
+                          {!section.bannerDescStyle?.isHidden && (
+                            <SafeHtml
+                              html={section.bannerDesc || "내용을 입력하세요."}
+                              className="self-stretch text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                              style={getElementStyle(
+                                section.bannerDescStyle,
+                                viewport,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(`bannerDesc`, section.id);
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return null;
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -854,16 +1346,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         }}
                       >
                         {/* 체크박스 이미지 */}
-                        <img
-                          src={
+                        <UniversalMedia
+                          url={
                             item.iconUrl || "/images/template/icon_checkbox.png"
                           }
+                          className="w-10 h-10 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
                           alt="icon"
-                          className="object-contain cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(
-                              "itemIconUrl",
+                              "itemIcon",
                               item.id || i.toString(),
                             );
                           }}
@@ -906,32 +1398,25 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               </div>
 
               <div
-                className={`w-full xl:w-[560px] relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden shrink-0 flex justify-center items-center h-auto`}
+                className="w-full xl:w-[560px] relative shrink-0 flex justify-center items-center h-auto"
                 style={{
                   borderRadius: data.imageStyle?.borderRadius
                     ? formatUnit(data.imageStyle.borderRadius)
                     : "16px",
                   minHeight: "0px",
                 }}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
               >
-                <img
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
-                  src={data.imageUrl || "/images/placeholder/section-image.jpg"}
-                  alt="Structure Image"
+                <UniversalMedia
+                  url={data.imageUrl || "/images/placeholder/section-image.jpg"}
                   className="w-full h-auto object-contain"
+                  alt="Structure Image"
                   style={{
-                    objectFit:
-                      (data.imageStyle
-                        ?.objectFit as React.CSSProperties["objectFit"]) ||
-                      "contain",
+                    ...getElementStyle(data.imageStyle, viewport),
+                    objectFit: (data.imageStyle?.objectFit as any) || "contain",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("imageUrl");
                   }}
                 />
               </div>
@@ -1016,7 +1501,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       .fill("")
                       .map(
                         (_: any, i: number) =>
-                          `/images/placeholder/section-image.jpg + 1}`,
+                          `/images/placeholder/section-image.jpg`,
                       );
                   return (
                     <div
@@ -1161,14 +1646,19 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   return (
                     <div
                       key={section.id}
-                      className="self-stretch bg-시안-mode-gray5 rounded-[20px] inline-flex flex-col md:flex-row justify-center items-center overflow-hidden w-full"
+                      className="self-stretch bg-시안-mode-gray5 rounded-[20px] inline-flex flex-col md:flex-row justify-center md:items-stretch items-center overflow-hidden w-full"
                     >
                       <UniversalMedia
                         url={
                           section.imageUrl ||
                           "/images/placeholder/strip-banner.jpg"
                         }
-                        className="w-full md:w-96 h-60 object-cover shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
+                        className="w-full md:w-96 shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
+                        style={{
+                          height: "100%",
+                          objectFit: "cover",
+                          minHeight: "240px",
+                        }}
                         alt=""
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -1320,7 +1810,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         .fill("")
                         .map(
                           (_: any, i: number) =>
-                            `/images/placeholder/section-image.jpg + 1}`,
+                            `/images/placeholder/section-image.jpg`,
                         );
                     return (
                       <div
@@ -1461,14 +1951,19 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     return (
                       <div
                         key={section.id}
-                        className="self-stretch bg-시안-mode-gray5 rounded-[20px] inline-flex flex-col md:flex-row justify-center items-center overflow-hidden w-full"
+                        className="self-stretch bg-시안-mode-gray5 rounded-[20px] inline-flex flex-col md:flex-row justify-center md:items-stretch items-center overflow-hidden w-full"
                       >
                         <UniversalMedia
                           url={
                             section.imageUrl ||
                             "/images/placeholder/strip-banner.jpg"
                           }
-                          className="w-full md:w-96 h-60 object-cover shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
+                          className="w-full md:w-96 shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
+                          style={{
+                            height: "100%",
+                            objectFit: "cover",
+                            minHeight: "240px",
+                          }}
                           alt=""
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -1598,6 +2093,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           key={imgIdx}
                           className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-xl w-full flex justify-center items-center h-auto"
                           style={{ height: "auto" }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "image",
+                              `s8img_${section.id}_${imgIdx}`,
+                            );
+                          }}
                         >
                           <UniversalMedia
                             url={img}
@@ -1607,13 +2109,6 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               section.imageStyle,
                               viewport,
                             )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(
-                                `image`,
-                                `s8img_${section.id}_${imgIdx}`,
-                              );
-                            }}
                           />
                         </div>
                       ))}
@@ -1803,7 +2298,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 className="w-full xl:flex-1 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl shrink-0 flex justify-center items-center h-auto"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("image");
+                  onElementSelect?.("imageUrl");
                 }}
               >
                 <UniversalMedia
@@ -1813,7 +2308,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   style={getElementStyle(data.imageStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
-                    onElementSelect?.("image");
+                    onElementSelect?.("image", "s9img_main");
                   }}
                 />
               </div>
@@ -1876,13 +2371,6 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             <div
                               key={item.id || i}
                               className="self-stretch p-4 bg-시안-mode-gray5 inline-flex justify-start items-center gap-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
-                              onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                onElementSelect?.(
-                                  "sectionFeatItem",
-                                  `${section.id}_${i}`,
-                                );
-                              }}
                             >
                               {!isTitleHidden && (
                                 <SafeHtml
@@ -1898,17 +2386,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                   }}
                                 />
                               )}
-                              <img
-                                src={
+                              <UniversalMedia
+                                url={
                                   item.iconUrl ||
                                   "/images/template/icon_arrow.png"
                                 }
+                                className="w-8 h-8 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer shrink-0"
                                 alt="icon"
-                                className="object-contain cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all shrink-0"
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.(
-                                    "itemIconUrl",
+                                    "itemIcon",
                                     item.id || i.toString(),
                                   );
                                 }}
@@ -2036,7 +2524,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     {!section.contentStyle?.isHidden && (
                       <SafeHtml
                         html={section.content || "내용을 입력하세요."}
-                        className="self-stretch justify-start text-gray-500 text-base font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                        className="self-stretch justify-start text-gray-500 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                         style={getElementStyle(section.contentStyle, viewport)}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -2077,23 +2565,23 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           {images.map((img: string, imgIdx: number) => (
                             <div
                               key={imgIdx}
-                              className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-md w-full flex justify-center items-center aspect-video"
+                              className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-md w-full flex justify-center items-center h-auto"
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  "image",
+                                  `s11img_${section.id}_${imgIdx}`,
+                                );
+                              }}
                             >
                               <UniversalMedia
                                 url={img}
-                                className="w-full h-full object-cover"
+                                className="w-full h-auto object-contain"
                                 alt=""
                                 style={getElementStyle(
                                   section.imageStyle,
                                   viewport,
                                 )}
-                                onDoubleClick={(e) => {
-                                  e.stopPropagation();
-                                  onElementSelect?.(
-                                    `image`,
-                                    `s11img_${section.id}_${imgIdx}`,
-                                  );
-                                }}
                               />
                             </div>
                           ))}
@@ -2127,19 +2615,20 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                     key={item.id || i}
                                     className={`self-stretch py-6 flex justify-start items-center gap-6 ${i !== 0 ? "border-t border-gray-300" : ""}`}
                                   >
-                                    {/* 아이콘 영역 (원형 배경) */}
-                                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center shrink-0">
-                                      <img
-                                        src={
+                                    {/* 이미지 영역 (기존 아이콘) */}
+                                    <div className="w-20 h-auto shrink-0 relative transition-all">
+                                      <UniversalMedia
+                                        url={
+                                          item.iconUrl ||
                                           item.icon ||
-                                          "/images/template/icon_program_thumb.png"
+                                          "/images/placeholder/icon_default.png"
                                         }
-                                        alt="icon"
-                                        className="w-12 h-12 object-contain cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                                        className="w-full h-auto object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
+                                        alt="item image"
                                         onDoubleClick={(e) => {
                                           e.stopPropagation();
                                           onElementSelect?.(
-                                            "itemIcon",
+                                            "itemIcon", // Data structure probably expects this name
                                             item.id,
                                           );
                                         }}
@@ -2188,7 +2677,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                             item.desc ||
                                             "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
                                           }
-                                          className="self-stretch justify-start text-gray-400 text-sm font-normal font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                                          className="self-stretch justify-start text-gray-400 text-lg font-normal font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                                           style={getElementStyle(
                                             item.descStyle,
                                             viewport,
@@ -2260,7 +2749,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         section.bannerDesc ||
                         "배너명에 대한 설명하는 부분의 텍스트 박스 부분"
                       }
-                      className="self-stretch text-center justify-start text-gray-400 text-sm font-normal font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                      className="self-stretch text-center justify-start text-gray-400 text-lg font-normal font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                       style={getElementStyle(section.bannerDescStyle, viewport)}
                       onDoubleClick={(e) => {
                         e.stopPropagation();

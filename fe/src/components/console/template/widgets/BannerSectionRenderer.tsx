@@ -218,7 +218,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
                   className={`group relative block w-full md:w-auto cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
                 >
                   <UniversalMedia
-                    url={item.image}
+                    url={item.image || ""}
                     alt="배너 이미지"
                     className="transition-transform duration-300"
                     style={{
@@ -357,7 +357,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
               className={`absolute bottom-0 right-0 hidden aspect-[6/7] max-w-[240px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 flex justify-center items-center overflow-hidden${viewport !== "mobile" ? " md:block" : ""}${viewport === "desktop" ? " xl:left-[240px] xl:right-auto" : ""}`}
             >
               <UniversalMedia
-                url={w.data.image}
+                url={w.data.image || ""}
                 alt="banner"
                 className="w-full h-auto object-contain"
                 autoPlay={w.data.autoPlay ?? false}

@@ -21,25 +21,20 @@ import {
 import { PageData, Widget, WidgetType } from "@/types/console/template";
 import { HtmlCodeEditor } from "./HtmlCodeEditor";
 import { ElementEditor } from "./ElementEditor";
-import { UniversalMedia } from "../widgets/WidgetUtils";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 import { reorderItems, updateItemInArray } from "@/utils/template/itemUtils";
 import { usePopupStore } from "@/store/console/usePopupStore";
-import TextStructure5Manager from "./TextStructure5Manager";
 import TextStructure6Manager from "./TextStructure6Manager";
 import TextStructure7Manager from "./TextStructure7Manager";
 import ComparisonDescManager from "./ComparisonDescManager";
 import TextStructure8Manager from "./TextStructure8Manager";
 import TextStructure11Manager from "./TextStructure11Manager";
 import {
-  TEXT_STRUCTURE_5_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_7_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
-  TEXT_STRUCTURE_9_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
-import TextStructure9Manager from "./TextStructure9Manager";
 
 export interface PropertyPanelProps {
   viewport: "desktop" | "tablet" | "mobile";
@@ -175,7 +170,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     listArrayName = "steps";
   else if (
     (widget.data as any).items ||
-    ["video", "faq", "bannerSection", "infoBanner"].includes(widget.type) ||
+    ["video", "faq", "bannerSection"].includes(widget.type) ||
     (widget.type === "textSection" &&
       ["text2", "text3"].includes((widget.data as any).variant))
   )
@@ -186,30 +181,22 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
   // comparisonCard는 좌/우 개별 desc 관리 사용 → 기존 items 구조 관리 숨김
   if (widget.type === "comparisonCard") listArrayName = null;
 
-  // 텍스트 구조 레이아웃 5, 6, 7, 8, 9, 11은 전용 매니저 사용 → 기존 items 구조 관리 숨김
+  // 텍스트 구조 레이아웃 11 특징 항목 연동용 특별 키
   if (
     widget.type === "textStructure" &&
-    ["5", "6", "7", "8", "9", "11"].includes(
-      ((widget.data as any).layout || "1").toString(),
-    )
+    ((widget.data as any).layout || "1") === "11"
   ) {
-    listArrayName = null;
+    listArrayName = "sections11_features";
   }
 
   // 텍스트 구조 레이아웃 4 케이스 내부 항목 관리용 특별 키
   if (
     widget.type === "textStructure" &&
-    ((widget.data as any).layout || "1").toString() === "4"
+    ((widget.data as any).layout || "1") === "4"
   ) {
     if (selectedElementKey === "caseFeatures") listArrayName = "case_features";
     else if (selectedElementKey === "caseLogos") listArrayName = "case_logos";
-    else if (
-      selectedElementKey === "caseTitle" ||
-      selectedElementKey === "caseSubTitle" ||
-      selectedElementKey === "caseImageUrl"
-    ) {
-      listArrayName = null; // Do not render the array manager for single text/image element edits
-    } else listArrayName = "cases"; // 기본적으로 케이스 목록 관리
+    else listArrayName = "cases"; // 기본적으로 케이스 목록 관리
   }
 
   return (
@@ -219,6 +206,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
       <div
         className={`flex-1 overflow-y-auto p-4 custom-scrollbar hover:scroll-visible`}
       >
+
         {/* 섹션 설정 패널 */}
         {!selectedElementKey && (
           <div className={`space-y-4${!isSidebarOpen ? " hidden" : ""}`}>
@@ -1041,25 +1029,16 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   (widget.type === "bannerSection" ||
                     widget.type === "banner2") &&
                   (widget.data as any).variant === "banner2"
-                )) ||
-              (widget.type === "textStructure" &&
-                ["9", "11"].includes(
-                  ((widget.data as any).layout || "1").toString(),
                 ))) && (
               <>
                 <hr className="border-gray-200" />
                 {/* Structure Management */}
                 <div className="space-y-4">
-                  {!(
-                    widget.type === "textStructure" &&
-                    ((widget.data as any).layout || "1") === "5"
-                  ) && (
-                    <h4 className="text-sm font-bold text-gray-700 uppercase flex items-center gap-2">
-                      {widget.type === "process"
-                        ? "카드 및 방향 아이콘 설정"
-                        : "구조 관리"}
-                    </h4>
-                  )}
+                  <h4 className="text-sm font-bold text-gray-700 uppercase flex items-center gap-2">
+                    {widget.type === "process"
+                      ? "카드 및 방향 아이콘 설정"
+                      : "구조 관리"}
+                  </h4>
 
                   {/* 항목 간격 (Gap) 설정 */}
                   {(listArrayName ||
@@ -1206,14 +1185,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     ((widget.data as any).itemsPerRow ||
                                       ((widget.data as any).layout === "1"
                                         ? "3"
-                                        : (
-                                              (widget.data as any).layout || "1"
-                                            ).toString() === "4"
+                                        : (widget.data as any).layout === "4"
                                           ? "2"
-                                          : (
-                                                (widget.data as any).layout ||
-                                                "1"
-                                              ).toString() === "5"
+                                          : (widget.data as any).layout === "5"
                                             ? "2"
                                             : "4")) === num
                                       ? "bg-blue-500 text-white border-blue-600 shadow-md transform scale-105"
@@ -1272,9 +1246,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                             이미지 추가
                           </button>
                         </div>
-                      ) : widget.type === "textStructure" &&
-                        ((widget.data as any).layout || "1").toString() ===
-                          "4" ? null : (
+                      ) : (
                         <button
                           onClick={() => addNewItem(widget)}
                           className="w-full bg-blue-50 text-blue-600 border border-blue-200 p-2 rounded text-xs font-bold hover:bg-blue-100 flex items-center justify-center gap-1"
@@ -1285,8 +1257,12 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                       <div className="space-y-1 max-h-[250px] overflow-y-auto border rounded p-2 bg-gray-50 mt-2">
                         {(() => {
                           let arr: any[] = [];
-                          if (listArrayName === "sections11") {
-                            arr = (widget.data as any).sections11 || [];
+                          if (listArrayName === "sections11_features") {
+                            const secs = (widget.data as any).sections11 || [];
+                            const featureSec = secs.find(
+                              (s: any) => s.type === "features",
+                            );
+                            arr = featureSec?.items || [];
                           } else if (
                             listArrayName === "case_features" &&
                             selectedItemId
@@ -1320,301 +1296,277 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           }
                           if (listArrayName === "cases") {
                             const cases = (widget.data as any)?.cases || [];
-                            const renderedCases = cases.map(
-                              (c: any, idx: number) => {
-                                if (!c) return null;
-                                const isSelected = selectedItemId === c.id;
-                                return (
-                                  <div
-                                    key={c.id || idx}
-                                    className={`flex flex-col gap-3 bg-white p-3 rounded-xl shadow-sm border transition-all ${
-                                      isSelected
-                                        ? "border-blue-400 ring-2 ring-blue-50"
-                                        : "border-gray-100 hover:border-blue-200"
-                                    }`}
-                                  >
-                                    {/* 상단: 이름 및 기본 관리 */}
-                                    <div className="flex items-center gap-2">
-                                      <GripVertical
-                                        size={14}
-                                        className="text-gray-300 cursor-grab shrink-0"
-                                      />
-                                      <input
-                                        className="flex-1 min-w-0 text-xs font-bold text-gray-700 bg-transparent border-none outline-none focus:ring-0 p-0"
-                                        value={c.title || ""}
-                                        onChange={(e) => {
-                                          const updated = cases.map(
-                                            (it: any) =>
-                                              it.id === c.id
-                                                ? {
-                                                    ...it,
-                                                    title: e.target.value,
-                                                  }
-                                                : it,
-                                          );
-                                          updateWidgetData(widget.id, {
-                                            cases: updated,
-                                          });
-                                        }}
-                                        onFocus={() => {
-                                          setSelectedItemId(c.id);
-                                          setSelectedElementKey("caseTitle");
-                                        }}
-                                        placeholder={`케이스 ${idx + 1}`}
-                                      />
-                                      <div className="flex items-center gap-1 bg-gray-50 rounded p-1">
-                                        <button
-                                          onClick={() =>
-                                            moveArrayItem(
-                                              widget,
-                                              c.id,
-                                              "up",
-                                              "cases",
-                                            )
-                                          }
-                                          className={`p-1 rounded ${idx === 0 ? "text-gray-200" : "text-gray-400 hover:text-blue-500"}`}
-                                          disabled={idx === 0}
-                                        >
-                                          <ArrowUp size={12} />
-                                        </button>
-                                        <button
-                                          onClick={() =>
-                                            moveArrayItem(
-                                              widget,
-                                              c.id,
-                                              "down",
-                                              "cases",
-                                            )
-                                          }
-                                          className={`p-1 rounded ${idx === cases.length - 1 ? "text-gray-200" : "text-gray-400 hover:text-blue-500"}`}
-                                          disabled={idx === cases.length - 1}
-                                        >
-                                          <ArrowDown size={12} />
-                                        </button>
-                                        <button
-                                          onClick={() => {
-                                            const updated = cases.filter(
-                                              (it: any) => it.id !== c.id,
-                                            );
-                                            updateWidgetData(widget.id, {
-                                              cases: updated,
-                                            });
-                                          }}
-                                          className="text-red-300 hover:text-red-500 p-1"
-                                        >
-                                          <Trash2 size={12} />
-                                        </button>
-                                      </div>
-                                    </div>
-
-                                    {/* 하단 제어부: 반전 및 개수 조절 */}
-                                    <div className="flex flex-col gap-2 mt-1 pt-2 border-t border-gray-50">
+                            return cases.map((c: any, idx: number) => {
+                              if (!c) return null;
+                              const isSelected = selectedItemId === c.id;
+                              return (
+                                <div
+                                  key={c.id || idx}
+                                  className={`flex flex-col gap-3 bg-white p-3 rounded-xl shadow-sm border transition-all ${
+                                    isSelected
+                                      ? "border-blue-400 ring-2 ring-blue-50"
+                                      : "border-gray-100 hover:border-blue-200"
+                                  }`}
+                                >
+                                  {/* 상단: 이름 및 기본 관리 */}
+                                  <div className="flex items-center gap-2">
+                                    <GripVertical
+                                      size={14}
+                                      className="text-gray-300 cursor-grab shrink-0"
+                                    />
+                                    <input
+                                      className="flex-1 min-w-0 text-xs font-bold text-gray-700 bg-transparent border-none outline-none focus:ring-0 p-0"
+                                      value={c.title || ""}
+                                      onChange={(e) => {
+                                        const updated = cases.map((it: any) =>
+                                          it.id === c.id
+                                            ? { ...it, title: e.target.value }
+                                            : it,
+                                        );
+                                        updateWidgetData(widget.id, {
+                                          cases: updated,
+                                        });
+                                      }}
+                                      onFocus={() => {
+                                        setSelectedItemId(c.id);
+                                        setSelectedElementKey("caseTitle");
+                                      }}
+                                      placeholder={`케이스 ${idx + 1}`}
+                                    />
+                                    <div className="flex items-center gap-1 bg-gray-50 rounded p-1">
+                                      <button
+                                        onClick={() =>
+                                          moveArrayItem(
+                                            widget,
+                                            c.id,
+                                            "up",
+                                            "cases",
+                                          )
+                                        }
+                                        className={`p-1 rounded ${idx === 0 ? "text-gray-200" : "text-gray-400 hover:text-blue-500"}`}
+                                        disabled={idx === 0}
+                                      >
+                                        <ArrowUp size={12} />
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          moveArrayItem(
+                                            widget,
+                                            c.id,
+                                            "down",
+                                            "cases",
+                                          )
+                                        }
+                                        className={`p-1 rounded ${idx === cases.length - 1 ? "text-gray-200" : "text-gray-400 hover:text-blue-500"}`}
+                                        disabled={idx === cases.length - 1}
+                                      >
+                                        <ArrowDown size={12} />
+                                      </button>
                                       <button
                                         onClick={() => {
-                                          const updated = cases.map(
-                                            (it: any) =>
-                                              it.id === c.id
-                                                ? {
-                                                    ...it,
-                                                    imageOnRight:
-                                                      !it.imageOnRight,
-                                                  }
-                                                : it,
+                                          const updated = cases.filter(
+                                            (it: any) => it.id !== c.id,
                                           );
                                           updateWidgetData(widget.id, {
                                             cases: updated,
                                           });
                                         }}
-                                        className={`flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-bold border transition-all ${
-                                          c.imageOnRight
-                                            ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                                            : "bg-white text-gray-500 border-gray-200 hover:border-blue-300 hover:text-blue-500"
-                                        }`}
+                                        className="text-red-300 hover:text-red-500 p-1"
                                       >
-                                        <ArrowRightLeft size={12} />
-                                        좌우 반전{" "}
-                                        {c.imageOnRight ? "(우)" : "(좌)"}
+                                        <Trash2 size={12} />
                                       </button>
+                                    </div>
+                                  </div>
 
-                                      <div className="flex flex-col gap-1">
-                                        <div className="flex items-center justify-between px-1">
-                                          <span className="text-[9px] font-bold text-gray-400">
-                                            체크리스트
+                                  {/* 하단 제어부: 반전 및 개수 조절 */}
+                                  <div className="grid grid-cols-2 gap-2 mt-1 pt-2 border-t border-gray-50">
+                                    <button
+                                      onClick={() => {
+                                        const updated = cases.map((it: any) =>
+                                          it.id === c.id
+                                            ? {
+                                                ...it,
+                                                imageOnRight: !it.imageOnRight,
+                                              }
+                                            : it,
+                                        );
+                                        updateWidgetData(widget.id, {
+                                          cases: updated,
+                                        });
+                                      }}
+                                      className={`flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-bold border transition-all ${
+                                        c.imageOnRight
+                                          ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                                          : "bg-white text-gray-500 border-gray-200 hover:border-blue-300 hover:text-blue-500"
+                                      }`}
+                                    >
+                                      <ArrowRightLeft size={12} />
+                                      좌우 반전{" "}
+                                      {c.imageOnRight ? "(우)" : "(좌)"}
+                                    </button>
+
+                                    <div className="flex flex-col gap-1">
+                                      <div className="flex items-center justify-between px-1">
+                                        <span className="text-[9px] font-bold text-gray-400">
+                                          체크리스트
+                                        </span>
+                                        <div className="flex items-center gap-1">
+                                          <button
+                                            onClick={() => {
+                                              const updated = cases.map(
+                                                (it: any) => {
+                                                  if (it.id === c.id) {
+                                                    const feats = [
+                                                      ...(it.features || []),
+                                                    ];
+                                                    if (feats.length > 0)
+                                                      feats.pop();
+                                                    return {
+                                                      ...it,
+                                                      features: feats,
+                                                    };
+                                                  }
+                                                  return it;
+                                                },
+                                              );
+                                              updateWidgetData(widget.id, {
+                                                cases: updated,
+                                              });
+                                            }}
+                                            className="w-4 h-4 flex items-center justify-center bg-gray-100 rounded text-gray-500 hover:bg-gray-200"
+                                          >
+                                            <Minus size={10} />
+                                          </button>
+                                          <span className="text-[10px] font-bold text-blue-600 min-w-[12px] text-center">
+                                            {(c.features || []).length}
                                           </span>
-                                          <div className="flex items-center gap-1">
-                                            <button
-                                              onClick={() => {
-                                                const updated = cases.map(
-                                                  (it: any) => {
-                                                    if (it.id === c.id) {
-                                                      const feats = [
-                                                        ...(it.features || []),
-                                                      ];
-                                                      if (feats.length > 0)
-                                                        feats.pop();
-                                                      return {
-                                                        ...it,
-                                                        features: feats,
-                                                      };
-                                                    }
-                                                    return it;
-                                                  },
-                                                );
-                                                updateWidgetData(widget.id, {
-                                                  cases: updated,
-                                                });
-                                              }}
-                                              className="w-4 h-4 flex items-center justify-center bg-gray-100 rounded text-gray-500 hover:bg-gray-200"
-                                            >
-                                              <Minus size={10} />
-                                            </button>
-                                            <span className="text-[10px] font-bold text-blue-600 min-w-[12px] text-center">
-                                              {(c.features || []).length}
-                                            </span>
-                                            <button
-                                              onClick={() => {
-                                                const updated = cases.map(
-                                                  (it: any) => {
-                                                    if (it.id === c.id) {
-                                                      const feats = [
-                                                        ...(it.features || []),
-                                                      ];
-                                                      feats.push(
-                                                        "새로운 특징 항목을 입력하세요",
-                                                      );
-                                                      return {
-                                                        ...it,
-                                                        features: feats,
-                                                      };
-                                                    }
-                                                    return it;
-                                                  },
-                                                );
-                                                updateWidgetData(widget.id, {
-                                                  cases: updated,
-                                                });
-                                              }}
-                                              className="w-4 h-4 flex items-center justify-center bg-blue-100 rounded text-blue-600 hover:bg-blue-200"
-                                            >
-                                              <Plus size={10} />
-                                            </button>
-                                          </div>
+                                          <button
+                                            onClick={() => {
+                                              const updated = cases.map(
+                                                (it: any) => {
+                                                  if (it.id === c.id) {
+                                                    const feats = [
+                                                      ...(it.features || []),
+                                                    ];
+                                                    feats.push(
+                                                      "새로운 특징 항목을 입력하세요",
+                                                    );
+                                                    return {
+                                                      ...it,
+                                                      features: feats,
+                                                    };
+                                                  }
+                                                  return it;
+                                                },
+                                              );
+                                              updateWidgetData(widget.id, {
+                                                cases: updated,
+                                              });
+                                            }}
+                                            className="w-4 h-4 flex items-center justify-center bg-blue-100 rounded text-blue-600 hover:bg-blue-200"
+                                          >
+                                            <Plus size={10} />
+                                          </button>
                                         </div>
-                                        <div className="flex items-center justify-between px-1">
-                                          <span className="text-[9px] font-bold text-gray-400">
-                                            로고박스
+                                      </div>
+                                      <div className="flex items-center justify-between px-1">
+                                        <span className="text-[9px] font-bold text-gray-400">
+                                          로고박스
+                                        </span>
+                                        <div className="flex items-center gap-1">
+                                          <button
+                                            onClick={() => {
+                                              const updated = cases.map(
+                                                (it: any) => {
+                                                  if (it.id === c.id) {
+                                                    const logos = [
+                                                      ...(it.avatars || []),
+                                                    ];
+                                                    if (logos.length > 0)
+                                                      logos.pop();
+                                                    return {
+                                                      ...it,
+                                                      avatars: logos,
+                                                    };
+                                                  }
+                                                  return it;
+                                                },
+                                              );
+                                              updateWidgetData(widget.id, {
+                                                cases: updated,
+                                              });
+                                            }}
+                                            className="w-4 h-4 flex items-center justify-center bg-gray-100 rounded text-gray-500 hover:bg-gray-200"
+                                          >
+                                            <Minus size={10} />
+                                          </button>
+                                          <span className="text-[10px] font-bold text-gray-600 min-w-[12px] text-center">
+                                            {(c.avatars || []).length}
                                           </span>
-                                          <div className="flex items-center gap-1">
-                                            <button
-                                              onClick={() => {
-                                                const updated = cases.map(
-                                                  (it: any) => {
-                                                    if (it.id === c.id) {
-                                                      const logos = [
-                                                        ...(it.avatars || []),
-                                                      ];
-                                                      if (logos.length > 0)
-                                                        logos.pop();
-                                                      return {
-                                                        ...it,
-                                                        avatars: logos,
-                                                      };
-                                                    }
-                                                    return it;
-                                                  },
-                                                );
-                                                updateWidgetData(widget.id, {
-                                                  cases: updated,
-                                                });
-                                              }}
-                                              className="w-4 h-4 flex items-center justify-center bg-gray-100 rounded text-gray-500 hover:bg-gray-200"
-                                            >
-                                              <Minus size={10} />
-                                            </button>
-                                            <span className="text-[10px] font-bold text-gray-600 min-w-[12px] text-center">
-                                              {(c.avatars || []).length}
-                                            </span>
-                                            <button
-                                              onClick={() => {
-                                                const updated = cases.map(
-                                                  (it: any) => {
-                                                    if (it.id === c.id) {
-                                                      const logos = [
-                                                        ...(it.avatars || []),
-                                                      ];
-                                                      logos.push(
-                                                        "https://placehold.co/100x100",
-                                                      );
-                                                      return {
-                                                        ...it,
-                                                        avatars: logos,
-                                                      };
-                                                    }
-                                                    return it;
-                                                  },
-                                                );
-                                                updateWidgetData(widget.id, {
-                                                  cases: updated,
-                                                });
-                                              }}
-                                              className="w-4 h-4 flex items-center justify-center bg-gray-800 rounded text-white hover:bg-black"
-                                            >
-                                              <Plus size={10} />
-                                            </button>
-                                          </div>
+                                          <button
+                                            onClick={() => {
+                                              const updated = cases.map(
+                                                (it: any) => {
+                                                  if (it.id === c.id) {
+                                                    const logos = [
+                                                      ...(it.avatars || []),
+                                                    ];
+                                                    logos.push(
+                                                      "https://placehold.co/100x100",
+                                                    );
+                                                    return {
+                                                      ...it,
+                                                      avatars: logos,
+                                                    };
+                                                  }
+                                                  return it;
+                                                },
+                                              );
+                                              updateWidgetData(widget.id, {
+                                                cases: updated,
+                                              });
+                                            }}
+                                            className="w-4 h-4 flex items-center justify-center bg-gray-800 rounded text-white hover:bg-black"
+                                          >
+                                            <Plus size={10} />
+                                          </button>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                );
-                              },
-                            );
-
-                            if (
-                              (
-                                (widget.data as any).layout || "1"
-                              ).toString() === "4"
-                            ) {
-                              return (
-                                <>
-                                  {renderedCases}
-                                  <div key="add-case-btn" className="mt-2">
-                                    <button
-                                      onClick={() => {
-                                        const cases =
-                                          (widget.data as any).cases || [];
-                                        const newId = `case-${Date.now()}`;
-                                        const newCase = {
-                                          id: newId,
-                                          subTitle: `Case 0${cases.length + 1}`,
-                                          title:
-                                            "새로운 실적 타이틀을 입력하세요",
-                                          features: [
-                                            "특징 항목 1",
-                                            "특징 항목 2",
-                                          ],
-                                          avatars: [
-                                            "https://placehold.co/100x100",
-                                          ],
-                                          imageUrl:
-                                            "https://placehold.co/600x584",
-                                          imageOnRight: false,
-                                        };
-                                        updateWidgetData(widget.id, {
-                                          cases: [...cases, newCase],
-                                        });
-                                        setSelectedItemId(newId);
-                                      }}
-                                      className="w-full flex items-center justify-center gap-1.5 py-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 font-bold hover:bg-blue-100 transition-all text-[11px]"
-                                    >
-                                      <Plus size={14} />
-                                      새로운 실적 케이스 추가
-                                    </button>
-                                  </div>
-                                </>
+                                </div>
                               );
-                            }
-                            return renderedCases;
+                            });
+                          }
+
+                          if (listArrayName === "cases" && (widget.data as any).layout === "4") {
+                            return (
+                              <div key="add-case-btn" className="mt-2">
+                                <button
+                                  onClick={() => {
+                                    const cases = (widget.data as any).cases || [];
+                                    const newId = `case-${Date.now()}`;
+                                    const newCase = {
+                                      id: newId,
+                                      subTitle: `Case 0${cases.length + 1}`,
+                                      title: "새로운 실적 타이틀을 입력하세요",
+                                      features: ["특징 항목 1", "특징 항목 2"],
+                                      avatars: ["https://placehold.co/100x100"],
+                                      imageUrl: "https://placehold.co/600x584",
+                                      imageOnRight: false,
+                                    };
+                                    updateWidgetData(widget.id, {
+                                      cases: [...cases, newCase],
+                                    });
+                                    setSelectedItemId(newId);
+                                  }}
+                                  className="w-full flex items-center justify-center gap-1.5 py-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 font-bold hover:bg-blue-100 transition-all text-[11px]"
+                                >
+                                  <Plus size={14} />
+                                  새로운 실적 케이스 추가
+                                </button>
+                              </div>
+                            );
                           }
 
                           return arr.map((item: any, idx: number) => {
@@ -2471,24 +2423,17 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     </span>
                                     <textarea
                                       className="w-full text-[10px] text-gray-700 bg-gray-50 border border-gray-200 outline-none focus:ring-1 focus:ring-gray-300 px-2 py-1.5 rounded-lg min-h-[60px] resize-none"
-                                      value={(item.desc || "").replace(
-                                        /<br\s*\/?>/gi,
-                                        "\n",
-                                      )}
-                                      onChange={(e) => {
-                                        const val = e.target.value.replace(
-                                          /\n/g,
-                                          "<br/>",
-                                        );
+                                      value={item.desc || ""}
+                                      onChange={(e) =>
                                         updateWidgetData(widget.id, {
                                           [listArrayName!]: updateItemInArray(
                                             items,
                                             item.id,
                                             "desc",
-                                            val,
+                                            e.target.value,
                                           ),
-                                        });
-                                      }}
+                                        })
+                                      }
                                       onFocus={() => {
                                         setSelectedItemId(item.id);
                                         setSelectedElementKey("itemDesc");
@@ -2505,355 +2450,510 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     </>
                   ) : null}
 
-                  {/* Video Banner Controls - Video Detail Removed for 'video' type as requested */}
-                  {["banner3", "banner6", "banner7"].includes(widget.type) && (
-                    <div className="space-y-4 pt-2">
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-500 block uppercase italic flex items-center gap-1">
-                          <Video size={10} /> 영상 설정
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full border p-2 rounded text-xs focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50"
-                          value={(widget.data as any).videoUrl || ""}
-                          onChange={(e) =>
-                            updateWidgetData(widget.id, {
-                              videoUrl: e.target.value,
-                            })
+                {/* Layout 4 Case Feature/Logo Text Editing Hooks */}
+                {widget.type === "textStructure" &&
+                  (widget.data as any).layout === "4" &&
+                  selectedElementKey === "caseFeatureText" && (
+                    <div className="space-y-2 pt-2 border-t border-gray-100">
+                      <label className="text-[10px] font-black text-blue-600 block uppercase tracking-tighter italic">
+                        체크리스트 항목 텍스트 편집
+                      </label>
+                      <textarea
+                        className="w-full border p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white min-h-[100px] resize-none border-gray-100 shadow-sm"
+                        value={(() => {
+                          const [cIdx, fIdx] = (selectedItemId || "0:0")
+                            .split(":")
+                            .map(Number);
+                          return (widget.data as any).cases?.[cIdx]?.features?.[fIdx] || "";
+                        })()}
+                        onChange={(e) => {
+                          const [cIdx, fIdx] = (selectedItemId || "0:0")
+                            .split(":")
+                            .map(Number);
+                          const newCases = [...((widget.data as any).cases || [])];
+                          if (newCases[cIdx] && newCases[cIdx].features) {
+                            const newFeatures = [...newCases[cIdx].features];
+                            newFeatures[fIdx] = e.target.value;
+                            newCases[cIdx] = { ...newCases[cIdx], features: newFeatures };
+                            updateWidgetData(widget.id, { cases: newCases });
                           }
-                          placeholder="유튜브 영상 주소 입력"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() =>
-                            updateWidgetData(widget.id, {
-                              autoPlay: !(widget.data as any).autoPlay,
-                            })
+                        }}
+                        placeholder="특징 내용을 입력하세요..."
+                      />
+                    </div>
+                  )}
+
+                {widget.type === "textStructure" &&
+                  (widget.data as any).layout === "4" &&
+                  selectedElementKey === "caseLogoUrl" && (
+                    <div className="space-y-4 pt-2 border-t border-gray-100">
+                      <label className="text-[10px] font-black text-blue-600 block uppercase tracking-tighter italic">
+                        로고 이미지 설정
+                      </label>
+                      <ImgUploadPop
+                        onSelect={(url) => {
+                          const [cIdx, aIdx] = (selectedItemId || "0:0")
+                            .split(":")
+                            .map(Number);
+                          const newCases = [...((widget.data as any).cases || [])];
+                          if (newCases[cIdx] && newCases[cIdx].avatars) {
+                            const newAvatars = [...newCases[cIdx].avatars];
+                            newAvatars[aIdx] = url;
+                            newCases[cIdx] = { ...newCases[cIdx], avatars: newAvatars };
+                            updateWidgetData(widget.id, { cases: newCases });
                           }
-                          className={`p-2 rounded text-[10px] font-bold border transition-all flex items-center justify-center gap-1 ${
-                            (widget.data as any).autoPlay
-                              ? "bg-blue-500 text-white border-blue-600 shadow-inner"
-                              : "bg-gray-50 text-gray-400 border-gray-200 hover:bg-white"
-                          }`}
-                        >
-                          {(widget.data as any).autoPlay ? (
-                            <Check size={10} />
-                          ) : null}{" "}
-                          자동재생
-                        </button>
-                        <button
-                          onClick={() =>
-                            updateWidgetData(widget.id, {
-                              muted: !(widget.data as any).muted,
-                            })
-                          }
-                          className={`p-2 rounded text-[10px] font-bold border transition-all flex items-center justify-center gap-1 ${
-                            (widget.data as any).muted
-                              ? "bg-blue-500 text-white border-blue-600 shadow-inner"
-                              : "bg-gray-50 text-gray-400 border-gray-200 hover:bg-white"
-                          }`}
-                        >
-                          {(widget.data as any).muted ? (
-                            <Check size={10} />
-                          ) : null}{" "}
-                          음소거
-                        </button>
-                      </div>
-                      <p className="text-[9px] text-gray-400 leading-tight">
-                        * 자동재생 시 브라우저 정책에 따라 음소거 상태로
-                        시작됩니다.
+                        }}
+                        button={
+                          <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                            <ImageIcon
+                              size={24}
+                              className="text-gray-300 group-hover:text-blue-500 transition-colors"
+                            />
+                            <div className="flex flex-col items-start gap-1">
+                              <span className="text-xs font-bold text-gray-500 group-hover:text-blue-600 transition-colors">
+                                로고 이미지 변경
+                              </span>
+                              <span className="text-[10px] text-gray-400">
+                                이미지를 클릭하여 업로드하세요
+                              </span>
+                            </div>
+                          </div>
+                        }
+                      />
+                    </div>
+                  )}
+
+                {/* Video Banner Controls - Video Detail Removed for 'video' type as requested */}
+                {["banner3", "banner6", "banner7"].includes(widget.type) && (
+                  <div className="space-y-4 pt-2">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-500 block uppercase italic flex items-center gap-1">
+                        <Video size={10} /> 영상 설정
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full border p-2 rounded text-xs focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50"
+                        value={(widget.data as any).videoUrl || ""}
+                        onChange={(e) =>
+                          updateWidgetData(widget.id, { videoUrl: e.target.value })
+                        }
+                        placeholder="유튜브 영상 주소 입력"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() =>
+                          updateWidgetData(widget.id, {
+                            autoPlay: !(widget.data as any).autoPlay,
+                          })
+                        }
+                        className={`p-2 rounded text-[10px] font-bold border transition-all flex items-center justify-center gap-1 ${
+                          (widget.data as any).autoPlay
+                            ? "bg-blue-500 text-white border-blue-600 shadow-inner"
+                            : "bg-gray-50 text-gray-400 border-gray-200 hover:bg-white"
+                        }`}
+                      >
+                        {(widget.data as any).autoPlay ? <Check size={10} /> : null}{" "}
+                        자동재생
+                      </button>
+                      <button
+                        onClick={() =>
+                          updateWidgetData(widget.id, {
+                            muted: !(widget.data as any).muted,
+                          })
+                        }
+                        className={`p-2 rounded text-[10px] font-bold border transition-all flex items-center justify-center gap-1 ${
+                          (widget.data as any).muted
+                            ? "bg-blue-500 text-white border-blue-600 shadow-inner"
+                            : "bg-gray-50 text-gray-400 border-gray-200 hover:bg-white"
+                        }`}
+                      >
+                        {(widget.data as any).muted ? <Check size={10} /> : null}{" "}
+                        음소거
+                      </button>
+                    </div>
+                    <p className="text-[9px] text-gray-400 leading-tight">
+                      * 자동재생 시 브라우저 정책에 따라 음소거 상태로 시작됩니다.
+                    </p>
+                  </div>
+                )}
+
+                {/* Image Area Controls */}
+                {widget.type === "imageArea" && (
+                  <div className="space-y-6 pt-2">
+                    <div className="space-y-3">
+                      <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                        <ImageIcon size={14} className="text-blue-500" /> PC 이미지
+                        설정
+                      </label>
+                      <ImgUploadPop
+                        onSelect={(url) =>
+                          updateWidgetData(widget.id, { imageUrl: url })
+                        }
+                        button={
+                          <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                            <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <Upload size={18} />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-bold text-gray-700 text-sm">
+                                PC 이미지 선택
+                              </p>
+                              <p className="text-[10px] text-gray-400">
+                                서버 업로드 또는 선택
+                              </p>
+                            </div>
+                          </div>
+                        }
+                      />
+                      <input
+                        type="text"
+                        className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                        value={(widget.data as any).imageUrl || ""}
+                        onChange={(e) =>
+                          updateWidgetData(widget.id, { imageUrl: e.target.value })
+                        }
+                        placeholder="PC 이미지 URL을 입력하세요"
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                        <Smartphone size={14} className="text-blue-500" /> 모바일
+                        이미지 설정
+                      </label>
+                      <ImgUploadPop
+                        onSelect={(url) =>
+                          updateWidgetData(widget.id, { mobileImageUrl: url })
+                        }
+                        button={
+                          <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                            <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <Upload size={18} />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-bold text-gray-700 text-sm">
+                                모바일 이미지 선택
+                              </p>
+                              <p className="text-[10px] text-gray-400">
+                                서버 업로드 또는 선택
+                              </p>
+                            </div>
+                          </div>
+                        }
+                      />
+                      <input
+                        type="text"
+                        className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                        value={(widget.data as any).mobileImageUrl || ""}
+                        onChange={(e) =>
+                          updateWidgetData(widget.id, {
+                            mobileImageUrl: e.target.value,
+                          })
+                        }
+                        placeholder="모바일 이미지 URL을 입력하세요 (선택)"
+                      />
+                      <p className="text-[10px] text-gray-400 leading-tight">
+                        * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
+                        노출됩니다.
                       </p>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Image Area Controls */}
-                  {widget.type === "imageArea" && (
-                    <div className="space-y-6 pt-2">
-                      <div className="space-y-3">
-                        <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
-                          <ImageIcon size={14} className="text-blue-500" /> PC
-                          이미지 설정
+                {widget.type === "textStructure" && (
+                  <div className="space-y-2">
+                    {["1", "2", "3", "4"].includes(
+                      (widget as any).data.layout || "1",
+                    ) && (
+                      <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded-lg">
+                        <label className="text-sm text-gray-700">
+                          이미지/텍스트 좌우 반전
                         </label>
-                        <ImgUploadPop
-                          onSelect={(url) =>
-                            updateWidgetData(widget.id, { imageUrl: url })
-                          }
-                          button={
-                            <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
-                              <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Upload size={18} />
-                              </div>
-                              <div className="text-left">
-                                <p className="font-bold text-gray-700 text-sm">
-                                  PC 이미지 선택
-                                </p>
-                                <p className="text-[10px] text-gray-400">
-                                  서버 업로드 또는 선택
-                                </p>
-                              </div>
-                            </div>
-                          }
-                        />
-                        <input
-                          type="text"
-                          className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
-                          value={(widget.data as any).imageUrl || ""}
-                          onChange={(e) =>
+                        <button
+                          className={`relative w-10 h-5 rounded-full transition-colors ${
+                            (widget as any).data.reverseLayout
+                              ? "bg-blue-500"
+                              : "bg-gray-300"
+                          }`}
+                          onClick={() => {
                             updateWidgetData(widget.id, {
-                              imageUrl: e.target.value,
-                            })
-                          }
-                          placeholder="PC 이미지 URL을 입력하세요"
-                        />
-                      </div>
-
-                      <div className="space-y-3">
-                        <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
-                          <Smartphone size={14} className="text-blue-500" />{" "}
-                          모바일 이미지 설정
-                        </label>
-                        <ImgUploadPop
-                          onSelect={(url) =>
-                            updateWidgetData(widget.id, { mobileImageUrl: url })
-                          }
-                          button={
-                            <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
-                              <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Upload size={18} />
-                              </div>
-                              <div className="text-left">
-                                <p className="font-bold text-gray-700 text-sm">
-                                  모바일 이미지 선택
-                                </p>
-                                <p className="text-[10px] text-gray-400">
-                                  서버 업로드 또는 선택
-                                </p>
-                              </div>
-                            </div>
-                          }
-                        />
-                        <input
-                          type="text"
-                          className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
-                          value={(widget.data as any).mobileImageUrl || ""}
-                          onChange={(e) =>
-                            updateWidgetData(widget.id, {
-                              mobileImageUrl: e.target.value,
-                            })
-                          }
-                          placeholder="모바일 이미지 URL을 입력하세요 (선택)"
-                        />
-                        <p className="text-[10px] text-gray-400 leading-tight">
-                          * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
-                          노출됩니다.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {widget.type === "textStructure" && (
-                    <div className="space-y-2">
-                      {["1", "2", "3", "4"].includes(
-                        (widget as any).data.layout || "1",
-                      ) && (
-                        <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded-lg">
-                          <label className="text-sm text-gray-700">
-                            이미지/텍스트 좌우 반전
-                          </label>
-                          <button
-                            className={`relative w-10 h-5 rounded-full transition-colors ${
+                              reverseLayout: !(widget as any).data.reverseLayout,
+                            });
+                          }}
+                        >
+                          <span
+                            className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
                               (widget as any).data.reverseLayout
-                                ? "bg-blue-500"
-                                : "bg-gray-300"
+                                ? "translate-x-5"
+                                : "translate-x-0.5"
                             }`}
-                            onClick={() => {
-                              updateWidgetData(widget.id, {
-                                reverseLayout: !(widget as any).data
-                                  .reverseLayout,
-                              });
-                            }}
-                          >
-                            <span
-                              className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                                (widget as any).data.reverseLayout
-                                  ? "translate-x-5"
-                                  : "translate-x-0.5"
-                              }`}
-                            />
-                          </button>
+                          />
+                        </button>
+                      </div>
+                    )}
+
+                    {/* 레이아웃 6 전용: 동적 섹션 구조 관리 */}
+                    {((widget as any).data.layout || "1") === "6" && (
+                      <TextStructure6Manager
+                        widgetId={widget.id}
+                        sections={
+                          (widget as any).data.sections6 ||
+                          TEXT_STRUCTURE_6_DEFAULT_SECTIONS
+                        }
+                        updateWidgetData={updateWidgetData}
+                      />
+                    )}
+
+                    {/* 레이아웃 7 전용: 동적 섹션 구조 관리 */}
+                    {((widget as any).data.layout || "1") === "7" && (
+                      <TextStructure7Manager
+                        widgetId={widget.id}
+                        sections={
+                          (widget as any).data.sections7 ||
+                          TEXT_STRUCTURE_7_DEFAULT_SECTIONS
+                        }
+                        updateWidgetData={updateWidgetData}
+                      />
+                    )}
+
+                    {/* 레이아웃 8 전용: 동적 섹션 구조 관리 */}
+                    {((widget as any).data.layout || "1") === "8" && (
+                      <TextStructure8Manager
+                        widgetId={widget.id}
+                        sections={
+                          (widget as any).data.sections8 ||
+                          TEXT_STRUCTURE_8_DEFAULT_SECTIONS
+                        }
+                        updateWidgetData={updateWidgetData}
+                      />
+                    )}
+
+                    {/* 레이아웃 11 전용: 동적 섹션 구조 관리 */}
+                    {((widget as any).data.layout || "1") === "11" && (
+                      <TextStructure11Manager
+                        widgetId={widget.id}
+                        sections={
+                          (widget as any).data.sections11 ||
+                          TEXT_STRUCTURE_11_DEFAULT_SECTIONS
+                        }
+                        updateWidgetData={updateWidgetData}
+                      />
+                    )}
+                  </div>
+                )}
+
+                {/* Image Height Controls */}
+                {[
+                  "imageCard",
+                  "iconCard",
+                  "comparisonCard",
+                  "imageCarousel",
+                  "infoBanner",
+                  "process",
+                  "imageTitle3",
+                ].includes(widget.type) && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
+                      이미지 높이
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={80}
+                        max={800}
+                        className="flex-1 bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-center font-mono"
+                        value={
+                          parseInt(
+                            ((widget.data as any).imageHeight || "0").replace(
+                              "px",
+                              "",
+                            ),
+                          ) ||
+                          (widget.type === "iconCard"
+                            ? 320
+                            : widget.type === "comparisonCard"
+                              ? 320
+                              : widget.type === "imageCarousel"
+                                ? 300
+                                : widget.type === "infoBanner"
+                                  ? 412
+                                  : widget.type === "process"
+                                    ? 176
+                                    : widget.type === "titleBanner"
+                                      ? 384
+                                      : widget.type === "imageTitle3"
+                                        ? 400
+                                        : 240)
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val && !isNaN(Number(val))) {
+                            updateWidgetData(widget.id, {
+                              imageHeight: val + "px",
+                            });
+                          }
+                        }}
+                      />
+                      <span className="text-xs font-mono text-gray-400 shrink-0">
+                        px
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-gray-400">
+                      * 이미지 영역 높이를 조절합니다.
+                    </p>
+                  </div>
+                )}
+
+                {/* Table Controls - Reverted Position */}
+
+                {/* Image Layout Controls */}
+                {widget.type === "imageLayout" && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
+                      레이아웃 스타일
+                    </label>
+                    <select
+                      className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all cursor-pointer hover:bg-gray-100"
+                      value={(widget as any).data.variant}
+                      onChange={(e) => {
+                        setConfirmPop(
+                          true,
+                          "레이아웃을 변경하면 현재 입력된 데이터가 초기화될 수 있습니다. <br/>계속하시겠습니까?",
+                          2,
+                          () => {
+                            updateWidgetData(widget.id, {
+                              variant: e.target.value,
+                            });
+                          },
+                        );
+                      }}
+                    >
+                      <option value="list">리스트형</option>
+                      <option value="check">체크박스형</option>
+                      <option value="horizontal">가로 이미지</option>
+                      <option value="horizontal-video">가로 영상</option>
+                    </select>
+                  </div>
+                )}
+
+                <HtmlCodeEditor
+                  widget={widget}
+                  pageData={pageData}
+                  selectedSectionId={selectedSectionId}
+                  selectedWidgetId={selectedWidgetId}
+                  setPageData={setPageData}
+                  pushHistory={pushHistory}
+                />
+              </div>
+            </>
+          )}
+
+        {/* sections6 이미지 편집 패널 */}
+        {selectedElementKey &&
+          (selectedElementKey.startsWith("s6img_") ||
+            selectedElementKey.startsWith("s6banner_")) && (
+            <div className="absolute inset-0 bg-white z-10 flex flex-col overflow-y-auto">
+              {/* 헤더 */}
+              <div className="flex items-center gap-2 p-3 border-b border-gray-100 bg-white sticky top-0">
+                <button
+                  onClick={() => setSelectedElementKey(null)}
+                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 font-semibold"
+                >
+                  <ChevronLeft size={14} />
+                  뒤로
+                </button>
+                <span className="text-xs font-bold text-gray-700 flex-1 text-center pr-6">
+                  이미지 설정
+                </span>
+              </div>
+
+              {/* 이미지 편집 영역 */}
+              <div className="p-4 space-y-4">
+                {(() => {
+                  const key = selectedElementKey;
+                  const sections6: any[] =
+                    (widget.data as any).sections6 ||
+                    TEXT_STRUCTURE_6_DEFAULT_SECTIONS;
+
+                  let currentUrl = "";
+                  let sectionId = "";
+                  let imgIdx = -1;
+                  let isBanner = false;
+
+                  if (key.startsWith("s6img_")) {
+                    // format: s6img_{sectionId}_{imgIdx}
+                    const withoutPrefix = key.slice("s6img_".length);
+                    const lastUnderscore = withoutPrefix.lastIndexOf("_");
+                    sectionId = withoutPrefix.slice(0, lastUnderscore);
+                    imgIdx = parseInt(
+                      withoutPrefix.slice(lastUnderscore + 1),
+                      10,
+                    );
+                    const sec = sections6.find((s: any) => s.id === sectionId);
+                    currentUrl = sec?.images?.[imgIdx] || "";
+                  } else {
+                    // format: s6banner_{sectionId}
+                    isBanner = true;
+                    sectionId = key.slice("s6banner_".length);
+                    const sec = sections6.find((s: any) => s.id === sectionId);
+                    currentUrl = sec?.imageUrl || "";
+                  }
+
+                  const handleUpdate = (url: string) => {
+                    const updated = sections6.map((s: any) => {
+                      if (s.id !== sectionId) return s;
+                      if (isBanner) return { ...s, imageUrl: url };
+                      const imgs = [...(s.images || [])];
+                      imgs[imgIdx] = url;
+                      return { ...s, images: imgs };
+                    });
+                    updateWidgetData(widget.id, { sections6: updated });
+                  };
+
+                  return (
+                    <>
+                      {/* 미리보기 */}
+                      {currentUrl && (
+                        <div className="w-full h-36 rounded-xl overflow-hidden bg-gray-100">
+                          <img
+                            src={currentUrl}
+                            className="w-full h-full object-cover"
+                            alt=""
+                          />
                         </div>
                       )}
 
-                      {/* 레이아웃 5 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "5" && (
-                        <TextStructure5Manager
-                          widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections5 ||
-                            TEXT_STRUCTURE_5_DEFAULT_SECTIONS
-                          }
-                          updateWidgetData={updateWidgetData}
-                        />
-                      )}
-
-                      {/* 레이아웃 6 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "6" && (
-                        <TextStructure6Manager
-                          widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections6 ||
-                            TEXT_STRUCTURE_6_DEFAULT_SECTIONS
-                          }
-                          updateWidgetData={updateWidgetData}
-                        />
-                      )}
-
-                      {/* 레이아웃 7 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "7" && (
-                        <TextStructure7Manager
-                          widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections7 ||
-                            TEXT_STRUCTURE_7_DEFAULT_SECTIONS
-                          }
-                          updateWidgetData={updateWidgetData}
-                        />
-                      )}
-
-                      {/* 레이아웃 9 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "9" && (
-                        <TextStructure9Manager
-                          widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections9 ||
-                            TEXT_STRUCTURE_9_DEFAULT_SECTIONS
-                          }
-                          updateWidgetData={updateWidgetData}
-                        />
-                      )}
-
-                      {/* 레이아웃 11 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "11" && (
-                        <TextStructure11Manager
-                          widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections11 ||
-                            TEXT_STRUCTURE_11_DEFAULT_SECTIONS
-                          }
-                          updateWidgetData={updateWidgetData}
-                        />
-                      )}
-                    </div>
-                  )}
-
-                  {/* Image Height Controls */}
-                  {[
-                    "imageCard",
-                    "iconCard",
-                    "comparisonCard",
-                    "imageCarousel",
-                    "infoBanner",
-                    "process",
-                    "imageTitle3",
-                  ].includes(widget.type) && (
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
-                        이미지 높이
-                      </label>
-                      <div className="flex items-center gap-2">
+                      {/* URL 입력 */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gray-400 font-semibold">
+                          이미지 URL
+                        </label>
                         <input
-                          type="number"
-                          min={80}
-                          max={800}
-                          className="flex-1 bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-center font-mono"
-                          value={
-                            parseInt(
-                              ((widget.data as any).imageHeight || "0").replace(
-                                "px",
-                                "",
-                              ),
-                            ) ||
-                            (widget.type === "iconCard"
-                              ? 320
-                              : widget.type === "comparisonCard"
-                                ? 320
-                                : widget.type === "imageCarousel"
-                                  ? 300
-                                  : widget.type === "infoBanner"
-                                    ? 412
-                                    : widget.type === "process"
-                                      ? 176
-                                      : widget.type === "titleBanner"
-                                        ? 384
-                                        : widget.type === "imageTitle3"
-                                          ? 400
-                                          : 240)
-                          }
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            if (val && !isNaN(Number(val))) {
-                              updateWidgetData(widget.id, {
-                                imageHeight: val + "px",
-                              });
-                            }
-                          }}
+                          type="text"
+                          className="w-full bg-gray-50 border-none p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                          value={currentUrl}
+                          onChange={(e) => handleUpdate(e.target.value)}
+                          placeholder="이미지 URL을 입력하세요"
                         />
-                        <span className="text-xs font-mono text-gray-400 shrink-0">
-                          px
-                        </span>
                       </div>
-                      <p className="text-[10px] text-gray-400">
-                        * 이미지 영역 높이를 조절합니다.
-                      </p>
-                    </div>
-                  )}
 
-                  {/* Table Controls - Reverted Position */}
-
-                  {/* Image Layout Controls */}
-                  {widget.type === "imageLayout" && (
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
-                        레이아웃 스타일
-                      </label>
-                      <select
-                        className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all cursor-pointer hover:bg-gray-100"
-                        value={(widget as any).data.variant}
-                        onChange={(e) => {
-                          setConfirmPop(
-                            true,
-                            "레이아웃을 변경하면 현재 입력된 데이터가 초기화될 수 있습니다. <br/>계속하시겠습니까?",
-                            2,
-                            () => {
-                              updateWidgetData(widget.id, {
-                                variant: e.target.value,
-                              });
-                            },
-                          );
-                        }}
-                      >
-                        <option value="list">리스트형</option>
-                        <option value="check">체크박스형</option>
-                        <option value="horizontal">가로 이미지</option>
-                        <option value="horizontal-video">가로 영상</option>
-                      </select>
-                    </div>
-                  )}
-
-                  <HtmlCodeEditor
-                    widget={widget}
-                    pageData={pageData}
-                    selectedSectionId={selectedSectionId}
-                    selectedWidgetId={selectedWidgetId}
-                    setPageData={setPageData}
-                    pushHistory={pushHistory}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        )}
+                      {/* 업로드 버튼 */}
+                      <ImgUploadPop
+                        button={
+                          <button className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all border border-blue-200">
+                            <ImageIcon size={13} />
+                            이미지 선택 / 업로드
+                          </button>
+                        }
+                        onSelect={(url) => handleUpdate(url)}
+                      />
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
 
         {/* comparisonCard 좌/우 desc 항목 관리 패널 */}
         {selectedElementKey &&
@@ -2882,166 +2982,15 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             />
           )}
 
-        {/* sections5 체크리스트 / 라벨리스트 항목 텍스트 편집 패널 */}
-        {selectedElementKey &&
-          widget.type === "textStructure" &&
-          ((widget.data as any).layout || "1") === "5" &&
-          (selectedElementKey === "s5checkItem" ||
-            selectedElementKey === "s5labelItem") &&
-          selectedItemId &&
-          (() => {
-            const [sectionId, idxStr] = selectedItemId.split(":");
-            const itemIdx = parseInt(idxStr || "0", 10);
-            const sections5: any[] =
-              (widget.data as any).sections5 ||
-              TEXT_STRUCTURE_5_DEFAULT_SECTIONS;
-            const section = sections5.find((s: any) => s.id === sectionId);
-            const item = section?.items?.[itemIdx];
-            const isChecklist = selectedElementKey === "s5checkItem";
-
-            const handleChange = (prop: string, val: string) => {
-              const updated = sections5.map((s: any) => {
-                if (s.id !== sectionId) return s;
-                const items = [...(s.items || [])];
-                items[itemIdx] = { ...items[itemIdx], [prop]: val };
-                return { ...s, items };
-              });
-              updateWidgetData(widget.id, { sections5: updated });
-            };
-
-            return (
-              <div className="absolute inset-0 bg-white z-10 flex flex-col overflow-y-auto">
-                <div className="flex items-center gap-2 p-3 border-b border-gray-100 bg-white sticky top-0">
-                  <button
-                    onClick={() => setSelectedElementKey(null)}
-                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 font-semibold"
-                  >
-                    <ChevronLeft size={14} />
-                    뒤로
-                  </button>
-                  <span className="text-xs font-bold text-gray-700 flex-1 text-center pr-6">
-                    {isChecklist ? "체크리스트 항목 편집" : "라벨 항목 편집"}
-                  </span>
-                </div>
-                <div className="p-4 space-y-3">
-                  {isChecklist ? (
-                    <>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold">
-                          제목
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={item?.title || ""}
-                          onChange={(e) =>
-                            handleChange("title", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold">
-                          내용
-                        </label>
-                        <textarea
-                          className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
-                          rows={3}
-                          value={(item?.desc || "").replace(
-                            /<br\s*\/?>/gi,
-                            "\n",
-                          )}
-                          onChange={(e) =>
-                            handleChange(
-                              "desc",
-                              e.target.value.replace(/\n/g, "<br/>"),
-                            )
-                          }
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold uppercase flex items-center gap-1">
-                          <ImageIcon size={10} /> 아이콘/이미지
-                        </label>
-                        <ImgUploadPop
-                          onSelect={(url) => handleChange("icon", url)}
-                          button={
-                            <div className="flex items-center justify-center p-3 bg-gray-50 border border-dashed border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer transition-all">
-                              <UniversalMedia
-                                url={
-                                  item?.icon ||
-                                  "/images/template/icon_checkbox.png"
-                                }
-                                className="w-8 h-8 object-contain"
-                              />
-                            </div>
-                          }
-                        />
-                        <input
-                          type="text"
-                          className="w-full bg-gray-50 border-none p-2 rounded-lg text-[10px] focus:ring-2 focus:ring-blue-100 outline-none text-blue-600 font-mono"
-                          value={item?.icon || ""}
-                          onChange={(e) => handleChange("icon", e.target.value)}
-                          placeholder="이미지 URL을 입력하세요"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold">
-                          라벨명
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={item?.label || ""}
-                          onChange={(e) =>
-                            handleChange("label", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-gray-400 font-semibold">
-                          내용
-                        </label>
-                        <textarea
-                          className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
-                          rows={3}
-                          value={(item?.content || "").replace(
-                            /<br\s*\/?>/gi,
-                            "\n",
-                          )}
-                          onChange={(e) =>
-                            handleChange(
-                              "content",
-                              e.target.value.replace(/\n/g, "<br/>"),
-                            )
-                          }
-                        />
-                      </div>
-                    </>
-                  )}
-                  {!item && (
-                    <p className="text-xs text-gray-400 text-center py-4">
-                      항목을 찾을 수 없습니다.
-                    </p>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
-
         {/* 섹션 하위 요소 설정 패널 */}
         {selectedElementKey &&
-          selectedElementKey !== "s5checkItem" &&
-          selectedElementKey !== "s5labelItem" &&
+          !selectedElementKey.startsWith("s6img_") &&
+          !selectedElementKey.startsWith("s6banner_") &&
           !(
             widget.type === "comparisonCard" &&
             (selectedElementKey === "leftDescItems" ||
               selectedElementKey === "rightDescItems")
-          ) &&
-          selectedElementKey !== "caseFeatureText" &&
-          selectedElementKey !== "caseLogoUrl" && (
+          ) && (
             <ElementEditor
               widget={widget}
               elementKey={selectedElementKey}
@@ -3054,123 +3003,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               setUploadProgress={setUploadProgress}
             />
           )}
-
-        {/* TextStructure Layout 4 Case Feature/Logo Text Editing Hooks (Overlay View) */}
-        {selectedElementKey &&
-          widget.type === "textStructure" &&
-          ((widget.data as any).layout || "1").toString() === "4" &&
-          (selectedElementKey === "caseFeatureText" ||
-            selectedElementKey === "caseLogoUrl") && (
-            <div className="absolute inset-0 bg-white z-10 flex flex-col overflow-y-auto">
-              <div className="flex items-center gap-2 p-3 border-b border-gray-100 bg-white sticky top-0">
-                <button
-                  onClick={() => setSelectedElementKey(null)}
-                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 font-semibold"
-                >
-                  <ChevronLeft size={14} />
-                  뒤로
-                </button>
-                <span className="text-xs font-bold text-gray-700 flex-1 text-center pr-6">
-                  {selectedElementKey === "caseFeatureText"
-                    ? "체크리스트 내용 편집"
-                    : "로고 이미지 설정"}
-                </span>
-              </div>
-              <div className="p-4 space-y-4 flex-1 bg-gray-50/50">
-                {selectedElementKey === "caseFeatureText" && (
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-blue-600 block uppercase tracking-tighter italic">
-                      체크리스트 항목 텍스트
-                    </label>
-                    <textarea
-                      className="w-full border p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white min-h-[100px] resize-none border-gray-100 shadow-sm"
-                      value={(() => {
-                        const cases = (widget.data as any).cases || [];
-                        const [cId, fIdxStr] = (selectedItemId || "0:0").split(
-                          ":",
-                        );
-                        const cIdx = cases.findIndex(
-                          (c: any) => c.id === cId || cId === c.id,
-                        );
-                        if (cIdx === -1) return "";
-                        const raw =
-                          cases[cIdx]?.features?.[Number(fIdxStr)] || "";
-                        return raw.replace(/<br\s*\/?>/gi, "\n");
-                      })()}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\n/g, "<br/>");
-                        const cases = (widget.data as any).cases || [];
-                        const [cId, fIdxStr] = (selectedItemId || "0:0").split(
-                          ":",
-                        );
-                        const cIdx = cases.findIndex(
-                          (c: any) => c.id === cId || cId === c.id,
-                        );
-                        if (cIdx === -1) return;
-
-                        const newCases = [...cases];
-                        if (newCases[cIdx] && newCases[cIdx].features) {
-                          const newFeatures = [...newCases[cIdx].features];
-                          newFeatures[Number(fIdxStr)] = val;
-                          newCases[cIdx] = {
-                            ...newCases[cIdx],
-                            features: newFeatures,
-                          };
-                          updateWidgetData(widget.id, { cases: newCases });
-                        }
-                      }}
-                      placeholder="특징 내용을 입력하세요..."
-                    />
-                  </div>
-                )}
-
-                {selectedElementKey === "caseLogoUrl" && (
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black text-blue-600 block uppercase tracking-tighter italic">
-                      로고 이미지
-                    </label>
-                    <ImgUploadPop
-                      onSelect={(url) => {
-                        const cases = (widget.data as any).cases || [];
-                        const [cId, aIdxStr] = (selectedItemId || "0:0").split(
-                          ":",
-                        );
-                        const cIdx = cases.findIndex(
-                          (c: any) => c.id === cId || cId === c.id,
-                        );
-                        if (cIdx === -1) return;
-
-                        const newCases = [...cases];
-                        if (newCases[cIdx] && newCases[cIdx].avatars) {
-                          const newAvatars = [...newCases[cIdx].avatars];
-                          newAvatars[Number(aIdxStr)] = url;
-                          newCases[cIdx] = {
-                            ...newCases[cIdx],
-                            avatars: newAvatars,
-                          };
-                          updateWidgetData(widget.id, { cases: newCases });
-                        }
-                      }}
-                      button={
-                        <div className="flex flex-row items-center justify-center gap-4 w-full bg-white border-2 border-dashed border-gray-200 p-5 rounded-2xl cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group">
-                          <ImageIcon
-                            size={28}
-                            className="text-gray-300 group-hover:text-blue-500 transition-colors"
-                          />
-                          <div className="flex flex-col items-start gap-1">
-                            <span className="text-sm font-bold text-gray-500 group-hover:text-blue-600 transition-colors">
-                              새 이미지 업로드
-                            </span>
-                          </div>
-                        </div>
-                      }
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
       </div>
+        </div>
     </div>
   );
 };

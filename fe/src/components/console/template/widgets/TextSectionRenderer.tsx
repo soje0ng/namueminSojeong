@@ -168,7 +168,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
         <div className="mx-auto w-full max-w-[1920px]">
           <div className="w-full h-auto flex justify-center items-center overflow-hidden">
             <UniversalMedia
-              url={w.data.topImage}
+              url={w.data.topImage || ""}
               alt="banner"
               className="w-full h-auto object-contain cursor-pointer"
               onDoubleClick={(e) => {
@@ -269,7 +269,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <div className="flex size-[100px] items-center justify-center rounded-full md:size-[120px] shrink-0 overflow-hidden cursor-pointer flex justify-center items-center h-auto">
                     <UniversalMedia
-                      url={item.icon}
+                      url={item.icon || ""}
                       alt="Service"
                       className="w-full h-auto object-contain"
                       style={getElementStyle(item.iconStyle, viewport as any)}

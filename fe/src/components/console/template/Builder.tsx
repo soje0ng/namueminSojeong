@@ -632,10 +632,12 @@ const Builder: React.FC<BuilderProps> = ({
         newItem = {
           id,
           icon: "task_alt",
+          iconUrl: "/images/template/icon_program.png",
+          image: "/images/template/img1.png",
           title: "프로그램 특징",
-          titleStyle: { fontSize: "20px", fontWeight: "700", color: "#111827" },
+          titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
           desc: "프로그램 특징 내용 입력",
-          descStyle: { fontSize: "16px", fontWeight: "400", color: "#6b7280" },
+          descStyle: { fontSize: "16px", fontWeight: "400", color: "#FFFFFF" },
         };
       } else if (widget.type === "tabButton") {
         newItem = {
@@ -675,8 +677,74 @@ const Builder: React.FC<BuilderProps> = ({
     }
 
     if (newItem) {
-      const currentList = data[arrayName] || [];
-      updateWidgetData(widget.id, { [arrayName]: [...currentList, newItem] });
+      if (
+        widget.type === "textStructure" &&
+        (data.layout || "1") === "11" &&
+        data.sections11
+      ) {
+        const newSecs = data.sections11.map((s: any) => {
+          if (s.type === "features") {
+            const currentItems = s.items || [];
+            const count = currentItems.length + 1;
+            const featureItem = {
+              ...newItem,
+              number: count < 10 ? `0${count}.` : `${count}.`,
+              icon: "/images/template/icon_program_thumb.png",
+            };
+            return {
+              ...s,
+              items: [...currentItems, featureItem],
+            };
+          }
+          return s;
+        });
+        updateWidgetData(widget.id, { sections11: newSecs });
+      } else if (
+        widget.type === "textStructure" &&
+        (data.layout || "1") === "4"
+      ) {
+        // 레이아웃 4 특별 처리
+        if (arrayName === "addCase") {
+          const currentCases = data.cases || [];
+          const newCase = {
+            id: `case-${Date.now()}`,
+            subTitle: `Case 0${currentCases.length + 1}`,
+            title: "새로운 실적 타이틀",
+            features: ["새로운 특징 항목"],
+            avatars: ["https://placehold.co/100x100"],
+            imageOnRight: false,
+            imageUrl: "https://placehold.co/600x584",
+          };
+          updateWidgetData(widget.id, { cases: [...currentCases, newCase] });
+        } else if (arrayName === "case_features" && selectedItemId) {
+          const currentCases = data.cases || [];
+          const updatedCases = currentCases.map((c: any) => {
+            if (c.id === selectedItemId) {
+              return {
+                ...c,
+                features: [...(c.features || []), "새로운 특징 항목"],
+              };
+            }
+            return c;
+          });
+          updateWidgetData(widget.id, { cases: updatedCases });
+        } else if (arrayName === "case_logos" && selectedItemId) {
+          const currentCases = data.cases || [];
+          const updatedCases = currentCases.map((c: any) => {
+            if (c.id === selectedItemId) {
+              return {
+                ...c,
+                avatars: [...(c.avatars || []), "https://placehold.co/100x100"],
+              };
+            }
+            return c;
+          });
+          updateWidgetData(widget.id, { cases: updatedCases });
+        }
+      } else {
+        const currentList = data[arrayName] || [];
+        updateWidgetData(widget.id, { [arrayName]: [...currentList, newItem] });
+      }
     }
   };
 
@@ -686,10 +754,60 @@ const Builder: React.FC<BuilderProps> = ({
     arrayName: string = "items",
   ) => {
     const data = widget.data as any;
-    if (!data[arrayName]) return;
-    updateWidgetData(widget.id, {
-      [arrayName]: data[arrayName].filter((i: any) => i.id !== itemId),
-    });
+    if (arrayName === "sections11_features" && data.sections11) {
+      const newSecs = data.sections11.map((s: any) => {
+        if (s.type === "features") {
+          return {
+            ...s,
+            items: s.items.filter((i: any) => i.id !== itemId),
+          };
+        }
+        return s;
+      });
+      updateWidgetData(widget.id, { sections11: newSecs });
+    } else if (
+      widget.type === "textStructure" &&
+      (data.layout || "1") === "4"
+    ) {
+      if (arrayName === "deleteCase") {
+        const currentCases = data.cases || [];
+        const updatedCases = currentCases.filter(
+          (_: any, idx: number) => idx.toString() !== itemId,
+        );
+        updateWidgetData(widget.id, { cases: updatedCases });
+      } else if (arrayName === "case_features" && selectedItemId) {
+        const currentCases = data.cases || [];
+        const updatedCases = currentCases.map((c: any) => {
+          if (c.id === selectedItemId) {
+            const idx = parseInt(itemId.replace("f-", ""));
+            const updatedFeatures = (c.features || []).filter(
+              (_: any, i: number) => i !== idx,
+            );
+            return { ...c, features: updatedFeatures };
+          }
+          return c;
+        });
+        updateWidgetData(widget.id, { cases: updatedCases });
+      } else if (arrayName === "case_logos" && selectedItemId) {
+        const currentCases = data.cases || [];
+        const updatedCases = currentCases.map((c: any) => {
+          if (c.id === selectedItemId) {
+            const idx = parseInt(itemId.replace("a-", ""));
+            const updatedLogos = (c.avatars || []).filter(
+              (_: any, i: number) => i !== idx,
+            );
+            return { ...c, avatars: updatedLogos };
+          }
+          return c;
+        });
+        updateWidgetData(widget.id, { cases: updatedCases });
+      }
+    } else {
+      if (!data[arrayName]) return;
+      updateWidgetData(widget.id, {
+        [arrayName]: data[arrayName].filter((i: any) => i.id !== itemId),
+      });
+    }
     if (selectedItemId === itemId) setSelectedItemId(null);
   };
 
@@ -700,6 +818,64 @@ const Builder: React.FC<BuilderProps> = ({
     arrayName: string = "items",
   ) => {
     const data = widget.data as any;
+
+    if (arrayName === "sections11_features" && data.sections11) {
+      const featureSec = data.sections11.find(
+        (s: any) => s.type === "features",
+      );
+      if (!featureSec) return;
+      const items = [...(featureSec.items || [])];
+      const idx = items.findIndex((i: any) => i.id === itemId);
+      if (idx === -1) return;
+
+      if (direction === "up" && idx > 0) {
+        [items[idx], items[idx - 1]] = [items[idx - 1], items[idx]];
+      } else if (direction === "down" && idx < items.length - 1) {
+        [items[idx], items[idx + 1]] = [items[idx + 1], items[idx]];
+      }
+
+      const newSecs = data.sections11.map((s: any) =>
+        s.type === "features" ? { ...s, items } : s,
+      );
+      updateWidgetData(widget.id, { sections11: newSecs });
+      return;
+    }
+
+    if (widget.type === "textStructure" && (data.layout || "1") === "4") {
+      const currentCases = data.cases || [];
+      if (arrayName === "case_features" && selectedItemId) {
+        const updatedCases = currentCases.map((c: any) => {
+          if (c.id === selectedItemId) {
+            const idx = parseInt(itemId.replace("f-", ""));
+            const items = [...(c.features || [])];
+            if (direction === "up" && idx > 0)
+              [items[idx], items[idx - 1]] = [items[idx - 1], items[idx]];
+            else if (direction === "down" && idx < items.length - 1)
+              [items[idx], items[idx + 1]] = [items[idx + 1], items[idx]];
+            return { ...c, features: items };
+          }
+          return c;
+        });
+        updateWidgetData(widget.id, { cases: updatedCases });
+        return;
+      } else if (arrayName === "case_logos" && selectedItemId) {
+        const updatedCases = currentCases.map((c: any) => {
+          if (c.id === selectedItemId) {
+            const idx = parseInt(itemId.replace("a-", ""));
+            const items = [...(c.avatars || [])];
+            if (direction === "up" && idx > 0)
+              [items[idx], items[idx - 1]] = [items[idx - 1], items[idx]];
+            else if (direction === "down" && idx < items.length - 1)
+              [items[idx], items[idx + 1]] = [items[idx + 1], items[idx]];
+            return { ...c, avatars: items };
+          }
+          return c;
+        });
+        updateWidgetData(widget.id, { cases: updatedCases });
+        return;
+      }
+    }
+
     if (!data[arrayName]) return;
     const items = [...data[arrayName]];
     const idx = items.findIndex((i: any) => i.id === itemId);
@@ -823,7 +999,19 @@ const Builder: React.FC<BuilderProps> = ({
       else arrayName = "blocks";
     }
 
-    const items = d[arrayName];
+    const items =
+      arrayName === "sections11_features"
+        ? d.sections11?.find((s: any) => s.type === "features")?.items || []
+        : arrayName === "case_features" && selectedItemId
+          ? (
+              d.cases?.find((c: any) => c.id === selectedItemId)?.features || []
+            ).map((f: string, i: number) => ({ id: `f-${i}`, text: f }))
+          : arrayName === "case_logos" && selectedItemId
+            ? (
+                d.cases?.find((c: any) => c.id === selectedItemId)?.avatars ||
+                []
+              ).map((a: string, i: number) => ({ id: `a-${i}`, image: a }))
+            : d[arrayName];
     if (!Array.isArray(items)) return;
 
     const fromIndex = items.findIndex((it: any) => it.id === draggedId);
@@ -835,7 +1023,30 @@ const Builder: React.FC<BuilderProps> = ({
     const [moved] = newItems.splice(fromIndex, 1);
     newItems.splice(toIndex, 0, moved);
 
-    updateWidgetData(widgetId, { [arrayName]: newItems });
+    if (arrayName === "sections11_features") {
+      const newSecs = d.sections11.map((s: any) =>
+        s.type === "features" ? { ...s, items: newItems } : s,
+      );
+      updateWidgetData(widgetId, { sections11: newSecs });
+    } else if (arrayName === "case_features" && selectedItemId) {
+      const updatedCases = d.cases.map((c: any) => {
+        if (c.id === selectedItemId) {
+          return { ...c, features: newItems.map((it) => it.text) };
+        }
+        return c;
+      });
+      updateWidgetData(widgetId, { cases: updatedCases });
+    } else if (arrayName === "case_logos" && selectedItemId) {
+      const updatedCases = d.cases.map((c: any) => {
+        if (c.id === selectedItemId) {
+          return { ...c, avatars: newItems.map((it) => it.image) };
+        }
+        return c;
+      });
+      updateWidgetData(widgetId, { cases: updatedCases });
+    } else {
+      updateWidgetData(widgetId, { [arrayName]: newItems });
+    }
   };
 
   const getWidgetName = (type: WidgetType) => {
