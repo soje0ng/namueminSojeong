@@ -33,7 +33,7 @@ export const VIDEO_DEFAULTS = {
     {
       id: "i1",
       type: "image",
-      url: "/images/template/video_thumb.jpg",
+      url: "/images/placeholder/video_thumb.jpg",
       title: "이미지 제목",
       desc: "설명",
       itemTitleStyle: { fontSize: "24px", fontSizeMobile: "20px" },

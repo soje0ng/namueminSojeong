@@ -27,24 +27,24 @@ export const TITLE_BANNER_DEFAULTS = {
   textContent:
     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
   textContentStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
-  feature1Image: "/images/template/icon_program.png",
+  feature1Image: "/images/placeholder/icon_program.png",
   feature1Title: "프로그램 특징",
   feature1TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature1Desc: "프로그램 특징 내용 입력",
   feature1DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
-  feature2Image: "/images/template/icon_program.png",
+  feature2Image: "/images/placeholder/icon_program.png",
   feature2Title: "프로그램 특징",
   feature2TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature2Desc: "프로그램 특징 내용 입력",
   feature2DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
-  feature3Image: "/images/template/icon_program.png",
+  feature3Image: "/images/placeholder/icon_program.png",
   feature3Title: "프로그램 특징",
   feature3TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature3Desc: "프로그램 특징 내용 입력",
   feature3DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
-  backgroundImage: "/images/template/titlebanner_banckground.png",
-  layout1Image: "/images/template/title_banner_img.png",
-  layout2HeroImage: "/images/template/title_banner_img2.png",
+  backgroundImage: "/images/placeholder/titlebanner_banckground.png",
+  layout1Image: "/images/placeholder/title_banner_img.png",
+  layout2HeroImage: "/images/placeholder/title_banner_img2.png",
   layout3Image: "/images/placeholder/hero-img.jpg",
   quoteLeftUrl: "/images/placeholder/icon-quote.jpg",
   quoteRightUrl: "/images/placeholder/icon-quote.jpg",
@@ -161,7 +161,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   {[1, 2, 3].map((idx) => {
                     const fImg = (data as any)[
                       `feature${idx}Image` ||
-                        "/images/template/icon_program.png"
+                        "/images/placeholder/icon_program.png"
                     ];
                     const fTitle = (data as any)[
                       `feature${idx}Title` || "프로그램 특징"
@@ -297,7 +297,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 className="w-[360px] h-auto max-h-[440px] rounded-tl-[60px] object-cover"
                 src={
                   data.layout2HeroImage ||
-                  "/images/template/title_banner_img2.png"
+                  "/images/placeholder/title_banner_img2.png"
                 }
                 onDoubleClick={(e) => {
                   e.stopPropagation();

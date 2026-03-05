@@ -21,7 +21,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
   imageUrl: "/images/placeholder/section-image.jpg",
   imageStyle: { objectFit: "cover", borderRadius: "16px" },
 
-  l4CheckIconUrl: "/images/template/check_bullet.png",
+  l4CheckIconUrl: "/images/placeholder/check_bullet.png",
 
   bgImageUrl: "/images/placeholder/bg-image.jpg",
   contentTitle: "USCIS 우선심사 프로젝트<br/>Copper Valley",
@@ -41,9 +41,9 @@ export const TEXT_STRUCTURE_DEFAULTS = {
         "첫째 치대, 둘째 로스쿨, 셋째 아트스쿨 진학 성공",
       ],
       avatars: [
-        "/images/template/icon_checkbox.png",
-        "/images/template/icon_checkbox.png",
-        "/images/template/icon_checkbox.png",
+        "/images/placeholder/icon_checkbox.png",
+        "/images/placeholder/icon_checkbox.png",
+        "/images/placeholder/icon_checkbox.png",
       ],
       imageUrl: "/images/placeholder/section-image.jpg",
       imageOnRight: false,
@@ -236,19 +236,19 @@ export const TEXT_STRUCTURE_8_DEFAULT_SECTIONS = [
         id: "f8-1",
         title: "첫째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/template/icon_arrow.png",
+        iconUrl: "/images/placeholder/icon-arrow.png",
       },
       {
         id: "f8-2",
         title: "둘째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/template/icon_arrow.png",
+        iconUrl: "/images/placeholder/icon-arrow.png",
       },
       {
         id: "f8-3",
         title: "셋째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/template/icon_arrow.png",
+        iconUrl: "/images/placeholder/icon-arrow.png",
       },
     ],
   },
@@ -276,19 +276,19 @@ export const TEXT_STRUCTURE_9_DEFAULT_SECTIONS = [
         id: "f9-1",
         title: "첫째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/template/icon_arrow.png",
+        iconUrl: "/images/placeholder/icon-arrow.png",
       },
       {
         id: "f9-2",
         title: "둘째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/template/icon_arrow.png",
+        iconUrl: "/images/placeholder/icon-arrow.png",
       },
       {
         id: "f9-3",
         title: "셋째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/template/icon_arrow.png",
+        iconUrl: "/images/placeholder/icon-arrow.png",
       },
     ],
   },
@@ -312,7 +312,7 @@ export const TEXT_STRUCTURE_11_DEFAULT_SECTIONS = [
     id: "s11-img-1",
     type: "image",
     columns: 1,
-    images: ["/images/template/text_structure_img11.png"],
+    images: ["/images/placeholder/text_structure_img11.png"],
     imageHeight: "358",
   },
   {
@@ -324,21 +324,21 @@ export const TEXT_STRUCTURE_11_DEFAULT_SECTIONS = [
         number: "01.",
         title: "프로그램 특징",
         desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
-        icon: "/images/template/icon_program_thumb.png",
+        icon: "/images/placeholder/icon_program_thumb.png",
       },
       {
         id: "f11-2",
         number: "02.",
         title: "프로그램 특징",
         desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
-        icon: "/images/template/icon_program_thumb.png",
+        icon: "/images/placeholder/icon_program_thumb.png",
       },
       {
         id: "f11-3",
         number: "03.",
         title: "프로그램 특징",
         desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
-        icon: "/images/template/icon_program_thumb.png",
+        icon: "/images/placeholder/icon_program_thumb.png",
       },
     ],
   },
@@ -446,7 +446,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       >
                         <UniversalMedia
                           url={
-                            item.iconUrl || "/images/template/icon_bullet.png"
+                            item.iconUrl || "/images/placeholder/icon_bullet.png"
                           }
                           className="w-6 h-6 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer shrink-0"
                           alt="icon"
@@ -805,7 +805,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               <img
                                 src={
                                   data.l4CheckIconUrl ||
-                                  "/images/template/check_bullet.png"
+                                  "/images/placeholder/check_bullet.png"
                                 }
                                 alt="check"
                                 className="w-full h-full object-contain"
@@ -1139,7 +1139,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                 <UniversalMedia
                                   url={
                                     item.icon ||
-                                    "/images/template/label_feature_icon.png"
+                                    "/images/placeholder/label_feature_icon.png"
                                   }
                                   className="w-10 h-10 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer shrink-0"
                                   alt="icon"
@@ -1348,7 +1348,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         {/* 체크박스 이미지 */}
                         <UniversalMedia
                           url={
-                            item.iconUrl || "/images/template/icon_checkbox.png"
+                            item.iconUrl || "/images/placeholder/icon_checkbox.png"
                           }
                           className="w-10 h-10 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
                           alt="icon"
@@ -2389,7 +2389,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               <UniversalMedia
                                 url={
                                   item.iconUrl ||
-                                  "/images/template/icon_arrow.png"
+                                  "/images/placeholder/icon-arrow.png"
                                 }
                                 className="w-8 h-8 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer shrink-0"
                                 alt="icon"

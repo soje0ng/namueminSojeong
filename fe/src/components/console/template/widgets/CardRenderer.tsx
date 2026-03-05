@@ -31,7 +31,7 @@ export const CARD_LIST_DEFAULTS = {
   items: [
     {
       id: "1",
-      image: "/images/template/img1.png",
+      image: "/images/placeholder/img1.png",
       imageStyle: { borderRadius: "0px" },
       title: "콘텐츠 비즈니스 <br/>설계자들 2024",
       titleStyle: { fontSize: "20px", fontWeight: "700" },
@@ -53,7 +53,7 @@ export const CARD_LIST_DEFAULTS = {
     },
     {
       id: "2",
-      image: "/images/template/img2.png",
+      image: "/images/placeholder/img2.png",
       imageStyle: { borderRadius: "0px" },
       title: "콘텐츠 비즈니스 <br/>설계자들 2024",
       titleStyle: { fontSize: "20px", fontWeight: "700" },
@@ -75,7 +75,7 @@ export const CARD_LIST_DEFAULTS = {
     },
     {
       id: "3",
-      image: "/images/template/img3.png",
+      image: "/images/placeholder/img3.png",
       imageStyle: { borderRadius: "0px" },
       title: "콘텐츠 비즈니스 <br/>설계자들 2024",
       titleStyle: { fontSize: "20px", fontWeight: "700" },
@@ -138,7 +138,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
               }}
             >
               <UniversalMedia
-                url={item.image || "/images/template/img1.png"}
+                url={item.image || "/images/placeholder/img1.png"}
                 className="w-auto h-auto max-w-full max-h-full transition-transform duration-700 group-hover:scale-105 object-contain"
                 style={{
                   width: "auto",
@@ -270,7 +270,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
                     onElementSelect?.("image", item.id);
                   }}
 
-                    src="/images/template/icon_house.png"
+                    src="/images/placeholder/icon.png"
                     alt="icon"
                     className="w-full h-auto object-contain"
                   />
@@ -291,7 +291,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
             }}
           >
             <UniversalMedia
-              url={item.image || "/images/template/img1.png"}
+              url={item.image || "/images/placeholder/img1.png"}
               className="w-full h-auto transition-transform duration-500 group-hover:scale-105 object-contain"
               style={{ width: "100%", height: "auto" }}
               onDoubleClick={(e) => {

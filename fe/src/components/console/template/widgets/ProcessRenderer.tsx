@@ -27,7 +27,7 @@ export const PROCESS_DEFAULTS = {
       number: "1",
       title: "상담 신청",
       desc: "홈페이지를 통해 상담을 신청합니다.",
-      icon: "/images/template/like_cat.jpg",
+      icon: "/images/placeholder/like_cat.jpg",
       label: "평균 1~2일 소요",
       titleStyle: {
         fontWeight: "700",
@@ -41,7 +41,7 @@ export const PROCESS_DEFAULTS = {
       number: "2",
       title: "계약 체결",
       desc: "전문가와 상세 상담 후 계약을 체결합니다.",
-      icon: "/images/template/like_cat.jpg",
+      icon: "/images/placeholder/like_cat.jpg",
       label: "평균 3~5일 소요",
       titleStyle: {
         fontWeight: "700",
@@ -55,7 +55,7 @@ export const PROCESS_DEFAULTS = {
       number: "3",
       title: "서비스 진행",
       desc: "체계적인 절차에 따라 업무를 수행합니다.",
-      icon: "/images/template/like_cat.jpg",
+      icon: "/images/placeholder/like_cat.jpg",
       label: "평균 2~4주 소요",
       titleStyle: {
         fontWeight: "700",
@@ -71,7 +71,7 @@ export const PROCESS_STEP_DEFAULT = {
   number: "01",
   title: "새 단계",
   desc: "설명",
-  icon: "/images/template/like_cat.jpg",
+  icon: "/images/placeholder/like_cat.jpg",
   label: "안내 문구",
   titleStyle: { fontWeight: "700", fontSize: "20px", fontSizeMobile: "20px" },
   descStyle: { fontSize: "18px" },
@@ -690,7 +690,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   onElementSelect?.("imageUrl");
                 }}
 
-                                  src="/images/template/arrow.png"
+                                  src="/images/placeholder/arrow.png"
                                   alt="next"
                                   className="w-full h-full object-contain opacity-40 max-w-none"
                                 />
@@ -705,7 +705,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   onElementSelect?.("imageUrl");
                 }}
 
-                                  src="/images/template/arrow.png"
+                                  src="/images/placeholder/arrow.png"
                                   alt="next"
                                   className="w-full h-full object-contain opacity-40 max-w-none"
                                 />
@@ -889,7 +889,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   onElementSelect?.("imageUrl");
                 }}
 
-                              url={step.icon || "/images/template/like_cat.jpg"}
+                              url={step.icon || "/images/placeholder/like_cat.jpg"}
                               className="w-full h-auto block mx-auto hover:scale-110 transition-transform duration-500"
                               alt="step icon"
                               style={getElementStyle(

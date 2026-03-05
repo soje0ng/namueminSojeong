@@ -26,7 +26,7 @@ export const ICON_CARD_DEFAULTS = {
   items: [
     {
       id: "ts-1",
-      icon: "/images/template/icon_default.png",
+      icon: "/images/placeholder/icon_default.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -38,7 +38,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-2",
-      icon: "/images/template/icon_default.png",
+      icon: "/images/placeholder/icon_default.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -50,7 +50,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-3",
-      icon: "/images/template/icon_default.png",
+      icon: "/images/placeholder/icon_default.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -62,7 +62,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-4",
-      icon: "/images/template/icon_default.png",
+      icon: "/images/placeholder/icon_default.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -76,7 +76,7 @@ export const ICON_CARD_DEFAULTS = {
 };
 
 export const ICON_CARD_ITEM_DEFAULT = {
-  icon: "/images/template/icon_default.png",
+  icon: "/images/placeholder/icon_default.png",
   title: "콘텐츠 비즈니스 설계자들 2024",
   desc: "새로운 시대를 이끄는 기획자들의 비결",
   titleStyle: { fontWeight: "700", fontSize: "20px", fontSizeMobile: "20px" },
@@ -152,7 +152,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 className="self-stretch w-full h-auto object-contain"
                 url={
                   (w.data as any).imageUrl ||
-                  "/images/template/icon_card_banner.png"
+                  "/images/placeholder/icon_card_banner.png"
                 }
                 alt="banner image"
                 style={{
@@ -191,9 +191,9 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                     <UniversalMedia
                       url={
                         item.icon &&
-                        item.icon !== "/images/template/icon_default.png"
+                        item.icon !== "/images/placeholder/icon_default.png"
                           ? item.icon
-                          : "/images/template/icon_default.png"
+                          : "/images/placeholder/icon_default.png"
                       }
                       alt="icon"
                       className="w-10 h-10 object-contain"
@@ -284,9 +284,9 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                   <UniversalMedia
                     url={
                       item.icon &&
-                      item.icon !== "/images/template/icon_default.png"
+                      item.icon !== "/images/placeholder/icon_default.png"
                         ? item.icon
-                        : "/images/template/icon_default.png"
+                        : "/images/placeholder/icon_default.png"
                     }
                     alt="icon"
                     className="w-10 h-10 object-contain"
@@ -419,9 +419,9 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         <UniversalMedia
                           url={
                             item.icon &&
-                            item.icon !== "/images/template/icon_default.png"
+                            item.icon !== "/images/placeholder/icon_default.png"
                               ? item.icon
-                              : "/images/template/icon_default.png"
+                              : "/images/placeholder/icon_default.png"
                           }
                           alt="icon"
                           className="w-16 h-16 object-contain"
@@ -577,9 +577,9 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         <UniversalMedia
                           url={
                             item.icon &&
-                            item.icon !== "/images/template/icon_default.png"
+                            item.icon !== "/images/placeholder/icon_default.png"
                               ? item.icon
-                              : "/images/template/icon_default.png"
+                              : "/images/placeholder/icon_default.png"
                           }
                           alt="icon"
                           className="w-16 h-16 object-contain"
@@ -712,9 +712,9 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                           <UniversalMedia
                             url={
                               item.icon &&
-                              item.icon !== "/images/template/icon_default.png"
+                              item.icon !== "/images/placeholder/icon_default.png"
                                 ? item.icon
-                                : "/images/template/icon_default.png"
+                                : "/images/placeholder/icon_default.png"
                             }
                             alt="icon"
                             className="w-10 h-10 object-contain"

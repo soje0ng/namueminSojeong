@@ -40,7 +40,7 @@ export const GRID_CARD_DEFAULTS = {
         color: "#ffffff",
         backgroundColor: "#104893",
       },
-      image: "/images/template/default_new.jpg",
+      image: "/images/placeholder/card-sm.jpg",
     },
     {
       id: "2",
@@ -57,7 +57,7 @@ export const GRID_CARD_DEFAULTS = {
         color: "#ffffff",
         backgroundColor: "#104893",
       },
-      image: "/images/template/default_new.jpg",
+      image: "/images/placeholder/card-sm.jpg",
     },
     {
       id: "3",
@@ -74,7 +74,7 @@ export const GRID_CARD_DEFAULTS = {
         color: "#ffffff",
         backgroundColor: "#104893",
       },
-      image: "/images/template/default_new.jpg",
+      image: "/images/placeholder/card-sm.jpg",
     },
   ],
 };

@@ -25,7 +25,7 @@ export const TEXT_SECTION_DEFAULTS = {
     {
       id: "b1",
       type: "image",
-      url: "/images/template/like_cat.jpg",
+      url: "/images/placeholder/like_cat.jpg",
       style: { objectFit: "cover" },
     },
     {

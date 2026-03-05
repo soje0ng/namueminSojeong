@@ -682,7 +682,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 </table>
               </div>
               <div className="absolute left-1/2 top-[20%] -translate-x-1/2 transition-opacity duration-300 hover:opacity-0 group-hover:opacity-0 min-[1510px]:hidden pointer-events-none">
-                <img src="/images/template/scroll_img.png" alt="scroll" />
+                <img src="/images/placeholder/arrow.png" alt="scroll" />
               </div>
             </div>
           </div>
