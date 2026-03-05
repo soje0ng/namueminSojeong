@@ -18,7 +18,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
   titleStyle: { fontSize: "36px", fontWeight: "700", color: "#111827" },
   desc: "이민 프로그램명 입력",
   descStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
-  imageUrl: "/images/placeholder/section-image.jpg",
+  imageUrl: "/images/placeholder/ts_main_image.jpg",
   imageStyle: { objectFit: "cover", borderRadius: "16px" },
 
   l4CheckIconUrl: "/images/placeholder/check_bullet.png",
@@ -41,11 +41,11 @@ export const TEXT_STRUCTURE_DEFAULTS = {
         "첫째 치대, 둘째 로스쿨, 셋째 아트스쿨 진학 성공",
       ],
       avatars: [
-        "/images/placeholder/icon_checkbox.png",
-        "/images/placeholder/icon_checkbox.png",
-        "/images/placeholder/icon_checkbox.png",
+        "/images/placeholder/ts_avatar_01.png",
+        "/images/placeholder/ts_avatar_02.png",
+        "/images/placeholder/ts_avatar_03.png",
       ],
-      imageUrl: "/images/placeholder/section-image.jpg",
+      imageUrl: "/images/placeholder/ts_case_image.jpg",
       imageOnRight: false,
     },
   ],
@@ -92,8 +92,8 @@ export const TEXT_STRUCTURE_5_DEFAULT_SECTIONS = [
     type: "image",
     columns: 2,
     images: [
-      "/images/placeholder/section-image.jpg",
-      "/images/placeholder/section-image.jpg",
+      "/images/placeholder/ts_section_img_01.jpg",
+      "/images/placeholder/ts_section_img_02.jpg",
     ],
     imageHeight: "384",
   },
@@ -117,7 +117,7 @@ export const TEXT_STRUCTURE_5_DEFAULT_SECTIONS = [
   {
     id: "s5-labellist-1",
     type: "labelList",
-    imageUrl: "/images/placeholder/section-image.jpg",
+    imageUrl: "/images/placeholder/ts_label_list_img.jpg",
     items: [
       { id: "ll-1", label: "라벨명", content: "프로그램 특징 내용 입력" },
       { id: "ll-2", label: "라벨명", content: "프로그램 특징 내용 입력" },
@@ -128,7 +128,7 @@ export const TEXT_STRUCTURE_5_DEFAULT_SECTIONS = [
   {
     id: "s5-banner-1",
     type: "imageBanner",
-    imageUrl: "/images/placeholder/strip-banner.jpg",
+    imageUrl: "/images/placeholder/ts_banner_img_01.jpg",
     bannerSubTitle: "서브 타이틀 입력",
     bannerDesc:
       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
@@ -141,8 +141,8 @@ export const TEXT_STRUCTURE_6_DEFAULT_SECTIONS = [
     type: "image",
     columns: 2,
     images: [
-      "/images/placeholder/section-image.jpg",
-      "/images/placeholder/section-image.jpg",
+      "/images/placeholder/ts_imgs_l6_01.jpg",
+      "/images/placeholder/ts_imgs_l6_02.jpg",
     ],
     imageHeight: "384",
   },
@@ -174,7 +174,7 @@ export const TEXT_STRUCTURE_6_DEFAULT_SECTIONS = [
   {
     id: "s6-banner-1",
     type: "stripBanner",
-    imageUrl: "/images/placeholder/strip-banner.jpg",
+    imageUrl: "/images/placeholder/ts_banner_img_02.jpg",
     bannerSubTitle: "서브 타이틀 입력",
     bannerDesc: "내용을 입력하세요.",
   },
@@ -186,8 +186,8 @@ export const TEXT_STRUCTURE_7_DEFAULT_SECTIONS = [
     type: "image",
     columns: 2,
     images: [
-      "/images/placeholder/section-image.jpg",
-      "/images/placeholder/section-image.jpg",
+      "/images/placeholder/ts_imgs_l7_01.jpg",
+      "/images/placeholder/ts_imgs_l7_02.jpg",
     ],
     imageHeight: "380",
   },
@@ -207,7 +207,7 @@ export const TEXT_STRUCTURE_7_DEFAULT_SECTIONS = [
   {
     id: "s7-banner-1",
     type: "stripBanner",
-    imageUrl: "/images/placeholder/strip-banner.jpg",
+    imageUrl: "/images/placeholder/ts_banner_img_03.jpg",
     bannerSubTitle: "서브 타이틀 입력",
     bannerDesc: "내용을 입력하세요.",
   },
@@ -218,7 +218,7 @@ export const TEXT_STRUCTURE_8_DEFAULT_SECTIONS = [
     id: "s8-img-1",
     type: "image",
     columns: 1,
-    images: ["/images/placeholder/wide-image.jpg"],
+    images: ["/images/placeholder/ts_wide_img_l8.jpg"],
     imageHeight: "288",
   },
   {
@@ -242,13 +242,13 @@ export const TEXT_STRUCTURE_8_DEFAULT_SECTIONS = [
         id: "f8-2",
         title: "둘째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/placeholder/icon-arrow.png",
+        iconUrl: "/images/placeholder/icon_arrow_right.png",
       },
       {
         id: "f8-3",
         title: "셋째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/placeholder/icon-arrow.png",
+        iconUrl: "/images/placeholder/icon_bullet.png",
       },
     ],
   },
@@ -282,13 +282,13 @@ export const TEXT_STRUCTURE_9_DEFAULT_SECTIONS = [
         id: "f9-2",
         title: "둘째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/placeholder/icon-arrow.png",
+        iconUrl: "/images/placeholder/icon_arrow_right.png",
       },
       {
         id: "f9-3",
         title: "셋째. 타이틀",
         desc: "설명 텍스트를 입력하세요.",
-        iconUrl: "/images/placeholder/icon-arrow.png",
+        iconUrl: "/images/placeholder/icon_bullet.png",
       },
     ],
   },
@@ -331,14 +331,14 @@ export const TEXT_STRUCTURE_11_DEFAULT_SECTIONS = [
         number: "02.",
         title: "프로그램 특징",
         desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
-        icon: "/images/placeholder/icon_program_thumb.png",
+        icon: "/images/placeholder/icon_program.png",
       },
       {
         id: "f11-3",
         number: "03.",
         title: "프로그램 특징",
         desc: "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다.",
-        icon: "/images/placeholder/icon_program_thumb.png",
+        icon: "/images/placeholder/ib_icon1.png",
       },
     ],
   },
@@ -374,7 +374,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             >
               <div className="w-full xl:w-[560px] shrink-0 relative flex justify-center items-center h-auto">
                 <UniversalMedia
-                  url={data.imageUrl || "/images/placeholder/section-image.jpg"}
+                  url={data.imageUrl || "/images/placeholder/ts_layout2_img.jpg"}
                   className="w-full h-auto object-contain"
                   alt="Structure Image"
                   style={getElementStyle(data.imageStyle, viewport)}
@@ -970,7 +970,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             : "grid-cols-4";
                     const images: string[] =
                       section.images ||
-                      Array(cols).fill("/images/placeholder/section-image.jpg");
+                      Array(cols).fill("/images/placeholder/ts_section_fill_img.jpg");
                     return (
                       <div
                         key={section.id}
@@ -986,7 +986,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           >
                             <img
                               src={
-                                img || "/images/placeholder/section-image.jpg"
+                                img || "/images/placeholder/ts_section_default.jpg"
                               }
                               className="w-full h-auto object-cover"
                               alt=""
@@ -1177,7 +1177,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           <UniversalMedia
                             url={
                               section.imageUrl ||
-                              "/images/placeholder/section-image.jpg"
+                              "/images/placeholder/ts_labellist_main.jpg"
                             }
                             className="w-full object-cover"
                             alt=""
@@ -1210,7 +1210,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           <UniversalMedia
                             url={
                               section.imageUrl ||
-                              "/images/placeholder/strip-banner.jpg"
+                              "/images/placeholder/ts_banner_layout5.jpg"
                             }
                             className="w-full h-full object-cover"
                             alt=""
@@ -1348,7 +1348,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         {/* 체크박스 이미지 */}
                         <UniversalMedia
                           url={
-                            item.iconUrl || "/images/placeholder/icon_checkbox.png"
+                            item.iconUrl || "/images/placeholder/ts_checklist_icon.png"
                           }
                           className="w-10 h-10 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
                           alt="icon"
@@ -1407,7 +1407,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
-                  url={data.imageUrl || "/images/placeholder/section-image.jpg"}
+                  url={data.imageUrl || "/images/placeholder/ts_layout_side_img.jpg"}
                   className="w-full h-auto object-contain"
                   alt="Structure Image"
                   style={{
@@ -1501,7 +1501,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       .fill("")
                       .map(
                         (_: any, i: number) =>
-                          `/images/placeholder/section-image.jpg`,
+                          `/images/placeholder/ts_grid_img_l6.jpg`,
                       );
                   return (
                     <div
@@ -1651,7 +1651,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       <UniversalMedia
                         url={
                           section.imageUrl ||
-                          "/images/placeholder/strip-banner.jpg"
+                          "/images/placeholder/ts_strip_layout6.jpg"
                         }
                         className="w-full md:w-96 shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
                         style={{
@@ -1810,7 +1810,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         .fill("")
                         .map(
                           (_: any, i: number) =>
-                            `/images/placeholder/section-image.jpg`,
+                            `/images/placeholder/ts_grid_img_l7.jpg`,
                         );
                     return (
                       <div
@@ -1956,7 +1956,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         <UniversalMedia
                           url={
                             section.imageUrl ||
-                            "/images/placeholder/strip-banner.jpg"
+                            "/images/placeholder/ts_strip_layout7.jpg"
                           }
                           className="w-full md:w-96 shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
                           style={{
@@ -2302,7 +2302,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
-                  url={data.imageUrl || "/images/placeholder/section-image.jpg"}
+                  url={data.imageUrl || "/images/placeholder/ts_case_banner_img.jpg"}
                   className="w-full h-auto object-contain"
                   alt="Text Structure 9 Image"
                   style={getElementStyle(data.imageStyle, viewport)}
@@ -2389,7 +2389,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               <UniversalMedia
                                 url={
                                   item.iconUrl ||
-                                  "/images/placeholder/icon-arrow.png"
+                                  "/images/placeholder/ts_feat_forward_icon.png"
                                 }
                                 className="w-8 h-8 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer shrink-0"
                                 alt="icon"
@@ -2556,7 +2556,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         section.images ||
                         Array(cols)
                           .fill("")
-                          .map(() => `/images/placeholder/section-image.jpg`);
+                          .map(() => `/images/placeholder/ts_dynamic_img.jpg`);
                       return (
                         <div
                           key={section.id}

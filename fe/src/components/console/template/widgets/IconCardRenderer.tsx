@@ -26,7 +26,7 @@ export const ICON_CARD_DEFAULTS = {
   items: [
     {
       id: "ts-1",
-      icon: "/images/placeholder/icon_default.png",
+      icon: "/images/placeholder/icon_feature_01.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -38,7 +38,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-2",
-      icon: "/images/placeholder/icon_default.png",
+      icon: "/images/placeholder/icon_feature_02.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -50,7 +50,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-3",
-      icon: "/images/placeholder/icon_default.png",
+      icon: "/images/placeholder/icon_feature_03.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -62,7 +62,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-4",
-      icon: "/images/placeholder/icon_default.png",
+      icon: "/images/placeholder/icon_feature_04.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -76,7 +76,7 @@ export const ICON_CARD_DEFAULTS = {
 };
 
 export const ICON_CARD_ITEM_DEFAULT = {
-  icon: "/images/placeholder/icon_default.png",
+  icon: "/images/placeholder/icon_feature_new.png",
   title: "콘텐츠 비즈니스 설계자들 2024",
   desc: "새로운 시대를 이끄는 기획자들의 비결",
   titleStyle: { fontWeight: "700", fontSize: "20px", fontSizeMobile: "20px" },
@@ -712,7 +712,8 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                           <UniversalMedia
                             url={
                               item.icon &&
-                              item.icon !== "/images/placeholder/icon_default.png"
+                              item.icon !==
+                                "/images/placeholder/icon_default.png"
                                 ? item.icon
                                 : "/images/placeholder/icon_default.png"
                             }

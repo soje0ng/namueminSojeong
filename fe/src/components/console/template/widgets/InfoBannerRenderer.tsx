@@ -20,7 +20,7 @@ export const INFO_BANNER_DEFAULTS = {
   contentTitleStyle: { fontSize: "36px", fontWeight: "500", color: "#111827" },
   contentDesc: "설명 텍스트 입력 영역입니다.",
   contentDescStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
-  imageUrl: "/images/placeholder/section-image.jpg",
+  imageUrl: "/images/placeholder/infobanner_hero.jpg",
   imageStyle: { objectFit: "cover" },
   items: [
     {
@@ -244,7 +244,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
-                  url={data.imageUrl || "/images/placeholder/section-image.jpg"}
+                  url={data.imageUrl || "/images/placeholder/infobanner_hero.jpg"}
                   alt="banner"
                   className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}
@@ -563,7 +563,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               </div>
               <div className="w-full xl:w-[620px] h-auto shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all shadow-[8px_8px_20px_0px_rgba(0,0,0,0.12)] rounded-3xl xl:rounded-l-none xl:rounded-tr-[40px] xl:rounded-bl-[40px] z-0 overflow-hidden flex justify-center items-center">
                 <UniversalMedia
-                  url={data.imageUrl || "/images/placeholder/section-image.jpg"}
+                  url={data.imageUrl || "/images/placeholder/infobanner_hero.jpg"}
                   alt="banner"
                   className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}
@@ -700,7 +700,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               {/* Right Large Image */}
               <div className="w-full xl:w-[620px] h-auto shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-2xl overflow-hidden shadow-sm flex justify-center items-center">
                 <UniversalMedia
-                  url={data.imageUrl || "/images/placeholder/section-image.jpg"}
+                  url={data.imageUrl || "/images/placeholder/infobanner_hero.jpg"}
                   alt="banner"
                   className="w-full h-auto object-contain"
                   style={getElementStyle(data.imageStyle, viewport)}

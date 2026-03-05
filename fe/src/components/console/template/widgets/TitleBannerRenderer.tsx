@@ -27,17 +27,17 @@ export const TITLE_BANNER_DEFAULTS = {
   textContent:
     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
   textContentStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
-  feature1Image: "/images/placeholder/icon_program.png",
+  feature1Image: "/images/placeholder/banner_feature_01.png",
   feature1Title: "프로그램 특징",
   feature1TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature1Desc: "프로그램 특징 내용 입력",
   feature1DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
-  feature2Image: "/images/placeholder/icon_program.png",
+  feature2Image: "/images/placeholder/banner_feature_02.png",
   feature2Title: "프로그램 특징",
   feature2TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature2Desc: "프로그램 특징 내용 입력",
   feature2DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
-  feature3Image: "/images/placeholder/icon_program.png",
+  feature3Image: "/images/placeholder/banner_feature_03.png",
   feature3Title: "프로그램 특징",
   feature3TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature3Desc: "프로그램 특징 내용 입력",
@@ -46,8 +46,8 @@ export const TITLE_BANNER_DEFAULTS = {
   layout1Image: "/images/placeholder/title_banner_img.png",
   layout2HeroImage: "/images/placeholder/title_banner_img2.png",
   layout3Image: "/images/placeholder/hero-img.jpg",
-  quoteLeftUrl: "/images/placeholder/icon-quote.jpg",
-  quoteRightUrl: "/images/placeholder/icon-quote.jpg",
+  quoteLeftUrl: "/images/placeholder/banner_quote_left.jpg",
+  quoteRightUrl: "/images/placeholder/banner_quote_right.jpg",
   layout3SmallTitle: "1명당 유학 비용 30억원의 시대, 가장 합리적인 선택!",
   layout3SmallTitleStyle: {
     color: "#131416",
@@ -161,7 +161,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   {[1, 2, 3].map((idx) => {
                     const fImg = (data as any)[
                       `feature${idx}Image` ||
-                        "/images/placeholder/icon_program.png"
+                        "/images/placeholder/banner_feature_01.png"
                     ];
                     const fTitle = (data as any)[
                       `feature${idx}Title` || "프로그램 특징"
@@ -277,7 +277,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={data.desc || "서브타이틀 입력 영역"}
                 className="self-stretch justify-start text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                style={{ color: "#6b7280", ...getElementStyle(data.descStyle, viewport) }}
+                style={{
+                  color: "#6b7280",
+                  ...getElementStyle(data.descStyle, viewport),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -316,9 +319,15 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 />
                 <div className="w-14 h-px bg-gray-10"></div>
                 <SafeHtml
-                  html={data.textContent || "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다."}
+                  html={
+                    data.textContent ||
+                    "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다."
+                  }
                   className="self-stretch justify-start text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                  style={{ color: "#6b7280", ...getElementStyle(data.textContentStyle, viewport) }}
+                  style={{
+                    color: "#6b7280",
+                    ...getElementStyle(data.textContentStyle, viewport),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("textContent");
@@ -352,11 +361,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("imageUrl");
+                  }}
                   url={data.quoteLeftUrl}
                   className="w-full h-full object-contain"
                   alt="Left Quote"
@@ -409,11 +417,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("imageUrl");
+                  }}
                   url={data.quoteRightUrl}
                   className="w-full h-full object-contain"
                   alt="Right Quote"

@@ -138,7 +138,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
               }}
             >
               <UniversalMedia
-                url={item.image || "/images/placeholder/img1.png"}
+                url={item.image || "/images/placeholder/card_img_default.jpg"}
                 className="w-auto h-auto max-w-full max-h-full transition-transform duration-700 group-hover:scale-105 object-contain"
                 style={{
                   width: "auto",
@@ -265,11 +265,10 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
                   </span>
                 ) : (
                   <img
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("image", item.id);
-                  }}
-
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("image", item.id);
+                    }}
                     src="/images/placeholder/icon.png"
                     alt="icon"
                     className="w-full h-auto object-contain"
@@ -291,7 +290,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
             }}
           >
             <UniversalMedia
-              url={item.image || "/images/placeholder/img1.png"}
+              url={item.image || "/images/placeholder/card_img_default.jpg"}
               className="w-full h-auto transition-transform duration-500 group-hover:scale-105 object-contain"
               style={{ width: "100%", height: "auto" }}
               onDoubleClick={(e) => {
