@@ -685,6 +685,11 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             {idx % pcCols !== 0 && (
                               <div className="hidden xl:flex absolute top-1/2 -left-5 -translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-20 pointer-events-none">
                                 <img
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                                   src="/images/template/arrow.png"
                                   alt="next"
                                   className="w-full h-full object-contain opacity-40 max-w-none"
@@ -695,6 +700,11 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             {idx % 2 !== 0 && (
                               <div className="hidden md:flex xl:hidden absolute top-1/2 -left-5 -translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-20 pointer-events-none">
                                 <img
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                                   src="/images/template/arrow.png"
                                   alt="next"
                                   className="w-full h-full object-contain opacity-40 max-w-none"
@@ -874,6 +884,11 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             }}
                           >
                             <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                               url={step.icon || "/images/template/like_cat.jpg"}
                               className="w-full h-auto block mx-auto hover:scale-110 transition-transform duration-500"
                               alt="step icon"

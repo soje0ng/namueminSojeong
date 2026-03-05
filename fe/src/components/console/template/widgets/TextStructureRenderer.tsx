@@ -359,6 +359,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <img
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   src={data.imageUrl}
                   alt="Structure Image"
                   className="w-full h-auto object-contain"
@@ -546,12 +551,22 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <img
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   className="w-full h-full xl:w-[960px] xl:h-[800px] left-0 top-0 absolute mix-blend-overlay object-cover"
                   src={data.bgImageUrl}
                   alt="Background Overlay"
                 />
                 <div className="self-stretch flex-1 relative overflow-hidden flex justify-center items-center h-auto">
                   <img
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                     className="w-full relative object-contain h-auto"
                     src={data.imageUrl}
                     alt="Main Content Image"
@@ -647,6 +662,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     }}
                   >
                     <img
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                       src={c.imageUrl}
                       alt={`Case ${i + 1} Image`}
                       className="w-full h-auto object-contain"
@@ -899,6 +919,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <img
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   src={data.imageUrl || "/images/placeholder/section-image.jpg"}
                   alt="Structure Image"
                   className="w-full h-auto object-contain"

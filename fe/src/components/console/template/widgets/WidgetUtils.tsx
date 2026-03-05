@@ -328,7 +328,7 @@ export const UniversalMedia: React.FC<{
     }
 
     return (
-      <img src={url} className="w-full h-full" style={mediaStyle} alt={alt} />
+      <img src={url} className=\"w-full h-full\" style={mediaStyle} alt={alt} onDoubleClick={onDoubleClick} />
     );
   };
 

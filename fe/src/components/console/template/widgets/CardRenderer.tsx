@@ -265,6 +265,11 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
                   </span>
                 ) : (
                   <img
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("image", item.id);
+                  }}
+
                     src="/images/template/icon_house.png"
                     alt="icon"
                     className="w-full h-auto object-contain"

@@ -343,6 +343,11 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       }}
                     >
                       <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                         className="w-full object-cover"
                         url={item.image}
                         alt="card_image"
@@ -574,6 +579,11 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     }}
                   >
                     <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                       className="w-full object-cover"
                       url={item.image}
                       alt="card_image"
@@ -771,6 +781,11 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                   }}
                 >
                   <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                     className="w-full object-cover"
                     url={item.image}
                     alt="card_image"
@@ -1027,6 +1042,11 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     }}
                   >
                     <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                       className="w-full object-cover"
                       url={item.image}
                       alt="card_image"

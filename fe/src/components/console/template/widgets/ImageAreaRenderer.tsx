@@ -54,6 +54,11 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                 url={currentImage}
                 alt={`banner image (${isMobile ? "Mobile" : "PC"})`}
                 className="w-full h-auto hover:ring-4 hover:ring-blue-400"

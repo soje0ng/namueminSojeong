@@ -129,6 +129,11 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                 url={data.imageUrl}
                 className="w-full xl:w-96 h-full xl:h-64 xl:left-[12px] xl:top-[17px] absolute object-cover"
                 style={getElementStyle(data.imageStyle, viewport)}
@@ -184,6 +189,11 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
             }}
           >
             <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
               className="w-full h-full object-cover absolute inset-0"
               url={data.layout2ImageUrl || "https://placehold.co/680x400"}
               alt="Banner Image"

@@ -352,6 +352,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   url={data.quoteLeftUrl}
                   className="w-full h-full object-contain"
                   alt="Left Quote"
@@ -404,6 +409,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   url={data.quoteRightUrl}
                   className="w-full h-full object-contain"
                   alt="Right Quote"

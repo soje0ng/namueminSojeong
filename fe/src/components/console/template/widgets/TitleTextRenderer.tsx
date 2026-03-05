@@ -49,6 +49,11 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   url={data.quoteLeftUrl}
                   className="w-full h-full object-contain"
                   alt="Left Content Image"
@@ -94,6 +99,11 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   url={data.quoteRightUrl}
                   className="w-full h-full object-contain"
                   alt="Right Content Image"
@@ -140,6 +150,11 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   url={data.quoteLeftWhiteUrl}
                   className="w-full h-full object-contain"
                   alt="Left Content Image"
@@ -196,6 +211,11 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("imageUrl");
+                }}
+
                   url={data.quoteRightWhiteUrl}
                   className="w-full h-full object-contain"
                   alt="Right Content Image"
