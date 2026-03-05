@@ -143,9 +143,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               {/* Left Column Text & Feature Row */}
-              <div className="flex-1 self-stretch flex flex-col justify-between items-start w-full">
+              <div className="flex-1 self-stretch flex flex-col justify-start items-start gap-20 w-full">
                 {/* Header Text Group */}
-                <div className="self-stretch flex flex-col justify-center items-start gap-3 mb-10 xl:mb-0">
+                <div className="self-stretch flex flex-col justify-center items-start gap-3">
                   {!data.subTitleStyle?.isHidden && (
                     <SafeHtml
                       html={data.subTitle || "Program Name."}
@@ -797,102 +797,131 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               </div>
             </div>
 
-            <div className="self-stretch w-full px-72 -mt-[240px] flex justify-between items-end">
-              <div className="flex justify-start items-start gap-10">
-                {(data.items || []).slice(0, 2).map((item: any, idx: number) => (
-                  <div
-                    key={item.id}
-                    className="w-80 inline-flex flex-col justify-center items-center gap-4 overflow-hidden"
-                  >
-                    <div className="w-80 aspect-[16/9] relative rounded-2xl overflow-hidden">
-                      <UniversalMedia
-                        url={
-                          idx === 0
-                            ? data.layout5Card1ImageUrl ||
-                              "/images/placeholder/infobanner_layout5_card1_image.jpg"
-                            : data.layout5Card2ImageUrl ||
-                              "/images/placeholder/infobanner_layout5_card2_image.jpg"
-                        }
-                        className="w-full h-full"
-                        alt="video thumbnail"
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.(
-                            idx === 0
-                              ? "layout5Card1ImageUrl"
-                              : "layout5Card2ImageUrl",
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                      {!(
-                        idx === 0
-                          ? data.layout5Card1TitleStyle?.isHidden
-                          : data.layout5Card2TitleStyle?.isHidden
-                      ) && (
-                        <SafeHtml
-                          html={
-                            idx === 0
-                              ? data.layout5Card1Title || "영상명 입력"
-                              : data.layout5Card2Title || "영상명 입력"
-                          }
-                          className="justify-start text-zinc-950 text-2xl font-medium font-['Pretendard'] leading-9"
-                          style={{
-                            ...getElementStyle(
-                              idx === 0
-                                ? data.layout5Card1TitleStyle
-                                : data.layout5Card2TitleStyle,
-                              viewport,
-                            ),
-                            fontSize: "24px",
-                            fontWeight: "500",
-                            lineHeight: "36px",
-                            color: "#060606",
-                          }}
+            <div
+              className={`self-stretch w-full px-72 ${
+                (data.items || []).length > 2 ? "-mt-[80px]" : "-mt-[240px]"
+              } flex justify-between ${
+                (data.items || []).length > 2 ? "items-start" : "items-end"
+              }`}
+            >
+              <div className="grid grid-cols-2 gap-10">
+                {(data.items || []).map((item: any, idx: number) => {
+                  const itemSelectId = item?.id || `ib-layout5-item-${idx}`;
+                  const isFirstCard = idx === 0;
+                  const isSecondCard = idx === 1;
+                  const imageUrl = isFirstCard
+                    ? data.layout5Card1ImageUrl ||
+                      item?.imageUrl ||
+                      item?.image ||
+                      "/images/placeholder/infobanner_layout5_card1_image.jpg"
+                    : isSecondCard
+                      ? data.layout5Card2ImageUrl ||
+                        item?.imageUrl ||
+                        item?.image ||
+                        "/images/placeholder/infobanner_layout5_card2_image.jpg"
+                      : item?.imageUrl ||
+                        item?.image ||
+                        "/images/placeholder/infobanner_layout5_card1_image.jpg";
+                  const titleStyle = isFirstCard
+                    ? data.layout5Card1TitleStyle
+                    : isSecondCard
+                      ? data.layout5Card2TitleStyle
+                      : item?.titleStyle;
+                  const descStyle = isFirstCard
+                    ? data.layout5Card1DescStyle
+                    : isSecondCard
+                      ? data.layout5Card2DescStyle
+                      : item?.descStyle;
+                  const titleText = isFirstCard
+                    ? data.layout5Card1Title || item?.title || "영상명 입력"
+                    : isSecondCard
+                      ? data.layout5Card2Title || item?.title || "영상명 입력"
+                      : item?.title || "영상명 입력";
+                  const descText = isFirstCard
+                    ? data.layout5Card1Desc || item?.desc || "영상 소개 문구 적는 곳"
+                    : isSecondCard
+                      ? data.layout5Card2Desc || item?.desc || "영상 소개 문구 적는 곳"
+                      : item?.desc || "영상 소개 문구 적는 곳";
+
+                  return (
+                    <div
+                      key={itemSelectId}
+                      className="w-80 inline-flex flex-col justify-center items-center gap-4 overflow-hidden"
+                    >
+                      <div className="w-80 aspect-[16/9] relative rounded-2xl overflow-hidden">
+                        <UniversalMedia
+                          url={imageUrl}
+                          className="w-full h-full"
+                          alt="video thumbnail"
                           onDoubleClick={(e) => {
                             e.stopPropagation();
-                            onElementSelect?.(
-                              idx === 0 ? "layout5Card1Title" : "layout5Card2Title",
-                            );
+                            if (isFirstCard) {
+                              onElementSelect?.("layout5Card1ImageUrl");
+                              return;
+                            }
+                            if (isSecondCard) {
+                              onElementSelect?.("layout5Card2ImageUrl");
+                              return;
+                            }
+                            onElementSelect?.("itemImage", itemSelectId);
                           }}
                         />
-                      )}
-                      {!(
-                        idx === 0
-                          ? data.layout5Card1DescStyle?.isHidden
-                          : data.layout5Card2DescStyle?.isHidden
-                      ) && (
-                        <SafeHtml
-                          html={
-                            idx === 0
-                              ? data.layout5Card1Desc || "영상 소개 문구 적는 곳"
-                              : data.layout5Card2Desc || "영상 소개 문구 적는 곳"
-                          }
-                          className={`self-stretch justify-start ${idx === 0 ? "text-gray-500" : "text-gray-50"} text-xl font-medium font-['Pretendard'] leading-8`}
-                          style={{
-                            ...getElementStyle(
-                              idx === 0
-                                ? data.layout5Card1DescStyle
-                                : data.layout5Card2DescStyle,
-                              viewport,
-                            ),
-                            fontSize: "20px",
-                            fontWeight: "500",
-                            lineHeight: "32px",
-                            color: "#6D7882",
-                          }}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              idx === 0 ? "layout5Card1Desc" : "layout5Card2Desc",
-                            );
-                          }}
-                        />
-                      )}
+                      </div>
+                      <div className="self-stretch flex flex-col justify-start items-start gap-2">
+                        {!titleStyle?.isHidden && (
+                          <SafeHtml
+                            html={titleText}
+                            className="justify-start text-zinc-950 text-2xl font-medium font-['Pretendard'] leading-9"
+                            style={{
+                              ...getElementStyle(titleStyle, viewport),
+                              fontSize: "24px",
+                              fontWeight: "500",
+                              lineHeight: "36px",
+                              color: "#060606",
+                            }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              if (isFirstCard) {
+                                onElementSelect?.("layout5Card1Title");
+                                return;
+                              }
+                              if (isSecondCard) {
+                                onElementSelect?.("layout5Card2Title");
+                                return;
+                              }
+                              onElementSelect?.("itemTitle", itemSelectId);
+                            }}
+                          />
+                        )}
+                        {!descStyle?.isHidden && (
+                          <SafeHtml
+                            html={descText}
+                            className="self-stretch justify-start text-gray-500 text-xl font-medium font-['Pretendard'] leading-8"
+                            style={{
+                              ...getElementStyle(descStyle, viewport),
+                              fontSize: "20px",
+                              fontWeight: "500",
+                              lineHeight: "32px",
+                              color: "#6D7882",
+                            }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              if (isFirstCard) {
+                                onElementSelect?.("layout5Card1Desc");
+                                return;
+                              }
+                              if (isSecondCard) {
+                                onElementSelect?.("layout5Card2Desc");
+                                return;
+                              }
+                              onElementSelect?.("itemDesc", itemSelectId);
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <div className="w-[620px] aspect-[31/22] rounded-2xl overflow-hidden cursor-pointer">
                 <UniversalMedia

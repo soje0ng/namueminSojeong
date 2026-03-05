@@ -372,6 +372,14 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
   // comparisonCard는 좌/우 개별 desc 관리 사용 → 기존 items 구조 관리 숨김
   if (widget.type === "comparisonCard") listArrayName = null;
 
+  // infoBanner 레이아웃 3, 4는 항목 구조가 없으므로 items 구조 관리 숨김
+  if (
+    widget.type === "infoBanner" &&
+    ["3", "4"].includes(((widget.data as any).layout || "1").toString())
+  ) {
+    listArrayName = null;
+  }
+
   // 텍스트 구조 레이아웃 5, 6, 7, 8, 9, 11은 전용 매니저 사용 → 기존 items 구조 관리 숨김
   if (
     widget.type === "textStructure" &&
@@ -1269,40 +1277,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                         : "구조 관리"}
                     </h4>
                   )}
-
-                  {/* 항목 간격 (Gap) 설정 */}
-                  {(listArrayName ||
-                    widget.type === "gridCard" ||
-                    widget.type === "iconCard") &&
-                    widget.type !== "textStructure" && (
-                      <div className="flex items-center justify-between bg-gray-50/50 p-2 rounded-lg border border-gray-100 mb-2">
-                        <span className="text-xs font-bold text-gray-500">
-                          항목 간격
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="range"
-                            min="0"
-                            max="80"
-                            step="4"
-                            value={
-                              parseInt(
-                                (widget.style?.gap || "0").replace("px", ""),
-                              ) || 0
-                            }
-                            onChange={(e) =>
-                              updateWidgetStyle(widget.id, {
-                                gap: `${e.target.value}px`,
-                              })
-                            }
-                            className="w-20 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                          />
-                          <span className="text-[10px] w-8 text-right font-mono text-gray-400">
-                            {widget.style?.gap || "0px"}
-                          </span>
-                        </div>
-                      </div>
-                    )}
 
                   {/* textStructure 레이아웃 1 전용: 열 수 + 항목 간격 */}
                   {widget.type === "textStructure" &&
