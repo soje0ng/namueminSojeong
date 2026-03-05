@@ -10,14 +10,74 @@ import {
 
 export const TITLE_TEXT_DEFAULTS = {
   layout: "1",
+  // Legacy (shared) fields kept for migration compatibility
   subTitle: "이민 프로그램명 입력",
   subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
   title: "타이틀 문구를 적는 곳입니다.",
   titleStyle: { fontSize: "48px", fontWeight: "700", color: "#111827" },
+  desc: "서브타이틀 입력 영역",
+  descStyle: { fontSize: "20px", fontWeight: "500", color: "#6B7280" },
   quoteLeftUrl: "/images/placeholder/icon-quote.jpg",
   quoteRightUrl: "/images/placeholder/icon-quote.jpg",
   quoteLeftWhiteUrl: "/images/placeholder/icon-quote.jpg",
   quoteRightWhiteUrl: "/images/placeholder/icon-quote.jpg",
+
+  // Layout 1
+  layout1Title: "타이틀 문구를 적는 곳입니다.",
+  layout1TitleStyle: { fontSize: "48px", fontWeight: "700", color: "#111827" },
+  layout1SubTitle: "이민 프로그램명 입력",
+  layout1SubTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
+  layout1LeftImageUrl: "/images/placeholder/banner_quote_left.jpg",
+  layout1RightImageUrl: "/images/placeholder/banner_quote_right.jpg",
+
+  // Layout 2
+  layout2Title:
+    "자녀를 미국에서 교육시키는 이유는<br/>世界 대학 순위가 증명하고 있습니다.",
+  layout2TitleStyle: { fontSize: "48px", fontWeight: "700", color: "#ffffff" },
+  layout2SubTitle:
+    "국내 최고 대학 서울대도 세계 순위에서는 62위 … 결국 전세계 상위권의 학교 중 70%는 미국 대학이 차지합니다.",
+  layout2SubTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#ffffff" },
+  layout2LeftImageUrl: "/images/placeholder/tt_layout2_left_01.png",
+  layout2RightImageUrl: "/images/placeholder/tt_layout2_right_01.png",
+  layout2BackgroundImageUrl: "/images/placeholder/tt_layout2_bg_01.jpg",
+
+  // Layout 3
+  layout3SubTitle: "타이틀명 입력",
+  layout3SubTitleStyle: {
+    color: "var(--gray-95, #131416)",
+    fontFamily: "Pretendard",
+    fontSize: "24px",
+    fontStyle: "normal",
+    fontWeight: "700",
+    lineHeight: "150%",
+    letterSpacing: "-0.48px",
+  },
+  layout3Title: "Program Name.",
+  layout3TitleStyle: {
+    color: "var(--mode-Primary70, #295E92)",
+    fontFamily: "Pretendard",
+    fontSize: "60px",
+    fontStyle: "normal",
+    fontWeight: "400",
+    lineHeight: "150%",
+    letterSpacing: "-1.2px",
+    textDecorationLine: "underline",
+    textDecorationStyle: "solid",
+    textDecorationSkipInk: "auto",
+    textDecorationThickness: "auto",
+    textUnderlineOffset: "auto",
+    textUnderlinePosition: "from-font",
+  },
+  layout3Desc: "서브타이틀 입력 영역",
+  layout3DescStyle: { fontSize: "20px", fontWeight: "500", color: "#6B7280" },
+
+  // Layout 4
+  layout4SubTitle: "( 서브타이틀 )",
+  layout4SubTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
+  layout4Title: "타이틀명 입력",
+  layout4TitleStyle: { fontSize: "36px", fontWeight: "700", color: "#111827" },
+  layout4Desc: "이민 프로그램명 입력",
+  layout4DescStyle: { fontSize: "20px", fontWeight: "500", color: "#6B7280" },
 };
 
 export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
@@ -30,7 +90,62 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
   const data = w.data;
   const layout = data.layout || "1";
 
+  const getValue = (
+    primaryKey: string,
+    fallbackKeys: string[] = [],
+    fallbackValue: string,
+  ) => {
+    for (const key of [primaryKey, ...fallbackKeys]) {
+      const value = (data as any)[key];
+      if (value !== undefined && value !== null) return value;
+    }
+    return fallbackValue;
+  };
+
+  const getStyle = (
+    primaryKey: string,
+    fallbackKeys: string[] = [],
+    fallbackStyle: any,
+  ) => {
+    for (const key of [primaryKey, ...fallbackKeys]) {
+      const value = (data as any)[key];
+      if (value !== undefined && value !== null) return value;
+    }
+    return fallbackStyle;
+  };
+
   if (layout === "1") {
+    const title = getValue(
+      "layout1Title",
+      ["title"],
+      TITLE_TEXT_DEFAULTS.layout1Title,
+    );
+    const titleStyle = getStyle(
+      "layout1TitleStyle",
+      ["titleStyle"],
+      TITLE_TEXT_DEFAULTS.layout1TitleStyle,
+    );
+    const subTitle = getValue(
+      "layout1SubTitle",
+      ["subTitle"],
+      TITLE_TEXT_DEFAULTS.layout1SubTitle,
+    );
+    const subTitleStyle = getStyle(
+      "layout1SubTitleStyle",
+      ["subTitleStyle"],
+      TITLE_TEXT_DEFAULTS.layout1SubTitleStyle,
+    );
+    const leftImage = getValue(
+      "layout1LeftImageUrl",
+      ["quoteLeftUrl"],
+      TITLE_TEXT_DEFAULTS.layout1LeftImageUrl,
+    );
+    const rightImage = getValue(
+      "layout1RightImageUrl",
+      ["quoteRightUrl"],
+      TITLE_TEXT_DEFAULTS.layout1RightImageUrl,
+    );
+
     return (
       <section
         style={style}
@@ -42,49 +157,42 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
             <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
               {/* Left Image Area Slot */}
               <div
-                className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer overflow-hidden transition-all hover:ring-2 hover:ring-blue-400"
+                className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("quoteLeftUrl");
+                  onElementSelect?.("layout1LeftImageUrl");
                 }}
               >
                 <UniversalMedia
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
-                  url={data.quoteLeftUrl}
+                  url={leftImage}
                   className="w-full h-full object-contain"
+                  style={{ objectFit: "contain" }}
                   alt="Left Content Image"
                 />
               </div>
 
               <div className="inline-flex flex-col justify-start items-center text-center w-full">
-                {!data.titleStyle?.isHidden && (
+                {!titleStyle?.isHidden && (
                   <div className="justify-start transition-all w-fit mx-auto">
                     <SafeHtml
-                      html={data.title || "타이틀 문구를 적는 곳입니다."}
+                      html={title}
                       className="text-시안-mode-gray90 text-3xl xl:text-5xl font-bold leading-tight xl:leading-[72px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
-                      style={getElementStyle(data.titleStyle, viewport)}
+                      style={getElementStyle(titleStyle, viewport)}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("title");
+                        onElementSelect?.("layout1Title");
                       }}
                     />
                   </div>
                 )}
-                {!data.subTitleStyle?.isHidden && (
+                {!subTitleStyle?.isHidden && (
                   <SafeHtml
-                    html={data.subTitle || "이민 프로그램명 입력"}
+                    html={subTitle}
                     className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all mt-2 cursor-text break-keep"
-                    style={{
-                      ...getElementStyle(data.subTitleStyle, viewport),
-                      color: "#285DE1",
-                    }}
+                    style={getElementStyle(subTitleStyle, viewport)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("subTitle");
+                      onElementSelect?.("layout1SubTitle");
                     }}
                   />
                 )}
@@ -92,20 +200,16 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
 
               {/* Right Image Area Slot */}
               <div
-                className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer overflow-hidden transition-all hover:ring-2 hover:ring-blue-400"
+                className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("quoteRightUrl");
+                  onElementSelect?.("layout1RightImageUrl");
                 }}
               >
                 <UniversalMedia
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
-                  url={data.quoteRightUrl}
+                  url={rightImage}
                   className="w-full h-full object-contain"
+                  style={{ objectFit: "contain" }}
                   alt="Right Content Image"
                 />
               </div>
@@ -117,6 +221,42 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "2") {
+    const title = getValue(
+      "layout2Title",
+      ["title"],
+      TITLE_TEXT_DEFAULTS.layout2Title,
+    );
+    const titleStyle = getStyle(
+      "layout2TitleStyle",
+      ["titleStyle"],
+      TITLE_TEXT_DEFAULTS.layout2TitleStyle,
+    );
+    const subTitle = getValue(
+      "layout2SubTitle",
+      ["subTitle"],
+      TITLE_TEXT_DEFAULTS.layout2SubTitle,
+    );
+    const subTitleStyle = getStyle(
+      "layout2SubTitleStyle",
+      ["subTitleStyle"],
+      TITLE_TEXT_DEFAULTS.layout2SubTitleStyle,
+    );
+    const leftImage = getValue(
+      "layout2LeftImageUrl",
+      ["quoteLeftWhiteUrl"],
+      TITLE_TEXT_DEFAULTS.layout2LeftImageUrl,
+    );
+    const rightImage = getValue(
+      "layout2RightImageUrl",
+      ["quoteRightWhiteUrl"],
+      TITLE_TEXT_DEFAULTS.layout2RightImageUrl,
+    );
+    const backgroundImageUrl = getValue(
+      "layout2BackgroundImageUrl",
+      ["backgroundImage"],
+      TITLE_TEXT_DEFAULTS.layout2BackgroundImageUrl,
+    );
+
     return (
       <section
         style={style}
@@ -126,77 +266,65 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
             style={{
-              // 1. 배경색 우선 적용
               backgroundColor: style?.backgroundColor || "transparent",
-              // 2. 사용자가 배경 이미지를 올렸거나 배경색을 바꿨다면 기본 그라데이션을 제거
               backgroundImage: style?.backgroundImage
                 ? style.backgroundImage
-                : style?.backgroundColor
-                  ? "none"
-                  : "linear-gradient(to bottom right, #3b82f6, #2dd4bf, #22c55e)",
+                : `url(${backgroundImageUrl})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
+            }}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              onElementSelect?.("layout2BackgroundImageUrl");
             }}
             className="self-stretch px-5 xl:px-72 py-16 xl:py-28 inline-flex flex-col justify-start items-center gap-14 w-full"
           >
             <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
               {/* Left Image Area Slot */}
               <div
-                className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer overflow-hidden transition-all hover:ring-2 hover:ring-white/50"
+                className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-white/50"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("quoteLeftWhiteUrl");
+                  onElementSelect?.("layout2LeftImageUrl");
                 }}
               >
                 <UniversalMedia
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
-                  url={data.quoteLeftWhiteUrl}
+                  url={leftImage}
                   className="w-full h-full object-contain"
+                  style={{ objectFit: "contain" }}
                   alt="Left Content Image"
                 />
               </div>
 
               <div className="inline-flex flex-col justify-start items-center text-center max-w-[800px]">
-                {!data.titleStyle?.isHidden && (
+                {!titleStyle?.isHidden && (
                   <div className="justify-start transition-all w-fit mx-auto">
                     <SafeHtml
-                      html={
-                        data.title ||
-                        "자녀를 미국에서 교육시키는 이유는<br/>世界 대학 순위가 증명하고 있습니다."
-                      }
+                      html={title}
                       className="text-white text-3xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded cursor-text transition-all"
                       style={{
-                        ...getElementStyle(data.titleStyle, viewport),
-                        color: "#ffffff",
+                        ...getElementStyle(titleStyle, viewport),
                         backgroundColor: "transparent",
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("title");
+                        onElementSelect?.("layout2Title");
                       }}
                     />
                   </div>
                 )}
-                {!data.subTitleStyle?.isHidden && (
+                {!subTitleStyle?.isHidden && (
                   <SafeHtml
-                    html={
-                      data.subTitle ||
-                      "국내 최고 대학 서울대도 세계 순위에서는 62위 … 결국 전세계 상위권의 학교 중 70%는 미국 대학이 차지합니다."
-                    }
+                    html={subTitle}
                     className="text-center justify-start text-white/90 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded transition-all mt-4 cursor-text break-keep"
                     style={{
-                      ...getElementStyle(data.subTitleStyle, viewport),
-                      color: "#ffffff",
+                      ...getElementStyle(subTitleStyle, viewport),
                       backgroundColor: "transparent",
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("subTitle");
+                      onElementSelect?.("layout2SubTitle");
                     }}
                   />
                 )}
@@ -204,20 +332,16 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
 
               {/* Right Image Area Slot */}
               <div
-                className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer overflow-hidden transition-all hover:ring-2 hover:ring-white/50"
+                className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-white/50"
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("quoteRightWhiteUrl");
+                  onElementSelect?.("layout2RightImageUrl");
                 }}
               >
                 <UniversalMedia
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
-                  url={data.quoteRightWhiteUrl}
+                  url={rightImage}
                   className="w-full h-full object-contain"
+                  style={{ objectFit: "contain" }}
                   alt="Right Content Image"
                 />
               </div>
@@ -229,6 +353,36 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "3") {
+    const subTitle = getValue(
+      "layout3SubTitle",
+      ["subTitle"],
+      TITLE_TEXT_DEFAULTS.layout3SubTitle,
+    );
+    const subTitleStyle = getStyle(
+      "layout3SubTitleStyle",
+      ["subTitleStyle"],
+      TITLE_TEXT_DEFAULTS.layout3SubTitleStyle,
+    );
+    const title = getValue(
+      "layout3Title",
+      ["title"],
+      TITLE_TEXT_DEFAULTS.layout3Title,
+    );
+    const titleStyle = getStyle(
+      "layout3TitleStyle",
+      ["titleStyle"],
+      TITLE_TEXT_DEFAULTS.layout3TitleStyle,
+    );
+    const desc = getValue(
+      "layout3Desc",
+      ["desc"],
+      TITLE_TEXT_DEFAULTS.layout3Desc,
+    );
+    const descStyle = getStyle(
+      "layout3DescStyle",
+      ["descStyle"],
+      TITLE_TEXT_DEFAULTS.layout3DescStyle,
+    );
     return (
       <section
         style={style}
@@ -237,44 +391,41 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-3 w-full text-center hover:ring-2 hover:ring-transparent transition-all">
-            {!data.subTitleStyle?.isHidden && (
+            {!subTitleStyle?.isHidden && (
               <SafeHtml
-                html={data.subTitle || "타이틀명 입력"}
-                className="text-center justify-start text-시안-mode-gray90 text-xl xl:text-2xl font-bold leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={{
-                  ...getElementStyle(data.subTitleStyle, viewport),
-                  color: "#285DE1",
-                }}
+                html={subTitle}
+                className="text-center justify-start break-keep leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                style={getElementStyle(subTitleStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("subTitle");
+                  onElementSelect?.("layout3SubTitle");
                 }}
               />
             )}
 
-            {!data.titleStyle?.isHidden && (
+            {!titleStyle?.isHidden && (
               <div className="justify-start transition-all w-fit mx-auto">
                 <SafeHtml
-                  html={data.title || "Program Name."}
-                  className="text-center justify-start text-blue-600 text-4xl xl:text-6xl font-normal underline leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
-                  style={getElementStyle(data.titleStyle, viewport)}
+                  html={title}
+                  className="text-center justify-start break-keep leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
+                  style={getElementStyle(titleStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
-                    onElementSelect?.("title");
+                    onElementSelect?.("layout3Title");
                   }}
                 />
               </div>
             )}
 
             {/* The layout HTML actually provides a 3rd sub-subtitle "서브타이틀 입력 영역". We can map this to data.desc to avoid creating too many fields. */}
-            {!data.descStyle?.isHidden && (
+            {!descStyle?.isHidden && (
               <SafeHtml
-                html={data.desc || "서브타이틀 입력 영역"}
-                className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all mt-2 cursor-text break-keep"
-                style={getElementStyle(data.descStyle, viewport)}
+                html={desc}
+                className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all mt-2 cursor-text break-keep"
+                style={getElementStyle(descStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("desc");
+                  onElementSelect?.("layout3Desc");
                 }}
               />
             )}
@@ -285,6 +436,36 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "4") {
+    const subTitle = getValue(
+      "layout4SubTitle",
+      ["subTitle"],
+      TITLE_TEXT_DEFAULTS.layout4SubTitle,
+    );
+    const subTitleStyle = getStyle(
+      "layout4SubTitleStyle",
+      ["subTitleStyle"],
+      TITLE_TEXT_DEFAULTS.layout4SubTitleStyle,
+    );
+    const title = getValue(
+      "layout4Title",
+      ["title"],
+      TITLE_TEXT_DEFAULTS.layout4Title,
+    );
+    const titleStyle = getStyle(
+      "layout4TitleStyle",
+      ["titleStyle"],
+      TITLE_TEXT_DEFAULTS.layout4TitleStyle,
+    );
+    const desc = getValue(
+      "layout4Desc",
+      ["desc"],
+      TITLE_TEXT_DEFAULTS.layout4Desc,
+    );
+    const descStyle = getStyle(
+      "layout4DescStyle",
+      ["descStyle"],
+      TITLE_TEXT_DEFAULTS.layout4DescStyle,
+    );
     return (
       <section
         style={style}
@@ -294,43 +475,40 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
             <div className="flex flex-col justify-start items-center text-center w-full max-w-[800px]">
-              {!data.subTitleStyle?.isHidden && (
+              {!subTitleStyle?.isHidden && (
                 <SafeHtml
-                  html={data.subTitle || "( 서브타이틀 )"}
+                  html={subTitle}
                   className="text-center justify-start text-blue-500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={{
-                    ...getElementStyle(data.subTitleStyle, viewport),
-                    color: "#285DE1",
-                  }}
+                  style={getElementStyle(subTitleStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
-                    onElementSelect?.("subTitle");
+                    onElementSelect?.("layout4SubTitle");
                   }}
                 />
               )}
 
-              {!data.titleStyle?.isHidden && (
+              {!titleStyle?.isHidden && (
                 <div className="justify-start transition-all w-fit mx-auto mt-2 mb-2">
                   <SafeHtml
-                    html={data.title || "타이틀명 입력"}
+                    html={title}
                     className="justify-start text-시안-mode-gray90 text-3xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
-                    style={getElementStyle(data.titleStyle, viewport)}
+                    style={getElementStyle(titleStyle, viewport)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("title");
+                      onElementSelect?.("layout4Title");
                     }}
                   />
                 </div>
               )}
 
-              {!data.descStyle?.isHidden && (
+              {!descStyle?.isHidden && (
                 <SafeHtml
-                  html={data.desc || "이민 프로그램명 입력"}
+                  html={desc}
                   className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.descStyle, viewport)}
+                  style={getElementStyle(descStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
-                    onElementSelect?.("desc");
+                    onElementSelect?.("layout4Desc");
                   }}
                 />
               )}

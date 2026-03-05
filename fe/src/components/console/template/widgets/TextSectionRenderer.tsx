@@ -269,7 +269,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <div className="flex size-[100px] items-center justify-center rounded-full md:size-[120px] shrink-0 overflow-hidden cursor-pointer flex justify-center items-center h-auto">
                     <UniversalMedia
-                      url={item.icon || ""}
+                      url={item.iconUrl || item.icon || ""}
                       alt="Service"
                       className="w-full h-auto object-contain"
                       style={getElementStyle(item.iconStyle, viewport as any)}

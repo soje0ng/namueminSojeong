@@ -15,6 +15,14 @@ import { IMAGE_AREA_DEFAULTS } from "@/components/console/template/widgets/Image
 import { TITLE_TEXT_DEFAULTS } from "@/components/console/template/widgets/TitleTextRenderer";
 import { TAB_BUTTON_DEFAULTS } from "@/components/console/template/widgets/TabButtonRenderer";
 import { TEXT_STRUCTURE_DEFAULTS } from "@/components/console/template/widgets/TextStructureRenderer";
+import {
+  TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_5_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_7_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_9_DEFAULT_SECTIONS,
+} from "@/components/console/template/widgets/TextStructureRenderer";
 import { IMAGE_CARD_DEFAULTS } from "@/components/console/template/widgets/ImageCardRenderer";
 import { COMPARISON_CARD_DEFAULTS } from "@/components/console/template/widgets/ComparisonCardRenderer";
 import { STRIP_BANNER_DEFAULTS } from "@/components/console/template/widgets/StripBannerRenderer";
@@ -57,117 +65,140 @@ export function createWidget(
 }
 
 function _createWidget(type: WidgetType, widgetId: string): Widget | null {
+  const cloneDefaults = (defaults: any) => JSON.parse(JSON.stringify(defaults));
+
   switch (type) {
     case "mainTitle":
       return {
         id: widgetId,
         type,
-        data: { ...MAIN_TITLE_DEFAULTS } as any,
+        data: cloneDefaults(MAIN_TITLE_DEFAULTS) as any,
       };
 
     case "textSection":
       return {
         id: widgetId,
         type: "textSection",
-        data: { ...TEXT_SECTION_DEFAULTS },
+        data: cloneDefaults(TEXT_SECTION_DEFAULTS),
       } as any;
 
     case "bannerSection":
       return {
         id: widgetId,
         type: "bannerSection",
-        data: { ...BANNER_SECTION_DEFAULTS },
+        data: cloneDefaults(BANNER_SECTION_DEFAULTS),
       } as any;
 
     case "video":
       return {
         id: widgetId,
         type,
-        data: { ...VIDEO_DEFAULTS } as any,
+        data: cloneDefaults(VIDEO_DEFAULTS) as any,
       };
 
     case "infoBanner":
       return {
         id: widgetId,
         type,
-        data: { ...INFO_BANNER_DEFAULTS } as any,
+        data: cloneDefaults(INFO_BANNER_DEFAULTS) as any,
       };
 
     case "titleText":
       return {
         id: widgetId,
         type,
-        data: { ...TITLE_TEXT_DEFAULTS } as any,
+        data: cloneDefaults(TITLE_TEXT_DEFAULTS) as any,
       };
 
     case "tabButton":
       return {
         id: widgetId,
         type,
-        data: { ...TAB_BUTTON_DEFAULTS } as any,
+        data: cloneDefaults(TAB_BUTTON_DEFAULTS) as any,
       };
 
     case "textStructure":
+      const textStructureDefaults = cloneDefaults(TEXT_STRUCTURE_DEFAULTS);
+      textStructureDefaults.sections5 = textStructureDefaults.sections5
+        ? cloneDefaults(textStructureDefaults.sections5)
+        : cloneDefaults(TEXT_STRUCTURE_5_DEFAULT_SECTIONS);
+      textStructureDefaults.sections6 = textStructureDefaults.sections6
+        ? cloneDefaults(textStructureDefaults.sections6)
+        : cloneDefaults(TEXT_STRUCTURE_6_DEFAULT_SECTIONS);
+      textStructureDefaults.sections7 = textStructureDefaults.sections7
+        ? cloneDefaults(textStructureDefaults.sections7)
+        : cloneDefaults(TEXT_STRUCTURE_7_DEFAULT_SECTIONS);
+      textStructureDefaults.sections8 = textStructureDefaults.sections8
+        ? cloneDefaults(textStructureDefaults.sections8)
+        : cloneDefaults(TEXT_STRUCTURE_8_DEFAULT_SECTIONS);
+      textStructureDefaults.sections9 = textStructureDefaults.sections9
+        ? cloneDefaults(textStructureDefaults.sections9)
+        : cloneDefaults(TEXT_STRUCTURE_9_DEFAULT_SECTIONS);
+      textStructureDefaults.sections11 = textStructureDefaults.sections11
+        ? cloneDefaults(textStructureDefaults.sections11)
+        : cloneDefaults(TEXT_STRUCTURE_11_DEFAULT_SECTIONS);
+
+      // Ensure 모든 레이아웃의 디폴트 섹션도 각 위젯별로 독립 복사본을 가짐
       return {
         id: widgetId,
         type,
-        data: { ...TEXT_STRUCTURE_DEFAULTS } as any,
+        data: textStructureDefaults as any,
       };
 
     case "gridCard":
       return {
         id: widgetId,
         type,
-        data: { ...GRID_CARD_DEFAULTS } as any,
+        data: cloneDefaults(GRID_CARD_DEFAULTS) as any,
       };
 
     case "iconCard":
       return {
         id: widgetId,
         type,
-        data: { ...ICON_CARD_DEFAULTS } as any,
+        data: cloneDefaults(ICON_CARD_DEFAULTS) as any,
       };
 
     case "table":
       return {
         id: widgetId,
         type,
-        data: { ...TABLE_DEFAULTS } as any,
+        data: cloneDefaults(TABLE_DEFAULTS) as any,
       };
 
     case "process":
       return {
         id: widgetId,
         type,
-        data: { ...PROCESS_DEFAULTS } as any,
+        data: cloneDefaults(PROCESS_DEFAULTS) as any,
       };
 
     case "faq":
       return {
         id: widgetId,
         type,
-        data: { ...FAQ_DEFAULTS } as any,
+        data: cloneDefaults(FAQ_DEFAULTS) as any,
       };
 
     case "cardList":
       return {
         id: widgetId,
         type: "cardList",
-        data: { ...CARD_LIST_DEFAULTS },
+        data: cloneDefaults(CARD_LIST_DEFAULTS),
       } as any;
 
     case "titleBanner":
       return {
         id: widgetId,
         type,
-        data: { ...TITLE_BANNER_DEFAULTS },
+        data: cloneDefaults(TITLE_BANNER_DEFAULTS),
       } as any;
 
     case "imageArea":
       return {
         id: widgetId,
         type,
-        data: { ...IMAGE_AREA_DEFAULTS },
+        data: cloneDefaults(IMAGE_AREA_DEFAULTS),
       } as any;
 
     case "titleText":
@@ -178,7 +209,7 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
         id: widgetId,
         type,
         data: {
-          ...PROCESS_DEFAULTS,
+          ...cloneDefaults(PROCESS_DEFAULTS),
           layout: "1",
         },
       } as any;
@@ -186,20 +217,20 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
       return {
         id: widgetId,
         type,
-        data: { ...IMAGE_CARD_DEFAULTS },
+        data: cloneDefaults(IMAGE_CARD_DEFAULTS),
       } as any;
     case "comparisonCard":
       return {
         id: widgetId,
         type,
-        data: { ...COMPARISON_CARD_DEFAULTS },
+        data: cloneDefaults(COMPARISON_CARD_DEFAULTS),
       } as any;
 
     case "stripBanner":
       return {
         id: widgetId,
         type,
-        data: { ...STRIP_BANNER_DEFAULTS },
+        data: cloneDefaults(STRIP_BANNER_DEFAULTS),
         style: {
           backgroundColor: STRIP_BANNER_DEFAULTS.backgroundColor,
         },

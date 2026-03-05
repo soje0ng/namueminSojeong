@@ -87,6 +87,9 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
   const layout = data.layout || "1";
 
   if (layout === "1") {
+    const itemCount = (data.items || []).length;
+    const visibleColumns = itemCount >= 4 ? 4 : itemCount || 1;
+
     return (
       <section
         style={style}
@@ -142,13 +145,14 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* Tab Container */}
             <div
-              className="self-stretch inline-flex justify-start items-start flex-wrap content-start w-full"
+              className="self-stretch w-full border-t border-시안-mode-gray20 grid"
               style={{
                 gap: w.style?.gap
                   ? formatUnit(w.style.gap)
                   : data.itemGap
                     ? formatUnit(data.itemGap)
                     : undefined,
+                gridTemplateColumns: `repeat(${visibleColumns}, minmax(0, 1fr))`,
               }}
             >
               {(data.items || []).map((item: any, i: number) => {
@@ -185,7 +189,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   return (
                     <div
                       key={item.id}
-                      className={`flex-1 min-w-[288px] px-4 py-3 border-t border-b border-transparent flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
+                      className={`w-full px-4 py-3 border-b border-시안-mode-gray20 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
                         !hasCustomBg
                           ? "bg-gradient-to-r from-blue-400 to-blue-600"
                           : ""
@@ -214,7 +218,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                 return (
                   <div
                     key={item.id}
-                    className={`flex-1 min-w-[288px] px-4 py-3 border-t border-b border-시안-mode-gray20 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
+                    className={`w-full px-4 py-3 border-b border-시안-mode-gray20 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
                       !hasCustomBg ? "bg-white" : ""
                     }`}
                     style={{

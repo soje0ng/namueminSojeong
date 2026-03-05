@@ -17,12 +17,14 @@ export interface ChecklistItem {
   id: string;
   title: string;
   desc: string;
+  iconUrl?: string;
 }
 
 export interface LabelListItem {
   id: string;
   label: string;
   content: string;
+  iconUrl?: string;
 }
 
 export interface Section5Item {
@@ -41,7 +43,9 @@ export interface Section5Item {
   // labelList
   imageUrl?: string;
   // imageBanner
-  desc?: string;
+  bannerSubTitle?: string;
+  bannerDesc?: string;
+  desc?: string; // legacy imageBanner field fallback
 }
 
 const SECTION_LABELS: Record<Section5Type, string> = {
@@ -68,10 +72,9 @@ function createDefaultSection(type: Section5Type): Section5Item {
       type: "image",
       columns: 2,
       images: [
-        "/images/placeholder/section-image.jpg",
-        "/images/placeholder/section-image.jpg",
+        "/images/placeholder/card-sm.jpg",
+        "/images/placeholder/card-sm.jpg",
       ],
-      imageHeight: "384",
     };
   }
   if (type === "text") {
@@ -88,9 +91,24 @@ function createDefaultSection(type: Section5Type): Section5Item {
       type: "checklist",
       bojoTitle: "보조 타이틀 문구 입력",
       items: [
-        { id: `cl-${Date.now()}-1`, title: "프로그램 특징", desc: "프로그램 특징 내용 입력" },
-        { id: `cl-${Date.now()}-2`, title: "프로그램 특징", desc: "프로그램 특징 내용 입력" },
-        { id: `cl-${Date.now()}-3`, title: "프로그램 특징", desc: "프로그램 특징 내용 입력" },
+        {
+          id: `cl-${Date.now()}-1`,
+          title: "프로그램 특징",
+          desc: "프로그램 특징 내용 입력",
+          iconUrl: "/images/placeholder/ts_checklist_icon.png",
+        },
+        {
+          id: `cl-${Date.now()}-2`,
+          title: "프로그램 특징",
+          desc: "프로그램 특징 내용 입력",
+          iconUrl: "/images/placeholder/ts_checklist_icon.png",
+        },
+        {
+          id: `cl-${Date.now()}-3`,
+          title: "프로그램 특징",
+          desc: "프로그램 특징 내용 입력",
+          iconUrl: "/images/placeholder/ts_checklist_icon.png",
+        },
       ] as ChecklistItem[],
     };
   }
@@ -98,7 +116,7 @@ function createDefaultSection(type: Section5Type): Section5Item {
     return {
       id,
       type: "labelList",
-      imageUrl: "/images/placeholder/section-image.jpg",
+      imageUrl: "/images/placeholder/card-sm.jpg",
       items: [
         { id: `ll-${Date.now()}-1`, label: "라벨명", content: "프로그램 특징 내용 입력" },
         { id: `ll-${Date.now()}-2`, label: "라벨명", content: "프로그램 특징 내용 입력" },
@@ -111,9 +129,9 @@ function createDefaultSection(type: Section5Type): Section5Item {
   return {
     id,
     type: "imageBanner",
-    imageUrl: "/images/placeholder/strip-banner.jpg",
-    subTitle: "서브 타이틀 입력",
-    desc: "내용을 입력하세요.",
+    imageUrl: "/images/placeholder/card-sm.jpg",
+    bannerSubTitle: "서브 타이틀 입력",
+    bannerDesc: "내용을 입력하세요.",
   };
 }
 
@@ -130,6 +148,14 @@ const TextStructure5Manager: React.FC<Props> = ({
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddPicker, setShowAddPicker] = useState(false);
+  const resolveImageInputs = (section: Section5Item) => {
+    const cols = section.columns || 2;
+    const images = [...(section.images || [])];
+    while (images.length < cols) {
+      images.push("/images/placeholder/card-sm.jpg");
+    }
+    return images.slice(0, cols);
+  };
 
   const update = (newSections: Section5Item[]) => {
     updateWidgetData(widgetId, { sections5: newSections });
@@ -159,20 +185,24 @@ const TextStructure5Manager: React.FC<Props> = ({
 
   const updateImageCount = (section: Section5Item, cols: number) => {
     const current = section.images || [];
-    const placeholder = "/images/placeholder/section-image.jpg";
+    const placeholder = "/images/placeholder/card-sm.jpg";
     let images: string[];
     if (cols > current.length) {
       images = [...current, ...Array(cols - current.length).fill(placeholder)];
     } else {
       images = current.slice(0, cols);
     }
-    const heightMap: Record<number, string> = { 1: "480", 2: "384", 3: "280", 4: "240" };
-    updateSection(section.id, { columns: cols, images, imageHeight: heightMap[cols] || "280" });
+    updateSection(section.id, { columns: cols, images });
   };
 
   const addChecklistItem = (section: Section5Item) => {
     const items = [...((section.items as ChecklistItem[]) || [])];
-    items.push({ id: `cl-${Date.now()}`, title: "프로그램 특징", desc: "프로그램 특징 내용 입력" });
+    items.push({
+      id: `cl-${Date.now()}`,
+      title: "프로그램 특징",
+      desc: "프로그램 특징 내용 입력",
+      iconUrl: "/images/placeholder/ts_checklist_icon.png",
+    });
     updateSection(section.id, { items });
   };
 
@@ -291,22 +321,22 @@ const TextStructure5Manager: React.FC<Props> = ({
                           min={80}
                           max={800}
                           className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={parseInt(section.imageHeight || "384") || 384}
+                          value={section.imageHeight || ""}
                           onChange={(e) => updateSection(section.id, { imageHeight: e.target.value })}
                         />
                         <span className="text-[10px] text-gray-400">px</span>
                       </div>
-                      {(section.images || []).map((img, imgIdx) => (
-                        <div key={imgIdx} className="space-y-1">
-                          <label className="text-[10px] text-gray-400 font-semibold">이미지 {imgIdx + 1}</label>
-                          <div className="flex gap-1.5">
+                      {resolveImageInputs(section).map((img, imgIdx) => (
+                          <div key={imgIdx} className="space-y-1">
+                            <label className="text-[10px] text-gray-400 font-semibold">이미지 {imgIdx + 1}</label>
+                            <div className="flex gap-1.5">
                             <input
                               type="text"
                               className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
                               placeholder="section-image.jpg"
                               value={img}
                               onChange={(e) => {
-                                const imgs = [...(section.images || [])];
+                                const imgs = resolveImageInputs(section);
                                 imgs[imgIdx] = e.target.value;
                                 updateSection(section.id, { images: imgs });
                               }}
@@ -318,7 +348,7 @@ const TextStructure5Manager: React.FC<Props> = ({
                                 </button>
                               }
                               onSelect={(url) => {
-                                const imgs = [...(section.images || [])];
+                                const imgs = resolveImageInputs(section);
                                 imgs[imgIdx] = url;
                                 updateSection(section.id, { images: imgs });
                               }}
@@ -392,6 +422,31 @@ const TextStructure5Manager: React.FC<Props> = ({
                               value={item.desc || ""}
                               onChange={(e) => updateChecklistItem(section, itemIdx, { desc: e.target.value })}
                             />
+                            <div className="flex gap-1.5">
+                              <input
+                                type="text"
+                                className="flex-1 bg-gray-50 border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                                placeholder="아이콘 URL"
+                                value={item.iconUrl || ""}
+                                onChange={(e) =>
+                                  updateChecklistItem(section, itemIdx, {
+                                    iconUrl: e.target.value,
+                                  })
+                                }
+                              />
+                              <ImgUploadPop
+                                button={
+                                  <button className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
+                                    <ImageIcon size={10} />
+                                  </button>
+                                }
+                                onSelect={(url) =>
+                                  updateChecklistItem(section, itemIdx, {
+                                    iconUrl: url,
+                                  })
+                                }
+                              />
+                            </div>
                           </div>
                         ))}
                         <button
@@ -454,6 +509,31 @@ const TextStructure5Manager: React.FC<Props> = ({
                               value={item.content || ""}
                               onChange={(e) => updateLabelItem(section, itemIdx, { content: e.target.value })}
                             />
+                            <div className="flex gap-1.5">
+                              <input
+                                type="text"
+                                className="flex-1 bg-gray-50 border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                                placeholder="아이콘 URL"
+                                value={item.iconUrl || ""}
+                                onChange={(e) =>
+                                  updateLabelItem(section, itemIdx, {
+                                    iconUrl: e.target.value,
+                                  })
+                                }
+                              />
+                              <ImgUploadPop
+                                button={
+                                  <button className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
+                                    <ImageIcon size={10} />
+                                  </button>
+                                }
+                                onSelect={(url) =>
+                                  updateLabelItem(section, itemIdx, {
+                                    iconUrl: url,
+                                  })
+                                }
+                              />
+                            </div>
                           </div>
                         ))}
                         <button
@@ -469,6 +549,20 @@ const TextStructure5Manager: React.FC<Props> = ({
                   {/* IMAGE BANNER */}
                   {section.type === "imageBanner" && (
                     <>
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs text-gray-500 w-16 shrink-0">배너 높이</label>
+                        <input
+                          type="number"
+                          min={80}
+                          max={800}
+                          className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
+                          value={section.imageHeight || ""}
+                          onChange={(e) =>
+                            updateSection(section.id, { imageHeight: e.target.value })
+                          }
+                        />
+                        <span className="text-[10px] text-gray-400">px</span>
+                      </div>
                       <div className="space-y-1">
                         <label className="text-[10px] text-gray-400 font-semibold">좌측 이미지</label>
                         <div className="flex gap-1.5">
@@ -494,8 +588,12 @@ const TextStructure5Manager: React.FC<Props> = ({
                         <input
                           type="text"
                           className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={section.subTitle || ""}
-                          onChange={(e) => updateSection(section.id, { subTitle: e.target.value })}
+                          value={section.bannerSubTitle ?? section.subTitle ?? ""}
+                          onChange={(e) =>
+                            updateSection(section.id, {
+                              bannerSubTitle: e.target.value,
+                            })
+                          }
                         />
                       </div>
                       <div className="space-y-1">
@@ -503,8 +601,12 @@ const TextStructure5Manager: React.FC<Props> = ({
                         <textarea
                           className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
                           rows={3}
-                          value={section.desc || ""}
-                          onChange={(e) => updateSection(section.id, { desc: e.target.value })}
+                          value={section.bannerDesc ?? section.desc ?? ""}
+                          onChange={(e) =>
+                            updateSection(section.id, {
+                              bannerDesc: e.target.value,
+                            })
+                          }
                         />
                       </div>
                     </>

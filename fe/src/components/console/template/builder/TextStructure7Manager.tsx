@@ -55,10 +55,9 @@ function createDefaultSection(type: Section7Type): Section7Item {
       type: "image",
       columns: 2,
       images: [
-        "/images/placeholder/section-image.jpg",
-        "/images/placeholder/section-image.jpg",
+        "/images/placeholder/card-sm.jpg",
+        "/images/placeholder/card-sm.jpg",
       ],
-      imageHeight: "380",
     };
   }
   if (type === "text") {
@@ -82,7 +81,7 @@ function createDefaultSection(type: Section7Type): Section7Item {
   return {
     id,
     type: "stripBanner",
-    imageUrl: "/images/placeholder/strip-banner.jpg",
+    imageUrl: "/images/placeholder/card-sm.jpg",
     bannerSubTitle: "서브 타이틀 입력",
     bannerDesc: "내용을 입력하세요.",
   };
@@ -130,15 +129,14 @@ const TextStructure7Manager: React.FC<Props> = ({
 
   const updateImageCount = (section: Section7Item, cols: number) => {
     const current = section.images || [];
-    const placeholder = "/images/placeholder/section-image.jpg";
+    const placeholder = "/images/placeholder/card-sm.jpg";
     let images: string[];
     if (cols > current.length) {
       images = [...current, ...Array(cols - current.length).fill(placeholder)];
     } else {
       images = current.slice(0, cols);
     }
-    const heightMap: Record<number, string> = { 1: "480", 2: "384", 3: "280", 4: "240" };
-    updateSection(section.id, { columns: cols, images, imageHeight: heightMap[cols] || "280" });
+    updateSection(section.id, { columns: cols, images });
   };
 
   return (
@@ -235,7 +233,7 @@ const TextStructure7Manager: React.FC<Props> = ({
                           min={80}
                           max={800}
                           className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={parseInt(section.imageHeight || "380") || 380}
+                          value={section.imageHeight || ""}
                           onChange={(e) =>
                             updateSection(section.id, {
                               imageHeight: e.target.value,
@@ -369,6 +367,24 @@ const TextStructure7Manager: React.FC<Props> = ({
                   {/* STRIP BANNER */}
                   {section.type === "stripBanner" && (
                     <>
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs text-gray-500 w-16 shrink-0">
+                          배너 높이
+                        </label>
+                        <input
+                          type="number"
+                          min={80}
+                          max={800}
+                          className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
+                          value={section.imageHeight || ""}
+                          onChange={(e) =>
+                            updateSection(section.id, {
+                              imageHeight: e.target.value,
+                            })
+                          }
+                        />
+                        <span className="text-[10px] text-gray-400">px</span>
+                      </div>
                       <div className="space-y-1">
                         <label className="text-[10px] text-gray-400 font-semibold">
                           배너 이미지

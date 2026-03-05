@@ -2324,10 +2324,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                                 </span>
                                                 <select
                                                   className="text-[10px] bg-white border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-300"
-                                                  value={
-                                                    badgeStyle.fontSize ||
-                                                    "16px"
-                                                  }
+                                                  value={badgeStyle.fontSize || ""}
                                                   onChange={(e) =>
                                                     updateWidgetData(
                                                       widget.id,
@@ -2347,6 +2344,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                                     )
                                                   }
                                                 >
+                                                  <option value="">
+                                                    선택
+                                                  </option>
                                                   {[
                                                     "12px",
                                                     "13px",
@@ -2664,7 +2664,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                 {widget.type === "textStructure" && (
                   <div className="space-y-2">
                     {["1", "2", "3", "4"].includes(
-                      (widget as any).data.layout || "1",
+                      String((widget as any).data.layout || "1"),
                     ) && (
                       <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded-lg">
                         <label className="text-sm text-gray-700">
@@ -2694,7 +2694,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                     {/* 레이아웃 6 전용: 동적 섹션 구조 관리 */}
-                    {((widget as any).data.layout || "1") === "6" && (
+                    {String((widget as any).data.layout || "1") === "6" && (
                       <TextStructure6Manager
                         widgetId={widget.id}
                         sections={
@@ -2706,7 +2706,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                     {/* 레이아웃 7 전용: 동적 섹션 구조 관리 */}
-                    {((widget as any).data.layout || "1") === "7" && (
+                    {String((widget as any).data.layout || "1") === "7" && (
                       <TextStructure7Manager
                         widgetId={widget.id}
                         sections={
@@ -2718,7 +2718,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                     {/* 레이아웃 8 전용: 동적 섹션 구조 관리 */}
-                    {((widget as any).data.layout || "1") === "8" && (
+                    {String((widget as any).data.layout || "1") === "8" && (
                       <TextStructure8Manager
                         widgetId={widget.id}
                         sections={
@@ -2730,7 +2730,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                     {/* 레이아웃 11 전용: 동적 섹션 구조 관리 */}
-                    {((widget as any).data.layout || "1") === "11" && (
+                    {String((widget as any).data.layout || "1") === "11" && (
                       <TextStructure11Manager
                         widgetId={widget.id}
                         sections={

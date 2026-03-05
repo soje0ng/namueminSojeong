@@ -173,6 +173,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                           width: "100%",
                           height: "auto",
                           objectFit: "cover",
+                          ...getElementStyle(item.imageStyle, viewport as any),
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -418,6 +419,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                       width: "100%",
                       height: "auto",
                       objectFit: "cover",
+                      ...getElementStyle(items[0]?.imageStyle, viewport as any),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -584,6 +586,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                       width: "100%",
                       height: "auto",
                       objectFit: "cover",
+                      ...getElementStyle(items[1]?.imageStyle, viewport as any),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();

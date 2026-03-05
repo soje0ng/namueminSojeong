@@ -139,10 +139,12 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
                             onElementSelect?.("faqQuestion", item.id);
                           }}
                         />
-                        <div className="w-10 h-10 relative shrink-0">
-                          <div
-                            className={`w-4 h-2 left-[12px] top-[16px] absolute outline outline-4 outline-offset-[-2px] outline-시안-mode-gray20 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                          ></div>
+                        <div className="relative shrink-0 flex items-center justify-center">
+                          <img
+                            src="/images/placeholder/faq_arrow_icon.png"
+                            alt="faq arrow"
+                            className={`object-contain transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                          />
                         </div>
                       </div>
                       {isOpen && item.answer && (

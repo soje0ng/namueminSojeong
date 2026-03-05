@@ -8,13 +8,21 @@ import { ICON_CARD_ITEM_DEFAULT } from "@/components/console/template/widgets/Ic
  * 배열에서 아이템을 찾습니다.
  */
 export const findItem = (arr: any[], id: string) =>
-    arr.find((i: any) => i.id === id);
+    id?.startsWith("__idx_")
+        ? arr[parseInt(id.replace("__idx_", ""), 10)]
+        : arr.find((i: any) => i.id === id);
 
 /**
  * 배열에서 아이템을 업데이트합니다.
  */
 export const updateItemInArray = (arr: any[], id: string, key: string, val: any) =>
-    arr.map((i: any) => (i.id === id ? { ...i, [key]: val } : i));
+    arr.map((i: any, idx: number) => {
+        if (id?.startsWith("__idx_")) {
+            const targetIdx = parseInt(id.replace("__idx_", ""), 10);
+            return idx === targetIdx ? { ...i, [key]: val } : i;
+        }
+        return i.id === id ? { ...i, [key]: val } : i;
+    });
 
 /**
  * 위젯 타입에 따른 배열 이름을 반환합니다.

@@ -292,7 +292,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
             <UniversalMedia
               url={item.image || "/images/placeholder/card_img_default.jpg"}
               className="w-full h-auto transition-transform duration-500 group-hover:scale-105 object-contain"
-              style={{ width: "100%", height: "auto" }}
+              style={{ width: "100%", height: "auto", ...itemImageStyle }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("itemImage", item.id);

@@ -37,7 +37,7 @@ export const getElementStyle = (
   style?: ElementStyle,
   viewport: "mobile" | "tablet" | "desktop" = "desktop",
 ) => {
-  if (!style) return { maxWidth: "100%" };
+  if (!style) return { maxWidth: "100%", lineHeight: "150%" };
 
   let fontSize =
     viewport === "mobile" && style.fontSizeMobile
@@ -48,6 +48,7 @@ export const getElementStyle = (
     fontSize,
     fontWeight: style.fontWeight,
     color: style.color,
+    lineHeight: (style as any).lineHeight || "150%",
     backgroundColor: style.backgroundColor,
     borderColor: style.borderColor,
     borderWidth: style.borderColor ? style.borderWidth || "1px" : undefined,
@@ -146,6 +147,8 @@ export const SafeHtml: React.FC<{
           minWidth: "100px",
           minHeight: "1em",
         }}
+        onClick={onClick}
+        onDoubleClick={onDoubleClick}
       >
         {placeholder || "텍스트를 입력하세요"}
       </Tag>
@@ -248,6 +251,7 @@ export const UniversalMedia: React.FC<{
   autoPlay?: boolean;
   muted?: boolean;
   loop?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
   onDoubleClick?: (e: React.MouseEvent) => void;
 }> = ({
   url,
@@ -258,19 +262,25 @@ export const UniversalMedia: React.FC<{
   autoPlay = false,
   muted = false,
   loop = false,
+  onClick,
   onDoubleClick,
 }) => {
   if (!url) return null;
 
   const isVideo =
     mediaType === "video" || (mediaType !== "image" && isVideoUrl(url));
-  const isEditor = !!onDoubleClick;
+  const isEditor = !!onDoubleClick || !!onClick;
 
   const renderMedia = () => {
     // Shared media styles for consistent object-fit and full-content scaling
     const mediaStyle: React.CSSProperties = {
       width: "100%",
-      height: style?.height === "auto" ? "auto" : "100%",
+      height:
+        style?.height === "auto"
+          ? "auto"
+          : style?.height
+            ? style.height
+            : "auto",
       objectFit: (style?.objectFit as any) || "cover",
       borderRadius: style?.borderRadius || "inherit",
       display: "block",
@@ -290,6 +300,8 @@ export const UniversalMedia: React.FC<{
             borderRadius: style?.borderRadius,
             pointerEvents: isEditor ? "none" : "auto",
           }}
+          onDoubleClick={onDoubleClick}
+          onClick={onClick}
         />
       );
     }
@@ -305,6 +317,8 @@ export const UniversalMedia: React.FC<{
             borderRadius: style?.borderRadius,
             pointerEvents: isEditor ? "none" : "auto",
           }}
+          onDoubleClick={onDoubleClick}
+          onClick={onClick}
         />
       );
     }
@@ -323,6 +337,8 @@ export const UniversalMedia: React.FC<{
           autoPlay={!isEditor && autoPlay}
           muted={muted || autoPlay}
           loop={loop}
+          onDoubleClick={onDoubleClick}
+          onClick={onClick}
         />
       );
     }
@@ -334,11 +350,15 @@ export const UniversalMedia: React.FC<{
         style={mediaStyle}
         alt={alt}
         onDoubleClick={onDoubleClick}
+        onClick={onClick}
       />
     );
   };
 
   // Container gets dimensions and alignment; Child media handles object-fit
+  const isVideoMedia = isVideo;
+  const showEditorShield = isEditor && isVideoMedia;
+
   const containerStyle: React.CSSProperties = {
     ...style,
     position: "relative",
@@ -362,7 +382,7 @@ export const UniversalMedia: React.FC<{
       {renderMedia()}
 
       {/* Editor Shield: Captures clicks to prevent video interaction/play in editor */}
-      {isEditor && (
+      {showEditorShield && (
         <div
           className="absolute inset-0 z-[50] cursor-pointer bg-transparent"
           onDoubleClick={onDoubleClick}
@@ -370,6 +390,7 @@ export const UniversalMedia: React.FC<{
             // Prevent single clicks from doing anything (like playing video or following links)
             e.preventDefault();
             e.stopPropagation();
+            onClick?.(e);
           }}
         />
       )}

@@ -6,7 +6,6 @@ import {
   SafeHtml,
   UniversalMedia,
   WidgetRendererProps,
-  formatUnit,
   getImageUrl,
 } from "./WidgetUtils";
 
@@ -26,18 +25,18 @@ export const TITLE_BANNER_DEFAULTS = {
   },
   textContent:
     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
-  textContentStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
-  feature1Image: "/images/placeholder/banner_feature_01.png",
+  textContentStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "400" },
+  feature1Image: "/images/placeholder/banner_feature.png",
   feature1Title: "프로그램 특징",
   feature1TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature1Desc: "프로그램 특징 내용 입력",
   feature1DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
-  feature2Image: "/images/placeholder/banner_feature_02.png",
+  feature2Image: "/images/placeholder/banner_feature.png",
   feature2Title: "프로그램 특징",
   feature2TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature2Desc: "프로그램 특징 내용 입력",
   feature2DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
-  feature3Image: "/images/placeholder/banner_feature_03.png",
+  feature3Image: "/images/placeholder/banner_feature.png",
   feature3Title: "프로그램 특징",
   feature3TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature3Desc: "프로그램 특징 내용 입력",
@@ -79,7 +78,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         style={{
           ...style,
           backgroundImage: data.backgroundImage
-            ? `url(${data.backgroundImage})`
+            ? `url(${getImageUrl(data.backgroundImageStyle, viewport, data.backgroundImage)})`
             : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -159,16 +158,15 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
 
                 <div className="self-stretch inline-flex justify-center items-start">
                   {[1, 2, 3].map((idx) => {
-                    const fImg = (data as any)[
-                      `feature${idx}Image` ||
-                        "/images/placeholder/banner_feature_01.png"
-                    ];
-                    const fTitle = (data as any)[
-                      `feature${idx}Title` || "프로그램 특징"
-                    ];
-                    const fDesc = (data as any)[
-                      `feature${idx}Desc` || "프로그램 특징 내용 입력"
-                    ];
+                    const fImg =
+                      (data as any)[`feature${idx}Image`] ||
+                      "/images/placeholder/banner_feature.png";
+                    const fTitle =
+                      (data as any)[`feature${idx}Title`] || "프로그램 특징";
+                    const fDesc =
+                      (data as any)[`feature${idx}Desc`] ||
+                      "프로그램 특징 내용 입력";
+                    const fImageStyle = (data as any)[`feature${idx}ImageStyle`];
                     const fTitleStyle = (data as any)[
                       `feature${idx}TitleStyle`
                     ];
@@ -180,16 +178,24 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                         key={idx}
                         className={`flex-1 max-w-96 ${!isLast ? "border-r border-gray-200" : ""} inline-flex flex-col justify-start items-center gap-4`}
                       >
-                        <div className="w-24 h-24 relative bg-gray-50 rounded-[50px] overflow-hidden flex items-center justify-center">
-                          <UniversalMedia
-                            className="w-14 h-14 object-contain"
-                            url={fImg}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(`feature${idx}Image`);
-                            }}
-                          />
-                        </div>
+                        <UniversalMedia
+                          className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                          style={{
+                            width: "96px",
+                            height: "96px",
+                            objectFit: "contain",
+                            ...getElementStyle(fImageStyle, viewport),
+                          }}
+                          url={getImageUrl(
+                            fImageStyle,
+                            viewport,
+                            fImg,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(`feature${idx}Image`);
+                          }}
+                        />
                         <div className="flex flex-col justify-start items-center gap-2">
                           <SafeHtml
                             className="text-center justify-start text-[#0369a1] text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
@@ -223,6 +229,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 viewport,
                 data.layout1Image,
               )}
+              style={getElementStyle(data.layout1ImageStyle, viewport)}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("layout1Image");
@@ -296,12 +303,15 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 gap: "40px",
               }}
             >
-              <img
-                className="w-[360px] h-auto max-h-[440px] rounded-tl-[60px] object-cover"
-                src={
+              <UniversalMedia
+                className="w-[360px] h-auto max-h-[440px] rounded-tl-[60px] object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                url={getImageUrl(
+                  data.layout2HeroImageStyle,
+                  viewport,
                   data.layout2HeroImage ||
-                  "/images/placeholder/title_banner_img2.png"
-                }
+                    "/images/placeholder/title_banner_img2.png",
+                )}
+                style={getElementStyle(data.layout2HeroImageStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("layout2HeroImage");
@@ -363,9 +373,14 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <UniversalMedia
                   onDoubleClick={(e) => {
                     e.stopPropagation();
-                    onElementSelect?.("imageUrl");
+                    onElementSelect?.("quoteLeftUrl");
                   }}
-                  url={data.quoteLeftUrl}
+                  url={getImageUrl(
+                    data.quoteLeftUrlStyle,
+                    viewport,
+                    data.quoteLeftUrl,
+                  )}
+                  style={getElementStyle(data.quoteLeftUrlStyle, viewport)}
                   className="w-full h-full object-contain"
                   alt="Left Quote"
                 />
@@ -419,9 +434,14 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <UniversalMedia
                   onDoubleClick={(e) => {
                     e.stopPropagation();
-                    onElementSelect?.("imageUrl");
+                    onElementSelect?.("quoteRightUrl");
                   }}
-                  url={data.quoteRightUrl}
+                  url={getImageUrl(
+                    data.quoteRightUrlStyle,
+                    viewport,
+                    data.quoteRightUrl,
+                  )}
+                  style={getElementStyle(data.quoteRightUrlStyle, viewport)}
                   className="w-full h-full object-contain"
                   alt="Right Quote"
                 />
@@ -432,7 +452,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
             <div className="self-stretch h-96 relative rounded-3xl overflow-hidden">
               <UniversalMedia
                 className="w-full h-full object-cover"
-                url={data.layout3Image || "/images/placeholder/hero-img.jpg"}
+                url={getImageUrl(
+                  data.layout3ImageStyle,
+                  viewport,
+                  data.layout3Image || "/images/placeholder/hero-img.jpg",
+                )}
+                style={getElementStyle(data.layout3ImageStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("layout3Image");

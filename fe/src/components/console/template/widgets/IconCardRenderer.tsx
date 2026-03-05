@@ -190,10 +190,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                   <div className="w-14 h-14 relative z-20 bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center p-1">
                     <UniversalMedia
                       url={
-                        item.icon &&
-                        item.icon !== "/images/placeholder/icon_default.png"
-                          ? item.icon
-                          : "/images/placeholder/icon_default.png"
+                        item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
                       }
                       alt="icon"
                       className="w-10 h-10 object-contain"
@@ -283,10 +280,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 <div className="w-14 h-14 relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center p-1 shrink-0">
                   <UniversalMedia
                     url={
-                      item.icon &&
-                      item.icon !== "/images/placeholder/icon_default.png"
-                        ? item.icon
-                        : "/images/placeholder/icon_default.png"
+                      item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
                     }
                     alt="icon"
                     className="w-10 h-10 object-contain"
@@ -418,10 +412,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                       <div className="w-24 h-24 relative bg-시안-mode-gray5 rounded-[50px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
                         <UniversalMedia
                           url={
-                            item.icon &&
-                            item.icon !== "/images/placeholder/icon_default.png"
-                              ? item.icon
-                              : "/images/placeholder/icon_default.png"
+                            item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
                           }
                           alt="icon"
                           className="w-16 h-16 object-contain"
@@ -576,10 +567,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                       <div className="w-24 h-24 shrink-0 relative bg-white rounded-[50px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
                         <UniversalMedia
                           url={
-                            item.icon &&
-                            item.icon !== "/images/placeholder/icon_default.png"
-                              ? item.icon
-                              : "/images/placeholder/icon_default.png"
+                            item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
                           }
                           alt="icon"
                           className="w-16 h-16 object-contain"
@@ -711,11 +699,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         <div className="w-14 h-14 relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
                           <UniversalMedia
                             url={
-                              item.icon &&
-                              item.icon !==
-                                "/images/placeholder/icon_default.png"
-                                ? item.icon
-                                : "/images/placeholder/icon_default.png"
+                              item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
                             }
                             alt="icon"
                             className="w-10 h-10 object-contain"

@@ -439,6 +439,7 @@ const Builder: React.FC<BuilderProps> = ({
     elementKey: string,
     itemId?: string,
   ) => {
+    setIsSidebarOpen(true);
     setSelectedSectionId(sectionId);
     setSelectedWidgetId(widgetId);
     setSelectedElementKey(elementKey);
@@ -516,6 +517,27 @@ const Builder: React.FC<BuilderProps> = ({
       if (widget.type === "process") {
         const count = (data.steps?.length || 0) + 1;
         newItem.number = count < 10 ? `0${count}` : `${count}`;
+      }
+
+      if (widget.type === "tabButton") {
+        newItem.active = false;
+        if (newItem.style && typeof newItem.style === "object") {
+          newItem.style = { ...newItem.style };
+          delete newItem.style.backgroundColor;
+          delete newItem.style.backgroundImage;
+        }
+        if (newItem.titleStyle && typeof newItem.titleStyle === "object") {
+          newItem.titleStyle = {
+            ...newItem.titleStyle,
+            color: "#6b7280",
+          };
+        } else {
+          newItem.titleStyle = {
+            fontSize: "20px",
+            fontWeight: "500",
+            color: "#6b7280",
+          };
+        }
       }
     } else {
       // 💡 [새 항목 추가 시 기본값 설정 (Fallback)]
