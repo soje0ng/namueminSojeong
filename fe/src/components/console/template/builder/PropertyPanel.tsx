@@ -40,6 +40,7 @@ import {
   TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
 import TextStructure9Manager from "./TextStructure9Manager";
+import { INFO_BANNER_DEFAULTS } from "../widgets/InfoBannerRenderer";
 
 export interface PropertyPanelProps {
   viewport: "desktop" | "tablet" | "mobile";
@@ -98,6 +99,91 @@ const getWidgetName = (type: WidgetType) => {
   return names[type] || type;
 };
 
+const INFO_BANNER_LAYOUT_STATE_KEY = "__layoutStateMap";
+const INFO_BANNER_LAYOUT_FIELDS = [
+  "subTitle",
+  "subTitleStyle",
+  "title",
+  "titleStyle",
+  "desc",
+  "descStyle",
+  "contentTitle",
+  "contentTitleStyle",
+  "contentDesc",
+  "contentDescStyle",
+  "layout1BgImageUrl",
+  "layout1BgImageUrlStyle",
+  "imageUrl",
+  "layout2ImageUrl",
+  "layout2ImageUrlStyle",
+  "layout2SubTitle",
+  "layout2SubTitleStyle",
+  "layout2Title",
+  "layout2TitleStyle",
+  "layout2Desc",
+  "layout2DescStyle",
+  "layout3ImageUrl",
+  "layout3ImageUrlStyle",
+  "layout3IconImageUrl",
+  "layout3IconImageUrlStyle",
+  "layout3SubTitle",
+  "layout3SubTitleStyle",
+  "layout3Title",
+  "layout3TitleStyle",
+  "layout3Desc",
+  "layout3DescStyle",
+  "layout3ContentTitle",
+  "layout3ContentTitleStyle",
+  "layout3ContentDesc",
+  "layout3ContentDescStyle",
+  "layout4ImageUrl",
+  "layout4ImageUrlStyle",
+  "layout4TopImageUrl",
+  "layout4TopImageUrlStyle",
+  "layout4Title",
+  "layout4TitleStyle",
+  "layout4Desc",
+  "layout4DescStyle",
+  "layout5BgImageUrl",
+  "layout5Card1ImageUrl",
+  "layout5Card2ImageUrl",
+  "layout5ImageUrl",
+  "layout5ImageUrlStyle",
+  "layout5Card1Title",
+  "layout5Card1TitleStyle",
+  "layout5Card1Desc",
+  "layout5Card1DescStyle",
+  "layout5Card2Title",
+  "layout5Card2TitleStyle",
+  "layout5Card2Desc",
+  "layout5Card2DescStyle",
+  "layout5SubTitle",
+  "layout5SubTitleStyle",
+  "layout5Title",
+  "layout5TitleStyle",
+  "layout5Desc",
+  "layout5DescStyle",
+  "imageStyle",
+  "items",
+] as const;
+
+const cloneDeep = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
+const cloneTextStructureDefaults = <T,>(value: T): T =>
+  JSON.parse(JSON.stringify(value));
+
+const pickInfoBannerLayoutState = (data: any) => {
+  const picked: Record<string, any> = {};
+  for (const key of INFO_BANNER_LAYOUT_FIELDS) {
+    if (data[key] !== undefined) picked[key] = cloneDeep(data[key]);
+  }
+  return picked;
+};
+
+const getInfoBannerDefaultState = (layout: string) => ({
+  ...pickInfoBannerLayoutState(INFO_BANNER_DEFAULTS as any),
+  layout,
+});
+
 export const PropertyPanel: React.FC<PropertyPanelProps> = ({
   viewport,
   widget,
@@ -130,6 +216,106 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
   // 아이템 드래그 상태 (내부 관리)
   const [itemDraggedIdx, setItemDraggedIdx] = useState<number | null>(null);
   const [itemDragOverIdx, setItemDragOverIdx] = useState<number | null>(null);
+  const textStructureSections = {
+    sections5:
+      (widget as any).data?.sections5 ||
+      cloneTextStructureDefaults(TEXT_STRUCTURE_5_DEFAULT_SECTIONS),
+    sections6:
+      (widget as any).data?.sections6 ||
+      cloneTextStructureDefaults(TEXT_STRUCTURE_6_DEFAULT_SECTIONS),
+    sections7:
+      (widget as any).data?.sections7 ||
+      cloneTextStructureDefaults(TEXT_STRUCTURE_7_DEFAULT_SECTIONS),
+    sections8:
+      (widget as any).data?.sections8 ||
+      cloneTextStructureDefaults(TEXT_STRUCTURE_8_DEFAULT_SECTIONS),
+    sections9:
+      (widget as any).data?.sections9 ||
+      cloneTextStructureDefaults(TEXT_STRUCTURE_9_DEFAULT_SECTIONS),
+    sections11:
+      (widget as any).data?.sections11 ||
+      cloneTextStructureDefaults(TEXT_STRUCTURE_11_DEFAULT_SECTIONS),
+  };
+
+  const layout9AutoExpandSectionId =
+    widget?.type === "textStructure" &&
+    String((widget as any).data?.layout || "1") === "9" &&
+    !selectedElementKey
+      ? (() => {
+          if (!selectedItemId) return null;
+          const sections = textStructureSections.sections9 || [];
+          const sectionDirect = sections.find((s: any) => s.id === selectedItemId);
+          if (sectionDirect) return sectionDirect.id;
+
+          for (const section of sections) {
+            if ((section.items || []).some((it: any) => it.id === selectedItemId))
+              return section.id;
+          }
+
+          const colonIndex = selectedItemId.indexOf(":");
+          if (colonIndex > 0) {
+            const sectionId = selectedItemId.slice(0, colonIndex);
+            const matched = sections.find((s: any) => s.id === sectionId);
+            if (matched) return matched.id;
+          }
+          return null;
+        })()
+      : null;
+
+  const layout8AutoExpandSectionId =
+    widget?.type === "textStructure" &&
+    String((widget as any).data?.layout || "1") === "8" &&
+    !selectedElementKey
+      ? (() => {
+          if (!selectedItemId) return null;
+          const sections = textStructureSections.sections8 || [];
+          const sectionDirect = sections.find((s: any) => s.id === selectedItemId);
+          if (sectionDirect) return sectionDirect.id;
+
+          for (const section of sections) {
+            if ((section.items || []).some((it: any) => it.id === selectedItemId))
+              return section.id;
+          }
+
+          const colonIndex = selectedItemId.indexOf(":");
+          if (colonIndex > 0) {
+            const sectionId = selectedItemId.slice(0, colonIndex);
+            const matched = sections.find((s: any) => s.id === sectionId);
+            if (matched) return matched.id;
+          }
+          return null;
+        })()
+      : null;
+
+  const layout11AutoExpandSectionId =
+    widget?.type === "textStructure" &&
+    String((widget as any).data?.layout || "1") === "11" &&
+    !selectedElementKey
+      ? (() => {
+          if (!selectedItemId) return null;
+          const sections = textStructureSections.sections11 || [];
+          const sectionDirect = sections.find(
+            (s: any) => s.id === selectedItemId && s.type === "features",
+          );
+          if (sectionDirect) return sectionDirect.id;
+
+          for (const section of sections) {
+            if (section.type !== "features") continue;
+            if ((section.items || []).some((it: any) => it.id === selectedItemId))
+              return section.id;
+          }
+
+          const colonIndex = selectedItemId.indexOf(":");
+          if (colonIndex > 0) {
+            const sectionId = selectedItemId.slice(0, colonIndex);
+            const matched = sections.find(
+              (s: any) => s.id === sectionId && s.type === "features",
+            );
+            if (matched) return matched.id;
+          }
+          return null;
+        })()
+      : null;
 
   // 아이템 드롭 핸들러
   const handleItemDrop = (arrayName: string) => {
@@ -267,6 +453,29 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                       2,
                       () => {
                         pushHistory();
+                        if (widget.type === "infoBanner") {
+                          const currentData = (widget.data as any) || {};
+                          const currentLayout = String(currentData.layout || "1");
+                          const stateMap = cloneDeep(
+                            currentData[INFO_BANNER_LAYOUT_STATE_KEY] || {},
+                          );
+
+                          stateMap[currentLayout] =
+                            pickInfoBannerLayoutState(currentData);
+
+                          const nextState =
+                            stateMap[newLayout] ||
+                            getInfoBannerDefaultState(newLayout);
+                          stateMap[newLayout] = cloneDeep(nextState);
+
+                          updateWidgetData(widget.id, {
+                            ...nextState,
+                            layout: newLayout,
+                            [INFO_BANNER_LAYOUT_STATE_KEY]: stateMap,
+                          });
+                          return;
+                        }
+
                         const updates: any = { layout: newLayout };
                         // Add table-specific initialization
                         if (widget.type === "table") {
@@ -1043,7 +1252,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   (widget.data as any).variant === "banner2"
                 )) ||
               (widget.type === "textStructure" &&
-                ["9", "11"].includes(
+                ["5", "6", "7", "8", "9", "11"].includes(
                   ((widget.data as any).layout || "1").toString(),
                 ))) && (
               <>
@@ -2372,10 +2581,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                                 </span>
                                                 <select
                                                   className="text-[10px] bg-white border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-300"
-                                                  value={
-                                                    badgeStyle.fontSize ||
-                                                    "16px"
-                                                  }
+                                                  value={badgeStyle.fontSize || ""}
                                                   onChange={(e) =>
                                                     updateWidgetData(
                                                       widget.id,
@@ -2395,6 +2601,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                                     )
                                                   }
                                                 >
+                                                  <option value="">
+                                                    선택
+                                                  </option>
                                                   {[
                                                     "12px",
                                                     "13px",
@@ -2655,7 +2864,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   {widget.type === "textStructure" && (
                     <div className="space-y-2">
                       {["1", "2", "3", "4"].includes(
-                        (widget as any).data.layout || "1",
+                        String((widget as any).data.layout || "1"),
                       ) && (
                         <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded-lg">
                           <label className="text-sm text-gray-700">
@@ -2686,62 +2895,59 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                       )}
 
                       {/* 레이아웃 5 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "5" && (
+                      {String((widget as any).data.layout || "1") === "5" && (
                         <TextStructure5Manager
                           widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections5 ||
-                            TEXT_STRUCTURE_5_DEFAULT_SECTIONS
-                          }
+                          sections={textStructureSections.sections5}
                           updateWidgetData={updateWidgetData}
                         />
                       )}
 
                       {/* 레이아웃 6 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "6" && (
+                      {String((widget as any).data.layout || "1") === "6" && (
                         <TextStructure6Manager
                           widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections6 ||
-                            TEXT_STRUCTURE_6_DEFAULT_SECTIONS
-                          }
+                          sections={textStructureSections.sections6}
                           updateWidgetData={updateWidgetData}
                         />
                       )}
 
                       {/* 레이아웃 7 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "7" && (
+                      {String((widget as any).data.layout || "1") === "7" && (
                         <TextStructure7Manager
                           widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections7 ||
-                            TEXT_STRUCTURE_7_DEFAULT_SECTIONS
-                          }
+                          sections={textStructureSections.sections7}
                           updateWidgetData={updateWidgetData}
+                        />
+                      )}
+
+                      {/* 레이아웃 8 전용: 동적 섹션 구조 관리 */}
+                      {String((widget as any).data.layout || "1") === "8" && (
+                        <TextStructure8Manager
+                          widgetId={widget.id}
+                          sections={textStructureSections.sections8}
+                          updateWidgetData={updateWidgetData}
+                          autoExpandSectionId={layout8AutoExpandSectionId}
                         />
                       )}
 
                       {/* 레이아웃 9 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "9" && (
+                      {String((widget as any).data.layout || "1") === "9" && (
                         <TextStructure9Manager
                           widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections9 ||
-                            TEXT_STRUCTURE_9_DEFAULT_SECTIONS
-                          }
+                          sections={textStructureSections.sections9}
                           updateWidgetData={updateWidgetData}
+                          autoExpandSectionId={layout9AutoExpandSectionId}
                         />
                       )}
 
                       {/* 레이아웃 11 전용: 동적 섹션 구조 관리 */}
-                      {((widget as any).data.layout || "1") === "11" && (
+                      {String((widget as any).data.layout || "1") === "11" && (
                         <TextStructure11Manager
                           widgetId={widget.id}
-                          sections={
-                            (widget as any).data.sections11 ||
-                            TEXT_STRUCTURE_11_DEFAULT_SECTIONS
-                          }
+                          sections={textStructureSections.sections11}
                           updateWidgetData={updateWidgetData}
+                          autoExpandSectionId={layout11AutoExpandSectionId}
                         />
                       )}
                     </div>
@@ -2891,19 +3097,41 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
           selectedItemId &&
           (() => {
             const [sectionId, idxStr] = selectedItemId.split(":");
-            const itemIdx = parseInt(idxStr || "0", 10);
+            const parsedIdx = parseInt(idxStr || "", 10);
+            const itemIdx = Number.isNaN(parsedIdx) ? -1 : parsedIdx;
             const sections5: any[] =
-              (widget.data as any).sections5 ||
-              TEXT_STRUCTURE_5_DEFAULT_SECTIONS;
+              textStructureSections.sections5;
             const section = sections5.find((s: any) => s.id === sectionId);
-            const item = section?.items?.[itemIdx];
+            let resolvedSection = section;
+            let resolvedItemIdx = itemIdx;
+            let item = section?.items?.[itemIdx];
+
+            if (!resolvedSection || resolvedItemIdx < 0) {
+              const foundInSection = sections5.find((s: any) =>
+                (s.items || []).some((it: any) => it.id === selectedItemId),
+              );
+              if (foundInSection) {
+                resolvedSection = foundInSection;
+                resolvedItemIdx = (foundInSection.items || []).findIndex(
+                  (it: any) => it.id === selectedItemId,
+                );
+                if (resolvedItemIdx >= 0) {
+                  item = foundInSection.items?.[resolvedItemIdx];
+                }
+              }
+            }
             const isChecklist = selectedElementKey === "s5checkItem";
 
             const handleChange = (prop: string, val: string) => {
+              if (!resolvedSection || resolvedItemIdx < 0) return;
               const updated = sections5.map((s: any) => {
-                if (s.id !== sectionId) return s;
+                if (s.id !== resolvedSection.id) return s;
                 const items = [...(s.items || [])];
-                items[itemIdx] = { ...items[itemIdx], [prop]: val };
+                if (!items[resolvedItemIdx]) return s;
+                items[resolvedItemIdx] = {
+                  ...items[resolvedItemIdx],
+                  [prop]: val,
+                };
                 return { ...s, items };
               });
               updateWidgetData(widget.id, { sections5: updated });

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -59,13 +59,13 @@ function createDefaultSection(type: Section9Type): Section9Item {
           id: `f9-${Date.now()}-1`,
           title: "첫째. 타이틀",
           desc: "설명 텍스트를 입력하세요.",
-          iconUrl: "/images/template/icon_arrow.png",
+          iconUrl: "/images/placeholder/icon_arrow_right.png",
         },
         {
           id: `f9-${Date.now()}-2`,
           title: "둘째. 타이틀",
           desc: "설명 텍스트를 입력하세요.",
-          iconUrl: "/images/template/icon_arrow.png",
+          iconUrl: "/images/placeholder/icon_arrow_right.png",
         },
       ],
     };
@@ -77,15 +77,23 @@ interface Props {
   widgetId: string;
   sections: Section9Item[];
   updateWidgetData: (id: string, data: any) => void;
+  autoExpandSectionId?: string | null;
 }
 
 const TextStructure9Manager: React.FC<Props> = ({
   widgetId,
   sections,
   updateWidgetData,
+  autoExpandSectionId = null,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddPicker, setShowAddPicker] = useState(false);
+
+  useEffect(() => {
+    if (!autoExpandSectionId) return;
+    const exists = sections.some((s) => s.id === autoExpandSectionId);
+    if (exists) setExpandedId(autoExpandSectionId);
+  }, [autoExpandSectionId, sections]);
 
   const update = (newSections: Section9Item[]) => {
     updateWidgetData(widgetId, { sections9: newSections });
@@ -134,7 +142,7 @@ const TextStructure9Manager: React.FC<Props> = ({
       id: `f9-${Date.now()}`,
       title: "타이틀",
       desc: "설명을 입력하세요.",
-      iconUrl: "/images/template/icon_arrow.png",
+      iconUrl: "/images/placeholder/icon_arrow_right.png",
     });
     updateSection(sectionId, { items });
   };
@@ -155,10 +163,14 @@ const TextStructure9Manager: React.FC<Props> = ({
       <div className="space-y-1.5">
         {sections.map((section, idx) => {
           const isExpanded = expandedId === section.id;
+          const isHighlighted =
+            isExpanded || autoExpandSectionId === section.id;
           return (
             <div
               key={section.id}
-              className="border border-gray-200 rounded-xl overflow-hidden"
+              className={`border rounded-xl overflow-hidden transition-colors ${
+                isHighlighted ? "border-blue-500" : "border-gray-200"
+              }`}
             >
               {/* Header row */}
               <div className="flex items-center gap-1 p-2 bg-gray-50/80">

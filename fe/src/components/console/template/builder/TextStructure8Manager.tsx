@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -17,6 +17,7 @@ export interface Section8FeatItem {
   id: string;
   title: string;
   desc: string;
+  iconUrl?: string;
 }
 
 export interface Section8Item {
@@ -47,13 +48,6 @@ const SECTION_COLORS: Record<Section8Type, string> = {
   basicText: "bg-green-100 text-green-700",
 };
 
-const HEIGHT_MAP: Record<number, string> = {
-  1: "480",
-  2: "384",
-  3: "280",
-  4: "240",
-};
-
 function createDefaultSection(type: Section8Type): Section8Item {
   const id = `s8-${type}-${Date.now()}`;
   if (type === "image") {
@@ -61,8 +55,7 @@ function createDefaultSection(type: Section8Type): Section8Item {
       id,
       type: "image",
       columns: 1,
-      images: ["/images/placeholder/wide-image.jpg"],
-      imageHeight: "480",
+      images: ["/images/placeholder/card-sm.jpg"],
     };
   }
   if (type === "text") {
@@ -78,8 +71,18 @@ function createDefaultSection(type: Section8Type): Section8Item {
       id,
       type: "features",
       items: [
-        { id: `f8-${Date.now()}-1`, title: "첫째. 타이틀", desc: "설명 텍스트를 입력하세요." },
-        { id: `f8-${Date.now()}-2`, title: "둘째. 타이틀", desc: "설명 텍스트를 입력하세요." },
+        {
+          id: `f8-${Date.now()}-1`,
+          title: "첫째. 타이틀",
+          desc: "설명 텍스트를 입력하세요.",
+          iconUrl: "/images/placeholder/icon_arrow_right.png",
+        },
+        {
+          id: `f8-${Date.now()}-2`,
+          title: "둘째. 타이틀",
+          desc: "설명 텍스트를 입력하세요.",
+          iconUrl: "/images/placeholder/icon_arrow_right.png",
+        },
       ],
     };
   }
@@ -90,15 +93,23 @@ interface Props {
   widgetId: string;
   sections: Section8Item[];
   updateWidgetData: (id: string, data: any) => void;
+  autoExpandSectionId?: string | null;
 }
 
 const TextStructure8Manager: React.FC<Props> = ({
   widgetId,
   sections,
   updateWidgetData,
+  autoExpandSectionId = null,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddPicker, setShowAddPicker] = useState(false);
+
+  useEffect(() => {
+    if (!autoExpandSectionId) return;
+    const exists = sections.some((s) => s.id === autoExpandSectionId);
+    if (exists) setExpandedId(autoExpandSectionId);
+  }, [autoExpandSectionId, sections]);
 
   const update = (newSections: Section8Item[]) => {
     updateWidgetData(widgetId, { sections8: newSections });
@@ -128,18 +139,14 @@ const TextStructure8Manager: React.FC<Props> = ({
 
   const updateImageCount = (section: Section8Item, cols: number) => {
     const current = section.images || [];
-    const placeholder = "/images/placeholder/wide-image.jpg";
+    const placeholder = "/images/placeholder/card-sm.jpg";
     let images: string[];
     if (cols > current.length) {
       images = [...current, ...Array(cols - current.length).fill(placeholder)];
     } else {
       images = current.slice(0, cols);
     }
-    updateSection(section.id, {
-      columns: cols,
-      images,
-      imageHeight: HEIGHT_MAP[cols] || "288",
-    });
+    updateSection(section.id, { columns: cols, images });
   };
 
   const updateFeatItem = (
@@ -159,7 +166,12 @@ const TextStructure8Manager: React.FC<Props> = ({
     const section = sections.find((s) => s.id === sectionId);
     if (!section) return;
     const items = [...(section.items || [])];
-    items.push({ id: `f8-${Date.now()}`, title: "타이틀", desc: "설명을 입력하세요." });
+    items.push({
+      id: `f8-${Date.now()}`,
+      title: "타이틀",
+      desc: "설명 텍스트를 입력하세요.",
+      iconUrl: "/images/placeholder/icon_arrow_right.png",
+    });
     updateSection(sectionId, { items });
   };
 
@@ -179,10 +191,14 @@ const TextStructure8Manager: React.FC<Props> = ({
       <div className="space-y-1.5">
         {sections.map((section, idx) => {
           const isExpanded = expandedId === section.id;
+          const isHighlighted =
+            isExpanded || autoExpandSectionId === section.id;
           return (
             <div
               key={section.id}
-              className="border border-gray-200 rounded-xl overflow-hidden"
+              className={`border rounded-xl overflow-hidden transition-colors ${
+                isHighlighted ? "border-blue-500" : "border-gray-200"
+              }`}
             >
               {/* Header row */}
               <div className="flex items-center gap-1 p-2 bg-gray-50/80">
@@ -263,7 +279,7 @@ const TextStructure8Manager: React.FC<Props> = ({
                           min={80}
                           max={800}
                           className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={parseInt(section.imageHeight || "480") || 480}
+                          value={section.imageHeight || ""}
                           onChange={(e) =>
                             updateSection(section.id, {
                               imageHeight: e.target.value,
@@ -392,6 +408,37 @@ const TextStructure8Manager: React.FC<Props> = ({
                               )
                             }
                           />
+                          <div className="flex gap-1.5">
+                            <input
+                              type="text"
+                              className="flex-1 bg-white border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                              placeholder="아이콘 URL"
+                              value={item.iconUrl || ""}
+                              onChange={(e) =>
+                                updateFeatItem(
+                                  section.id,
+                                  itemIdx,
+                                  "iconUrl",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <ImgUploadPop
+                              button={
+                                <button className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
+                                  <ImageIcon size={10} />
+                                </button>
+                              }
+                              onSelect={(url) =>
+                                updateFeatItem(
+                                  section.id,
+                                  itemIdx,
+                                  "iconUrl",
+                                  url,
+                                )
+                              }
+                            />
+                          </div>
                         </div>
                       ))}
                       <button

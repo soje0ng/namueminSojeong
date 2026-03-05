@@ -15,9 +15,11 @@ import { BANNER_SECTION_DEFAULTS } from "../widgets/BannerSectionRenderer";
 import { updateItemInArray, findItem } from "@/utils/template/itemUtils";
 import { isVideoUrl } from "../widgets/WidgetUtils";
 import {
+  TEXT_STRUCTURE_5_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_7_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_9_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
@@ -63,6 +65,66 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   let onMutedChange = (val: boolean) => {};
   let onLoopChange = (val: boolean) => {};
   const { setConfirmPop } = usePopupStore();
+
+  const cloneTextStructureDefaults = (value: any) =>
+    JSON.parse(JSON.stringify(value));
+
+  const textStructureFallbackText = (
+    key: string,
+    sectionType?: string,
+  ): string => {
+    const fallbackMap: Record<string, string> = {
+      subTitle: "( 서브타이틀 )",
+      title: "타이틀명 입력",
+      desc: "이민 프로그램명 입력",
+      l5SubTitle: "( 서브타이틀 )",
+      l5Title: "타이틀명 입력",
+      l5Desc: "이민 프로그램명 입력",
+      l5SideTitle: "타이틀명 입력",
+      l5SideDesc: "이민 프로그램명 입력",
+      sectionSubTitle: "서브 타이틀 입력",
+      sectionContent: "내용을 입력하세요.",
+      sectionBasicText: "내용을 입력하세요.",
+      bojoTitle: "보조 타이틀 문구 입력",
+      sectionNewsletterSubTitle: "서브 타이틀 입력",
+      sectionNewsletterLeft: "내용을 입력하세요.",
+      sectionNewsletterRight: "내용을 입력하세요.",
+      contentTitle: "USCIS 우선심사 프로젝트<br/>Copper Valley",
+      contentSubTitle: "캘리포디나 대형 리조트 건설 프로젝트",
+      contentDesc:
+        "캘리포디나 대형 리조트 건설 프로젝트 서브 텍스트<br/>내용 적는 곳 에디터로 활용",
+      layout3ContentTitle: "USCIS 우선심사 프로젝트<br/>Copper Valley",
+      layout3ContentSubTitle: "캘리포디나 대형 리조트 건설 프로젝트",
+      layout3ContentDesc:
+        "캘리포디나 대형 리조트 건설 프로젝트 서브 텍스트<br/>내용 적는 곳 에디터로 활용",
+    };
+
+    if (key === "bannerSubTitle") {
+      return sectionType === "banner" ? "배너명 입력하는 부분" : "서브 타이틀 입력";
+    }
+    if (key === "bannerDesc") {
+      return sectionType === "banner"
+        ? "배너명에 대한 설명하는 부분의 텍스트 박스 부분"
+        : "내용을 입력하세요.";
+    }
+
+    return fallbackMap[key] || "";
+  };
+
+  const textStructureSections = {
+    sections5:
+      data.sections5 || cloneTextStructureDefaults(TEXT_STRUCTURE_5_DEFAULT_SECTIONS),
+    sections6:
+      data.sections6 || cloneTextStructureDefaults(TEXT_STRUCTURE_6_DEFAULT_SECTIONS),
+    sections7:
+      data.sections7 || cloneTextStructureDefaults(TEXT_STRUCTURE_7_DEFAULT_SECTIONS),
+    sections8:
+      data.sections8 || cloneTextStructureDefaults(TEXT_STRUCTURE_8_DEFAULT_SECTIONS),
+    sections9:
+      data.sections9 || cloneTextStructureDefaults(TEXT_STRUCTURE_9_DEFAULT_SECTIONS),
+    sections11:
+      data.sections11 || cloneTextStructureDefaults(TEXT_STRUCTURE_11_DEFAULT_SECTIONS),
+  };
 
   // Helper to update style for item or root property
   const updateStyle = (
@@ -215,6 +277,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     [
       "sectionSubTitle",
       "sectionContent",
+      "bojoTitle",
       "sectionNewsletterSubTitle",
       "sectionNewsletterLeft",
       "sectionNewsletterRight",
@@ -224,18 +287,24 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     ].includes(elementKey) &&
     itemId
   ) {
-    // 레이아웃 6/7/8/11 동적 섹션 텍스트 편집 처리
-    const sections6: any[] =
-      data.sections6 || TEXT_STRUCTURE_6_DEFAULT_SECTIONS;
-    const sections7: any[] =
-      data.sections7 || TEXT_STRUCTURE_7_DEFAULT_SECTIONS;
-    const sections8: any[] =
-      data.sections8 || TEXT_STRUCTURE_8_DEFAULT_SECTIONS;
-    const sections11: any[] =
-      data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
-    let sectionsArr = sections6;
-    let sectionsKey = "sections6";
-    let section = sections6.find((s: any) => s.id === itemId);
+    // 레이아웃 5/6/7/8/9/11 동적 섹션 텍스트 편집 처리
+    const sections5: any[] = textStructureSections.sections5;
+    const sections6: any[] = textStructureSections.sections6;
+    const sections7: any[] = textStructureSections.sections7;
+    const sections8: any[] = textStructureSections.sections8;
+    const sections9: any[] = textStructureSections.sections9;
+    const sections11: any[] = textStructureSections.sections11;
+    let sectionsArr = sections5;
+    let sectionsKey = "sections5";
+    let section = sections5.find((s: any) => s.id === itemId);
+    if (!section) {
+      const sec6 = sections6.find((s: any) => s.id === itemId);
+      if (sec6) {
+        section = sec6;
+        sectionsArr = sections6;
+        sectionsKey = "sections6";
+      }
+    }
     if (!section) {
       const sec7 = sections7.find((s: any) => s.id === itemId);
       if (sec7) {
@@ -253,6 +322,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       }
     }
     if (!section) {
+      const sec9 = sections9.find((s: any) => s.id === itemId);
+      if (sec9) {
+        section = sec9;
+        sectionsArr = sections9;
+        sectionsKey = "sections9";
+      }
+    }
+    if (!section) {
       const sec11 = sections11.find((s: any) => s.id === itemId);
       if (sec11) {
         section = sec11;
@@ -264,6 +341,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     const textPropMap: Record<string, string> = {
       sectionSubTitle: "subTitle",
       sectionContent: "content",
+      bojoTitle: "bojoTitle",
       sectionBasicText: "content",
       sectionNewsletterSubTitle: "newsletterSubTitle",
       sectionNewsletterLeft: "leftContent",
@@ -274,6 +352,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     const stylePropMap: Record<string, string> = {
       sectionSubTitle: "subTitleStyle",
       sectionContent: "contentStyle",
+      bojoTitle: "bojoTitleStyle",
       sectionBasicText: "contentStyle",
       sectionNewsletterSubTitle: "newsletterSubTitleStyle",
       sectionNewsletterLeft: "leftContentStyle",
@@ -284,7 +363,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
     const textProp = textPropMap[elementKey];
     const styleProp = stylePropMap[elementKey];
-    textValue = section?.[textProp] || "";
+    textValue =
+      section?.[textProp] ??
+      (elementKey === "bannerSubTitle"
+        ? section?.subTitle
+        : elementKey === "bannerDesc"
+          ? section?.desc
+          : undefined) ??
+      textStructureFallbackText(elementKey, section?.type);
     styleKey = styleProp;
     styleValue = section?.[styleProp] || {};
 
@@ -314,6 +400,447 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         arrayName = "items";
       else arrayName = "blocks";
     } else if (widget.type === "textStructure") {
+        if (
+          [
+            "itemNumber",
+            "itemTitle",
+            "itemDesc",
+            "itemIcon",
+            "itemLabel",
+            "itemText",
+            "s5labelItem",
+            "s5checkItem",
+          ].includes(elementKey)
+        ) {
+        const parseSectionIdxFromGeneratedKey = (value: string, type: string) => {
+          const match = new RegExp(`^${type}-(\\d+)$`).exec(value || "");
+          if (!match) return -1;
+          const parsed = Number.parseInt(match[1], 10);
+          return Number.isNaN(parsed) ? -1 : parsed;
+        };
+        const sectionBuckets: Array<{ key: string; list: any[] }> = [
+          { key: "sections5", list: textStructureSections.sections5 },
+          { key: "sections6", list: textStructureSections.sections6 },
+          { key: "sections7", list: textStructureSections.sections7 },
+          { key: "sections8", list: textStructureSections.sections8 },
+          { key: "sections9", list: textStructureSections.sections9 },
+          { key: "sections11", list: textStructureSections.sections11 },
+        ];
+
+        const colonIndex = itemId.indexOf(":");
+        const hasCompositeRef = colonIndex > -1;
+        const compositeSectionId = hasCompositeRef
+          ? itemId.slice(0, colonIndex)
+          : "";
+        const compositeItemIdx = hasCompositeRef
+          ? Number.parseInt(itemId.slice(colonIndex + 1), 10)
+          : -1;
+        const isCompositeItemRef =
+          hasCompositeRef &&
+          Number.isFinite(compositeItemIdx) &&
+          !Number.isNaN(compositeItemIdx);
+        const allowedSectionTypes =
+          elementKey === "itemLabel" || elementKey === "itemText" || elementKey === "s5labelItem"
+            ? ["labelList"]
+            : elementKey === "s5checkItem"
+              ? ["checklist"]
+            : elementKey === "itemNumber" || elementKey === "itemTitle" || elementKey === "itemDesc"
+              ? ["checklist", "features"]
+              : elementKey === "itemIcon"
+                ? ["checklist", "labelList", "features"]
+                : undefined;
+
+        for (const bucket of sectionBuckets) {
+          for (let sectionIdx = 0; sectionIdx < bucket.list.length; sectionIdx++) {
+            const section = bucket.list[sectionIdx];
+            if (
+              allowedSectionTypes &&
+              !allowedSectionTypes.includes(section.type)
+            ) {
+              continue;
+            }
+            const items = section?.items || [];
+            let foundIdx = -1;
+            const fallbackSectionIndex =
+              isCompositeItemRef && !section.id
+                ? parseSectionIdxFromGeneratedKey(compositeSectionId, section.type)
+                : -1;
+            if (
+              isCompositeItemRef &&
+              (section.id === compositeSectionId &&
+                compositeItemIdx >= 0 &&
+                compositeItemIdx < items.length)
+            ) {
+              foundIdx = compositeItemIdx;
+            } else if (
+              isCompositeItemRef &&
+              !section.id &&
+              fallbackSectionIndex >= 0 &&
+              fallbackSectionIndex === sectionIdx &&
+              compositeItemIdx >= 0 &&
+              compositeItemIdx < items.length
+            ) {
+              foundIdx = compositeItemIdx;
+            } else if (
+              isCompositeItemRef &&
+              !compositeSectionId &&
+              (elementKey === "itemLabel" ||
+                elementKey === "itemText" ||
+                elementKey === "s5labelItem") &&
+              compositeItemIdx >= 0 &&
+              compositeItemIdx < items.length
+            ) {
+              foundIdx = compositeItemIdx;
+            } else if (
+              isCompositeItemRef &&
+              !compositeSectionId &&
+              (elementKey === "itemIcon" ||
+                elementKey === "itemTitle" ||
+                elementKey === "itemDesc" ||
+                elementKey === "itemNumber") &&
+              compositeItemIdx >= 0 &&
+              compositeItemIdx < items.length
+            ) {
+              foundIdx = compositeItemIdx;
+            } else {
+              foundIdx = items.findIndex((it: any) => it.id === itemId);
+            }
+            if (foundIdx < 0) continue;
+            const found = items[foundIdx];
+
+            const iconProp =
+              found.iconUrl !== undefined
+                ? "iconUrl"
+                : found.icon !== undefined
+                  ? "icon"
+                  : "iconUrl";
+            const targetPropMap: Record<string, string> = {
+              itemNumber: "number",
+              itemTitle: "title",
+              itemDesc: "desc",
+              itemIcon: iconProp,
+              itemLabel: "label",
+              itemText: "content",
+              s5labelItem: "label",
+              s5checkItem: "title",
+            };
+            const stylePropMap: Record<string, string> = {
+              itemNumber: "numberStyle",
+              itemTitle: "titleStyle",
+              itemDesc: "descStyle",
+              itemIcon: "iconStyle",
+              itemLabel: "labelStyle",
+              itemText: "contentStyle",
+              s5labelItem: "labelStyle",
+              s5checkItem: "titleStyle",
+            };
+            const targetProp = targetPropMap[elementKey];
+            const itemStyleKey = stylePropMap[elementKey];
+
+            textValue = found[targetProp] || "";
+            styleKey = itemStyleKey;
+            styleValue = found[itemStyleKey] || {};
+
+            onTextChange = (val) => {
+              const updatedSections = bucket.list.map((s: any) => {
+                if (s !== section) return s;
+                const updatedItems = [...(s.items || [])];
+                if (updatedItems[foundIdx]) {
+                  updatedItems[foundIdx] = {
+                    ...updatedItems[foundIdx],
+                    [targetProp]: val,
+                  };
+                }
+                return { ...s, items: updatedItems };
+              });
+              updateWidgetData(widget.id, { [bucket.key]: updatedSections });
+            };
+            onStyleChange = (k, v) => {
+              const updatedSections = bucket.list.map((s: any) => {
+                if (s !== section) return s;
+                const updatedItems = [...(s.items || [])];
+                if (updatedItems[foundIdx]) {
+                  const targetItem = updatedItems[foundIdx];
+                  updatedItems[foundIdx] = {
+                    ...targetItem,
+                    [itemStyleKey]: {
+                      ...(targetItem[itemStyleKey] || {}),
+                      [k]: v,
+                    },
+                  };
+                }
+                return { ...s, items: updatedItems };
+              });
+              updateWidgetData(widget.id, { [bucket.key]: updatedSections });
+            };
+            return;
+          }
+        }
+      }
+
+      if (elementKey === "image" && /^s(5|6|7|8|9|11)img_/.test(itemId)) {
+        // Generic section-image editor mapping:
+        // s{layout}img_{sectionId}_{imgIdx}
+        const [layoutToken, sectionId, imgIdxToken] = itemId.split("_");
+        const imgIdx = parseInt(imgIdxToken || "0", 10);
+        const parseSectionIdxFromGeneratedKey = (value: string, type: string) => {
+          const match = new RegExp(`^${type}-(\\d+)$`).exec(value || "");
+          if (!match) return -1;
+          const parsed = Number.parseInt(match[1], 10);
+          return Number.isNaN(parsed) ? -1 : parsed;
+        };
+        const sectionsMap: Record<string, { key: string; list: any[] }> = {
+          s5img: {
+            key: "sections5",
+            list: textStructureSections.sections5,
+          },
+          s6img: {
+            key: "sections6",
+            list: textStructureSections.sections6,
+          },
+          s7img: {
+            key: "sections7",
+            list: textStructureSections.sections7,
+          },
+          s8img: {
+            key: "sections8",
+            list: textStructureSections.sections8,
+          },
+          s9img: {
+            key: "sections9",
+            list: textStructureSections.sections9,
+          },
+          s11img: {
+            key: "sections11",
+            list: textStructureSections.sections11,
+          },
+        };
+
+        const target = sectionsMap[layoutToken];
+        if (target) {
+          let section = target.list.find((s: any) => s.id === sectionId);
+          let sectionIndex = target.list.findIndex((s: any) => s.id === sectionId);
+          if (!section && sectionIndex < 0) {
+            const generatedSectionIdx =
+              sectionId && parseSectionIdxFromGeneratedKey(sectionId, "image");
+            if (generatedSectionIdx >= 0) {
+              const generatedSection = target.list[generatedSectionIdx];
+              if (generatedSection?.type === "image") {
+                section = generatedSection;
+                sectionIndex = generatedSectionIdx;
+              }
+            }
+          }
+          if (!section && sectionIndex < 0) {
+            sectionIndex = target.list.findIndex((s: any) => s.type === "image");
+            section = sectionIndex >= 0 ? target.list[sectionIndex] : undefined;
+          }
+          if (section && sectionIndex >= 0) {
+            const images: string[] = section.images || [];
+            const fallbackUrl =
+              section.imageUrl || "/images/placeholder/card-sm.jpg";
+            textValue = images[imgIdx] || fallbackUrl;
+            styleKey = "imageStyle";
+            styleValue = section.imageStyle || {};
+
+            onTextChange = (val) => {
+              const sourceImages: string[] =
+                section.images && section.images.length > 0
+                  ? [...section.images]
+                  : [section.imageUrl || fallbackUrl];
+              while (sourceImages.length <= imgIdx) sourceImages.push("");
+              sourceImages[imgIdx] = val;
+
+              const updatedSections = target.list.map((s: any, idx: number) =>
+                idx === sectionIndex ? { ...s, images: sourceImages } : s,
+              );
+              updateWidgetData(widget.id, { [target.key]: updatedSections });
+            };
+
+            onStyleChange = (k, v) => {
+              const updatedSections = target.list.map((s: any, idx: number) =>
+                idx === sectionIndex
+                  ? {
+                      ...s,
+                      imageStyle: { ...(s.imageStyle || {}), [k]: v },
+                    }
+                  : s,
+                  );
+              updateWidgetData(widget.id, { [target.key]: updatedSections });
+            };
+            autoPlayValue = section.autoPlay || false;
+            mutedValue = section.muted !== undefined ? section.muted : true;
+            loopValue = section.loop || false;
+            onAutoPlayChange = (val) => {
+              const updatedSections = target.list.map((s: any, idx: number) =>
+                idx === sectionIndex
+                  ? { ...s, autoPlay: val, muted: val ? true : s.muted }
+                  : s,
+              );
+              updateWidgetData(widget.id, { [target.key]: updatedSections });
+            };
+            onMutedChange = (val) => {
+              const updatedSections = target.list.map((s: any, idx: number) =>
+                idx === sectionIndex ? { ...s, muted: val } : s,
+              );
+              updateWidgetData(widget.id, { [target.key]: updatedSections });
+            };
+            onLoopChange = (val) => {
+              const updatedSections = target.list.map((s: any, idx: number) =>
+                idx === sectionIndex ? { ...s, loop: val } : s,
+              );
+              updateWidgetData(widget.id, { [target.key]: updatedSections });
+            };
+          }
+        }
+      }
+
+      if (elementKey === "image" && /^s5labelimg_/.test(itemId)) {
+        const [, sectionId] = itemId.split("_");
+        const sections = textStructureSections.sections5;
+        let section = sections.find((s: any) => s.id === sectionId);
+        let sectionIndex = sections.findIndex((s: any) => s.id === sectionId);
+        const parseSectionIdxFromGeneratedKey = (value: string, type: string) => {
+          const match = new RegExp(`^${type}-(\\d+)$`).exec(value || "");
+          if (!match) return -1;
+          const parsed = Number.parseInt(match[1], 10);
+          return Number.isNaN(parsed) ? -1 : parsed;
+        };
+        if (!section && sectionIndex < 0) {
+          const generatedSectionIdx =
+            sectionId && parseSectionIdxFromGeneratedKey(sectionId, "labelList");
+          if (generatedSectionIdx >= 0) {
+            const generatedSection = sections[generatedSectionIdx];
+            if (generatedSection?.type === "labelList") {
+              section = generatedSection;
+              sectionIndex = generatedSectionIdx;
+            }
+          }
+        }
+        if (!section && sectionIndex < 0) {
+          sectionIndex = sections.findIndex((s: any) => s.type === "labelList");
+          section = sectionIndex >= 0 ? sections[sectionIndex] : undefined;
+        }
+        if (section) {
+          textValue =
+            section.imageUrl || "/images/placeholder/card-sm.jpg";
+          styleKey = "imageStyle";
+          styleValue = section.imageStyle || {};
+          onTextChange = (val) => {
+            const updated = sections.map((s: any, idx: number) =>
+              idx === sectionIndex ? { ...s, imageUrl: val } : s,
+            );
+            updateWidgetData(widget.id, { sections5: updated });
+          };
+          onStyleChange = (k, v) => {
+            const updated = sections.map((s: any, idx: number) =>
+              idx === sectionIndex
+                ? { ...s, imageStyle: { ...(s.imageStyle || {}), [k]: v } }
+                : s,
+            );
+            updateWidgetData(widget.id, { sections5: updated });
+          };
+          autoPlayValue = section.autoPlay || false;
+          mutedValue = section.muted !== undefined ? section.muted : true;
+          loopValue = section.loop || false;
+          onAutoPlayChange = (val) => {
+            const updated = sections.map((s: any, idx: number) =>
+              idx === sectionIndex
+                ? { ...s, autoPlay: val, muted: val ? true : s.muted }
+                : s,
+            );
+            updateWidgetData(widget.id, { sections5: updated });
+          };
+          onMutedChange = (val) => {
+            const updated = sections.map((s: any, idx: number) =>
+              idx === sectionIndex ? { ...s, muted: val } : s,
+            );
+            updateWidgetData(widget.id, { sections5: updated });
+          };
+          onLoopChange = (val) => {
+            const updated = sections.map((s: any, idx: number) =>
+              idx === sectionIndex ? { ...s, loop: val } : s,
+            );
+            updateWidgetData(widget.id, { sections5: updated });
+          };
+        }
+      }
+
+      if (elementKey === "image" && /^s(5|6|7)banner_/.test(itemId)) {
+        const [layoutToken, sectionId] = itemId.split("_");
+        const map: Record<string, { key: string; list: any[] }> = {
+          s5banner: {
+            key: "sections5",
+            list: textStructureSections.sections5,
+          },
+          s6banner: {
+            key: "sections6",
+            list: textStructureSections.sections6,
+          },
+          s7banner: {
+            key: "sections7",
+            list: textStructureSections.sections7,
+          },
+        };
+        const target = map[layoutToken];
+        if (target) {
+          const parseSectionIdxFromGeneratedKey = (
+            value: string,
+            type: string,
+          ) => {
+            const match = new RegExp(`^${type}-(\\d+)$`).exec(value || "");
+            if (!match) return -1;
+            const parsed = Number.parseInt(match[1], 10);
+            return Number.isNaN(parsed) ? -1 : parsed;
+          };
+
+          let section = target.list.find((s: any) => s.id === sectionId);
+          let sectionIndex = target.list.findIndex((s: any) => s.id === sectionId);
+
+          if (!section && sectionIndex < 0) {
+            const generatedSectionIdx =
+              sectionId && parseSectionIdxFromGeneratedKey(sectionId, "banner");
+            if (generatedSectionIdx >= 0) {
+              const generatedSection = target.list[generatedSectionIdx];
+              if (generatedSection?.type === "stripBanner") {
+                section = generatedSection;
+                sectionIndex = generatedSectionIdx;
+              }
+            }
+          }
+          if (!section && sectionIndex < 0) {
+            sectionIndex = target.list.findIndex((s: any) => s.type === "stripBanner");
+            section = sectionIndex >= 0 ? target.list[sectionIndex] : undefined;
+          }
+
+          if (section) {
+            const bannerFallbackMap: Record<string, string> = {
+              s5banner: "/images/placeholder/card-sm.jpg",
+              s6banner: "/images/placeholder/card-sm.jpg",
+              s7banner: "/images/placeholder/card-sm.jpg",
+            };
+            textValue = section.imageUrl || bannerFallbackMap[layoutToken] || "";
+            styleKey = "imageStyle";
+            styleValue = section.imageStyle || {};
+            onTextChange = (val) => {
+              const updated = target.list.map((s: any, idx: number) =>
+                idx === sectionIndex ? { ...s, imageUrl: val } : s,
+              );
+              updateWidgetData(widget.id, { [target.key]: updated });
+            };
+            onStyleChange = (k, v) => {
+              const updated = target.list.map((s: any, idx: number) =>
+                idx === sectionIndex
+                  ? { ...s, imageStyle: { ...(s.imageStyle || {}), [k]: v } }
+                  : s,
+              );
+              updateWidgetData(widget.id, { [target.key]: updated });
+            };
+            return;
+          }
+        }
+      }
+
       const layoutVal = data.layout || "1";
       if (layoutVal === "4") arrayName = "cases";
       else if (layoutVal === "6" || layoutVal === "layout6")
@@ -334,8 +861,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         ) {
           // Find which section and which item the element belongs to
           // sectionImage is direct in section, others are in section.items
-          const sections =
-            data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
+          const sections = textStructureSections.sections11;
           if (elementKey === "sectionImage") {
             const section = sections.find((s: any) => s.id === itemId);
             if (section) {
@@ -354,12 +880,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             // itemId: s11img_{sectionId}_{imgIdx}
             const [, sectionId, imgIdxStr] = itemId.split("_");
             const imgIdx = parseInt(imgIdxStr);
-            const sections =
-              data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
+            const sections = textStructureSections.sections11;
             const section = sections.find((s: any) => s.id === sectionId);
             if (section) {
               const images = section.images || [
-                section.imageUrl || "/images/template/text_structure_img11.png",
+                section.imageUrl || "/images/placeholder/card-sm.jpg",
               ];
               textValue = images[imgIdx] || "";
               onTextChange = (val) => {
@@ -829,7 +1354,22 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       return "";
     };
     textValue =
-      data[elementKey] !== undefined ? data[elementKey] : getRootDefaultText();
+      widget.type === "textStructure"
+        ? (data[elementKey] ??
+          textStructureFallbackText(elementKey))
+        : data[elementKey] !== undefined
+          ? data[elementKey]
+          : getRootDefaultText();
+    if (
+      widget.type === "textStructure" &&
+      elementKey === "imageUrl" &&
+      !textValue
+    ) {
+      const layoutVal = (data.layout || "1").toString();
+      if (layoutVal === "5" || layoutVal === "9") {
+        textValue = "/images/placeholder/card-sm.jpg";
+      }
+    }
     // Convention: property 'mainTitle' -> style 'mainTitleStyle'
     styleKey =
       elementKey === "contentTitle"
@@ -885,67 +1425,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     if (styleValue.width === undefined)
       styleValue = { ...styleValue, width: "100%" };
   }
-  // Inject sensible defaults so inputs are never completely blank.
-  const getFallbackStyles = () => {
-    const keyLower = elementKey.toLowerCase();
-    const isTitle =
-      keyLower.includes("title") ||
-      keyLower.includes("question") ||
-      keyLower === "number";
-    const isDesc =
-      keyLower.includes("desc") ||
-      keyLower.includes("answer") ||
-      keyLower.includes("text");
-    const isLabel =
-      keyLower.includes("label") ||
-      keyLower.includes("tag") ||
-      keyLower.includes("badge");
-
-    let fontSize = "";
-    let fontWeight = "";
-    let color = "";
-
-    if (isTitle) {
-      fontSize = "24px";
-      fontWeight = "700";
-      color = "#111111";
-    } else if (isDesc) {
-      fontSize = "16px";
-      fontWeight = "400";
-      color = "#666666";
-    } else if (isLabel) {
-      fontSize = "14px";
-      fontWeight = "700";
-      color = "#ffffff";
-    }
-
-    if (widget.type === "process") {
-      if (isTitle) color = "#000000";
-      if (elementKey === "number") {
-        fontSize = "20px";
-        fontWeight = "700";
-        color = "#285DE1";
-      }
-    }
-
-    return { fontSize, fontWeight, color };
-  };
-
-  if (!isMediaKey && elementKey !== "bannerButton") {
-    const fb = getFallbackStyles();
-    styleValue = {
-      ...styleValue,
-      fontSize: styleValue.fontSize || fb.fontSize || "16px",
-      fontWeight: styleValue.fontWeight || fb.fontWeight || "400",
-      color: styleValue.color || fb.color || "#000000",
-    };
-  }
+  // Keep style inputs source-of-truth only from actual widget data.
+  // Do not inject fallback font sizes/weights/colors, so cleared values stay cleared.
 
   const getPlaceholderText = () => {
     if (isMediaKey) {
       if (widget.type === "process" || widget.type === "processCard")
-        return "/images/template/like_cat.jpg";
-      return "/images/template/img1.png";
+        return "/images/placeholder/step_consult.jpg";
+      return "/images/placeholder/card_img_default.jpg";
     }
     const keyLower = elementKey.toLowerCase();
     if (keyLower.includes("subtitle")) return "( 서브타이틀 )";
@@ -958,8 +1445,64 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   };
 
   const currentPlaceholder = getPlaceholderText();
+  const resolvedStyleValue = styleValue;
 
   const displayValue = textValue ? textValue.replace(/<br\s*\/?>/gi, "\n") : "";
+  const currentLayoutVal = (data.layout || "1").toString();
+  const isLayout11FeaturePanel =
+    widget.type === "textStructure" &&
+    (currentLayoutVal === "11" || currentLayoutVal === "layout11") &&
+    !!itemId &&
+    ["itemNumber", "itemTitle", "itemDesc", "itemIcon"].includes(elementKey);
+  const layout11FeatureContext = (() => {
+    if (!isLayout11FeaturePanel || !itemId) return null;
+    const sections = textStructureSections.sections11 || [];
+    let sectionIndex = -1;
+    let itemIndex = -1;
+    const colonIndex = itemId.indexOf(":");
+    if (colonIndex > 0) {
+      const sectionId = itemId.slice(0, colonIndex);
+      const parsedIdx = Number.parseInt(itemId.slice(colonIndex + 1), 10);
+      const foundSectionIdx = sections.findIndex((s: any) => s.id === sectionId);
+      if (
+        foundSectionIdx >= 0 &&
+        !Number.isNaN(parsedIdx) &&
+        parsedIdx >= 0 &&
+        parsedIdx < (sections[foundSectionIdx]?.items || []).length
+      ) {
+        sectionIndex = foundSectionIdx;
+        itemIndex = parsedIdx;
+      }
+    }
+    for (let sIdx = 0; sIdx < sections.length; sIdx += 1) {
+      if (sectionIndex >= 0 && itemIndex >= 0) break;
+      const items = sections[sIdx]?.items || [];
+      const found = items.findIndex((it: any) => it.id === itemId);
+      if (found >= 0) {
+        sectionIndex = sIdx;
+        itemIndex = found;
+        break;
+      }
+    }
+    if (sectionIndex < 0 || itemIndex < 0) return null;
+    const section = sections[sectionIndex];
+    const item = (section.items || [])[itemIndex] || {};
+    return { sections, sectionIndex, itemIndex, item };
+  })();
+  const updateLayout11FeatureItem = (patch: Record<string, any>) => {
+    if (!layout11FeatureContext) return;
+    const updatedSections = layout11FeatureContext.sections.map(
+      (section: any, sIdx: number) => {
+        if (sIdx !== layout11FeatureContext.sectionIndex) return section;
+        const updatedItems = (section.items || []).map(
+          (it: any, i: number) =>
+            i === layout11FeatureContext.itemIndex ? { ...it, ...patch } : it,
+        );
+        return { ...section, items: updatedItems };
+      },
+    );
+    updateWidgetData(widget.id, { sections11: updatedSections });
+  };
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4 duration-200">
@@ -976,7 +1519,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           </span>
         </button>
         <h3 className="font-bold text-gray-800">
-          {isMediaKey
+          {isLayout11FeaturePanel
+            ? "프로그램 특징 편집"
+            : isMediaKey
             ? "이미지/영상 편집"
             : elementKey === "itemFeatures"
               ? "특징 항목 관리"
@@ -990,7 +1535,75 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       <div>
         {/* Banner Button Link Editor (Exclusive) */}
         {/* Button (Banner/Process Step) Editor */}
-        {elementKey === "itemFeatures" && itemId ? (
+        {isLayout11FeaturePanel && layout11FeatureContext ? (
+          <div className="space-y-4 p-2">
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-gray-400 font-semibold">
+                아이콘 이미지 URL
+              </label>
+              <input
+                type="text"
+                className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                value={
+                  layout11FeatureContext.item.icon ||
+                  layout11FeatureContext.item.iconUrl ||
+                  ""
+                }
+                onChange={(e) =>
+                  updateLayout11FeatureItem({
+                    icon: e.target.value,
+                    iconUrl: e.target.value,
+                  })
+                }
+                placeholder="/images/placeholder/icon_program.png"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-gray-400 font-semibold">
+                숫자
+              </label>
+              <input
+                type="text"
+                className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                value={layout11FeatureContext.item.number || ""}
+                onChange={(e) =>
+                  updateLayout11FeatureItem({ number: e.target.value })
+                }
+                placeholder="01."
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-gray-400 font-semibold">
+                프로그램 특징명
+              </label>
+              <input
+                type="text"
+                className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                value={layout11FeatureContext.item.title || ""}
+                onChange={(e) =>
+                  updateLayout11FeatureItem({ title: e.target.value })
+                }
+                placeholder="프로그램 특징"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-gray-400 font-semibold">
+                프로그램 설명
+              </label>
+              <textarea
+                className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none min-h-[72px]"
+                value={layout11FeatureContext.item.desc || ""}
+                onChange={(e) =>
+                  updateLayout11FeatureItem({ desc: e.target.value })
+                }
+                placeholder="프로그램 설명을 입력하세요."
+              />
+            </div>
+          </div>
+        ) : elementKey === "itemFeatures" && itemId ? (
           <div className="space-y-4 p-2">
             <div className="flex justify-between items-center mb-2">
               <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
@@ -1258,11 +1871,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 <div className="flex-1 space-y-1">
                   <select
                     className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs font-medium outline-none text-gray-700"
-                    value={styleValue.fontWeight || "500"}
+                    value={styleValue.fontWeight ?? ""}
                     onChange={(e) =>
                       onStyleChange("fontWeight", e.target.value)
                     }
                   >
+                    <option value="">굵기 선택</option>
                     <option value="400">Regular</option>
                     <option value="500">Medium</option>
                     <option value="600">SemiBold</option>
@@ -1273,7 +1887,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   <input
                     type="color"
                     className="w-full h-[32px] rounded-lg cursor-pointer border-none bg-gray-50 p-1"
-                    value={styleValue.color || "#060606"}
+                    value={
+                      /^#([0-9a-fA-F]{6})$/.test(styleValue.color || "")
+                        ? styleValue.color
+                        : "#ffffff"
+                    }
                     onChange={(e) => onStyleChange("color", e.target.value)}
                   />
                 </div>
@@ -2095,11 +2713,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               <input
                 type="text"
                 placeholder={
-                  styleValue.fontSize
-                    ? styleValue.fontSize.toString().replace("px", "")
+                  resolvedStyleValue.fontSize
+                    ? resolvedStyleValue.fontSize.toString().replace("px", "")
                     : placeholder
                 }
-                value={styleValue.fontSize?.toString().replace("px", "") || ""}
+                value={
+                  resolvedStyleValue.fontSize
+                    ?.toString()
+                    .replace("px", "") || ""
+                }
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === "") onStyleChange("fontSize", "");
@@ -2117,14 +2739,16 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               <input
                 type="text"
                 placeholder={
-                  styleValue.fontSizeMobile
-                    ? styleValue.fontSizeMobile.toString().replace("px", "")
-                    : styleValue.fontSize
-                      ? styleValue.fontSize.toString().replace("px", "")
+                  resolvedStyleValue.fontSizeMobile
+                    ? resolvedStyleValue.fontSizeMobile.toString().replace("px", "")
+                    : resolvedStyleValue.fontSize
+                      ? resolvedStyleValue.fontSize.toString().replace("px", "")
                       : placeholderMobile || placeholder
                 }
                 value={
-                  styleValue.fontSizeMobile?.toString().replace("px", "") || ""
+                  resolvedStyleValue.fontSizeMobile
+                    ?.toString()
+                    .replace("px", "") || ""
                 }
                 onChange={(e) => {
                   const val = e.target.value;
@@ -2142,10 +2766,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               굵기
             </label>
             <select
-              value={styleValue.fontWeight || "400"}
+              value={resolvedStyleValue.fontWeight ?? ""}
               onChange={(e) => onStyleChange("fontWeight", e.target.value)}
               className="w-full bg-gray-50 border-none p-2.5 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-100 outline-none appearance-none cursor-pointer"
             >
+              <option value="">선택 안 함</option>
               <option value="100">100</option>
               <option value="300">300</option>
               <option value="400">400</option>
@@ -2164,17 +2789,25 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               <div className="relative w-10 h-10 rounded-lg border-none shadow-sm overflow-hidden shrink-0 ring-1 ring-gray-100">
                 <input
                   type="color"
-                  value={styleValue.color || "#000000"}
+                  value={
+                    /^#([0-9a-fA-F]{6})$/.test(styleValue.color || "")
+                      ? styleValue.color
+                      : /^#([0-9a-fA-F]{6})$/.test(
+                            resolvedStyleValue.color || "",
+                          )
+                        ? resolvedStyleValue.color
+                      : "#ffffff"
+                  }
                   onChange={(e) => onStyleChange("color", e.target.value)}
                   className="absolute inset-[0] w-[150%] h-[150%] -translate-x-1/4 -translate-y-1/4 cursor-pointer p-0 border-0"
                 />
               </div>
               <input
                 type="text"
-                value={styleValue.color || "#000000"}
+                value={styleValue.color ?? resolvedStyleValue.color ?? ""}
                 onChange={(e) => onStyleChange("color", e.target.value)}
                 className="flex-1 min-w-0 bg-transparent border-none p-1 text-xs font-bold uppercase font-mono focus:ring-0 text-gray-600"
-                placeholder="#000000"
+                placeholder="#RRGGBB"
               />
             </div>
           </div>

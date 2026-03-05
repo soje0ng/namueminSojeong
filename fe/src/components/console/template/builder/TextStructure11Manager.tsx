@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -52,13 +52,6 @@ const SECTION_COLORS: Record<Section11Type, string> = {
   banner: "bg-purple-100 text-purple-700",
 };
 
-const HEIGHT_MAP: Record<number, string> = {
-  1: "480",
-  2: "358",
-  3: "280",
-  4: "240",
-};
-
 function createDefaultSection(type: Section11Type): Section11Item {
   const id = `s11-${type}-${Date.now()}`;
   if (type === "text") {
@@ -74,8 +67,7 @@ function createDefaultSection(type: Section11Type): Section11Item {
       id,
       type: "image",
       columns: 1,
-      images: ["/images/placeholder/section-image.jpg"],
-      imageHeight: "480",
+      images: ["/images/placeholder/card-sm.jpg"],
     };
   }
   if (type === "features") {
@@ -88,12 +80,14 @@ function createDefaultSection(type: Section11Type): Section11Item {
           number: "01.",
           title: "프로그램 특징",
           desc: "설명 텍스트를 입력하세요.",
+          icon: "/images/placeholder/icon_program_thumb.png",
         },
         {
           id: `f11-${Date.now()}-2`,
           number: "02.",
           title: "프로그램 특징",
           desc: "설명 텍스트를 입력하세요.",
+          icon: "/images/placeholder/icon_program_thumb.png",
         },
       ],
     };
@@ -110,15 +104,23 @@ interface Props {
   widgetId: string;
   sections: Section11Item[];
   updateWidgetData: (id: string, data: any) => void;
+  autoExpandSectionId?: string | null;
 }
 
 const TextStructure11Manager: React.FC<Props> = ({
   widgetId,
   sections,
   updateWidgetData,
+  autoExpandSectionId = null,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddPicker, setShowAddPicker] = useState(false);
+
+  useEffect(() => {
+    if (!autoExpandSectionId) return;
+    const exists = sections.some((s) => s.id === autoExpandSectionId);
+    if (exists) setExpandedId(autoExpandSectionId);
+  }, [autoExpandSectionId, sections]);
 
   const update = (newSections: Section11Item[]) => {
     updateWidgetData(widgetId, { sections11: newSections });
@@ -128,38 +130,61 @@ const TextStructure11Manager: React.FC<Props> = ({
     update(sections.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   };
 
+  const isReorderableSection = (type: Section11Type) =>
+    type === "text" || type === "banner";
+
+  const hasReorderTarget = (idx: number, dir: "up" | "down") => {
+    const step = dir === "up" ? -1 : 1;
+    let cursor = idx + step;
+    while (cursor >= 0 && cursor < sections.length) {
+      if (isReorderableSection(sections[cursor].type)) return true;
+      cursor += step;
+    }
+    return false;
+  };
+
   const moveSection = (idx: number, dir: "up" | "down") => {
+    if (!isReorderableSection(sections[idx]?.type)) return;
     const arr = [...sections];
-    const target = dir === "up" ? idx - 1 : idx + 1;
+    const step = dir === "up" ? -1 : 1;
+    let target = idx + step;
+    while (target >= 0 && target < arr.length) {
+      if (isReorderableSection(arr[target].type)) break;
+      target += step;
+    }
     if (target < 0 || target >= arr.length) return;
     [arr[idx], arr[target]] = [arr[target], arr[idx]];
     update(arr);
   };
 
   const deleteSection = (id: string) => {
+    const target = sections.find((s) => s.id === id);
+    if (target && (target.type === "image" || target.type === "features")) {
+      return;
+    }
     update(sections.filter((s) => s.id !== id));
     if (expandedId === id) setExpandedId(null);
   };
 
   const addSection = (type: Section11Type) => {
+    if (type === "image" || type === "features") {
+      setShowAddPicker(false);
+      return;
+    }
     update([...sections, createDefaultSection(type)]);
     setShowAddPicker(false);
   };
 
   const updateImageCount = (section: Section11Item, cols: number) => {
     const current = section.images || [];
-    const placeholder = "/images/placeholder/section-image.jpg";
+    const placeholder = "/images/placeholder/card-sm.jpg";
     let images: string[];
     if (cols > current.length) {
       images = [...current, ...Array(cols - current.length).fill(placeholder)];
     } else {
       images = current.slice(0, cols);
     }
-    updateSection(section.id, {
-      columns: cols,
-      images,
-      imageHeight: HEIGHT_MAP[cols] || "358",
-    });
+    updateSection(section.id, { columns: cols, images });
   };
 
   const updateFeatItem = (
@@ -185,6 +210,7 @@ const TextStructure11Manager: React.FC<Props> = ({
       number: num,
       title: "프로그램 특징",
       desc: "설명을 입력하세요.",
+      icon: "/images/placeholder/icon_program_thumb.png",
     });
     updateSection(sectionId, { items });
   };
@@ -205,10 +231,20 @@ const TextStructure11Manager: React.FC<Props> = ({
       <div className="space-y-1.5">
         {sections.map((section, idx) => {
           const isExpanded = expandedId === section.id;
+          const isHighlighted =
+            isExpanded || autoExpandSectionId === section.id;
+          const isLockedSection =
+            section.type === "image" || section.type === "features";
+          const canMoveUp =
+            isReorderableSection(section.type) && hasReorderTarget(idx, "up");
+          const canMoveDown =
+            isReorderableSection(section.type) && hasReorderTarget(idx, "down");
           return (
             <div
               key={section.id}
-              className="border border-gray-200 rounded-xl overflow-hidden"
+              className={`border rounded-xl overflow-hidden transition-colors ${
+                isHighlighted ? "border-blue-500" : "border-gray-200"
+              }`}
             >
               {/* Header row */}
               <div className="flex items-center gap-1 p-2 bg-gray-50/80">
@@ -220,21 +256,26 @@ const TextStructure11Manager: React.FC<Props> = ({
                 <div className="flex-1" />
                 <button
                   onClick={() => moveSection(idx, "up")}
-                  disabled={idx === 0}
+                  disabled={!canMoveUp}
                   className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-white disabled:opacity-30"
                 >
                   <ArrowUp size={12} />
                 </button>
                 <button
                   onClick={() => moveSection(idx, "down")}
-                  disabled={idx === sections.length - 1}
+                  disabled={!canMoveDown}
                   className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-white disabled:opacity-30"
                 >
                   <ArrowDown size={12} />
                 </button>
                 <button
                   onClick={() => deleteSection(section.id)}
-                  className="p-1 rounded text-red-400 hover:text-red-600 hover:bg-white"
+                  disabled={isLockedSection}
+                  className={`p-1 rounded ${
+                    isLockedSection
+                      ? "text-red-400 opacity-30 cursor-not-allowed"
+                      : "text-red-400 hover:text-red-600 hover:bg-white"
+                  }`}
                 >
                   <Trash2 size={12} />
                 </button>
@@ -325,7 +366,7 @@ const TextStructure11Manager: React.FC<Props> = ({
                           min={80}
                           max={800}
                           className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={parseInt(section.imageHeight || "480") || 480}
+                          value={section.imageHeight || ""}
                           onChange={(e) =>
                             updateSection(section.id, {
                               imageHeight: e.target.value,
@@ -531,15 +572,13 @@ const TextStructure11Manager: React.FC<Props> = ({
           <Plus size={13} />
           영역 추가
         </button>
-        {showAddPicker && (
-          <div className="absolute bottom-full left-0 right-0 mb-1.5 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-10 grid grid-cols-2 gap-1.5">
-            {(
-              ["text", "image", "features", "banner"] as Section11Type[]
-            ).map((type) => (
-              <button
-                key={type}
-                onClick={() => addSection(type)}
-                className={`text-xs font-semibold p-2 rounded-lg text-left transition-all hover:opacity-80 ${SECTION_COLORS[type]}`}
+          {showAddPicker && (
+            <div className="absolute bottom-full left-0 right-0 mb-1.5 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-10 grid grid-cols-2 gap-1.5">
+              {(["text", "banner"] as Section11Type[]).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => addSection(type)}
+                  className={`text-xs font-semibold p-2 rounded-lg text-left transition-all hover:opacity-80 ${SECTION_COLORS[type]}`}
               >
                 {SECTION_LABELS[type]}
               </button>
