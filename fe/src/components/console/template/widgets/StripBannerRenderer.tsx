@@ -6,7 +6,7 @@ export const STRIP_BANNER_DEFAULTS = {
   layout: "1",
   title: "이미 수많은 가정이 학부모 영주권 프로그램으로",
   desc: "수십억 원을 절감하며 자녀가 IVY 리그에 합격했습니다!",
-  imageUrl: "/images/placeholder/strip-banner.jpg",
+  imageUrl: "/images/placeholder/strip-banr.png",
   buttonText: "자세히 보기",
   buttonUrl: "#",
   backgroundColor: "#295E92",
@@ -60,7 +60,7 @@ export const STRIP_BANNER_DEFAULTS = {
     fontWeight: "700",
     lineHeight: "32px",
   },
-  layout2ImageUrl: "https://placehold.co/680x400",
+  layout2ImageUrl: "/images/placeholder/strip-banr-layout2.png",
 };
 
 export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
@@ -133,7 +133,6 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                   e.stopPropagation();
                   onElementSelect?.("imageUrl");
                 }}
-
                 url={data.imageUrl}
                 className="w-full xl:w-96 h-full xl:h-64 xl:left-[12px] xl:top-[17px] absolute object-cover"
                 style={getElementStyle(data.imageStyle, viewport)}
@@ -177,11 +176,11 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
     >
       <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
         <div
-          className="self-stretch h-auto xl:h-96 rounded-[20px] inline-flex flex-col xl:flex-row justify-start items-start overflow-hidden w-full"
+          className="self-stretch h-auto xl:h-96 rounded-[20px] inline-flex flex-col xl:flex-row justify-start items-stretch overflow-hidden w-full relative"
           style={{ backgroundColor: bg2Color }}
         >
           <div
-            className="flex-1 self-stretch h-60 xl:h-auto overflow-hidden shrink-0 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 relative"
+            className="flex-1 min-h-[240px] xl:min-h-0 relative overflow-hidden shrink-0 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
             onDoubleClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -189,14 +188,23 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
             }}
           >
             <UniversalMedia
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("imageUrl");
+              }}
               className="w-full h-full object-cover absolute inset-0"
-              url={data.layout2ImageUrl || "https://placehold.co/680x400"}
+              url={
+                data.layout2ImageUrl ||
+                "/images/placeholder/strip-banr-layout2.png"
+              }
               alt="Banner Image"
+              style={{
+                ...getElementStyle(data.imageStyle, viewport),
+                borderRadius: "0px",
+                height: "100%",
+                width: "100%",
+                objectFit: "cover",
+              }}
             />
           </div>
           <div className="flex-1 self-stretch p-8 xl:p-14 inline-flex flex-col justify-between items-start w-full">
@@ -268,10 +276,12 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }}
                 />
               )}
-              <div className="w-6 h-6 flex justify-center items-center gap-2.5">
-                <div className="w-6 h-6 relative">
-                  <div className="w-2.5 h-2 left-[7px] top-[7.63px] absolute outline outline-2 outline-offset-[-1px] outline-시안-mode-Primary10"></div>
-                </div>
+              <div className="w-6 h-6 flex justify-center items-center">
+                <img
+                  src="/images/placeholder/icon-arrow.png"
+                  alt="arrow icon"
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
           </div>

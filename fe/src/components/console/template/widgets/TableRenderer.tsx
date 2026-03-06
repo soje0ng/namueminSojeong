@@ -153,7 +153,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             {/* Table Area for Layout 04 - No Top/Bottom Borders, Rounded rows */}
             <div className="self-stretch flex flex-col justify-start items-start gap-1 overflow-hidden w-full">
               {/* Header Row */}
-              <div className="self-stretch inline-flex justify-start items-center overflow-hidden w-full">
+              <div className="self-stretch inline-flex justify-start items-center overflow-hidden w-full rounded-lg">
                 {tableHeaders.map((headerText, i) => (
                   <div
                     key={i}
@@ -161,9 +161,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     style={{
                       backgroundColor:
                         (w.data as any).headerCellStyles?.[i]
-                          ?.backgroundColor ??
-                        headerStyle?.backgroundColor ??
-                        "#F9FAFB",
+                          ?.backgroundColor || "#FFFFFF",
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -172,7 +170,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <SafeHtml
                       html={headerText}
-                      className={`text-center justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9`}
+                      className={`text-center justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-9`}
                       style={{ ...headerStyle, backgroundColor: "transparent" }}
                     />
                   </div>
@@ -183,8 +181,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {tableRows.map((row, rIdx) => (
                 <div
                   key={rIdx}
-                  className={`self-stretch inline-flex justify-start items-center overflow-hidden w-full`}
-                  style={{ borderBottom: "1px solid #E5E7EB" }}
+                  className={`self-stretch inline-flex justify-start items-center overflow-hidden w-full rounded-lg`}
+                  style={{
+                    backgroundColor:
+                      (w.data as any).rowStyles?.[rIdx]?.backgroundColor ||
+                      (rIdx % 2 === 0 ? "#F9FAFB" : "transparent"),
+                  }}
                 >
                   {row.map((cell, cIdx) => (
                     <div
@@ -193,9 +195,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       style={{
                         backgroundColor:
                           (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
-                            ?.backgroundColor ??
-                          bodyStyle?.backgroundColor ??
-                          (rIdx % 2 === 0 ? "#F9FAFB" : "transparent"),
+                            ?.backgroundColor || "transparent",
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -317,10 +317,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     className={`${i === 0 ? "w-24 xl:w-60" : i === 1 ? "flex-1" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                     style={{
                       backgroundColor:
-                        (w.data as any).headerCellStyles?.[i]
-                          ?.backgroundColor ??
-                        headerStyle?.backgroundColor ??
-                        (i === 0 ? "#E6E8EA" : i === 1 ? "#131416" : "#275DE0"),
+                        i === 0 ? "#E6E8EA" : i === 1 ? "#131416" : "#285DE1",
                       borderRadius: 8,
                     }}
                     onDoubleClick={(e) => {
@@ -331,7 +328,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     <SafeHtml
                       html={headerText}
                       className={`text-center justify-start ${i === 0 ? "text-[#131416]" : "text-[#FFFFFF]"} text-xl font-bold font-['Pretendard'] leading-8`}
-                      style={{ ...headerStyle, backgroundColor: "transparent" }}
+                      style={{
+                        ...headerStyle,
+                        backgroundColor: "transparent",
+                        color: i === 0 ? undefined : "#FFFFFF",
+                      }}
                     />
                   </div>
                 ))}
@@ -349,9 +350,8 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       style={{
                         backgroundColor:
                           (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
-                            ?.backgroundColor ??
-                          bodyStyle?.backgroundColor ??
-                          (cIdx === 0 || cIdx === 1 ? "#F6F7FB" : "#DDEFFE"),
+                            ?.backgroundColor ||
+                          (cIdx === 2 ? "#DDEFFE" : "#F6F7FB"),
                         borderRadius: 8,
                       }}
                       onDoubleClick={(e) => {
@@ -459,7 +459,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                         style={{
                           backgroundColor:
                             (w.data as any).headerCellStyles?.[i]
-                              ?.backgroundColor ?? headerStyle.backgroundColor,
+                              ?.backgroundColor || headerStyle?.backgroundColor,
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -489,7 +489,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                           style={{
                             backgroundColor:
                               (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
-                                ?.backgroundColor ?? bodyStyle.backgroundColor,
+                                ?.backgroundColor || bodyStyle?.backgroundColor,
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -585,9 +585,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                         className="border p-[16px_5px] font-[400] text-[#060606] break-all hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
                         style={{
                           backgroundColor:
-                            headerStyle.backgroundColor || "#FCFDFE",
-                          borderColor: headerStyle.borderColor || "#D9D9D9",
-                          textAlign: headerStyle.textAlign || "center",
+                            (w.data as any).headerGubunStyle?.backgroundColor ||
+                            headerStyle?.backgroundColor ||
+                            "#FCFDFE",
+                          borderColor: headerStyle?.borderColor || "#D9D9D9",
+                          textAlign: headerStyle?.textAlign || "center",
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -607,9 +609,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                           style={{
                             ...headerStyle,
                             backgroundColor:
-                              headerStyle.backgroundColor || "#F2F3F8",
-                            borderColor: headerStyle.borderColor || "#D9D9D9",
-                            textAlign: headerStyle.textAlign || "center",
+                              (w.data as any).headerCellStyles?.[i]
+                                ?.backgroundColor ||
+                              headerStyle?.backgroundColor ||
+                              "#F2F3F8",
+                            borderColor: headerStyle?.borderColor || "#D9D9D9",
+                            textAlign: headerStyle?.textAlign || "center",
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -633,9 +638,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                           style={{
                             ...bodyStyle,
                             backgroundColor:
-                              bodyStyle.backgroundColor || "#F2F3F8",
-                            borderColor: bodyStyle.borderColor || "#D9D9D9",
-                            textAlign: bodyStyle.textAlign || "center",
+                              (w.data as any).cellStyles?.[`${rIdx}-0`]
+                                ?.backgroundColor ||
+                              bodyStyle?.backgroundColor ||
+                              "#F2F3F8",
+                            borderColor: bodyStyle?.borderColor || "#D9D9D9",
+                            textAlign: bodyStyle?.textAlign || "center",
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -658,7 +666,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                                 borderColor: bodyStyle.borderColor || "#D9D9D9",
                                 textAlign: bodyStyle.textAlign || "center",
                                 backgroundColor:
-                                  bodyStyle?.backgroundColor || "transparent",
+                                  (w.data as any).cellStyles?.[
+                                    `${rIdx}-${cIdx + 1}`
+                                  ]?.backgroundColor ||
+                                  bodyStyle?.backgroundColor ||
+                                  "transparent",
                               }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
@@ -787,7 +799,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     style={{
                       backgroundColor:
                         (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
-                          ?.backgroundColor ?? bodyStyle.backgroundColor,
+                          ?.backgroundColor || bodyStyle?.backgroundColor,
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();

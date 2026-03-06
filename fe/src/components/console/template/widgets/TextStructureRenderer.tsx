@@ -1965,6 +1965,92 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   );
                 }
 
+                /* ── FEATURES ── */
+                if (section.type === "features") {
+                  return (
+                    <div
+                      key={section.id}
+                      className="self-stretch flex flex-col justify-start items-start gap-2 w-full"
+                    >
+                      {(section.items || []).map((item: any, i: number) => {
+                        const isTitleHidden = item.titleStyle?.isHidden;
+                        const isDescHidden = item.descStyle?.isHidden;
+                        const featureItemId = item.id || `${section.id}:${i}`;
+                        if (isTitleHidden && isDescHidden) return null;
+
+                        return (
+                          <div
+                            key={item.id || i}
+                            className="self-stretch p-4 bg-시안-mode-gray5 inline-flex justify-start items-center gap-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("itemTitle", featureItemId);
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("itemTitle", featureItemId);
+                            }}
+                          >
+                            {!isTitleHidden && (
+                              <TextStructureSafeHtml
+                                html={item.title || "첫째. 타이틀"}
+                                className="w-40 justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 shrink-0 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                                style={getElementStyle(item.titleStyle, viewport)}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.(
+                                    "itemTitle",
+                                    featureItemId,
+                                  );
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.(
+                                    "itemTitle",
+                                    featureItemId,
+                                  );
+                                }}
+                              />
+                            )}
+                            <UniversalMedia
+                              url={
+                                item.iconUrl ||
+                                "/images/placeholder/icon_arrow_right.png"
+                              }
+                              className="w-6 h-6 object-contain shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                              alt="feature icon"
+                              style={getElementStyle(item.iconStyle, viewport)}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("itemIcon", featureItemId);
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("itemIcon", featureItemId);
+                              }}
+                            />
+                            {!isDescHidden && (
+                              <TextStructureSafeHtml
+                                html={item.desc || "설명 텍스트를 입력하세요."}
+                                className="flex-1 justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                                style={getElementStyle(item.descStyle, viewport)}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("itemDesc", featureItemId);
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("itemDesc", featureItemId);
+                                }}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+
                   /* ── STRIP BANNER ── */
                   if (section.type === "stripBanner") {
                     const bannerHeight = section.imageHeight

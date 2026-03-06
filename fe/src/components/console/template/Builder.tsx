@@ -514,9 +514,9 @@ const Builder: React.FC<BuilderProps> = ({
       if (newItem.desc !== undefined) newItem.desc = "설명을 입력하세요.";
 
       // Special handling for process step numbering
-      if (widget.type === "process") {
+      if (widget.type === "process" || widget.type === "processCard") {
         const count = (data.steps?.length || 0) + 1;
-        newItem.number = count < 10 ? `0${count}` : `${count}`;
+        newItem.number = `${count}`;
       }
 
       if (widget.type === "tabButton") {
@@ -546,7 +546,7 @@ const Builder: React.FC<BuilderProps> = ({
         const count = 1;
         newItem = {
           id,
-          number: "01",
+          number: "1",
           title: "새 제목",
           desc: "설명을 입력하세요.",
           image: "/images/template/icon.png",
@@ -710,7 +710,7 @@ const Builder: React.FC<BuilderProps> = ({
             const count = currentItems.length + 1;
             const featureItem = {
               ...newItem,
-              number: count < 10 ? `0${count}.` : `${count}.`,
+              number: `${count}.`,
               icon: "/images/template/icon_program_thumb.png",
             };
             return {

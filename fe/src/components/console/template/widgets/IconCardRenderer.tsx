@@ -17,6 +17,23 @@ const getGridColsClass = (itemsPerRow?: number, defaultCols: number = 3) => {
   return "grid-cols-1 xl:grid-cols-3";
 };
 
+const getIconLayoutPlaceholderKey = (
+  layout?: string | number,
+  variant?: string,
+) => {
+  const normalizedRaw = String(layout || variant || "1")
+    .trim()
+    .toLowerCase();
+  const digitMatch = normalizedRaw.match(/\d+/);
+  const raw = (digitMatch?.[0] ??
+    (normalizedRaw === "box" ? "1" : normalizedRaw)) as string;
+
+  const num = Number.parseInt(raw, 10);
+
+  if (Number.isInteger(num) && num >= 1 && num <= 6) return num.toString();
+  return "1";
+};
+
 export const ICON_CARD_DEFAULTS = {
   variant: "box",
   title: "좌측타이틀영역",
@@ -26,7 +43,7 @@ export const ICON_CARD_DEFAULTS = {
   items: [
     {
       id: "ts-1",
-      icon: "/images/placeholder/icon_feature_01.png",
+      icon: "/images/placeholder/card_img1.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -38,7 +55,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-2",
-      icon: "/images/placeholder/icon_feature_02.png",
+      icon: "/images/placeholder/card_img1.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -50,7 +67,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-3",
-      icon: "/images/placeholder/icon_feature_03.png",
+      icon: "/images/placeholder/card_img1.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -62,7 +79,7 @@ export const ICON_CARD_DEFAULTS = {
     },
     {
       id: "ts-4",
-      icon: "/images/placeholder/icon_feature_04.png",
+      icon: "/images/placeholder/card_img1.png",
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
       titleStyle: {
@@ -76,7 +93,7 @@ export const ICON_CARD_DEFAULTS = {
 };
 
 export const ICON_CARD_ITEM_DEFAULT = {
-  icon: "/images/placeholder/icon_feature_new.png",
+  icon: "/images/placeholder/card_img1.png",
   title: "콘텐츠 비즈니스 설계자들 2024",
   desc: "새로운 시대를 이끄는 기획자들의 비결",
   titleStyle: { fontWeight: "700", fontSize: "20px", fontSizeMobile: "20px" },
@@ -90,8 +107,33 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 }) => {
   const w = widget as IconCardWidget;
   const style = useWidgetStyle(w.style);
-
-  const currentLayout = String(w.data.layout || w.data.variant || "1");
+  const iconPlaceholderLayout = getIconLayoutPlaceholderKey(
+    w.data.layout,
+    w.data.variant,
+  );
+  const currentLayout = getIconLayoutPlaceholderKey(
+    w.data.layout,
+    w.data.variant,
+  );
+  const isNaturalIconLayout = ["1", "2"].includes(currentLayout);
+  const getIconMediaStyle = (iconStyle: any) => ({
+    ...(() => {
+      const base = getElementStyle(iconStyle, viewport) as any;
+      delete base.width;
+      delete base.height;
+      delete base.objectFit;
+      if (["3", "4", "5"].includes(currentLayout)) {
+        delete base.backgroundColor;
+        delete base.borderRadius;
+        delete base.borderColor;
+        delete base.borderWidth;
+        delete base.borderStyle;
+      }
+      return base;
+    })(),
+    ...(isNaturalIconLayout ? {} : { height: "100%" }),
+    objectFit: "contain",
+  });
 
   if (
     currentLayout === "1" ||
@@ -187,14 +229,21 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                       onElementSelect?.("itemTitle", item.id || i.toString());
                     }}
                   />
-                  <div className="w-14 h-14 relative z-20 bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center p-1">
+                  <div className="relative z-20 bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
                     <UniversalMedia
-                      url={
-                        item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
-                      }
+                      url={(() => {
+                        const currentImg = item.iconUrl || item.icon;
+                        if (
+                          currentImg &&
+                          !currentImg.includes("/images/placeholder/")
+                        )
+                          return currentImg;
+                        return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                      })()}
                       alt="icon"
-                      className="w-10 h-10 object-contain"
-                      style={getElementStyle(item.iconStyle, viewport)}
+                      className="max-w-full"
+                      naturalSize
+                      style={getIconMediaStyle(item.iconStyle)}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("itemIcon", item.id || i.toString());
@@ -277,14 +326,21 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 key={item.id || i}
                 className="flex-1 min-w-[180px] p-6 rounded-2xl inline-flex flex-col justify-start items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
               >
-                <div className="w-14 h-14 relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center p-1 shrink-0">
+                <div className="relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
                   <UniversalMedia
-                    url={
-                      item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
-                    }
+                    url={(() => {
+                      const currentImg = item.iconUrl || item.icon;
+                      if (
+                        currentImg &&
+                        !currentImg.includes("/images/placeholder/")
+                      )
+                        return currentImg;
+                      return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                    })()}
                     alt="icon"
-                    className="w-10 h-10 object-contain"
-                    style={getElementStyle(item.iconStyle, viewport)}
+                    className="max-w-full"
+                    naturalSize
+                    style={getIconMediaStyle(item.iconStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("itemIcon", item.id || i.toString());
@@ -409,14 +465,20 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         }}
                       />
 
-                      <div className="w-24 h-24 relative bg-시안-mode-gray5 rounded-[50px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
+                      <div className="w-24 h-24 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
                         <UniversalMedia
-                          url={
-                            item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
-                          }
+                          url={(() => {
+                            const currentImg = item.iconUrl || item.icon;
+                            if (
+                              currentImg &&
+                              !currentImg.includes("/images/placeholder/")
+                            )
+                              return currentImg;
+                            return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                          })()}
                           alt="icon"
                           className="w-16 h-16 object-contain"
-                          style={getElementStyle(item.iconStyle, viewport)}
+                          style={getIconMediaStyle(item.iconStyle)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(
@@ -564,14 +626,20 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         />
                       </div>
 
-                      <div className="w-24 h-24 shrink-0 relative bg-white rounded-[50px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
+                      <div className="w-24 h-24 shrink-0 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
                         <UniversalMedia
-                          url={
-                            item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
-                          }
+                          url={(() => {
+                            const currentImg = item.iconUrl || item.icon;
+                            if (
+                              currentImg &&
+                              !currentImg.includes("/images/placeholder/")
+                            )
+                              return currentImg;
+                            return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                          })()}
                           alt="icon"
                           className="w-16 h-16 object-contain"
-                          style={getElementStyle(item.iconStyle, viewport)}
+                          style={getIconMediaStyle(item.iconStyle)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(
@@ -696,14 +764,20 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                           />
                         </div>
 
-                        <div className="w-14 h-14 relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
+                        <div className="w-14 h-14 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
                           <UniversalMedia
-                            url={
-                              item.iconUrl || item.icon || "/images/placeholder/icon_default.png"
-                            }
+                            url={(() => {
+                              const currentImg = item.iconUrl || item.icon;
+                              if (
+                                currentImg &&
+                                !currentImg.includes("/images/placeholder/")
+                              )
+                                return currentImg;
+                              return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                            })()}
                             alt="icon"
                             className="w-10 h-10 object-contain"
-                            style={getElementStyle(item.iconStyle, viewport)}
+                            style={getIconMediaStyle(item.iconStyle)}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.(

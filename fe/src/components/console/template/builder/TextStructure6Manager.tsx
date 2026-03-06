@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 
-export type Section6Type = "image" | "text" | "newsletter" | "stripBanner";
+export type Section6Type = "image" | "text" | "newsletter" | "stripBanner" | "features";
 
 export interface Section6Item {
   id: string;
@@ -31,6 +31,8 @@ export interface Section6Item {
   imageUrl?: string;
   bannerSubTitle?: string;
   bannerDesc?: string;
+  // features
+  items?: Section6FeatItem[];
 }
 
 const SECTION_LABELS: Record<Section6Type, string> = {
@@ -38,6 +40,7 @@ const SECTION_LABELS: Record<Section6Type, string> = {
   text: "기본 텍스트",
   newsletter: "뉴스레터 텍스트",
   stripBanner: "띠배너",
+  features: "프로그램 특징",
 };
 
 const SECTION_COLORS: Record<Section6Type, string> = {
@@ -45,7 +48,15 @@ const SECTION_COLORS: Record<Section6Type, string> = {
   text: "bg-gray-100 text-gray-700",
   newsletter: "bg-green-100 text-green-700",
   stripBanner: "bg-purple-100 text-purple-700",
+  features: "bg-orange-100 text-orange-700",
 };
+
+export interface Section6FeatItem {
+  id: string;
+  title: string;
+  desc: string;
+  iconUrl?: string;
+}
 
 function createDefaultSection(type: Section6Type): Section6Item {
   const id = `s6-${type}-${Date.now()}`;
@@ -75,6 +86,26 @@ function createDefaultSection(type: Section6Type): Section6Item {
       newsletterSubTitle: "서브 타이틀 입력",
       leftContent: "왼쪽 내용을 입력하세요.",
       rightContent: "오른쪽 내용을 입력하세요.",
+    };
+  }
+  if (type === "features") {
+    return {
+      id,
+      type: "features",
+      items: [
+        {
+          id: `f6-${Date.now()}-1`,
+          title: "첫째. 타이틀",
+          desc: "설명 텍스트를 입력하세요.",
+          iconUrl: "/images/placeholder/icon_arrow_right.png",
+        },
+        {
+          id: `f6-${Date.now()}-2`,
+          title: "둘째. 타이틀",
+          desc: "설명 텍스트를 입력하세요.",
+          iconUrl: "/images/placeholder/icon_arrow_right.png",
+        },
+      ],
     };
   }
   // stripBanner
@@ -125,6 +156,42 @@ const TextStructure6Manager: React.FC<Props> = ({
   const addSection = (type: Section6Type) => {
     update([...sections, createDefaultSection(type)]);
     setShowAddPicker(false);
+  };
+
+  const updateFeatItem = (
+    sectionId: string,
+    itemIdx: number,
+    field: string,
+    val: string,
+  ) => {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+    const items = [...(section.items || [])];
+    items[itemIdx] = {
+      ...items[itemIdx],
+      [field]: val,
+    };
+    updateSection(sectionId, { items });
+  };
+
+  const addFeatItem = (sectionId: string) => {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+    const items = [...(section.items || [])];
+    items.push({
+      id: `f6-${Date.now()}`,
+      title: "타이틀",
+      desc: "설명 텍스트를 입력하세요.",
+      iconUrl: "/images/placeholder/icon_arrow_right.png",
+    });
+    updateSection(sectionId, { items });
+  };
+
+  const deleteFeatItem = (sectionId: string, itemIdx: number) => {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+    const items = (section.items || []).filter((_, i) => i !== itemIdx);
+    updateSection(sectionId, { items });
   };
 
   const updateImageCount = (section: Section6Item, cols: number) => {
@@ -445,6 +512,98 @@ const TextStructure6Manager: React.FC<Props> = ({
                       </div>
                     </>
                   )}
+
+                  {/* FEATURES */}
+                  {section.type === "features" && (
+                    <div className="space-y-2">
+                      {(section.items || []).map((item, itemIdx) => (
+                        <div
+                          key={item.id || itemIdx}
+                          className="p-2 bg-gray-50 rounded-lg space-y-1.5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-gray-400 font-semibold">
+                              항목 {itemIdx + 1}
+                            </span>
+                            <button
+                              onClick={() =>
+                                deleteFeatItem(section.id, itemIdx)
+                              }
+                              className="p-0.5 rounded text-red-400 hover:text-red-600"
+                            >
+                              <Trash2 size={10} />
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            className="w-full bg-white border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                            placeholder="타이틀"
+                            value={item.title || ""}
+                            onChange={(e) =>
+                              updateFeatItem(
+                                section.id,
+                                itemIdx,
+                                "title",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <textarea
+                            className="w-full bg-white border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
+                            rows={2}
+                            placeholder="설명"
+                            value={item.desc || ""}
+                            onChange={(e) =>
+                              updateFeatItem(
+                                section.id,
+                                itemIdx,
+                                "desc",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <div className="flex gap-1.5">
+                            <input
+                              type="text"
+                              className="flex-1 bg-white border-none p-1.5 rounded text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                              placeholder="아이콘 URL"
+                              value={item.iconUrl || ""}
+                              onChange={(e) =>
+                                updateFeatItem(
+                                  section.id,
+                                  itemIdx,
+                                  "iconUrl",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <ImgUploadPop
+                              button={
+                                <button className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
+                                  <ImageIcon size={10} />
+                                </button>
+                              }
+                              onSelect={(url) =>
+                                updateFeatItem(
+                                  section.id,
+                                  itemIdx,
+                                  "iconUrl",
+                                  url,
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => addFeatItem(section.id)}
+                        className="w-full flex items-center justify-center gap-1 p-1.5 rounded-lg border border-dashed border-gray-300 text-[10px] font-semibold text-gray-400 hover:border-blue-300 hover:text-blue-500 transition-all"
+                      >
+                        <Plus size={10} />
+                        항목 추가
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -469,6 +628,7 @@ const TextStructure6Manager: React.FC<Props> = ({
                 "text",
                 "newsletter",
                 "stripBanner",
+                "features",
               ] as Section6Type[]
             ).map((type) => (
               <button

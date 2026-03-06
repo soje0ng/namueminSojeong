@@ -248,6 +248,7 @@ export const UniversalMedia: React.FC<{
   className?: string;
   style?: React.CSSProperties;
   alt?: string;
+  naturalSize?: boolean;
   autoPlay?: boolean;
   muted?: boolean;
   loop?: boolean;
@@ -259,6 +260,7 @@ export const UniversalMedia: React.FC<{
   className,
   style,
   alt = "",
+  naturalSize = false,
   autoPlay = false,
   muted = false,
   loop = false,
@@ -274,14 +276,16 @@ export const UniversalMedia: React.FC<{
   const renderMedia = () => {
     // Shared media styles for consistent object-fit and full-content scaling
     const mediaStyle: React.CSSProperties = {
-      width: "100%",
-      height:
-        style?.height === "auto"
-          ? "auto"
-          : style?.height
-            ? style.height
-            : "auto",
-      objectFit: (style?.objectFit as any) || "cover",
+      width: naturalSize ? (style?.width ? style.width : "auto") : "100%",
+      height: naturalSize
+        ? style?.height
+          ? style.height
+          : "auto"
+        : style?.height && style.height !== "auto"
+          ? style.height
+          : "100%",
+      objectFit:
+        (style?.objectFit as any) || (naturalSize ? "contain" : "cover"),
       borderRadius: style?.borderRadius || "inherit",
       display: "block",
       border: "none",
@@ -346,8 +350,8 @@ export const UniversalMedia: React.FC<{
     return (
       <img
         src={url}
-        className="w-full h-full"
-        style={mediaStyle}
+        className="w-full h-full object-cover"
+        style={{ ...mediaStyle, height: "100%", width: "100%" }}
         alt={alt}
         onDoubleClick={onDoubleClick}
         onClick={onClick}
@@ -366,9 +370,11 @@ export const UniversalMedia: React.FC<{
     display:
       style?.display === "none"
         ? "none"
-        : style?.width && style.width !== "100%"
+        : naturalSize
           ? "inline-block"
-          : "block",
+          : style?.width && style.width !== "100%"
+            ? "inline-block"
+            : "block",
     maxWidth: "100%",
     // If it's a video and no height is provided, use aspect-video
     aspectRatio:

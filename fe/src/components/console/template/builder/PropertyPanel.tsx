@@ -244,11 +244,15 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
       ? (() => {
           if (!selectedItemId) return null;
           const sections = textStructureSections.sections9 || [];
-          const sectionDirect = sections.find((s: any) => s.id === selectedItemId);
+          const sectionDirect = sections.find(
+            (s: any) => s.id === selectedItemId,
+          );
           if (sectionDirect) return sectionDirect.id;
 
           for (const section of sections) {
-            if ((section.items || []).some((it: any) => it.id === selectedItemId))
+            if (
+              (section.items || []).some((it: any) => it.id === selectedItemId)
+            )
               return section.id;
           }
 
@@ -269,11 +273,15 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
       ? (() => {
           if (!selectedItemId) return null;
           const sections = textStructureSections.sections8 || [];
-          const sectionDirect = sections.find((s: any) => s.id === selectedItemId);
+          const sectionDirect = sections.find(
+            (s: any) => s.id === selectedItemId,
+          );
           if (sectionDirect) return sectionDirect.id;
 
           for (const section of sections) {
-            if ((section.items || []).some((it: any) => it.id === selectedItemId))
+            if (
+              (section.items || []).some((it: any) => it.id === selectedItemId)
+            )
               return section.id;
           }
 
@@ -301,7 +309,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
           for (const section of sections) {
             if (section.type !== "features") continue;
-            if ((section.items || []).some((it: any) => it.id === selectedItemId))
+            if (
+              (section.items || []).some((it: any) => it.id === selectedItemId)
+            )
               return section.id;
           }
 
@@ -316,6 +326,48 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
           return null;
         })()
       : null;
+
+  const resolveLayout6FeatureItem = (itemId: string | null) => {
+    if (!itemId) return null;
+    const sections6 = textStructureSections.sections6 || [];
+
+    const directFeatureSection = sections6.find((section: any) => {
+      if (section?.type !== "features") return false;
+      return (section.items || []).some((item: any) => item.id === itemId);
+    });
+    if (directFeatureSection) {
+      const itemIndex = (directFeatureSection.items || []).findIndex(
+        (item: any) => item.id === itemId,
+      );
+      if (itemIndex >= 0) {
+        return {
+          section: directFeatureSection,
+          itemIndex,
+          item: directFeatureSection.items?.[itemIndex],
+        };
+      }
+    }
+
+    const colonIndex = itemId.indexOf(":");
+    if (colonIndex > 0) {
+      const sectionId = itemId.slice(0, colonIndex);
+      const idx = Number.parseInt(itemId.slice(colonIndex + 1), 10);
+      if (!Number.isNaN(idx) && idx >= 0) {
+        const section = sections6.find(
+          (s: any) => s.id === sectionId && s.type === "features",
+        );
+        if (section?.items?.[idx]) {
+          return {
+            section,
+            itemIndex: idx,
+            item: section.items[idx],
+          };
+        }
+      }
+    }
+
+    return null;
+  };
 
   // 아이템 드롭 핸들러
   const handleItemDrop = (arrayName: string) => {
@@ -406,6 +458,270 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     } else listArrayName = "cases"; // 기본적으로 케이스 목록 관리
   }
 
+  const normalizeImageCardLayout = (layout: any): string => {
+    const raw = String(layout || "1").trim();
+    return raw.startsWith("layout") ? raw.replace(/^layout/, "") : raw;
+  };
+
+  const isImageCardLayout4 =
+    widget.type === "imageCard" &&
+    normalizeImageCardLayout((widget.data as any).layout) === "4";
+  const imageCardLayout = normalizeImageCardLayout((widget.data as any).layout);
+  const isImageCardLayout3Or4 =
+    widget.type === "imageCard" &&
+    (imageCardLayout === "3" || imageCardLayout === "4");
+
+  const imageCardDefaultItemsPerRow =
+    imageCardLayout === "4"
+      ? 2
+      : imageCardLayout === "1" || imageCardLayout === "3"
+        ? 3
+        : 4;
+  const imageCardItemsPerRowOptions =
+    imageCardLayout === "4" ? [1, 2] : [1, 2, 3, 4];
+  const sanitizeImageCardItemsPerRow = (
+    targetLayout: string,
+    rawItemsPerRow: any,
+  ) => {
+    const allowed = targetLayout === "4" ? [1, 2] : [1, 2, 3, 4];
+    const parsed = Number.parseInt(String(rawItemsPerRow), 10);
+    if (Number.isFinite(parsed) && allowed.includes(parsed)) return parsed;
+    return targetLayout === "4"
+      ? 2
+      : targetLayout === "1" || targetLayout === "3"
+        ? 3
+        : 4;
+  };
+
+  const imageCardItemsPerRow = Number.parseInt(
+    String((widget.data as any).itemsPerRow),
+    10,
+  );
+  const resolvedImageCardItemsPerRow = sanitizeImageCardItemsPerRow(
+    imageCardLayout,
+    imageCardItemsPerRow,
+  );
+  const activeImageCardItemsPerRow = isImageCardLayout4
+    ? resolvedImageCardItemsPerRow
+    : null;
+
+  const getImageCardFeatureRows = (
+    item: any,
+  ): { label: string; value: string; id: string }[] => {
+    const getDefaultLabel = (idx: number) => {
+      const base = item?.featureLabel || "특징";
+      const numbered = `${base} ${String(idx + 1).padStart(2, "0")}`;
+      return numbered;
+    };
+
+    const parseDescLines = (value: any): string[] => {
+      const source = typeof value === "string" ? value : "";
+      const lines = source
+        .replace(/\r\n?/g, "\n")
+        .split(/\n|<br\s*\/?>/gi)
+        .map((line: string) => line.trim())
+        .filter((line: string) => line.length > 0);
+
+      return lines.length > 0 ? lines : ["프로그램 특징 내용 입력", "2줄 입력"];
+    };
+
+    const raw = Array.isArray(item?.features) ? item.features : [];
+
+    if (!raw.length) {
+      const descLines = parseDescLines(item?.desc);
+      const normalized = descLines.slice(0, 6);
+
+      return [
+        ...normalized.map((line: string, idx: number) => ({
+          id: `slot-${idx + 1}`,
+          label: getDefaultLabel(idx),
+          value: line,
+        })),
+      ];
+    }
+
+    let idx = 0;
+    return raw.flatMap((row: any) => {
+      if (!row) {
+        const fallback = {
+          id: `slot-${idx}-empty`,
+          label: getDefaultLabel(idx),
+          value: "",
+        };
+        idx += 1;
+        return [fallback];
+      }
+
+      if (typeof row === "string") {
+        const lines = parseDescLines(row);
+        return lines.map((line: string) => {
+          const itemRow = {
+            id: `slot-${idx}`,
+            label: getDefaultLabel(idx),
+            value: line,
+          };
+          idx += 1;
+          return itemRow;
+        });
+      }
+
+      if (typeof row === "object") {
+        const label = (row.label || "").trim();
+        const lines = parseDescLines(row.value);
+        return lines.map((line: string, lineIdx: number) => {
+          const itemRow = {
+            id: row.id || `slot-${idx}${lineIdx}`,
+            label:
+              lineIdx === 0
+                ? label || getDefaultLabel(idx)
+                : getDefaultLabel(idx),
+            value: line,
+          };
+          idx += 1;
+          return itemRow;
+        });
+      }
+
+      return [];
+    }) as {
+      label: string;
+      value: string;
+      id: string;
+    }[];
+  };
+
+  const resolveImageCardItemIndex = (
+    items: any[],
+    itemId: string | number | null | undefined,
+    fallbackIndex = -1,
+  ) => {
+    if (!items.length) return -1;
+    if (itemId === undefined || itemId === null || itemId === "") {
+      return fallbackIndex >= 0 && fallbackIndex < items.length
+        ? fallbackIndex
+        : -1;
+    }
+
+    const normalizedId = `${itemId}`;
+    const exactMatch = items.findIndex(
+      (it: any) => `${it.id}` === normalizedId,
+    );
+    if (exactMatch !== -1) return exactMatch;
+
+    if (typeof itemId === "string" && itemId.startsWith("__idx_")) {
+      const parsedIndex = Number.parseInt(itemId.replace("__idx_", ""), 10);
+      if (
+        Number.isFinite(parsedIndex) &&
+        parsedIndex >= 0 &&
+        parsedIndex < items.length
+      ) {
+        return parsedIndex;
+      }
+    }
+
+    const parsedIndex = Number.parseInt(normalizedId, 10);
+    if (
+      Number.isFinite(parsedIndex) &&
+      String(parsedIndex) === normalizedId &&
+      parsedIndex >= 0 &&
+      parsedIndex < items.length
+    ) {
+      return parsedIndex;
+    }
+
+    return fallbackIndex >= 0 && fallbackIndex < items.length
+      ? fallbackIndex
+      : -1;
+  };
+
+  const updateImageCardFeatures = (
+    itemId: string | number | null | undefined,
+    nextRows: { label: string; value: string }[],
+    fallbackIndex = -1,
+  ) => {
+    const currentItems = (widget.data as any).items || [];
+    const targetIndex = resolveImageCardItemIndex(
+      currentItems,
+      itemId,
+      fallbackIndex,
+    );
+    if (targetIndex === -1) return;
+
+    const targetItem = currentItems[targetIndex] || {};
+    const labelBase = targetItem.featureLabel || "특징";
+    const normalizedRows = nextRows.map((r, index) => {
+      const fallbackLabel = `${labelBase} ${String(index + 1).padStart(2, "0")}`;
+      return {
+        label: (r.label || fallbackLabel).trim(),
+        value: (r.value || "").trim(),
+      };
+    });
+    const descFromRows = normalizedRows
+      .map((row) => row.value)
+      .filter((v) => v.trim().length > 0)
+      .join("<br/>");
+
+    const updatedItems = currentItems.map((it: any, idx: number) =>
+      idx === targetIndex
+        ? {
+            ...it,
+            features: normalizedRows.map((r) => ({
+              label: r.label,
+              value: r.value,
+            })),
+            desc: descFromRows || "프로그램 특징 내용 입력<br/>2줄 입력",
+          }
+        : it,
+    );
+
+    updateWidgetData(widget.id, {
+      items: updatedItems,
+    });
+  };
+
+  const normalizeLayoutToNumber = (layout: any, fallback = "1") => {
+    const normalized = String(layout || fallback).trim();
+    const match = normalized.match(/\d+/);
+    const parsed = Number.parseInt(match?.[0] || "", 10);
+    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 6) return fallback;
+    return String(parsed);
+  };
+
+  const mapIconCardPlaceholderImage = (value: any, nextLayout: string) => {
+    if (typeof value !== "string") return { value, changed: false };
+    if (!value.includes("/images/placeholder/card_img")) {
+      return { value, changed: false };
+    }
+
+    return {
+      value: `/images/placeholder/card_img${nextLayout}.png`,
+      changed: true,
+    };
+  };
+
+  const syncIconCardPlaceholderItems = (items: any[] | undefined, nextLayout: string) => {
+    if (!items?.length) return { items, changed: false };
+
+    let changed = false;
+    const updatedItems = items.map((item: any) => {
+      if (!item || typeof item !== "object") return item;
+
+      const iconResult = mapIconCardPlaceholderImage(item.icon, nextLayout);
+      const iconUrlResult = mapIconCardPlaceholderImage(item.iconUrl, nextLayout);
+
+      if (!iconResult.changed && !iconUrlResult.changed) return item;
+
+      changed = true;
+      return {
+        ...item,
+        ...(iconResult.changed ? { icon: iconResult.value } : {}),
+        ...(iconUrlResult.changed ? { iconUrl: iconUrlResult.value } : {}),
+      };
+    });
+
+    return { items: updatedItems, changed };
+  };
+
   return (
     <div
       className={`h-full flex flex-col bg-white/90 backdrop-blur-xl shadow-2xl border-l border-white/50 ring-1 ring-black/5 overflow-hidden`}
@@ -452,9 +768,22 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                 </label>
                 <select
                   className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm font-semibold text-blue-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all cursor-pointer hover:bg-gray-100"
-                  value={(widget.data as any).layout || "1"}
+                  value={
+                    widget.type === "iconCard"
+                      ? normalizeLayoutToNumber(
+                          (widget.data as any).layout || (widget.data as any).variant,
+                          "1",
+                        )
+                      : widget.type === "imageCard"
+                      ? normalizeImageCardLayout(
+                          (widget.data as any).layout || "1",
+                        )
+                      : (widget.data as any).layout || "1"
+                  }
                   onChange={(e) => {
-                    const newLayout = e.target.value;
+                    const newLayout = widget.type === "iconCard"
+                      ? normalizeLayoutToNumber(e.target.value, "1")
+                      : normalizeImageCardLayout(e.target.value);
                     setConfirmPop(
                       true,
                       "레이아웃을 변경하면 현재 입력된 데이터가 초기화될 수 있습니다. <br/>계속하시겠습니까?",
@@ -463,7 +792,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                         pushHistory();
                         if (widget.type === "infoBanner") {
                           const currentData = (widget.data as any) || {};
-                          const currentLayout = String(currentData.layout || "1");
+                          const currentLayout = String(
+                            currentData.layout || "1",
+                          );
                           const stateMap = cloneDeep(
                             currentData[INFO_BANNER_LAYOUT_STATE_KEY] || {},
                           );
@@ -485,6 +816,22 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                         }
 
                         const updates: any = { layout: newLayout };
+                        if (widget.type === "imageCard") {
+                          updates.itemsPerRow = sanitizeImageCardItemsPerRow(
+                            newLayout,
+                            (widget.data as any).itemsPerRow,
+                          );
+                        }
+                        if (widget.type === "iconCard") {
+                          const { items: syncedItems, changed } =
+                            syncIconCardPlaceholderItems(
+                              (widget.data as any).items,
+                              newLayout,
+                            );
+                          if (changed) {
+                            updates.items = syncedItems;
+                          }
+                        }
                         // Add table-specific initialization
                         if (widget.type === "table") {
                           if (
@@ -671,29 +1018,43 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               </div>
             )}
 
-            {["iconCard", "imageCard", "process", "processCard"].includes(
-              widget.type,
-            ) &&
+            {["iconCard", "process", "processCard"].includes(widget.type) &&
               viewport === "desktop" && (
                 <div className="space-y-2 mt-2">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
                     카드 배치 (PC)
                   </label>
                   <div className="flex p-1 bg-gray-50 rounded-xl w-full border border-gray-100/50">
-                    {[1, 2, 3, 4].map((num) => (
+                    {(widget.type === "imageCard" && isImageCardLayout4
+                      ? [1, 2]
+                      : [1, 2, 3, 4]
+                    ).map((num) => (
                       <button
                         key={num}
                         onClick={() =>
-                          updateWidgetData(widget.id, { itemsPerRow: num })
+                          updateWidgetData(widget.id, {
+                            itemsPerRow:
+                              widget.type === "imageCard"
+                                ? sanitizeImageCardItemsPerRow(
+                                    imageCardLayout,
+                                    num,
+                                  )
+                                : num,
+                          })
                         }
                         className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                          ((widget.data as any).itemsPerRow ||
-                            (widget.type === "imageCard"
-                              ? 3
-                              : widget.type === "process" &&
-                                  (widget.data as any).variant === "vertical"
-                                ? 4
-                                : 3)) === num
+                          (widget.type === "imageCard"
+                            ? resolvedImageCardItemsPerRow
+                            : isImageCardLayout4
+                              ? activeImageCardItemsPerRow
+                              : Number.parseInt(
+                                  String((widget.data as any).itemsPerRow),
+                                  10,
+                                ) ||
+                                (widget.type === "process" &&
+                                (widget.data as any).variant === "vertical"
+                                  ? 4
+                                  : 3)) === num
                             ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5"
                             : "text-gray-400 hover:text-gray-600"
                         }`}
@@ -1363,21 +1724,14 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     <>
                       {/* 카드 전체 배열 설정 (구조관리 섹션 상단) */}
                       {widget.type === "imageCard" &&
-                        ["1", "2", "3", "4", "5"].includes(
-                          (widget.data as any).layout || "1",
-                        ) && (
+                        ["1", "2", "3", "4"].includes(imageCardLayout) && (
                           <div className="flex flex-col gap-1.5 p-3 bg-blue-50/50 border border-blue-100 rounded-xl mb-4 shadow-sm">
                             <label className="text-[10px] font-black text-blue-600 uppercase tracking-wider flex items-center gap-1">
                               <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
                               전체 배열 설정 (한 줄에 보여줄 개수)
                             </label>
                             <div className="grid grid-cols-4 gap-1">
-                              {(["4", "5"].includes(
-                                (widget.data as any).layout || "1",
-                              )
-                                ? ["1", "2"]
-                                : ["1", "2", "3", "4"]
-                              ).map((num) => (
+                              {imageCardItemsPerRowOptions.map((num) => (
                                 <button
                                   key={num}
                                   onClick={() =>
@@ -1386,19 +1740,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     })
                                   }
                                   className={`py-2 rounded-lg text-xs font-bold transition-all border ${
-                                    ((widget.data as any).itemsPerRow ||
-                                      ((widget.data as any).layout === "1"
-                                        ? "3"
-                                        : (
-                                              (widget.data as any).layout || "1"
-                                            ).toString() === "4"
-                                          ? "2"
-                                          : (
-                                                (widget.data as any).layout ||
-                                                "1"
-                                              ).toString() === "5"
-                                            ? "2"
-                                            : "4")) === num
+                                    resolvedImageCardItemsPerRow === num
                                       ? "bg-blue-500 text-white border-blue-600 shadow-md transform scale-105"
                                       : "bg-white text-gray-500 border-gray-200 hover:border-blue-300 hover:text-blue-500"
                                   }`}
@@ -1810,11 +2152,20 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                   : item.label !== undefined
                                     ? "label"
                                     : "text";
-                            const isSelected = selectedItemId === item.id;
+                            const imageCardItemId = item.id ?? `__idx_${idx}`;
+                            const itemLookupId =
+                              widget.type === "imageCard" &&
+                              isImageCardLayout3Or4
+                                ? imageCardItemId
+                                : item.id;
+                            const isSelected = selectedItemId === itemLookupId;
+                            const imageCardFeatureRows = isImageCardLayout3Or4
+                              ? getImageCardFeatureRows(item)
+                              : [];
 
                             return (
                               <div
-                                key={item.id}
+                                key={itemLookupId || item.id}
                                 draggable
                                 onDragStart={(e) => {
                                   e.stopPropagation();
@@ -1998,7 +2349,12 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                         }
                                       }}
                                       onFocus={() => {
-                                        setSelectedItemId(item.id);
+                                        setSelectedItemId(
+                                          widget.type === "imageCard" &&
+                                            isImageCardLayout3Or4
+                                            ? imageCardItemId
+                                            : item.id,
+                                        );
                                         setSelectedElementKey(
                                           item.question !== undefined
                                             ? "faqQuestion"
@@ -2062,6 +2418,185 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     </button>
                                   </div>
                                 </div>
+
+                                {widget.type === "imageCard" &&
+                                  isImageCardLayout3Or4 && (
+                                    <div className="flex flex-col gap-1 px-1 pt-2 border-t border-gray-100 mt-2">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter flex items-center gap-1">
+                                          <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
+                                          프로그램 특징 항목
+                                        </span>
+                                        <button
+                                          onClick={() => {
+                                            const nextIndex =
+                                              imageCardFeatureRows.length;
+                                            const baseLabel =
+                                              item.featureLabel || "특징";
+                                            const nextRows = [
+                                              ...imageCardFeatureRows,
+                                              {
+                                                id: `slot-${nextIndex}`,
+                                                label: `${baseLabel} ${String(nextIndex + 1).padStart(2, "0")}`,
+                                                value:
+                                                  "프로그램 특징 내용 입력",
+                                              },
+                                            ];
+                                            updateImageCardFeatures(
+                                              imageCardItemId,
+                                              nextRows,
+                                              idx,
+                                            );
+                                          }}
+                                          className="text-[9px] bg-blue-50 text-blue-600 px-2 py-1 rounded font-bold hover:bg-blue-100"
+                                        >
+                                          + 항목 추가
+                                        </button>
+                                      </div>
+                                      <div className="space-y-2">
+                                        {imageCardFeatureRows.map(
+                                          (feature, fIdx) => (
+                                            <div
+                                              key={feature.id}
+                                              className="flex flex-col gap-1 bg-white rounded-lg border border-gray-100 p-2"
+                                            >
+                                              <div className="flex items-center gap-1">
+                                                <span className="text-[9px] font-black text-gray-400 w-10">
+                                                  라벨
+                                                </span>
+                                                <input
+                                                  className="flex-1 min-w-0 text-[10px] bg-gray-50 border border-gray-100 outline-none focus:ring-1 focus:ring-blue-100 rounded px-2 py-1"
+                                                  value={feature.label}
+                                                  onChange={(e) => {
+                                                    const nextRows = [
+                                                      ...imageCardFeatureRows,
+                                                    ];
+                                                    nextRows[fIdx] = {
+                                                      ...nextRows[fIdx],
+                                                      label: e.target.value,
+                                                    };
+                                                    updateImageCardFeatures(
+                                                      imageCardItemId,
+                                                      nextRows,
+                                                      idx,
+                                                    );
+                                                  }}
+                                                  placeholder="라벨"
+                                                />
+                                                <button
+                                                  onClick={() => {
+                                                    if (
+                                                      imageCardFeatureRows.length <=
+                                                      1
+                                                    )
+                                                      return;
+                                                    const nextRows =
+                                                      imageCardFeatureRows.filter(
+                                                        (_, i) => i !== fIdx,
+                                                      );
+                                                    updateImageCardFeatures(
+                                                      imageCardItemId,
+                                                      nextRows,
+                                                      idx,
+                                                    );
+                                                  }}
+                                                  className="text-red-300 hover:text-red-500 p-1 rounded"
+                                                  title="삭제"
+                                                >
+                                                  <Trash2 size={10} />
+                                                </button>
+                                              </div>
+                                              <div className="flex items-start gap-1">
+                                                <span className="text-[9px] font-black text-gray-400 w-10 pt-2">
+                                                  내용
+                                                </span>
+                                                <textarea
+                                                  className="flex-1 min-w-0 bg-gray-50 border border-gray-100 p-2 rounded-lg text-[10px] outline-none focus:ring-2 focus:ring-blue-100 min-h-[48px] resize-none"
+                                                  value={feature.value}
+                                                  onChange={(e) => {
+                                                    const nextRows = [
+                                                      ...imageCardFeatureRows,
+                                                    ];
+                                                    nextRows[fIdx] = {
+                                                      ...nextRows[fIdx],
+                                                      value: e.target.value,
+                                                    };
+                                                    updateImageCardFeatures(
+                                                      imageCardItemId,
+                                                      nextRows,
+                                                      idx,
+                                                    );
+                                                  }}
+                                                  placeholder="프로그램 특징 내용 입력"
+                                                />
+                                              </div>
+                                              <div className="flex items-center justify-end gap-1">
+                                                <button
+                                                  onClick={() => {
+                                                    if (fIdx === 0) return;
+                                                    const nextRows = [
+                                                      ...imageCardFeatureRows,
+                                                    ];
+                                                    [
+                                                      nextRows[fIdx - 1],
+                                                      nextRows[fIdx],
+                                                    ] = [
+                                                      nextRows[fIdx],
+                                                      nextRows[fIdx - 1],
+                                                    ];
+                                                    updateImageCardFeatures(
+                                                      imageCardItemId,
+                                                      nextRows,
+                                                      idx,
+                                                    );
+                                                  }}
+                                                  className={`p-1 rounded ${fIdx === 0 ? "text-gray-200" : "text-gray-400 hover:text-blue-500"}`}
+                                                  disabled={fIdx === 0}
+                                                  title="위로"
+                                                >
+                                                  <ArrowUp size={10} />
+                                                </button>
+                                                <button
+                                                  onClick={() => {
+                                                    if (
+                                                      fIdx ===
+                                                      imageCardFeatureRows.length -
+                                                        1
+                                                    )
+                                                      return;
+                                                    const nextRows = [
+                                                      ...imageCardFeatureRows,
+                                                    ];
+                                                    [
+                                                      nextRows[fIdx + 1],
+                                                      nextRows[fIdx],
+                                                    ] = [
+                                                      nextRows[fIdx],
+                                                      nextRows[fIdx + 1],
+                                                    ];
+                                                    updateImageCardFeatures(
+                                                      imageCardItemId,
+                                                      nextRows,
+                                                      idx,
+                                                    );
+                                                  }}
+                                                  className={`p-1 rounded ${fIdx === imageCardFeatureRows.length - 1 ? "text-gray-200" : "text-gray-400 hover:text-blue-500"}`}
+                                                  disabled={
+                                                    fIdx ===
+                                                    imageCardFeatureRows.length -
+                                                      1
+                                                  }
+                                                  title="아래로"
+                                                >
+                                                  <ArrowDown size={10} />
+                                                </button>
+                                              </div>
+                                            </div>
+                                          ),
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
 
                                 {/* Text Structure Dynamic Sections Specific Controls */}
                                 {widget.type === "textStructure" &&
@@ -2555,7 +3090,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                                 </span>
                                                 <select
                                                   className="text-[10px] bg-white border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-300"
-                                                  value={badgeStyle.fontSize || ""}
+                                                  value={
+                                                    badgeStyle.fontSize || ""
+                                                  }
                                                   onChange={(e) =>
                                                     updateWidgetData(
                                                       widget.id,
@@ -2575,9 +3112,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                                     )
                                                   }
                                                 >
-                                                  <option value="">
-                                                    선택
-                                                  </option>
+                                                  <option value="">선택</option>
                                                   {[
                                                     "12px",
                                                     "13px",
@@ -3073,8 +3608,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             const [sectionId, idxStr] = selectedItemId.split(":");
             const parsedIdx = parseInt(idxStr || "", 10);
             const itemIdx = Number.isNaN(parsedIdx) ? -1 : parsedIdx;
-            const sections5: any[] =
-              textStructureSections.sections5;
+            const sections5: any[] = textStructureSections.sections5;
             const section = sections5.find((s: any) => s.id === sectionId);
             let resolvedSection = section;
             let resolvedItemIdx = itemIdx;
@@ -3233,10 +3767,128 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             );
           })()}
 
+        {/* sections6 프로그램 특징 항목 텍스트 편집 패널 */}
+        {selectedElementKey &&
+          widget.type === "textStructure" &&
+          ((widget.data as any).layout || "1").toString() === "6" &&
+          (selectedElementKey === "itemTitle" ||
+            selectedElementKey === "itemDesc" ||
+            selectedElementKey === "itemIcon") &&
+          selectedItemId &&
+          (() => {
+            const resolved = resolveLayout6FeatureItem(selectedItemId);
+            const section = resolved?.section;
+            const featureItem = resolved?.item;
+            const featureItemIndex = resolved?.itemIndex ?? -1;
+
+            const handleChange = (prop: string, val: string) => {
+              if (!section || featureItemIndex < 0) return;
+              const updated = (textStructureSections.sections6 || []).map(
+                (s: any) => {
+                  if (s.id !== section.id) return s;
+                  const items = [...(s.items || [])];
+                  if (!items[featureItemIndex]) return s;
+                  items[featureItemIndex] = {
+                    ...items[featureItemIndex],
+                    [prop]: val,
+                  };
+                  return { ...s, items };
+                },
+              );
+              updateWidgetData(widget.id, { sections6: updated });
+            };
+
+            return (
+              <div className="absolute inset-0 bg-white z-10 flex flex-col overflow-y-auto">
+                <div className="flex items-center gap-2 p-3 border-b border-gray-100 bg-white sticky top-0">
+                  <button
+                    onClick={() => setSelectedElementKey(null)}
+                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 font-semibold"
+                  >
+                    <ChevronLeft size={14} />
+                    뒤로
+                  </button>
+                  <span className="text-xs font-bold text-gray-700 flex-1 text-center pr-6">
+                    프로그램 특징 항목 편집
+                  </span>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-gray-400 font-semibold">
+                      제목
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                      value={featureItem?.title || ""}
+                      onChange={(e) => handleChange("title", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-gray-400 font-semibold">
+                      내용
+                    </label>
+                    <textarea
+                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
+                      rows={3}
+                      value={(featureItem?.desc || "").replace(
+                        /<br\s*\/?>/gi,
+                        "\n",
+                      )}
+                      onChange={(e) =>
+                        handleChange(
+                          "desc",
+                          e.target.value.replace(/\n/g, "<br/>"),
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-gray-400 font-semibold uppercase flex items-center gap-1">
+                      <ImageIcon size={10} /> 아이콘/이미지
+                    </label>
+                    <ImgUploadPop
+                      onSelect={(url) => handleChange("iconUrl", url)}
+                      button={
+                        <div className="flex items-center justify-center p-3 bg-gray-50 border border-dashed border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer transition-all">
+                          <UniversalMedia
+                            url={featureItem?.iconUrl || ""}
+                            className="w-6 h-6 object-contain"
+                          />
+                        </div>
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-[10px] focus:ring-2 focus:ring-blue-100 outline-none text-blue-600 font-mono"
+                      value={featureItem?.iconUrl || ""}
+                      onChange={(e) =>
+                        handleChange("iconUrl", e.target.value)
+                      }
+                      placeholder="이미지 URL을 입력하세요"
+                    />
+                  </div>
+                  {!featureItem && (
+                    <p className="text-xs text-gray-400 text-center py-4">
+                      항목을 찾을 수 없습니다.
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
         {/* 섹션 하위 요소 설정 패널 */}
         {selectedElementKey &&
           selectedElementKey !== "s5checkItem" &&
           selectedElementKey !== "s5labelItem" &&
+          !(
+            widget.type === "textStructure" &&
+            ((widget.data as any).layout || "1").toString() === "6" &&
+            (selectedElementKey === "itemTitle" ||
+              selectedElementKey === "itemDesc" ||
+              selectedElementKey === "itemIcon")
+          ) &&
           !(
             widget.type === "comparisonCard" &&
             (selectedElementKey === "leftDescItems" ||

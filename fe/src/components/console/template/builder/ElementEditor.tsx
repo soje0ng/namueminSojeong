@@ -69,6 +69,51 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   const cloneTextStructureDefaults = (value: any) =>
     JSON.parse(JSON.stringify(value));
 
+  const resolveItemIndex = (
+    items: any[],
+    targetItemId: string | null | undefined,
+  ) => {
+    if (!targetItemId) return -1;
+    const normalizedTarget = `${targetItemId}`;
+    const directMatch = items.findIndex(
+      (it: any) => `${it.id}` === normalizedTarget,
+    );
+    if (directMatch !== -1) return directMatch;
+    if (normalizedTarget.startsWith("__idx_")) {
+      const parsed = Number.parseInt(normalizedTarget.replace("__idx_", ""), 10);
+      if (
+        Number.isFinite(parsed) &&
+        parsed >= 0 &&
+        parsed < items.length
+      ) {
+        return parsed;
+      }
+    }
+    const parsedIndex = Number.parseInt(normalizedTarget, 10);
+    if (
+      Number.isFinite(parsedIndex) &&
+      String(parsedIndex) === normalizedTarget &&
+      parsedIndex >= 0 &&
+      parsedIndex < items.length
+    ) {
+      return parsedIndex;
+    }
+    return -1;
+  };
+
+  const getIconCardLayoutIndex = () => {
+    const raw = String(data.layout || data.variant || "1");
+    const parsed = Number.parseInt(raw.match(/\d+/)?.[0] || "1", 10);
+    if (parsed >= 1 && parsed <= 6) return parsed;
+    return 1;
+  };
+  const resolveIconCardMediaValue = (value?: string) => {
+    if (!value || widget.type !== "iconCard") return value || "";
+    if (!value.includes("/images/placeholder/card_img")) return value;
+
+    return `/images/placeholder/card_img${getIconCardLayoutIndex()}.png`;
+  };
+
   const textStructureFallbackText = (
     key: string,
     sectionType?: string,
@@ -154,8 +199,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       }
 
       const currentItems = data[arrayName] || [];
-      const updatedItems = currentItems.map((item: any) => {
-        if (item.id === itemId) {
+      const targetIndex = resolveItemIndex(currentItems, itemId);
+      if (targetIndex === -1) return;
+      const updatedItems = currentItems.map((item: any, idx: number) => {
+        if (idx === targetIndex) {
           const oldStyle = item[stylePropName] || {};
           return { ...item, [stylePropName]: { ...oldStyle, ...updates } };
         }
@@ -1113,8 +1160,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       } else if (
         elementKey === "itemBadge1" ||
         elementKey === "itemBadge2" ||
-        elementKey === "itemBadge3" ||
-        elementKey === "itemFeatureLabel"
+        elementKey === "itemBadge3"
       ) {
         const badgeProp =
           elementKey === "itemBadge1"
@@ -1146,9 +1192,22 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               : elementKey === "itemBadge3"
                 ? "badgeStyle3"
                 : "featureLabelStyle";
+        const legacyBadgeStyleKey =
+          elementKey === "itemBadge1"
+            ? "badge1Style"
+            : elementKey === "itemBadge2"
+              ? "badge2Style"
+              : "badge3Style";
+        const legacyBadgeStyleValue = legacyBadgeStyleKey
+          ? item?.[legacyBadgeStyleKey]
+          : undefined;
 
         // 현재 아이템에서 실제 스타일 객체 로드 (빈칸 문제 해결 핵심)
-        styleValue = item[styleKey] || {};
+        const mergedBadgeStyle = {
+          ...(legacyBadgeStyleValue || {}),
+          ...(item?.[styleKey] || {}),
+        };
+        styleValue = mergedBadgeStyle;
 
         onTextChange = (val) =>
           updateWidgetData(widget.id, {
@@ -1169,6 +1228,154 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             }),
           });
         };
+      } else if (/^itemFeature(Label|Value)(?::(\d+))?$/.test(elementKey)) {
+        const [, kind = "Label", indexText = "0"] =
+          /^itemFeature(Label|Value)(?::(\d+))?$/.exec(elementKey) || [];
+        const featureIdx = Number.parseInt(indexText, 10);
+        const featureMode = kind === "Label";
+        const featureRows = (() => {
+          const rawRows = Array.isArray(item?.features) ? item.features : [];
+          let idx = 0;
+
+          const getDefaultLabel = (idx: number) =>
+            `${item.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`;
+
+          const parseDescRows = (value: any): { label: string; value: string }[] => {
+            const lines =
+              typeof value === "string"
+                ? value
+                    .replace(/\r\n?/g, "\n")
+                    .split(/\n|<br\s*\/?>/gi)
+                    .map((line: string) => line.trim())
+                    .filter((line: string) => line.length > 0)
+                : [];
+
+            const safeLines = lines.length
+              ? lines
+              : ["프로그램 특징 내용 입력", "2줄 입력"];
+
+            return safeLines.map((line: string, idx: number) => ({
+              label: getDefaultLabel(idx),
+              value: line,
+            }));
+          };
+
+          if (!rawRows.length) {
+            return parseDescRows(item.desc);
+          }
+
+          return rawRows
+            .flatMap((row: any) => {
+              if (row === null || row === undefined) {
+                const emptyRow = { label: getDefaultLabel(idx), value: "" };
+                idx += 1;
+                return [emptyRow];
+              }
+
+              if (typeof row === "string") {
+                const sourceRows = parseDescRows(row);
+                return sourceRows.map((sourceRow) => {
+                  const next = {
+                    label: getDefaultLabel(idx),
+                    value: sourceRow.value,
+                  };
+                  idx += 1;
+                  return next;
+                });
+              }
+
+              if (typeof row === "object") {
+                const sourceRows = parseDescRows(row.value);
+                const baseLabel = (row.label || "").trim();
+                return sourceRows.map((sourceRow, sourceIdx) => {
+                  const next = {
+                    label:
+                      sourceIdx === 0
+                        ? baseLabel || getDefaultLabel(idx)
+                        : getDefaultLabel(idx),
+                    value: sourceRow.value,
+                  };
+                  idx += 1;
+                  return next;
+                });
+              }
+
+              return null;
+            })
+            .filter((row: any) => row !== null) as {
+            label: string;
+            value: string;
+          }[];
+        })();
+
+        const ensureRows = (rows: { label: string; value: string }[]) => {
+          const next = [...rows];
+          const baseLabel = item.featureLabel || "특징";
+
+          for (let i = next.length; i <= featureIdx; i += 1) {
+            next.push({
+              label: `${baseLabel} ${String(i + 1).padStart(2, "0")}`,
+              value: "",
+            });
+          }
+
+          return next;
+        };
+
+        const normalizedRows = ensureRows(featureRows);
+        const targetRow = normalizedRows[featureIdx] || {
+          label: `${item.featureLabel || "특징"} ${String(featureIdx + 1).padStart(2, "0")}`,
+          value: "",
+        };
+
+        textValue = featureMode ? targetRow.label : targetRow.value;
+        styleKey = featureMode ? "featureLabelStyle" : "descStyle";
+        styleValue = item[styleKey] || {};
+
+        onTextChange = (val) => {
+          const sourceRows = ensureRows(featureRows);
+          const updatedRows = sourceRows.map((row: any, idx: number) => ({
+            label:
+              row.label ||
+              `${item.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`,
+            value: row.value || "",
+          }));
+          const nextValue =
+            featureMode
+              ? {
+                  ...updatedRows[featureIdx],
+                  label: val,
+                }
+              : {
+                  ...updatedRows[featureIdx],
+                  value: val,
+                };
+
+          updatedRows[featureIdx] = nextValue;
+          const descFromRows = updatedRows
+            .map((r) => r.value)
+              .filter((v) => String(v || "").trim().length > 0)
+              .join("<br/>");
+
+          const newItems = (data[arrayName] || []).map((it: any) =>
+            it.id === itemId
+              ? {
+                  ...it,
+                  features: updatedRows,
+                  desc: descFromRows || "프로그램 특징 내용 입력<br/>2줄 입력",
+                }
+              : it,
+          );
+
+          updateWidgetData(widget.id, { [arrayName]: newItems });
+        };
+        onStyleChange = (k, v) =>
+          updateWidgetData(widget.id, {
+            [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
+              ...styleValue,
+              [k]: v,
+            }),
+          });
       } else if (
         elementKey === "stepDesc" ||
         elementKey === "itemDesc" ||
@@ -1249,8 +1456,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                         ? "url"
                         : elementKey;
 
-        textValue =
-          item[propName] || item.icon || item.image || item.iconUrl || "";
+        const rawIconCardValue = item[propName] || item.icon || item.image || item.iconUrl || "";
+        textValue = (elementKey === "itemIcon" || elementKey === "iconUrl" || elementKey === "icon")
+          ? resolveIconCardMediaValue(rawIconCardValue)
+          : rawIconCardValue;
         // For blocks (blockUrl), use 'style'. For others, use specific style keys.
         if (elementKey === "blockUrl") styleKey = "style";
         else
@@ -1611,28 +1820,89 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               </label>
               <button
                 onClick={() => {
-                  let arrayName = "items";
+                let arrayName = "items";
                   const itemsList = data[arrayName] || [];
-                  const targetItem =
-                    itemsList.find((i: any) => i.id === itemId) || {};
-                  const currentFeatures = targetItem.features || [
-                    {
-                      label: targetItem.featureLabel || "특징 01",
-                      value: "프로그램 특징 내용 입력",
-                    },
-                    {
-                      label: targetItem.featureLabel || "특징 01",
-                      value: "2줄 입력",
-                    },
-                  ];
+                  const targetItemIndex = resolveItemIndex(itemsList, itemId);
+                  const targetItem = itemsList[targetItemIndex] || {};
+                  const updateFeatures = (
+                    nextFeatures: { label: string; value: string }[],
+                  ) => {
+                    if (targetItemIndex < 0) return;
+                    const newItems = itemsList.map((it: any, idx: number) =>
+                      idx === targetItemIndex ? { ...it, features: nextFeatures } : it,
+                    );
+                    updateWidgetData(widget.id, { [arrayName]: newItems });
+                  };
+                  const getDefaultLabel = (idx: number) =>
+                    `${targetItem.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`;
+                  const parseFeatureLines = (value: any): string[] => {
+                    const source = typeof value === "string" ? value : "";
+                    const lines = source
+                      .replace(/\r\n?/g, "\n")
+                      .split(/\n|<br\s*\/?>/gi)
+                      .map((line: string) => line.trim())
+                      .filter((line: string) => line.length > 0);
+                    return lines.length > 0
+                      ? lines
+                      : ["프로그램 특징 내용 입력", "2줄 입력"];
+                  };
+                  const resolveFeatures = (
+                    item: any,
+                  ): { label: string; value: string }[] => {
+                    const raws = Array.isArray(item?.features) ? item.features : [];
+                    if (!raws.length) {
+                      return parseFeatureLines(item.desc).map(
+                        (line: string, idx: number) => ({
+                          label: getDefaultLabel(idx),
+                          value: line,
+                        }),
+                      );
+                    }
+
+                    let idx = 0;
+                    return raws.flatMap((row: any) => {
+                      if (row == null) {
+                        const empty = { label: getDefaultLabel(idx), value: "" };
+                        idx += 1;
+                        return [empty];
+                      }
+
+                      if (typeof row === "string") {
+                        return parseFeatureLines(row).map((line: string) => {
+                          const result = {
+                            label: getDefaultLabel(idx),
+                            value: line,
+                          };
+                          idx += 1;
+                          return result;
+                        });
+                      }
+
+                      if (typeof row === "object") {
+                        const baseLabel = (row.label || "").trim();
+                        const lines = parseFeatureLines(row.value);
+                        return lines.map((line: string, lineIdx: number) => {
+                          const result = {
+                            label:
+                              lineIdx === 0
+                                ? baseLabel || getDefaultLabel(idx)
+                                : getDefaultLabel(idx),
+                            value: line,
+                          };
+                          idx += 1;
+                          return result;
+                        });
+                      }
+
+                      return [];
+                    });
+                  };
+                  const currentFeatures = resolveFeatures(targetItem);
                   const newFeatures = [
                     ...currentFeatures,
-                    { label: "특징", value: "새로운 내용 입력" },
+                    { label: getDefaultLabel(currentFeatures.length), value: "새로운 내용 입력" },
                   ];
-                  const newItems = itemsList.map((it: any) =>
-                    it.id === itemId ? { ...it, features: newFeatures } : it,
-                  );
-                  updateWidgetData(widget.id, { [arrayName]: newItems });
+                  updateFeatures(newFeatures);
                 }}
                 className="text-[10px] bg-blue-50 text-blue-600 px-2.5 py-1.5 rounded-lg font-bold hover:bg-blue-100 transition-colors flex items-center gap-1"
               >
@@ -1644,18 +1914,82 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               {(() => {
                 let arrayName = "items";
                 const itemsList = data[arrayName] || [];
-                const targetItem =
-                  itemsList.find((i: any) => i.id === itemId) || {};
-                const features = targetItem.features || [
-                  {
-                    label: targetItem.featureLabel || "특징 01",
-                    value: "프로그램 특징 내용 입력",
-                  },
-                  {
-                    label: targetItem.featureLabel || "특징 01",
-                    value: "2줄 입력",
-                  },
-                ];
+                const targetItemIndex = resolveItemIndex(itemsList, itemId);
+                const targetItem = itemsList[targetItemIndex] || {};
+                const updateFeatures = (
+                  nextFeatures: { label: string; value: string }[],
+                ) => {
+                  if (targetItemIndex < 0) return;
+                  const newItems = itemsList.map((it: any, idx: number) =>
+                    idx === targetItemIndex ? { ...it, features: nextFeatures } : it,
+                  );
+                  updateWidgetData(widget.id, { [arrayName]: newItems });
+                };
+                const getDefaultLabel = (idx: number) =>
+                  `${targetItem.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`;
+                const parseFeatureLines = (value: any): string[] => {
+                  const source = typeof value === "string" ? value : "";
+                  const lines = source
+                    .replace(/\r\n?/g, "\n")
+                    .split(/\n|<br\s*\/?>/gi)
+                    .map((line: string) => line.trim())
+                    .filter((line: string) => line.length > 0);
+                  return lines.length > 0
+                    ? lines
+                    : ["프로그램 특징 내용 입력", "2줄 입력"];
+                };
+                const resolveFeatures = (
+                  item: any,
+                ): { label: string; value: string }[] => {
+                  const raws = Array.isArray(item?.features) ? item.features : [];
+                  if (!raws.length) {
+                    return parseFeatureLines(item.desc).map(
+                      (line: string, idx: number) => ({
+                        label: getDefaultLabel(idx),
+                        value: line,
+                      }),
+                    );
+                  }
+
+                  let idx = 0;
+                  return raws.flatMap((row: any) => {
+                    if (row == null) {
+                      const empty = { label: getDefaultLabel(idx), value: "" };
+                      idx += 1;
+                      return [empty];
+                    }
+
+                    if (typeof row === "string") {
+                      return parseFeatureLines(row).map((line: string) => {
+                        const result = {
+                          label: getDefaultLabel(idx),
+                          value: line,
+                        };
+                        idx += 1;
+                        return result;
+                      });
+                    }
+
+                    if (typeof row === "object") {
+                      const baseLabel = (row.label || "").trim();
+                      const lines = parseFeatureLines(row.value);
+                      return lines.map((line: string, lineIdx: number) => {
+                        const result = {
+                          label:
+                            lineIdx === 0
+                              ? baseLabel || getDefaultLabel(idx)
+                              : getDefaultLabel(idx),
+                          value: line,
+                        };
+                        idx += 1;
+                        return result;
+                      });
+                    }
+
+                    return [];
+                  });
+                };
+                const features = resolveFeatures(targetItem);
 
                 return features.map((feat: any, idx: number) => (
                   <div
@@ -1675,14 +2009,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                                 newFeatures[idx],
                                 newFeatures[idx - 1],
                               ];
-                              const newItems = itemsList.map((it: any) =>
-                                it.id === itemId
-                                  ? { ...it, features: newFeatures }
-                                  : it,
-                              );
-                              updateWidgetData(widget.id, {
-                                [arrayName]: newItems,
-                              });
+                              updateFeatures(newFeatures);
                             }}
                             className="p-1 bg-gray-50 rounded text-gray-500 hover:text-blue-500 hover:bg-blue-50"
                             title="위로 이동"
@@ -1700,14 +2027,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                                 newFeatures[idx],
                                 newFeatures[idx + 1],
                               ];
-                              const newItems = itemsList.map((it: any) =>
-                                it.id === itemId
-                                  ? { ...it, features: newFeatures }
-                                  : it,
-                              );
-                              updateWidgetData(widget.id, {
-                                [arrayName]: newItems,
-                              });
+                              updateFeatures(newFeatures);
                             }}
                             className="p-1 bg-gray-50 rounded text-gray-500 hover:text-blue-500 hover:bg-blue-50"
                             title="아래로 이동"
@@ -1722,14 +2042,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             const newFeatures = features.filter(
                               (_: any, i: number) => i !== idx,
                             );
-                            const newItems = itemsList.map((it: any) =>
-                              it.id === itemId
-                                ? { ...it, features: newFeatures }
-                                : it,
-                            );
-                            updateWidgetData(widget.id, {
-                              [arrayName]: newItems,
-                            });
+                            updateFeatures(newFeatures);
                           }}
                           className="p-1 bg-gray-50 rounded text-gray-500 hover:text-red-500 hover:bg-red-50"
                           title="삭제"
@@ -1753,14 +2066,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             ...newFeatures[idx],
                             label: e.target.value,
                           };
-                          const newItems = itemsList.map((it: any) =>
-                            it.id === itemId
-                              ? { ...it, features: newFeatures }
-                              : it,
-                          );
-                          updateWidgetData(widget.id, {
-                            [arrayName]: newItems,
-                          });
+                          updateFeatures(newFeatures);
                         }}
                         className="flex-1 min-w-0 w-full bg-gray-50 border border-gray-100 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-100 font-bold text-gray-700 placeholder-gray-300"
                         placeholder="라벨"
@@ -1778,14 +2084,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             ...newFeatures[idx],
                             value: e.target.value,
                           };
-                          const newItems = itemsList.map((it: any) =>
-                            it.id === itemId
-                              ? { ...it, features: newFeatures }
-                              : it,
-                          );
-                          updateWidgetData(widget.id, {
-                            [arrayName]: newItems,
-                          });
+                          updateFeatures(newFeatures);
                         }}
                         className="flex-1 min-w-0 w-full bg-gray-50 border border-gray-100 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-100 resize-none min-h-[50px] text-gray-600 placeholder-gray-300 leading-relaxed"
                         placeholder="특징 내용을 입력하세요."

@@ -41,7 +41,7 @@ export const PROCESS_DEFAULTS = {
       number: "2",
       title: "계약 체결",
       desc: "전문가와 상세 상담 후 계약을 체결합니다.",
-      icon: "/images/placeholder/step_contract.jpg",
+      icon: "/images/placeholder/step_consult.jpg",
       label: "평균 3~5일 소요",
       titleStyle: {
         fontWeight: "700",
@@ -55,7 +55,7 @@ export const PROCESS_DEFAULTS = {
       number: "3",
       title: "서비스 진행",
       desc: "체계적인 절차에 따라 업무를 수행합니다.",
-      icon: "/images/placeholder/step_service.jpg",
+      icon: "/images/placeholder/step_consult.jpg",
       label: "평균 2~4주 소요",
       titleStyle: {
         fontWeight: "700",
@@ -68,10 +68,10 @@ export const PROCESS_DEFAULTS = {
 };
 
 export const PROCESS_STEP_DEFAULT = {
-  number: "01",
+  number: "1",
   title: "새 단계",
   desc: "설명",
-  icon: "/images/placeholder/step_default.jpg",
+  icon: "/images/placeholder/step_consult.jpg",
   label: "안내 문구",
   titleStyle: { fontWeight: "700", fontSize: "20px", fontSizeMobile: "20px" },
   descStyle: { fontSize: "18px" },
@@ -183,7 +183,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <UniversalMedia
                         url={step.icon}
-                        className="w-full h-auto object-contain"
+                        className="w-full h-full object-cover"
                         alt="step icon"
                         style={getElementStyle(
                           step.iconStyle as any,
@@ -365,7 +365,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {!step.numberStyle?.isHidden && (
                           <div className="px-5 py-1 bg-[#285DE1] rounded-full inline-flex justify-center items-center gap-2.5 relative z-10 ring-8 ring-white">
                             <SafeHtml
-                              html={step.number || `0${idx + 1}`}
+                              html={step.number || `${idx + 1}`}
                               className="justify-start text-white text-lg md:text-xl font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text min-w-[1.5rem] text-center"
                               style={getElementStyle(
                                 step.numberStyle,
@@ -493,18 +493,18 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 (step: any, idx: number) => (
                   <div
                     key={step.id || idx}
-                    className="w-full bg-시안-mode-gray0 border-t border-시안-mode-gray95 inline-flex flex-col justify-start items-start"
+                    className="w-full bg-시안-mode-gray0 inline-flex flex-col justify-start items-start"
                   >
                     <div
                       className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
                       style={{
-                        height: "auto",
+                        height: "240px",
                         display: step.iconStyle?.isHidden ? "none" : undefined,
                       }}
                     >
                       <UniversalMedia
                         url={step.icon}
-                        className="w-full h-auto object-contain"
+                        className="w-full h-full object-cover"
                         alt="step icon"
                         style={getElementStyle(
                           step.iconStyle as any,
@@ -521,7 +521,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         <div className="inline-flex justify-start items-center gap-2">
                           {!step.numberStyle?.isHidden && (
                             <SafeHtml
-                              html={step.number || `0${idx + 1}.`}
+                              html={step.number || `${idx + 1}.`}
                               className="text-center justify-start text-[#285DE1] text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                               style={getElementStyle(
                                 step.numberStyle,
@@ -601,12 +601,12 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               onElementSelect?.("style");
             }}
           >
-            {/* 1. Header Area (3-tier) */}
+            {/* 1. Header Area: 3-tier */}
             <div className="flex flex-col justify-start items-center">
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(data.subTitleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -641,23 +641,24 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               )}
             </div>
 
-            {/* 2. Body Area (Steps Grid with Arrows) */}
+            {/* 2. Body Area: Steps Grid Layout 1 */}
             <div
-              className={`self-stretch w-full grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-x-5 gap-y-10`}
+              className={`self-stretch w-full grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-10`}
             >
               {(data.steps || (data as any).items || []).map(
                 (step: any, idx: number) => {
                   const arr = data.steps || (data as any).items || [];
-                  const isLastInRow =
-                    (idx + 1) % pcCols === 0 || idx === arr.length - 1;
+                  const isLast = idx === arr.length - 1;
+                  const isRowLast = (idx + 1) % pcCols === 0;
+
                   return (
                     <div
                       key={step.id || idx}
-                      className="relative w-full flex flex-col justify-start items-center gap-3"
+                      className="w-full flex items-center gap-5"
                     >
-                      <div className="relative w-full">
+                      <div className="flex-1 inline-flex flex-col justify-center items-center gap-3">
                         <div
-                          className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center aspect-video w-full rounded-t-lg"
+                          className="self-stretch h-44 bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer relative overflow-hidden"
                           style={{
                             display: step.iconStyle?.isHidden
                               ? "none"
@@ -678,86 +679,70 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             }}
                           />
                         </div>
-                        {/* Arrow logic - Attached to left edge of current card to render OVER previous card */}
-                        {idx !== 0 && (
-                          <>
-                            {/* PC (xl) Arrow */}
-                            {idx % pcCols !== 0 && (
-                              <div className="hidden xl:flex absolute top-1/2 -left-5 -translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-20 pointer-events-none">
-                                <img
-                                  onDoubleClick={(e) => {
-                                    e.stopPropagation();
-                                    onElementSelect?.("imageUrl");
-                                  }}
-                                  src="/images/placeholder/arrow.png"
-                                  alt="next"
-                                  className="w-full h-full object-contain opacity-40 max-w-none"
-                                />
-                              </div>
-                            )}
-                            {/* Tablet (md) Arrow */}
-                            {idx % 2 !== 0 && (
-                              <div className="hidden md:flex xl:hidden absolute top-1/2 -left-5 -translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center z-20 pointer-events-none">
-                                <img
-                                  onDoubleClick={(e) => {
-                                    e.stopPropagation();
-                                    onElementSelect?.("imageUrl");
-                                  }}
-                                  src="/images/placeholder/arrow.png"
-                                  alt="next"
-                                  className="w-full h-full object-contain opacity-40 max-w-none"
-                                />
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                      <div className="inline-flex justify-start items-center gap-3">
-                        {!step.numberStyle?.isHidden && (
-                          <div className="px-4 py-1 bg-시안-mode-Primary50 rounded-[30px] flex justify-center items-center gap-2.5">
+
+                        <div className="inline-flex justify-start items-center gap-3">
+                          {!step.numberStyle?.isHidden && (
+                            <div className="px-4 py-1 bg-시안-mode-Primary50 rounded-[30px] flex justify-center items-center gap-2.5">
+                              <SafeHtml
+                                html={step.number || `${idx + 1}`}
+                                className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                                style={getElementStyle(
+                                  step.numberStyle,
+                                  viewport as any,
+                                )}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("number", step.id);
+                                }}
+                              />
+                            </div>
+                          )}
+                          {!step.titleStyle?.isHidden && (
                             <SafeHtml
-                              html={step.number || `0${idx + 1}`}
-                              className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                              html={step.title || "과정명 01"}
+                              className="justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                               style={getElementStyle(
-                                step.numberStyle,
+                                step.titleStyle,
                                 viewport as any,
                               )}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
-                                onElementSelect?.("number", step.id);
+                                onElementSelect?.("stepTitle", step.id);
                               }}
                             />
-                          </div>
-                        )}
-                        {!step.titleStyle?.isHidden && (
+                          )}
+                        </div>
+
+                        {!step.descStyle?.isHidden && (
                           <SafeHtml
-                            html={step.title || "과정명 01"}
-                            className="justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                            html={step.desc || "내용 입력 01"}
+                            className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                             style={getElementStyle(
-                              step.titleStyle,
+                              step.descStyle,
                               viewport as any,
                             )}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.("stepTitle", step.id);
+                              onElementSelect?.("stepDesc", step.id);
                             }}
                           />
                         )}
                       </div>
-                      {!step.descStyle?.isHidden && (
-                        <SafeHtml
-                          html={step.desc || "내용 입력 01"}
-                          className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
-                          style={getElementStyle(
-                            step.descStyle,
-                            viewport as any,
-                          )}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("stepDesc", step.id);
-                          }}
+
+                      {/* Arrow Element: Hide on last item or row end (PC only) */}
+                      <div
+                        className={`w-10 h-10 relative flex flex-shrink-0 items-center justify-center ${
+                          isLast || (viewport === "desktop" && isRowLast)
+                            ? "opacity-0 invisible"
+                            : ""
+                        }`}
+                      >
+                        <img
+                          src="/images/placeholder/arrow.png"
+                          alt="next arrow"
+                          className="w-full h-full object-contain opacity-40 md:block hidden"
                         />
-                      )}
+                      </div>
                     </div>
                   );
                 },
@@ -889,7 +874,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                               url={
                                 step.icon || "/images/placeholder/ib_item1.jpg"
                               }
-                              className="w-full h-auto block mx-auto hover:scale-110 transition-transform duration-500"
+                              className="w-full h-full object-cover block mx-auto hover:scale-110 transition-transform duration-500"
                               alt="step icon"
                               style={getElementStyle(
                                 step.iconStyle as any,
@@ -991,7 +976,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             {/* PC/Tablet Arrow - Right side flow */}
                             {(isPc || isTablet) && (idx + 1) % cols !== 0 && (
                               <div
-                                className={`flex absolute transition-all ${isPc ? "-right-[54px]" : "-right-[40px]"}top-1/2 -translate-y-1/2 z-10 text-시안-mode-gray30 pointer-events-none group-hover:text-blue-400`}
+                                className={`flex absolute transition-all ${isPc ? "-right-[54px]" : "-right-[40px]"} top-1/2 -translate-y-1/2 z-10 text-시안-mode-gray30 pointer-events-none group-hover:text-blue-400`}
                               >
                                 <ChevronRight
                                   size={isPc ? 32 : 24}

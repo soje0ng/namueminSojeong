@@ -49,7 +49,8 @@ export const COMPARISON_CARD_DEFAULTS = {
     },
     {
       id: "2",
-      iconUrl: "/images/placeholder/section-image.jpg",
+      iconUrl:
+        "/images/placeholder/imaginary-comparison-right-custom-asset-3f9a21.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "30px", fontWeight: "700", color: "#ffffff" },
       desc: "프로그램 특징 내용 입력\n프로그램 특징 내용 입력\n프로그램 특징 내용 입력",
