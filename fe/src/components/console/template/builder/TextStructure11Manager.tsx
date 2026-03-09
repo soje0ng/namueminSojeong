@@ -19,17 +19,20 @@ export interface Section11FeatItem {
   number?: string;
   title: string;
   desc: string;
+  opacity?: string;
 }
 
 export interface Section11Item {
   id: string;
   type: Section11Type;
+  opacity?: string;
   // text
   subTitle?: string;
   content?: string;
   // image
   columns?: number;
   images?: string[];
+  imageOpacities?: string[];
   imageHeight?: string;
   // features
   items?: Section11FeatItem[];
@@ -222,6 +225,13 @@ const TextStructure11Manager: React.FC<Props> = ({
     updateSection(sectionId, { items });
   };
 
+  const normalizeOpacityValue = (value: string) => {
+    if (value === "") return "";
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) return "";
+    return String(Math.max(0, Math.min(100, parsed)));
+  };
+
   return (
     <div className="space-y-2">
       <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
@@ -318,6 +328,24 @@ const TextStructure11Manager: React.FC<Props> = ({
               {/* Expanded content */}
               {isExpanded && (
                 <div className="p-3 space-y-3 border-t border-gray-100 bg-white">
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-gray-500 w-16 shrink-0">
+                      영역 투명도
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
+                      value={section.opacity || ""}
+                      onChange={(e) =>
+                        updateSection(section.id, {
+                          opacity: normalizeOpacityValue(e.target.value),
+                        })
+                      }
+                    />
+                    <span className="text-[10px] text-gray-400">%</span>
+                  </div>
                   {/* TEXT */}
                   {section.type === "text" && (
                     <>
@@ -405,6 +433,28 @@ const TextStructure11Manager: React.FC<Props> = ({
                               }}
                             />
                           </div>
+                          <div className="flex items-center gap-2">
+                            <label className="text-[10px] text-gray-400 w-16 shrink-0">
+                              이미지 투명도
+                            </label>
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              className="flex-1 bg-gray-50 border-none p-1.5 rounded text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
+                              value={section.imageOpacities?.[imgIdx] || ""}
+                              onChange={(e) => {
+                                const imageOpacities = [
+                                  ...(section.imageOpacities || []),
+                                ];
+                                imageOpacities[imgIdx] = normalizeOpacityValue(
+                                  e.target.value,
+                                );
+                                updateSection(section.id, { imageOpacities });
+                              }}
+                            />
+                            <span className="text-[10px] text-gray-400">%</span>
+                          </div>
                         </div>
                       ))}
                     </>
@@ -430,6 +480,27 @@ const TextStructure11Manager: React.FC<Props> = ({
                             >
                               <Trash2 size={10} />
                             </button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="text-[10px] text-gray-400 w-16 shrink-0">
+                              항목 투명도
+                            </label>
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              className="flex-1 bg-white border-none p-1.5 rounded text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
+                              value={item.opacity || ""}
+                              onChange={(e) =>
+                                updateFeatItem(
+                                  section.id,
+                                  itemIdx,
+                                  "opacity",
+                                  normalizeOpacityValue(e.target.value),
+                                )
+                              }
+                            />
+                            <span className="text-[10px] text-gray-400">%</span>
                           </div>
                           <input
                             type="text"

@@ -34,6 +34,15 @@ const getIconLayoutPlaceholderKey = (
   return "1";
 };
 
+const getFixedRowItemWidthStyle = (itemsPerRow: number, gap: string) => {
+  const cols = Math.max(1, Number(itemsPerRow) || 1);
+  const width = `calc((100% - (${cols} - 1) * ${gap}) / ${cols})`;
+  return {
+    flex: `0 0 ${width}`,
+    maxWidth: width,
+  } as React.CSSProperties;
+};
+
 export const ICON_CARD_DEFAULTS = {
   variant: "box",
   title: "좌측타이틀영역",
@@ -107,6 +116,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 }) => {
   const w = widget as IconCardWidget;
   const style = useWidgetStyle(w.style);
+  const iconCardImageHeight = formatUnit((w.data as any).imageHeight);
   const iconPlaceholderLayout = getIconLayoutPlaceholderKey(
     w.data.layout,
     w.data.variant,
@@ -115,14 +125,17 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     w.data.layout,
     w.data.variant,
   );
-  const isNaturalIconLayout = ["1", "2"].includes(currentLayout);
+  const isNaturalIconLayout = ["1", "2", "3", "4", "6"].includes(currentLayout);
   const getIconMediaStyle = (iconStyle: any) => ({
     ...(() => {
       const base = getElementStyle(iconStyle, viewport) as any;
-      delete base.width;
-      delete base.height;
-      delete base.objectFit;
-      if (["3", "4", "5"].includes(currentLayout)) {
+      if (!iconStyle?.width) delete base.width;
+      if (!iconStyle?.height) delete base.height;
+      if (!iconStyle?.objectFit) delete base.objectFit;
+      if (["1", "2"].includes(currentLayout)) {
+        delete base.borderRadius;
+      }
+      if (["3", "4", "5", "6"].includes(currentLayout)) {
         delete base.backgroundColor;
         delete base.borderRadius;
         delete base.borderColor;
@@ -131,9 +144,27 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
       }
       return base;
     })(),
+    ...(iconCardImageHeight && !iconStyle?.height
+      ? { height: iconCardImageHeight }
+      : {}),
     ...(isNaturalIconLayout ? {} : { height: "100%" }),
-    objectFit: "contain",
+    objectFit: iconStyle?.objectFit || "contain",
   });
+  const getIconFrameStyle = (iconStyle: any) =>
+    iconStyle?.width || iconStyle?.height || iconCardImageHeight
+      ? {
+          ...(iconStyle?.width ? { width: formatUnit(iconStyle.width) } : {}),
+          ...(iconStyle?.height || iconCardImageHeight
+            ? { height: formatUnit(iconStyle?.height || iconCardImageHeight) }
+            : {}),
+        }
+      : undefined;
+  const bannerImageStyle = (() => {
+    const resolvedStyle = getElementStyle((w.data as any).imageStyle, viewport);
+    return iconCardImageHeight && !resolvedStyle.height
+      ? { ...resolvedStyle, height: iconCardImageHeight }
+      : resolvedStyle;
+  })();
 
   if (
     currentLayout === "1" ||
@@ -199,7 +230,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 alt="banner image"
                 style={{
                   height: "auto",
-                  ...getElementStyle((w.data as any).imageStyle, viewport),
+                  ...bannerImageStyle,
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
@@ -218,7 +249,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                     backgroundImage:
                       "linear-gradient(to bottom right, #f8fafc, #eff6ff)",
                   }}
-                  className="flex-1 min-w-80 p-6 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all relative z-20"
+                  className="w-full p-6 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all relative z-20"
                 >
                   <SafeHtml
                     html={item.title || "프로그램 특징"}
@@ -229,7 +260,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                       onElementSelect?.("itemTitle", item.id || i.toString());
                     }}
                   />
-                  <div className="relative z-20 bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
+                  <div className="relative z-20 bg-시안-mode-gray5 overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
                     <UniversalMedia
                       url={(() => {
                         const currentImg = item.iconUrl || item.icon;
@@ -272,7 +303,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -324,9 +355,12 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {(w.data.items || []).map((item: any, i: number) => (
               <div
                 key={item.id || i}
-                className="flex-1 min-w-[180px] p-6 rounded-2xl inline-flex flex-col justify-start items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                className="w-full p-6 rounded-2xl inline-flex flex-col justify-start items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
               >
-                <div className="relative bg-시안-mode-gray5 rounded-[60px] overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
+                <div
+                  className="relative bg-시안-mode-gray5 overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
+                  style={getIconFrameStyle(item.iconStyle)}
+                >
                   <UniversalMedia
                     url={(() => {
                       const currentImg = item.iconUrl || item.icon;
@@ -379,6 +413,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
   if (currentLayout === "3") {
     const items = w.data.items || [];
     const itemsPerRow = w.data.itemsPerRow || 3;
+    const rowItemGap = w.style?.gap ? formatUnit(w.style.gap) : "36px";
+    const rowItemWidthStyle = getFixedRowItemWidthStyle(
+      itemsPerRow,
+      rowItemGap,
+    );
     const rows: any[][] = [];
     for (let i = 0; i < items.length; i += itemsPerRow) {
       rows.push(items.slice(i, i + itemsPerRow));
@@ -387,7 +426,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -439,15 +478,16 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {rows.map((row, rowIndex) => (
               <div
                 key={rowIndex}
-                className="self-stretch inline-flex justify-center items-stretch flex-wrap"
-                style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "36px" }}
+                className="self-stretch inline-flex justify-start items-stretch flex-wrap"
+                style={{ gap: rowItemGap }}
               >
                 {row.map((item: any, i: number) => {
                   const itemIndex = rowIndex * itemsPerRow + i;
                   return (
                     <div
                       key={item.id || itemIndex}
-                      className="flex-1 min-w-[280px] max-w-96 px-6 py-8 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_12px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                      className="w-full px-6 py-8 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_12px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                      style={rowItemWidthStyle}
                     >
                       <SafeHtml
                         html={(item as any).subTitle || "( 서브타이틀 )"}
@@ -465,7 +505,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         }}
                       />
 
-                      <div className="w-24 h-24 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
+                      <div
+                        className="relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
+                        style={getIconFrameStyle(item.iconStyle)}
+                      >
                         <UniversalMedia
                           url={(() => {
                             const currentImg = item.iconUrl || item.icon;
@@ -477,7 +520,8 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                             return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
                           })()}
                           alt="icon"
-                          className="w-16 h-16 object-contain"
+                          className="max-w-full"
+                          naturalSize
                           style={getIconMediaStyle(item.iconStyle)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -529,6 +573,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
   if (currentLayout === "4") {
     const items = w.data.items || [];
     const itemsPerRow = w.data.itemsPerRow || 3;
+    const rowItemGap = w.style?.gap ? formatUnit(w.style.gap) : "20px";
+    const rowItemWidthStyle = getFixedRowItemWidthStyle(
+      itemsPerRow,
+      rowItemGap,
+    );
     const rows: any[][] = [];
     for (let i = 0; i < items.length; i += itemsPerRow) {
       rows.push(items.slice(i, i + itemsPerRow));
@@ -537,7 +586,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -589,15 +638,16 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {rows.map((row, rowIndex) => (
               <div
                 key={rowIndex}
-                className="self-stretch inline-flex justify-center items-center flex-wrap"
-                style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
+                className="self-stretch inline-flex justify-start items-center flex-wrap"
+                style={{ gap: rowItemGap }}
               >
                 {row.map((item: any, i: number) => {
                   const itemIndex = rowIndex * itemsPerRow + i;
                   return (
                     <div
                       key={item.id || itemIndex}
-                      className="flex-1 min-w-[260px] max-w-96 p-6 bg-시안-mode-gray5 rounded-2xl flex justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                      className="w-full p-6 bg-시안-mode-gray5 rounded-2xl flex justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                      style={rowItemWidthStyle}
                     >
                       <div className="inline-flex flex-col justify-start items-start gap-2 flex-1 min-w-0">
                         <SafeHtml
@@ -626,7 +676,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         />
                       </div>
 
-                      <div className="w-24 h-24 shrink-0 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
+                      <div
+                        className="shrink-0 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center"
+                        style={getIconFrameStyle(item.iconStyle)}
+                      >
                         <UniversalMedia
                           url={(() => {
                             const currentImg = item.iconUrl || item.icon;
@@ -638,7 +691,8 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                             return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
                           })()}
                           alt="icon"
-                          className="w-16 h-16 object-contain"
+                          className="max-w-full"
+                          naturalSize
                           style={getIconMediaStyle(item.iconStyle)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -663,6 +717,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
   if (currentLayout === "5") {
     const items = w.data.items || [];
     const itemsPerRow = w.data.itemsPerRow || 3;
+    const rowItemGap = w.style?.gap ? formatUnit(w.style.gap) : "36px";
+    const rowItemWidthStyle = getFixedRowItemWidthStyle(
+      itemsPerRow,
+      rowItemGap,
+    );
     const rows: any[][] = [];
     for (let i = 0; i < items.length; i += itemsPerRow) {
       rows.push(items.slice(i, i + itemsPerRow));
@@ -671,7 +730,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -723,15 +782,16 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {rows.map((row, rowIndex) => (
               <div
                 key={rowIndex}
-                className="self-stretch inline-flex justify-center items-center flex-wrap"
-                style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "36px" }}
+                className="self-stretch inline-flex justify-start items-center flex-wrap"
+                style={{ gap: rowItemGap }}
               >
                 {row.map((item: any, i: number) => {
                   const itemIndex = rowIndex * itemsPerRow + i;
                   return (
                     <div
                       key={item.id || itemIndex}
-                      className="flex-1 min-w-[260px] max-w-96 p-6 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_16px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-start gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                      className="w-full p-6 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_16px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-start gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                      style={rowItemWidthStyle}
                     >
                       <div className="self-stretch inline-flex justify-between items-start">
                         <div className="inline-flex flex-col justify-start items-start">
@@ -764,7 +824,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                           />
                         </div>
 
-                        <div className="w-14 h-14 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0">
+                        <div
+                          className="w-14 h-14 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
+                          style={getIconFrameStyle(item.iconStyle)}
+                        >
                           <UniversalMedia
                             url={(() => {
                               const currentImg = item.iconUrl || item.icon;
@@ -816,7 +879,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -872,16 +935,38 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
                   key={item.id || idx}
-                  className="flex-1 min-w-[260px] max-w-96 px-6 py-10 bg-시안-mode-gray0 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                  className="w-full px-6 py-10 bg-시안-mode-gray0 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("items", item.id);
                   }}
                 >
-                  <div className="w-6 h-6 relative bg-시안-mode-Primary30 rounded-xl">
-                    <div className="w-6 h-6 left-0 top-0 absolute">
-                      <div className="w-3 h-2.5 left-[5.75px] top-[5.87px] absolute outline outline-2 outline-offset-[-1px] outline-시안-mode-gray0"></div>
-                    </div>
+                  <div
+                    className="relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center"
+                    style={getIconFrameStyle(item.iconStyle)}
+                  >
+                    <UniversalMedia
+                      url={(() => {
+                        const currentImg = item.iconUrl || item.icon;
+                        if (
+                          currentImg &&
+                          !currentImg.includes("/images/placeholder/")
+                        )
+                          return currentImg;
+                        return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                      })()}
+                      alt="icon"
+                      className="max-w-full"
+                      naturalSize
+                      style={getIconMediaStyle(item.iconStyle)}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.(
+                          "itemIcon",
+                          item.id || idx.toString(),
+                        );
+                      }}
+                    />
                   </div>
                   <div className="flex flex-col justify-center items-center gap-1">
                     <SafeHtml

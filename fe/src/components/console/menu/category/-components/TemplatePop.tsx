@@ -20,7 +20,15 @@ import {
   TextSectionRenderer,
   BannerSectionRenderer,
   CardRenderer,
+  TitleBannerRenderer,
+  ImageAreaRenderer,
+  TitleTextRenderer,
+  TabButtonRenderer,
+  TextStructureRenderer,
+  ImageCardRenderer,
+  StripBannerRenderer,
 } from "@/components/console/template/Widgets";
+import { ComparisonCardRenderer } from "@/components/console/template/widgets/ComparisonCardRenderer";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { DEFAULT_TEMPLATE } from "@/constants/console/widgetDefaults";
 import type { PageData, Widget } from "@/types/console/template";
@@ -37,6 +45,15 @@ const RENDERER_MAP: Record<string, React.ComponentType<any>> = {
   faq: FaqRenderer,
   bannerSection: BannerSectionRenderer,
   cardList: CardRenderer,
+  titleBanner: TitleBannerRenderer,
+  imageArea: ImageAreaRenderer,
+  titleText: TitleTextRenderer,
+  tabButton: TabButtonRenderer,
+  textStructure: TextStructureRenderer,
+  imageCard: ImageCardRenderer,
+  comparisonCard: ComparisonCardRenderer,
+  processCard: ProcessRenderer,
+  stripBanner: StripBannerRenderer,
 };
 
 const convertPageDataToHtml = (data: PageData): string => {
@@ -191,6 +208,9 @@ export default function TemplatePop({
                         {widget.type === "process" && (
                           <ProcessRenderer widget={widget as any} />
                         )}
+                        {widget.type === "processCard" && (
+                          <ProcessRenderer widget={widget as any} />
+                        )}
                         {widget.type === "iconCard" && (
                           <IconCardRenderer widget={widget as any} />
                         )}
@@ -208,6 +228,30 @@ export default function TemplatePop({
                         )}
                         {widget.type === "cardList" && (
                           <CardRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "titleBanner" && (
+                          <TitleBannerRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "imageArea" && (
+                          <ImageAreaRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "titleText" && (
+                          <TitleTextRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "tabButton" && (
+                          <TabButtonRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "textStructure" && (
+                          <TextStructureRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "imageCard" && (
+                          <ImageCardRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "comparisonCard" && (
+                          <ComparisonCardRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "stripBanner" && (
+                          <StripBannerRenderer widget={widget as any} />
                         )}
                       </div>
                     ))}

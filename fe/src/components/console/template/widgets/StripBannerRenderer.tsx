@@ -165,6 +165,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
     widget.style?.backgroundColor && widget.style.backgroundColor !== "#295E92"
       ? widget.style.backgroundColor
       : defaultBg2Color;
+  const layout2ImageStyle = data.layout2ImageUrlStyle || data.imageStyle;
 
   const content = (
     <section
@@ -190,7 +191,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
             <UniversalMedia
               onDoubleClick={(e) => {
                 e.stopPropagation();
-                onElementSelect?.("imageUrl");
+                onElementSelect?.("layout2ImageUrl");
               }}
               className="w-full h-full object-cover absolute inset-0"
               url={
@@ -199,7 +200,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
               }
               alt="Banner Image"
               style={{
-                ...getElementStyle(data.imageStyle, viewport),
+                ...getElementStyle(layout2ImageStyle, viewport),
                 borderRadius: "0px",
                 height: "100%",
                 width: "100%",

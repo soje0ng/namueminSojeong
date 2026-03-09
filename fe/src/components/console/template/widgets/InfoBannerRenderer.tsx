@@ -6,6 +6,7 @@ import {
   SafeHtml,
   WidgetRendererProps,
   UniversalMedia,
+  formatUnit,
 } from "./WidgetUtils";
 
 export const INFO_BANNER_DEFAULTS = {
@@ -71,7 +72,7 @@ export const INFO_BANNER_DEFAULTS = {
   items: [
     {
       id: "ib-item-1",
-      iconUrl: "/images/placeholder/infobanner_item_icon_ka.png",
+      iconUrl: "/images/placeholder/info_banner_layout1_feature_media.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
       desc: "프로그램 특징 내용 입력",
@@ -79,7 +80,7 @@ export const INFO_BANNER_DEFAULTS = {
     },
     {
       id: "ib-item-2",
-      iconUrl: "/images/placeholder/infobanner_item_icon_ka.png",
+      iconUrl: "/images/placeholder/info_banner_layout1_feature_media.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
       desc: "프로그램 특징 내용 입력",
@@ -87,7 +88,7 @@ export const INFO_BANNER_DEFAULTS = {
     },
     {
       id: "ib-item-3",
-      iconUrl: "/images/placeholder/infobanner_item_icon_ka.png",
+      iconUrl: "/images/placeholder/info_banner_layout1_feature_media.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
       desc: "프로그램 특징 내용 입력",
@@ -95,7 +96,7 @@ export const INFO_BANNER_DEFAULTS = {
     },
     {
       id: "ib-item-4",
-      iconUrl: "/images/placeholder/infobanner_item_icon_ka.png",
+      iconUrl: "/images/placeholder/info_banner_layout1_feature_media.png",
       title: "프로그램 특징",
       titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
       desc: "프로그램 특징 내용 입력",
@@ -113,6 +114,20 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
   const style = useWidgetStyle(w.style);
   const data = w.data;
   const layout = data.layout || "1";
+  const infoBannerImageHeight = formatUnit((data as any).imageHeight);
+  const getMainImageStyle = (imageStyle: any) => {
+    const resolvedStyle = getElementStyle(imageStyle, viewport);
+    return infoBannerImageHeight && !resolvedStyle.height
+      ? { ...resolvedStyle, height: infoBannerImageHeight }
+      : resolvedStyle;
+  };
+  const getMainImageFrameStyle = (imageStyle: any, extra: React.CSSProperties = {}) => ({
+    ...extra,
+    ...(imageStyle?.width ? { width: formatUnit(imageStyle.width) } : {}),
+    ...(infoBannerImageHeight && !imageStyle?.height
+      ? { height: infoBannerImageHeight }
+      : {}),
+  });
   const isMediaUrl = (value: any) =>
     typeof value === "string" &&
     /^(https?:\/\/|\/|\.{1,2}\/|data:|blob:)/i.test(value);
@@ -202,6 +217,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <div
                         className="w-12 h-12 relative flex items-center justify-center cursor-pointer overflow-hidden"
+                        style={{ backgroundColor: "transparent", borderRadius: 0 }}
                         onClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("itemIcon", itemSelectId);
@@ -216,11 +232,15 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             item.iconUrl ||
                             item.image ||
                             (isMediaUrl(item.icon) ? item.icon : "") ||
-                            "/images/placeholder/infobanner_item_icon_ka.png"
+                            "/images/placeholder/info_banner_layout1_feature_media.png"
                           }
                           alt={item.title || "Icon"}
                           className="w-full h-full object-contain"
-                          style={getElementStyle(item.iconStyle, viewport)}
+                          style={{
+                            ...getElementStyle(item.iconStyle, viewport),
+                            backgroundColor: "transparent",
+                            borderRadius: 0,
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("itemIcon", itemSelectId);
@@ -259,7 +279,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
 
               <div
                 className={`w-full xl:w-[560px] shrink-0 cursor-pointer hover:ring-4 hover:ring-white transition-all rounded-2xl overflow-hidden shadow-[24px_12px_16px_0px_rgba(0,0,0,0.20)] z-10 flex justify-center items-center`}
-                style={{ height: "auto" }}
+                style={getMainImageFrameStyle(data.imageStyle, {
+                  height: data.imageStyle?.height || infoBannerImageHeight || "auto",
+                })}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("imageUrl");
@@ -269,7 +291,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   url={data.imageUrl}
                   className="w-full h-auto object-contain"
                   alt="banner image"
-                  style={getElementStyle(data.imageStyle, viewport)}
+                  style={getMainImageStyle(data.imageStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("imageUrl");
@@ -299,9 +321,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
             <div className="self-stretch p-5 bg-시안-mode-gray5 rounded-[20px] flex flex-col xl:flex-row justify-start items-start gap-14 w-full">
               <div
                 className="w-full xl:w-[600px] self-stretch rounded-2xl overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
-                style={{
+                style={getMainImageFrameStyle(l2ImageStyle, {
                   minHeight: "0",
-                }}
+                })}
                 onClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("layout2ImageUrl");
@@ -318,7 +340,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }
                   alt="layout2-main-image"
                   className="w-full h-full object-cover"
-                  style={getElementStyle(l2ImageStyle, viewport)}
+                  style={getMainImageStyle(l2ImageStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout2ImageUrl");
@@ -395,17 +417,20 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                           onElementSelect?.("itemIcon", itemSelectId);
                         }}
                       >
-                        <UniversalMedia
-                          url={
-                            item.image ||
-                            (item.iconUrl ===
-                            "/images/placeholder/infobanner_item_icon_ka.png"
-                              ? ""
-                              : item.iconUrl) ||
-                            "/images/placeholder/infobanner_layout2_item_icon.png"
-                          }
+	                        <UniversalMedia
+	                          url={
+	                            item.image ||
+	                            (item.iconUrl ===
+	                              "/images/placeholder/infobanner_item_icon_ka.png" ||
+	                            item.iconUrl ===
+	                              "/images/placeholder/info_banner_layout1_feature_media.png"
+	                              ? ""
+	                              : item.iconUrl) ||
+	                            "/images/placeholder/info_banner_layout1_feature_media2.png"
+	                          }
                           alt={`layout2-feature-icon-${idx + 1}`}
                           className="w-full h-full object-contain"
+                          style={getElementStyle(item.iconStyle, viewport)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("itemIcon", itemSelectId);
@@ -470,12 +495,17 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center w-full">
             {/* Top Header Section with overhanging image/card */}
             <div className="self-stretch flex flex-col justify-start items-end w-full">
-              <div className="w-full h-auto shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-xl overflow-hidden flex justify-center items-center">
+              <div
+                className="w-full h-auto shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all rounded-xl overflow-hidden flex justify-center items-center"
+                style={getMainImageFrameStyle(l3ImageStyle, {
+                  height: l3ImageStyle?.height || infoBannerImageHeight || "auto",
+                })}
+              >
                 <UniversalMedia
                   url={data.layout3ImageUrl || data.imageUrl}
                   alt="banner"
                   className="w-full h-auto object-contain"
-                  style={getElementStyle(l3ImageStyle, viewport)}
+                  style={getMainImageStyle(l3ImageStyle)}
                 />
                 <div
                   className="absolute top-0 left-0 right-0 h-[70%] z-10"
@@ -617,6 +647,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
   if (layout === "4") {
     const l4TitleStyle = data.layout4TitleStyle || data.titleStyle;
     const l4DescStyle = data.layout4DescStyle || data.descStyle;
+    const l4TopImageStyle = data.layout4TopImageUrlStyle;
     const l4ImageStyle = data.layout4ImageUrlStyle || data.imageStyle;
 
     return (
@@ -626,6 +657,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
             <div className="flex-1 inline-flex flex-col justify-center items-start gap-5">
               <div
                 className="w-12 h-10 overflow-hidden cursor-pointer"
+                style={getElementStyle(l4TopImageStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("layout4TopImageUrl");
@@ -638,6 +670,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }
                   alt="layout4-top-image"
                   className="w-full h-full object-cover"
+                  style={getElementStyle(l4TopImageStyle, viewport)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout4TopImageUrl");
@@ -687,6 +720,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               </div>
               <div
                 className="relative z-0 w-[620px] h-96 rounded-tr-[40px] rounded-bl-[40px] shadow-[8px_8px_20px_0px_rgba(0,0,0,0.12)] overflow-hidden cursor-pointer"
+                style={getMainImageFrameStyle(l4ImageStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("layout4ImageUrl");
@@ -700,7 +734,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }
                   alt="layout4-main-image"
                   className="w-[620px] h-96 object-cover"
-                  style={getElementStyle(l4ImageStyle, viewport)}
+                  style={getMainImageStyle(l4ImageStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout4ImageUrl");
@@ -923,7 +957,10 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   );
                 })}
               </div>
-              <div className="w-[620px] aspect-[31/22] rounded-2xl overflow-hidden cursor-pointer">
+              <div
+                className="w-[620px] aspect-[31/22] rounded-2xl overflow-hidden cursor-pointer"
+                style={getMainImageFrameStyle(l5ImageStyle)}
+              >
                 <UniversalMedia
                   url={
                     data.layout5ImageUrl ||
@@ -931,7 +968,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }
                   alt="banner"
                   className="w-full h-full"
-                  style={getElementStyle(l5ImageStyle, viewport)}
+                  style={getMainImageStyle(l5ImageStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout5ImageUrl");

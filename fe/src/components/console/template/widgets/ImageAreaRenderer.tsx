@@ -31,6 +31,12 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
     data.mobileImageUrl || data.imageUrl || IMAGE_AREA_DEFAULTS.mobileImageUrl;
   const isMobile = viewport === "mobile";
   const currentImage = isMobile ? mobileImageUrl : imageUrl;
+  const currentImageStyle = isMobile
+    ? {
+        ...(data.imageStyle || {}),
+        ...(data.mobileImageUrlStyle || {}),
+      }
+    : data.imageStyle;
 
   if (layout === "1") {
     return (
@@ -56,18 +62,15 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
               <UniversalMedia
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("imageUrl");
+                  onElementSelect?.(isMobile ? "mobileImageUrl" : "imageUrl");
                 }}
-
                 url={currentImage}
                 alt={`banner image (${isMobile ? "Mobile" : "PC"})`}
                 className="w-full h-auto hover:ring-4 hover:ring-blue-400"
                 style={{
-                  ...getElementStyle(data.imageStyle, viewport),
-                  height: "auto",
-                  width: "100%",
+                  ...getElementStyle(currentImageStyle, viewport),
                   aspectRatio: "auto",
-                  objectFit: data.imageStyle?.objectFit || "contain",
+                  objectFit: currentImageStyle?.objectFit || "contain",
                 }}
               />
             </div>

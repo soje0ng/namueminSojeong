@@ -37,9 +37,11 @@ import {
   TEXT_STRUCTURE_7_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_9_DEFAULT_SECTIONS,
+  TEXT_STRUCTURE_10_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
 import TextStructure9Manager from "./TextStructure9Manager";
+import TextStructure10Manager from "./TextStructure10Manager";
 import { INFO_BANNER_DEFAULTS } from "../widgets/InfoBannerRenderer";
 
 export interface PropertyPanelProps {
@@ -182,6 +184,14 @@ const pickInfoBannerLayoutState = (data: any) => {
 const getInfoBannerDefaultState = (layout: string) => ({
   ...pickInfoBannerLayoutState(INFO_BANNER_DEFAULTS as any),
   layout,
+  ...(layout === "2"
+    ? {
+        items: ((INFO_BANNER_DEFAULTS as any).items || []).map((item: any) => ({
+          ...cloneDeep(item),
+          iconUrl: "/images/placeholder/info_banner_layout1_feature_media2.png",
+        })),
+      }
+    : {}),
 });
 
 export const PropertyPanel: React.FC<PropertyPanelProps> = ({
@@ -232,10 +242,14 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     sections9:
       (widget as any).data?.sections9 ||
       cloneTextStructureDefaults(TEXT_STRUCTURE_9_DEFAULT_SECTIONS),
+    sections10:
+      (widget as any).data?.sections10 ||
+      cloneTextStructureDefaults(TEXT_STRUCTURE_10_DEFAULT_SECTIONS),
     sections11:
       (widget as any).data?.sections11 ||
       cloneTextStructureDefaults(TEXT_STRUCTURE_11_DEFAULT_SECTIONS),
   };
+  const textStructureLayout = String((widget as any).data?.layout || "1");
 
   const layout9AutoExpandSectionId =
     widget?.type === "textStructure" &&
@@ -324,6 +338,17 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             if (matched) return matched.id;
           }
           return null;
+        })()
+      : null;
+
+  const layout10AutoExpandSectionId =
+    widget?.type === "textStructure" &&
+    String((widget as any).data?.layout || "1") === "10"
+      ? (() => {
+          if (!selectedItemId) return null;
+          const sectionIndex = Number.parseInt(selectedItemId, 10);
+          if (Number.isNaN(sectionIndex) || sectionIndex < 0) return null;
+          return textStructureSections.sections10?.[sectionIndex]?.id || null;
         })()
       : null;
 
@@ -432,10 +457,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     listArrayName = null;
   }
 
-  // 텍스트 구조 레이아웃 5, 6, 7, 8, 9, 11은 전용 매니저 사용 → 기존 items 구조 관리 숨김
+  // 텍스트 구조 레이아웃 5, 6, 7, 8, 9, 10, 11은 전용 매니저 사용 → 기존 items 구조 관리 숨김
   if (
     widget.type === "textStructure" &&
-    ["5", "6", "7", "8", "9", "11"].includes(
+    ["5", "6", "7", "8", "9", "10", "11"].includes(
       ((widget.data as any).layout || "1").toString(),
     )
   ) {
@@ -699,7 +724,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     };
   };
 
-  const syncIconCardPlaceholderItems = (items: any[] | undefined, nextLayout: string) => {
+  const syncIconCardPlaceholderItems = (
+    items: any[] | undefined,
+    nextLayout: string,
+  ) => {
     if (!items?.length) return { items, changed: false };
 
     let changed = false;
@@ -707,7 +735,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
       if (!item || typeof item !== "object") return item;
 
       const iconResult = mapIconCardPlaceholderImage(item.icon, nextLayout);
-      const iconUrlResult = mapIconCardPlaceholderImage(item.iconUrl, nextLayout);
+      const iconUrlResult = mapIconCardPlaceholderImage(
+        item.iconUrl,
+        nextLayout,
+      );
 
       if (!iconResult.changed && !iconUrlResult.changed) return item;
 
@@ -771,19 +802,21 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   value={
                     widget.type === "iconCard"
                       ? normalizeLayoutToNumber(
-                          (widget.data as any).layout || (widget.data as any).variant,
+                          (widget.data as any).layout ||
+                            (widget.data as any).variant,
                           "1",
                         )
                       : widget.type === "imageCard"
-                      ? normalizeImageCardLayout(
-                          (widget.data as any).layout || "1",
-                        )
-                      : (widget.data as any).layout || "1"
+                        ? normalizeImageCardLayout(
+                            (widget.data as any).layout || "1",
+                          )
+                        : (widget.data as any).layout || "1"
                   }
                   onChange={(e) => {
-                    const newLayout = widget.type === "iconCard"
-                      ? normalizeLayoutToNumber(e.target.value, "1")
-                      : normalizeImageCardLayout(e.target.value);
+                    const newLayout =
+                      widget.type === "iconCard"
+                        ? normalizeLayoutToNumber(e.target.value, "1")
+                        : normalizeImageCardLayout(e.target.value);
                     setConfirmPop(
                       true,
                       "레이아웃을 변경하면 현재 입력된 데이터가 초기화될 수 있습니다. <br/>계속하시겠습니까?",
@@ -3370,9 +3403,98 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     </div>
                   )}
 
+                  {widget.type === "titleBanner" &&
+                    String((widget.data as any).layout || "1") === "3" && (
+                      <div className="space-y-6 pt-2">
+                        <div className="space-y-3">
+                          <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                            <ImageIcon size={14} className="text-blue-500" /> PC
+                            이미지 설정
+                          </label>
+                          <ImgUploadPop
+                            onSelect={(url) =>
+                              updateWidgetData(widget.id, { layout3Image: url })
+                            }
+                            button={
+                              <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                                <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                  <Upload size={18} />
+                                </div>
+                                <div className="text-left">
+                                  <p className="font-bold text-gray-700 text-sm">
+                                    PC 이미지 선택
+                                  </p>
+                                  <p className="text-[10px] text-gray-400">
+                                    서버 업로드 또는 선택
+                                  </p>
+                                </div>
+                              </div>
+                            }
+                          />
+                          <input
+                            type="text"
+                            className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                            value={(widget.data as any).layout3Image || ""}
+                            onChange={(e) =>
+                              updateWidgetData(widget.id, {
+                                layout3Image: e.target.value,
+                              })
+                            }
+                            placeholder="PC 이미지 URL을 입력하세요"
+                          />
+                        </div>
+
+                        <div className="space-y-3">
+                          <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                            <Smartphone size={14} className="text-blue-500" />{" "}
+                            모바일 이미지 설정
+                          </label>
+                          <ImgUploadPop
+                            onSelect={(url) =>
+                              updateWidgetData(widget.id, {
+                                layout3MobileImage: url,
+                              })
+                            }
+                            button={
+                              <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                                <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                  <Upload size={18} />
+                                </div>
+                                <div className="text-left">
+                                  <p className="font-bold text-gray-700 text-sm">
+                                    모바일 이미지 선택
+                                  </p>
+                                  <p className="text-[10px] text-gray-400">
+                                    서버 업로드 또는 선택
+                                  </p>
+                                </div>
+                              </div>
+                            }
+                          />
+                          <input
+                            type="text"
+                            className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                            value={
+                              (widget.data as any).layout3MobileImage || ""
+                            }
+                            onChange={(e) =>
+                              updateWidgetData(widget.id, {
+                                layout3MobileImage: e.target.value,
+                              })
+                            }
+                            placeholder="모바일 이미지 URL을 입력하세요 (선택)"
+                          />
+                          <p className="text-[10px] text-gray-400 leading-tight">
+                            * 모바일 이미지를 등록하지 않으면 PC 이미지가
+                            공통으로 노출됩니다.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                   {widget.type === "textStructure" && (
                     <div className="space-y-2">
-                      {["1", "2", "3", "4"].includes(
+                      {["1", "2", "3", "4", "9"].includes(
                         String((widget as any).data.layout || "1"),
                       ) && (
                         <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded-lg">
@@ -3446,7 +3568,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections9}
                           updateWidgetData={updateWidgetData}
-                          autoExpandSectionId={layout9AutoExpandSectionId}
                         />
                       )}
 
@@ -3456,7 +3577,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections11}
                           updateWidgetData={updateWidgetData}
-                          autoExpandSectionId={layout11AutoExpandSectionId}
                         />
                       )}
                     </div>
@@ -3470,6 +3590,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     "imageCarousel",
                     "infoBanner",
                     "process",
+                    "processCard",
                     "imageTitle3",
                   ].includes(widget.type) && (
                     <div className="space-y-2">
@@ -3499,11 +3620,13 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     ? 412
                                     : widget.type === "process"
                                       ? 176
-                                      : widget.type === "titleBanner"
-                                        ? 384
-                                        : widget.type === "imageTitle3"
-                                          ? 400
-                                          : 240)
+                                      : widget.type === "processCard"
+                                        ? 176
+                                        : widget.type === "titleBanner"
+                                          ? 384
+                                          : widget.type === "imageTitle3"
+                                            ? 400
+                                            : 240)
                           }
                           onChange={(e) => {
                             const val = e.target.value;
@@ -3862,9 +3985,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                       type="text"
                       className="w-full bg-gray-50 border-none p-2 rounded-lg text-[10px] focus:ring-2 focus:ring-blue-100 outline-none text-blue-600 font-mono"
                       value={featureItem?.iconUrl || ""}
-                      onChange={(e) =>
-                        handleChange("iconUrl", e.target.value)
-                      }
+                      onChange={(e) => handleChange("iconUrl", e.target.value)}
                       placeholder="이미지 URL을 입력하세요"
                     />
                   </div>
@@ -3882,20 +4003,19 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
         {selectedElementKey &&
           selectedElementKey !== "s5checkItem" &&
           selectedElementKey !== "s5labelItem" &&
+          !["comparisonCard", "stripBanner"].includes(widget.type) &&
           !(
-            widget.type === "textStructure" &&
-            ((widget.data as any).layout || "1").toString() === "6" &&
-            (selectedElementKey === "itemTitle" ||
-              selectedElementKey === "itemDesc" ||
-              selectedElementKey === "itemIcon")
-          ) &&
-          !(
-            widget.type === "comparisonCard" &&
-            (selectedElementKey === "leftDescItems" ||
-              selectedElementKey === "rightDescItems")
+            selectedElementKey === "leftDescItems" ||
+            selectedElementKey === "rightDescItems"
           ) &&
           selectedElementKey !== "caseFeatureText" &&
-          selectedElementKey !== "caseLogoUrl" && (
+          selectedElementKey !== "caseLogoUrl" &&
+          // 레이아웃 10번의 하위 요소 관리 필드들은 제외 (카드매니저에서 처리)
+          !(
+            widget.type === "textStructure" &&
+            ((widget.data as any).layout || "1").toString() === "10" &&
+            selectedElementKey.startsWith("sections10_")
+          ) && (
             <ElementEditor
               widget={widget}
               elementKey={selectedElementKey}
@@ -3908,6 +4028,19 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               setUploadProgress={setUploadProgress}
             />
           )}
+
+        {widget?.type === "textStructure" && textStructureLayout === "10" && (
+          <div className={`space-y-4${!isSidebarOpen ? " hidden" : ""}`}>
+            <div className="pt-4 border-t border-gray-100 mt-4">
+              <TextStructure10Manager
+                widgetId={widget.id}
+                sections={textStructureSections.sections10}
+                updateWidgetData={updateWidgetData}
+                autoExpandSectionId={layout10AutoExpandSectionId}
+              />
+            </div>
+          </div>
+        )}
 
         {/* TextStructure Layout 4 Case Feature/Logo Text Editing Hooks (Overlay View) */}
         {selectedElementKey &&

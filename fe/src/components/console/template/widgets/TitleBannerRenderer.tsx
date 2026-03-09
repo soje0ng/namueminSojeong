@@ -45,6 +45,7 @@ export const TITLE_BANNER_DEFAULTS = {
   layout1Image: "/images/placeholder/title_banner_img.png",
   layout2HeroImage: "/images/placeholder/title_banner_img2.png",
   layout3Image: "/images/placeholder/hero-img.jpg",
+  layout3MobileImage: "/images/placeholder/hero-img.jpg",
   quoteLeftUrl: "/images/placeholder/banner_quote_left.jpg",
   quoteRightUrl: "/images/placeholder/banner_quote_right.jpg",
   layout3SmallTitle: "1명당 유학 비용 30억원의 시대, 가장 합리적인 선택!",
@@ -70,6 +71,20 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   const style = useWidgetStyle(w.style);
   const data = w.data;
   const layout = String(data.layout || "1");
+  const isMobile = viewport === "mobile";
+  const layout3Image =
+    data.layout3Image || TITLE_BANNER_DEFAULTS.layout3Image;
+  const layout3MobileImage =
+    data.layout3MobileImage ||
+    data.layout3Image ||
+    TITLE_BANNER_DEFAULTS.layout3MobileImage;
+  const layout3CurrentImage = isMobile ? layout3MobileImage : layout3Image;
+  const layout3CurrentImageStyle = isMobile
+    ? {
+        ...(data.layout3ImageStyle || {}),
+        ...(data.layout3MobileImageStyle || {}),
+      }
+    : data.layout3ImageStyle;
 
   /* ─────────────────────────────────────────── 레이아웃 1 (구조 원복) ─── */
   if (layout === "1") {
@@ -452,15 +467,13 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
             <div className="self-stretch h-96 relative rounded-3xl overflow-hidden">
               <UniversalMedia
                 className="w-full h-full object-cover"
-                url={getImageUrl(
-                  data.layout3ImageStyle,
-                  viewport,
-                  data.layout3Image || "/images/placeholder/hero-img.jpg",
-                )}
-                style={getElementStyle(data.layout3ImageStyle, viewport)}
+                url={layout3CurrentImage}
+                style={getElementStyle(layout3CurrentImageStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("layout3Image");
+                  onElementSelect?.(
+                    isMobile ? "layout3MobileImage" : "layout3Image",
+                  );
                 }}
               />
             </div>

@@ -68,6 +68,17 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
   const style = useWidgetStyle(w.style);
   const data = w.data;
   const layout = data.layout || "1";
+  const comparisonImageHeight = formatUnit((data as any).imageHeight);
+  const getComparisonImageStyle = (imageStyle: any) => {
+    const resolvedStyle = getElementStyle(imageStyle, viewport as any);
+    return comparisonImageHeight && !resolvedStyle.height
+      ? { ...resolvedStyle, height: comparisonImageHeight }
+      : resolvedStyle;
+  };
+  const getComparisonImageFrameStyle = (imageStyle: any) => ({
+    ...(imageStyle?.width ? { width: formatUnit(imageStyle.width) } : {}),
+    height: imageStyle?.height || comparisonImageHeight || "auto",
+  });
 
   if (layout === "1" || layout === "layout1") {
     const items =
@@ -164,7 +175,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <div
                       className="self-stretch w-full hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center"
-                      style={{ height: "auto" }}
+                      style={getComparisonImageFrameStyle(item.imageStyle)}
                     >
                       <UniversalMedia
                         url={item.iconUrl || item.icon || item.image}
@@ -172,9 +183,8 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                         alt="comparison image"
                         style={{
                           width: "100%",
-                          height: "auto",
                           objectFit: "cover",
-                          ...getElementStyle(item.imageStyle, viewport as any),
+                          ...getComparisonImageStyle(item.imageStyle),
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -195,7 +205,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                                   item.titleStyle,
                                   viewport as any,
                                 ).backgroundColor
-                              ? "linear-gradient(to bottom right, #3b82f6, #2dd4bf, #22c55e)"
+                              ? "linear-gradient(133deg, var(--mode-Primary50, #285DE1) -2.89%, var(--mode-subColor30, #59A1B9) 48.56%, var(--mode-subColor50, #44A075) 100%)"
                               : "none",
                           backgroundSize: "contain",
                           backgroundRepeat: "no-repeat",
@@ -410,7 +420,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
                 <div
                   className="self-stretch hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center h-auto"
-                  style={{ height: "auto" }}
+                  style={getComparisonImageFrameStyle(items[0]?.imageStyle)}
                 >
                   <UniversalMedia
                     url={items[0]?.iconUrl || items[0]?.icon || items[0]?.image}
@@ -418,9 +428,8 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                     alt="left comparison image"
                     style={{
                       width: "100%",
-                      height: "auto",
                       objectFit: "cover",
-                      ...getElementStyle(items[0]?.imageStyle, viewport as any),
+                      ...getComparisonImageStyle(items[0]?.imageStyle),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -450,7 +459,10 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                           color: "#6D7882",
                           fontSize: "20px",
                           fontWeight: "400",
-                          ...getElementStyle(items[0]?.descStyle, viewport as any),
+                          ...getElementStyle(
+                            items[0]?.descStyle,
+                            viewport as any,
+                          ),
                           backgroundColor: "transparent",
                         }}
                       />
@@ -516,7 +528,10 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                             color: "#131416",
                             fontSize: "20px",
                             fontWeight: "600",
-                            ...getElementStyle(dynRowLabelStyle, viewport as any),
+                            ...getElementStyle(
+                              dynRowLabelStyle,
+                              viewport as any,
+                            ),
                             backgroundColor: "transparent",
                           }}
                           onDoubleClick={(e) => {
@@ -545,7 +560,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                               items[1]?.titleStyle,
                               viewport as any,
                             ).backgroundColor
-                          ? "linear-gradient(to bottom right, #3b82f6, #2dd4bf, #22c55e)"
+                          ? "linear-gradient(133deg, var(--mode-Primary50, #285DE1) -2.89%, var(--mode-subColor30, #59A1B9) 48.56%, var(--mode-subColor50, #44A075) 100%)"
                           : "none",
                     backgroundSize: "contain",
                     backgroundRepeat: "no-repeat",
@@ -577,7 +592,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
                 <div
                   className="self-stretch hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative flex justify-center items-center h-auto"
-                  style={{ height: "auto" }}
+                  style={getComparisonImageFrameStyle(items[1]?.imageStyle)}
                 >
                   <UniversalMedia
                     url={items[1]?.iconUrl || items[1]?.icon || items[1]?.image}
@@ -585,9 +600,8 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                     alt="right comparison image"
                     style={{
                       width: "100%",
-                      height: "auto",
                       objectFit: "cover",
-                      ...getElementStyle(items[1]?.imageStyle, viewport as any),
+                      ...getComparisonImageStyle(items[1]?.imageStyle),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -617,7 +631,10 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                           color: "#6D7882",
                           fontSize: "20px",
                           fontWeight: "400",
-                          ...getElementStyle(items[1]?.descStyle, viewport as any),
+                          ...getElementStyle(
+                            items[1]?.descStyle,
+                            viewport as any,
+                          ),
                           backgroundColor: "transparent",
                         }}
                       />

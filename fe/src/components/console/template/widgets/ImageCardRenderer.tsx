@@ -128,6 +128,20 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   const w = widget as GenericNewWidget;
   const style = useWidgetStyle(w.style);
   const itemsPerRow = Number(w.data.itemsPerRow) || 3;
+  const imageCardImageHeight = formatUnit((w.data as any).imageHeight);
+  const getItemImageStyle = (imageStyle: any) => {
+    const resolvedStyle = getElementStyle(imageStyle, viewport);
+    return imageCardImageHeight && !resolvedStyle.height
+      ? { ...resolvedStyle, height: imageCardImageHeight }
+      : resolvedStyle;
+  };
+  const getItemImageFrameStyle = (imageStyle: any) => ({
+    display: imageStyle?.isHidden ? "none" : undefined,
+    ...(imageStyle?.width ? { width: formatUnit(imageStyle.width) } : {}),
+    ...(imageCardImageHeight && !imageStyle?.height
+      ? { height: imageCardImageHeight }
+      : {}),
+  });
   const getBadgeStyle = (item: any, badgeNum: 1 | 2 | 3) => {
     const badgeStyleKey = `badgeStyle${badgeNum}` as const;
     const legacyBadgeStyleKey = `badge${badgeNum}Style` as const;
@@ -297,7 +311,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     className="self-stretch w-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
                     url={item.image}
                     alt="card_image"
-                    style={getElementStyle(item.imageStyle, viewport)}
+                    style={getItemImageStyle(item.imageStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("image", item.id);
@@ -402,7 +416,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     className="self-stretch w-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
                     url={item.image}
                     alt="card_image"
-                    style={getElementStyle(item.imageStyle, viewport)}
+                    style={getItemImageStyle(item.imageStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("image", item.id);
@@ -519,9 +533,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <div
                       className="self-stretch relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
-                      style={{
-                        display: item.imageStyle?.isHidden ? "none" : undefined,
-                      }}
+                      style={getItemImageFrameStyle(item.imageStyle)}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("image", item.id);
@@ -535,7 +547,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         className="w-full object-cover"
                         url={item.image}
                         alt="card_image"
-                        style={getElementStyle(item.imageStyle, viewport)}
+                        style={getItemImageStyle(item.imageStyle)}
                       />
                       <div className="p-2 left-0 top-0 absolute inline-flex justify-start items-center gap-1">
                         {!item.badgeStyle1?.isHidden && (
@@ -768,9 +780,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <div
                     className="flex-1 relative overflow-hidden w-full xl:w-auto shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
-                    style={{
-                      display: item.imageStyle?.isHidden ? "none" : undefined,
-                    }}
+                    style={getItemImageFrameStyle(item.imageStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("image", item.id);
@@ -784,7 +794,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       className="w-full object-cover"
                       url={item.image}
                       alt="card_image"
-                      style={getElementStyle(item.imageStyle, viewport)}
+                      style={getItemImageStyle(item.imageStyle)}
                     />
                     <div className="p-2 left-0 top-0 absolute inline-flex justify-start items-center gap-1">
                       {!item.badgeStyle1?.isHidden && (
@@ -1008,9 +1018,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               >
                 <div
                   className="w-full md:w-[480px] relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
-                  style={{
-                    display: item.imageStyle?.isHidden ? "none" : undefined,
-                  }}
+                  style={getItemImageFrameStyle(item.imageStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("image", item.id);
@@ -1024,7 +1032,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     className="w-full object-cover"
                     url={item.image}
                     alt="card_image"
-                    style={getElementStyle(item.imageStyle, viewport)}
+                    style={getItemImageStyle(item.imageStyle)}
                   />
                 </div>
                 <div
@@ -1250,9 +1258,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
 
                   <div
                     className="w-48 h-48 relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
-                    style={{
-                      display: item.imageStyle?.isHidden ? "none" : undefined,
-                    }}
+                    style={getItemImageFrameStyle(item.imageStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("image", item.id);
@@ -1266,7 +1272,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       className="w-full h-full object-cover"
                       url={item.image}
                       alt="card_image"
-                      style={getElementStyle(item.imageStyle, viewport)}
+                      style={getItemImageStyle(item.imageStyle)}
                     />
                   </div>
                 </div>

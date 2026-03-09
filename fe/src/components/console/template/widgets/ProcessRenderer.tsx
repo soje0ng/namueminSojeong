@@ -89,6 +89,18 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
   const isVertical = (w.data as any).variant === "vertical";
   const isNumber = (w.data as any).variant === "number";
   const typeStr = w.type as string;
+  const processImageHeight = formatUnit((data as any).imageHeight);
+  const getStepImageFrameStyle = (
+    iconStyle: any,
+    extra: React.CSSProperties = {},
+  ) => ({
+    ...extra,
+    display: iconStyle?.isHidden ? "none" : undefined,
+    ...(iconStyle?.width ? { width: formatUnit(iconStyle.width) } : {}),
+    ...(iconStyle?.height || processImageHeight
+      ? { height: iconStyle?.height || processImageHeight }
+      : {}),
+  });
   const isLayout1 =
     (layout === "1" || layout === "layout1" || typeStr === "processCard") &&
     typeStr !== "comparisonCard";
@@ -177,9 +189,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <div
                       className={`${idx === 0 ? "w-96" : "w-full"} h-auto hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative`}
-                      style={{
-                        display: step.iconStyle?.isHidden ? "none" : undefined,
-                      }}
+                      style={getStepImageFrameStyle(step.iconStyle)}
                     >
                       <UniversalMedia
                         url={step.icon}
@@ -199,7 +209,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       style={{
                         backgroundImage:
                           idx === 1
-                            ? "linear-gradient(to bottom right, #3b82f6, #2dd4bf, #22c55e)"
+                            ? "linear-gradient(133deg, var(--mode-Primary50, #285DE1) -2.89%, var(--mode-subColor30, #59A1B9) 48.56%, var(--mode-subColor50, #44A075) 100%)"
                             : "none",
                       }}
                       className={`self-stretch py-5 ${idx === 0 ? "bg-시안-mode-gray5" : ""} inline-flex justify-center items-center gap-2.5`}
@@ -334,9 +344,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <div
                       className="w-40 h-40 rounded-full bg-slate-50 flex justify-center items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
-                      style={{
-                        display: step.iconStyle?.isHidden ? "none" : undefined,
-                      }}
+                      style={getStepImageFrameStyle(step.iconStyle)}
                     >
                       <UniversalMedia
                         url={step.icon}
@@ -363,14 +371,20 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                           }}
                         ></div>
                         {!step.numberStyle?.isHidden && (
-                          <div className="px-5 py-1 bg-[#285DE1] rounded-full inline-flex justify-center items-center gap-2.5 relative z-10 ring-8 ring-white">
+                          <div
+                            className="px-5 py-1 rounded-full inline-flex justify-center items-center gap-2.5 relative z-10 ring-8 ring-white"
+                            style={{
+                              backgroundColor:
+                                step.numberStyle?.backgroundColor || "#285DE1",
+                              ...getElementStyle(
+                                step.numberStyle,
+                                viewport as any,
+                              ),
+                            }}
+                          >
                             <SafeHtml
                               html={step.number || `${idx + 1}`}
                               className="justify-start text-white text-lg md:text-xl font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text min-w-[1.5rem] text-center"
-                              style={getElementStyle(
-                                step.numberStyle,
-                                viewport as any,
-                              )}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("number", step.id);
@@ -497,10 +511,9 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <div
                       className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
-                      style={{
+                      style={getStepImageFrameStyle(step.iconStyle, {
                         height: "240px",
-                        display: step.iconStyle?.isHidden ? "none" : undefined,
-                      }}
+                      })}
                     >
                       <UniversalMedia
                         url={step.icon}
@@ -659,11 +672,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       <div className="flex-1 inline-flex flex-col justify-center items-center gap-3">
                         <div
                           className="self-stretch h-44 bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer relative overflow-hidden"
-                          style={{
-                            display: step.iconStyle?.isHidden
-                              ? "none"
-                              : undefined,
-                          }}
+                          style={getStepImageFrameStyle(step.iconStyle)}
                         >
                           <UniversalMedia
                             url={step.icon}
@@ -682,14 +691,21 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
                         <div className="inline-flex justify-start items-center gap-3">
                           {!step.numberStyle?.isHidden && (
-                            <div className="px-4 py-1 bg-시안-mode-Primary50 rounded-[30px] flex justify-center items-center gap-2.5">
+                            <div
+                              className="px-4 py-1 rounded-[30px] flex justify-center items-center gap-2.5"
+                              style={{
+                                backgroundColor:
+                                  step.numberStyle?.backgroundColor ||
+                                  "#285DE1",
+                                ...getElementStyle(
+                                  step.numberStyle,
+                                  viewport as any,
+                                ),
+                              }}
+                            >
                               <SafeHtml
                                 html={step.number || `${idx + 1}`}
                                 className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
-                                style={getElementStyle(
-                                  step.numberStyle,
-                                  viewport as any,
-                                )}
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.("number", step.id);
@@ -815,11 +831,16 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                           /* Emphasis Variant: STEP Capsule Badge */
                           !step.numberStyle?.isHidden && (
                             <div
-                              className="mb-6 px-4 py-1.5 bg-blue-600 text-white font-black tracking-widest text-[14px] md:text-[16px] transition-all cursor-pointer shadow-md shadow-blue-200 ring-4 ring-blue-50"
-                              style={getElementStyle(
-                                step.numberStyle,
-                                viewport as any,
-                              )}
+                              className="mb-6 px-4 py-1.5 text-white font-black tracking-widest text-[14px] md:text-[16px] transition-all cursor-pointer shadow-md ring-4 ring-blue-50"
+                              style={{
+                                backgroundColor:
+                                  step.numberStyle?.backgroundColor ||
+                                  "#2563EB",
+                                ...getElementStyle(
+                                  step.numberStyle,
+                                  viewport as any,
+                                ),
+                              }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("number", step.id);
@@ -856,11 +877,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {w.data.showImage !== false && (
                           <div
                             className={`w-full mb-6 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden${isNumber ? " max-w-[140px]" : ""}`}
-                            style={{
-                              display: step.iconStyle?.isHidden
-                                ? "none"
-                                : undefined,
-                            }}
+                            style={getStepImageFrameStyle(step.iconStyle)}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("icon", step.id);
@@ -869,7 +886,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             <UniversalMedia
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
-                                onElementSelect?.("imageUrl");
+                                onElementSelect?.("icon", step.id);
                               }}
                               url={
                                 step.icon || "/images/placeholder/ib_item1.jpg"

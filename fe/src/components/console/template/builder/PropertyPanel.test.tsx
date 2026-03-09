@@ -524,7 +524,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                         if (newVariant === "page") {
                           updateWidgetData(widget.id, {
                             variant: "page",
-                            iconUrl: "/images/template/loading.png",
+                            iconUrl: "/images/placeholder/loading.png",
                             contentTitle: "페이지 준비중입니다.",
                             contentDesc:
                               "현재 페이지를 준비하고 있으니 조금만 기다려 주세요.<br>감사합니다.",
@@ -533,7 +533,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                         } else {
                           updateWidgetData(widget.id, {
                             variant: "content",
-                            iconUrl: "/images/template/loading2.png",
+                            iconUrl: "/images/placeholder/loading2.png",
                             contentTitle: "콘텐츠 준비중입니다.",
                             contentDesc:
                               "현재 콘텐츠를 준비하고 있으니 조금만 기다려 주세요.<br />감사합니다.",
@@ -637,7 +637,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                             },
                             desc: "보다 정확한 자격 판정을 위해 양식을 다운받아 작성하여, 이메일(likweb@likeweb.com)로 보내 주시면<br/>24시간 이내 연락을 드리겠습니다.<br/>고객님의 소중한 정보는 안전하게 보장되오니, 정확한 판정을 위해 상세하기 기재 바랍니다.",
                             descStyle: { color: "#ffffff" },
-                            image: "/images/template/banner3_1.png",
+                            image: "/images/placeholder/banner3_1.png",
                             items: [
                               {
                                 id: "b3-1",
@@ -661,22 +661,22 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                             items: [
                               {
                                 id: `i-${Date.now()}-1`,
-                                image: "/images/template/img1.png",
+                                image: "/images/placeholder/img1.png",
                                 link: "#",
                               },
                               {
                                 id: `i-${Date.now()}-2`,
-                                image: "/images/template/img2.png",
+                                image: "/images/placeholder/img2.png",
                                 link: "#",
                               },
                               {
                                 id: `i-${Date.now()}-3`,
-                                image: "/images/template/img3.png",
+                                image: "/images/placeholder/img3.png",
                                 link: "#",
                               },
                               {
                                 id: `i-${Date.now()}-4`,
-                                image: "/images/template/img4.png",
+                                image: "/images/placeholder/img4.png",
                                 link: "#",
                               },
                             ],
@@ -966,14 +966,14 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                 number: "1",
                                 title: "라이크웹의 프로젝트명",
                                 desc: "라이크웹 대타이틀 영역 프로젝트는 미국 내 최고급 휴양지이자 스키 명소인 콜로라도 아스펜에 위치한 31개 유닛의 라이크웹 서브타이틀 영역 사업입니다.",
-                                icon: "/images/template/icon.png",
+                                icon: "/images/placeholder/icon.png",
                               },
                               {
                                 id: `item-${Date.now()}-2`,
                                 number: "2",
                                 title: "두 번째 서비스",
                                 desc: "여기에 설명을 입력하세요.",
-                                icon: "/images/template/icon.png",
+                                icon: "/images/placeholder/icon.png",
                               },
                             ],
                           };
@@ -987,7 +987,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                               {
                                 id: "b1",
                                 type: "image",
-                                url: "/images/template/banner_img1.jpg",
+                                url: "/images/placeholder/banner_img1.jpg",
                                 style: { objectFit: "cover" },
                               },
                               {
@@ -1230,7 +1230,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                               const newItem = {
                                 id,
                                 type: "image",
-                                url: "/images/template/default_new.jpg",
+                                url: "/images/placeholder/default_new.jpg",
                                 title: "새 이미지",
                                 desc: "이미지 설명",
                               };
@@ -2324,7 +2324,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                                 </span>
                                                 <select
                                                   className="text-[10px] bg-white border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-300"
-                                                  value={badgeStyle.fontSize || ""}
+                                                  value={
+                                                    badgeStyle.fontSize ||
+                                                    "16px"
+                                                  }
                                                   onChange={(e) =>
                                                     updateWidgetData(
                                                       widget.id,
@@ -2344,9 +2347,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                                     )
                                                   }
                                                 >
-                                                  <option value="">
-                                                    선택
-                                                  </option>
                                                   {[
                                                     "12px",
                                                     "13px",
@@ -2664,7 +2664,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                 {widget.type === "textStructure" && (
                   <div className="space-y-2">
                     {["1", "2", "3", "4"].includes(
-                      String((widget as any).data.layout || "1"),
+                      (widget as any).data.layout || "1",
                     ) && (
                       <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded-lg">
                         <label className="text-sm text-gray-700">
@@ -2694,7 +2694,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                     {/* 레이아웃 6 전용: 동적 섹션 구조 관리 */}
-                    {String((widget as any).data.layout || "1") === "6" && (
+                    {((widget as any).data.layout || "1") === "6" && (
                       <TextStructure6Manager
                         widgetId={widget.id}
                         sections={
@@ -2706,7 +2706,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                     {/* 레이아웃 7 전용: 동적 섹션 구조 관리 */}
-                    {String((widget as any).data.layout || "1") === "7" && (
+                    {((widget as any).data.layout || "1") === "7" && (
                       <TextStructure7Manager
                         widgetId={widget.id}
                         sections={
@@ -2718,7 +2718,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                     {/* 레이아웃 8 전용: 동적 섹션 구조 관리 */}
-                    {String((widget as any).data.layout || "1") === "8" && (
+                    {((widget as any).data.layout || "1") === "8" && (
                       <TextStructure8Manager
                         widgetId={widget.id}
                         sections={
@@ -2730,7 +2730,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                     {/* 레이아웃 11 전용: 동적 섹션 구조 관리 */}
-                    {String((widget as any).data.layout || "1") === "11" && (
+                    {((widget as any).data.layout || "1") === "11" && (
                       <TextStructure11Manager
                         widgetId={widget.id}
                         sections={

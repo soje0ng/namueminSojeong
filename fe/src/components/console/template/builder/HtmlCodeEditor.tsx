@@ -19,6 +19,14 @@ import { TableRenderer } from "../widgets/TableRenderer";
 import { FaqRenderer } from "../widgets/FaqRenderer";
 import { BannerSectionRenderer } from "../widgets/BannerSectionRenderer";
 import { CardRenderer } from "../widgets/CardRenderer";
+import { TitleBannerRenderer } from "../widgets/TitleBannerRenderer";
+import { ImageAreaRenderer } from "../widgets/ImageAreaRenderer";
+import { TitleTextRenderer } from "../widgets/TitleTextRenderer";
+import { TabButtonRenderer } from "../widgets/TabButtonRenderer";
+import { TextStructureRenderer } from "../widgets/TextStructureRenderer";
+import { ImageCardRenderer } from "../widgets/ImageCardRenderer";
+import { StripBannerRenderer } from "../widgets/StripBannerRenderer";
+import { ComparisonCardRenderer } from "../widgets/ComparisonCardRenderer";
 
 export interface HtmlCodeEditorProps {
   widget: Widget;
@@ -41,6 +49,15 @@ const RENDERER_MAP: Record<string, React.ComponentType<any>> = {
   faq: FaqRenderer,
   bannerSection: BannerSectionRenderer,
   cardList: CardRenderer,
+  titleBanner: TitleBannerRenderer,
+  imageArea: ImageAreaRenderer,
+  titleText: TitleTextRenderer,
+  tabButton: TabButtonRenderer,
+  textStructure: TextStructureRenderer,
+  imageCard: ImageCardRenderer,
+  comparisonCard: ComparisonCardRenderer,
+  processCard: ProcessRenderer,
+  stripBanner: StripBannerRenderer,
 };
 
 // HTML 포맷팅 함수

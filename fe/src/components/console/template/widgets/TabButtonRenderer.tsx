@@ -189,15 +189,13 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   return (
                     <div
                       key={item.id}
-                      className={`w-full px-4 py-3 border-b border-시안-mode-gray20 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all ${
-                        !hasCustomBg
-                          ? "bg-gradient-to-r from-blue-400 to-blue-600"
-                          : ""
-                      }`}
+                      className="w-full px-4 py-3 border-b border-시안-mode-gray20 flex justify-center items-center gap-2.5 hover:ring-2 hover:ring-blue-300 cursor-pointer transition-all"
                       style={{
                         ...itemStyle,
                         backgroundColor: containerBg,
-                        backgroundImage: containerBgImg,
+                        backgroundImage: !hasCustomBg
+                          ? "linear-gradient(90deg, var(--mode-Primary30, #5B88F5) 0%, var(--mode-Primary70, #295E92) 100%)"
+                          : containerBgImg,
                       }}
                     >
                       <SafeHtml

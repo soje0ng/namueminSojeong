@@ -5,6 +5,7 @@ import {
   Image as ImageIcon,
   Video,
   Upload,
+  Smartphone,
   AlignLeft,
   AlignCenter,
   AlignRight,
@@ -66,111 +67,6 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   let onLoopChange = (val: boolean) => {};
   const { setConfirmPop } = usePopupStore();
 
-  const cloneTextStructureDefaults = (value: any) =>
-    JSON.parse(JSON.stringify(value));
-
-  const resolveItemIndex = (
-    items: any[],
-    targetItemId: string | null | undefined,
-  ) => {
-    if (!targetItemId) return -1;
-    const normalizedTarget = `${targetItemId}`;
-    const directMatch = items.findIndex(
-      (it: any) => `${it.id}` === normalizedTarget,
-    );
-    if (directMatch !== -1) return directMatch;
-    if (normalizedTarget.startsWith("__idx_")) {
-      const parsed = Number.parseInt(normalizedTarget.replace("__idx_", ""), 10);
-      if (
-        Number.isFinite(parsed) &&
-        parsed >= 0 &&
-        parsed < items.length
-      ) {
-        return parsed;
-      }
-    }
-    const parsedIndex = Number.parseInt(normalizedTarget, 10);
-    if (
-      Number.isFinite(parsedIndex) &&
-      String(parsedIndex) === normalizedTarget &&
-      parsedIndex >= 0 &&
-      parsedIndex < items.length
-    ) {
-      return parsedIndex;
-    }
-    return -1;
-  };
-
-  const getIconCardLayoutIndex = () => {
-    const raw = String(data.layout || data.variant || "1");
-    const parsed = Number.parseInt(raw.match(/\d+/)?.[0] || "1", 10);
-    if (parsed >= 1 && parsed <= 6) return parsed;
-    return 1;
-  };
-  const resolveIconCardMediaValue = (value?: string) => {
-    if (!value || widget.type !== "iconCard") return value || "";
-    if (!value.includes("/images/placeholder/card_img")) return value;
-
-    return `/images/placeholder/card_img${getIconCardLayoutIndex()}.png`;
-  };
-
-  const textStructureFallbackText = (
-    key: string,
-    sectionType?: string,
-  ): string => {
-    const fallbackMap: Record<string, string> = {
-      subTitle: "( 서브타이틀 )",
-      title: "타이틀명 입력",
-      desc: "이민 프로그램명 입력",
-      l5SubTitle: "( 서브타이틀 )",
-      l5Title: "타이틀명 입력",
-      l5Desc: "이민 프로그램명 입력",
-      l5SideTitle: "타이틀명 입력",
-      l5SideDesc: "이민 프로그램명 입력",
-      sectionSubTitle: "서브 타이틀 입력",
-      sectionContent: "내용을 입력하세요.",
-      sectionBasicText: "내용을 입력하세요.",
-      bojoTitle: "보조 타이틀 문구 입력",
-      sectionNewsletterSubTitle: "서브 타이틀 입력",
-      sectionNewsletterLeft: "내용을 입력하세요.",
-      sectionNewsletterRight: "내용을 입력하세요.",
-      contentTitle: "USCIS 우선심사 프로젝트<br/>Copper Valley",
-      contentSubTitle: "캘리포디나 대형 리조트 건설 프로젝트",
-      contentDesc:
-        "캘리포디나 대형 리조트 건설 프로젝트 서브 텍스트<br/>내용 적는 곳 에디터로 활용",
-      layout3ContentTitle: "USCIS 우선심사 프로젝트<br/>Copper Valley",
-      layout3ContentSubTitle: "캘리포디나 대형 리조트 건설 프로젝트",
-      layout3ContentDesc:
-        "캘리포디나 대형 리조트 건설 프로젝트 서브 텍스트<br/>내용 적는 곳 에디터로 활용",
-    };
-
-    if (key === "bannerSubTitle") {
-      return sectionType === "banner" ? "배너명 입력하는 부분" : "서브 타이틀 입력";
-    }
-    if (key === "bannerDesc") {
-      return sectionType === "banner"
-        ? "배너명에 대한 설명하는 부분의 텍스트 박스 부분"
-        : "내용을 입력하세요.";
-    }
-
-    return fallbackMap[key] || "";
-  };
-
-  const textStructureSections = {
-    sections5:
-      data.sections5 || cloneTextStructureDefaults(TEXT_STRUCTURE_5_DEFAULT_SECTIONS),
-    sections6:
-      data.sections6 || cloneTextStructureDefaults(TEXT_STRUCTURE_6_DEFAULT_SECTIONS),
-    sections7:
-      data.sections7 || cloneTextStructureDefaults(TEXT_STRUCTURE_7_DEFAULT_SECTIONS),
-    sections8:
-      data.sections8 || cloneTextStructureDefaults(TEXT_STRUCTURE_8_DEFAULT_SECTIONS),
-    sections9:
-      data.sections9 || cloneTextStructureDefaults(TEXT_STRUCTURE_9_DEFAULT_SECTIONS),
-    sections11:
-      data.sections11 || cloneTextStructureDefaults(TEXT_STRUCTURE_11_DEFAULT_SECTIONS),
-  };
-
   // Helper to update style for item or root property
   const updateStyle = (
     stylePropName: string,
@@ -199,10 +95,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       }
 
       const currentItems = data[arrayName] || [];
-      const targetIndex = resolveItemIndex(currentItems, itemId);
-      if (targetIndex === -1) return;
-      const updatedItems = currentItems.map((item: any, idx: number) => {
-        if (idx === targetIndex) {
+      const updatedItems = currentItems.map((item: any) => {
+        if (item.id === itemId) {
           const oldStyle = item[stylePropName] || {};
           return { ...item, [stylePropName]: { ...oldStyle, ...updates } };
         }
@@ -322,9 +216,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   } else if (
     widget.type === "textStructure" &&
     [
+      "bojoTitle",
       "sectionSubTitle",
       "sectionContent",
-      "bojoTitle",
       "sectionNewsletterSubTitle",
       "sectionNewsletterLeft",
       "sectionNewsletterRight",
@@ -335,12 +229,18 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     itemId
   ) {
     // 레이아웃 5/6/7/8/9/11 동적 섹션 텍스트 편집 처리
-    const sections5: any[] = textStructureSections.sections5;
-    const sections6: any[] = textStructureSections.sections6;
-    const sections7: any[] = textStructureSections.sections7;
-    const sections8: any[] = textStructureSections.sections8;
-    const sections9: any[] = textStructureSections.sections9;
-    const sections11: any[] = textStructureSections.sections11;
+    const sections5: any[] =
+      data.sections5 || TEXT_STRUCTURE_5_DEFAULT_SECTIONS;
+    const sections6: any[] =
+      data.sections6 || TEXT_STRUCTURE_6_DEFAULT_SECTIONS;
+    const sections7: any[] =
+      data.sections7 || TEXT_STRUCTURE_7_DEFAULT_SECTIONS;
+    const sections8: any[] =
+      data.sections8 || TEXT_STRUCTURE_8_DEFAULT_SECTIONS;
+    const sections9: any[] =
+      data.sections9 || TEXT_STRUCTURE_9_DEFAULT_SECTIONS;
+    const sections11: any[] =
+      data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
     let sectionsArr = sections5;
     let sectionsKey = "sections5";
     let section = sections5.find((s: any) => s.id === itemId);
@@ -386,9 +286,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
 
     const textPropMap: Record<string, string> = {
+      bojoTitle: "bojoTitle",
       sectionSubTitle: "subTitle",
       sectionContent: "content",
-      bojoTitle: "bojoTitle",
       sectionBasicText: "content",
       sectionNewsletterSubTitle: "newsletterSubTitle",
       sectionNewsletterLeft: "leftContent",
@@ -397,9 +297,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       bannerDesc: "bannerDesc",
     };
     const stylePropMap: Record<string, string> = {
+      bojoTitle: "bojoTitleStyle",
       sectionSubTitle: "subTitleStyle",
       sectionContent: "contentStyle",
-      bojoTitle: "bojoTitleStyle",
       sectionBasicText: "contentStyle",
       sectionNewsletterSubTitle: "newsletterSubTitleStyle",
       sectionNewsletterLeft: "leftContentStyle",
@@ -410,14 +310,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
     const textProp = textPropMap[elementKey];
     const styleProp = stylePropMap[elementKey];
-    textValue =
-      section?.[textProp] ??
-      (elementKey === "bannerSubTitle"
-        ? section?.subTitle
-        : elementKey === "bannerDesc"
-          ? section?.desc
-          : undefined) ??
-      textStructureFallbackText(elementKey, section?.type);
+    textValue = section?.[textProp] || "";
     styleKey = styleProp;
     styleValue = section?.[styleProp] || {};
 
@@ -435,6 +328,63 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       );
       updateWidgetData(widget.id, { [sectionsKey]: updated });
     };
+  } else if (
+    widget.type === "textStructure" &&
+    elementKey.startsWith("sections10_") &&
+    itemId
+  ) {
+    // [레이아웃 10 전용] sections10 내부 요소 편집 (number, title, subTitle, desc, checkTitle, checkIcon)
+    const sections10: any[] = data.sections10 || [];
+    const idx = parseInt(itemId);
+    const section = sections10[idx];
+
+    if (section) {
+      const fieldRef = elementKey.replace("sections10_", "");
+      // 필드 명칭 매핑 (텍스트 및 이미지 소스용)
+      const textFieldMap: Record<string, string> = {
+        number: "number",
+        title: "title",
+        image: "iconUrl", // renderer: iconUrl
+        subTitle: "subTitle",
+        desc: "desc",
+        checkTitle: "checkTitle",
+        checkIcon: "checkIconUrl", // renderer: checkIconUrl
+      };
+      // 스타일 필드 명칭 매핑
+      const styleFieldMap: Record<string, string> = {
+        number: "numberStyle",
+        title: "titleStyle",
+        image: "imageStyle",
+        subTitle: "subTitleStyle",
+        desc: "descStyle",
+        checkTitle: "checkTitleStyle",
+        checkIcon: "checkIconStyle",
+      };
+
+      const textField = textFieldMap[fieldRef];
+      const styleField = styleFieldMap[fieldRef];
+
+      textValue = section[textField] || "";
+      styleKey = styleField || "";
+      styleValue = section[styleField] || {};
+
+      onTextChange = (val) => {
+        const updated = [...sections10];
+        updated[idx] = { ...updated[idx], [textField]: val };
+        updateWidgetData(widget.id, { sections10: updated });
+      };
+
+      onStyleChange = (k, v) => {
+        if (!styleField) return;
+        const updated = [...sections10];
+        const oldStyle = updated[idx][styleField] || {};
+        updated[idx] = {
+          ...updated[idx],
+          [styleField]: { ...oldStyle, [k]: v },
+        };
+        updateWidgetData(widget.id, { sections10: updated });
+      };
+    }
   } else if (itemId) {
     let arrayName = "items";
     if (widget.type === "process" || widget.type === "processCard")
@@ -447,455 +397,209 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         arrayName = "items";
       else arrayName = "blocks";
     } else if (widget.type === "textStructure") {
-        if (
-          [
-            "itemNumber",
-            "itemTitle",
-            "itemDesc",
-            "itemIcon",
-            "itemLabel",
-            "itemText",
-            "s5labelItem",
-            "s5checkItem",
-          ].includes(elementKey)
-        ) {
-        const parseSectionIdxFromGeneratedKey = (value: string, type: string) => {
-          const match = new RegExp(`^${type}-(\\d+)$`).exec(value || "");
-          if (!match) return -1;
-          const parsed = Number.parseInt(match[1], 10);
-          return Number.isNaN(parsed) ? -1 : parsed;
-        };
-        const sectionBuckets: Array<{ key: string; list: any[] }> = [
-          { key: "sections5", list: textStructureSections.sections5 },
-          { key: "sections6", list: textStructureSections.sections6 },
-          { key: "sections7", list: textStructureSections.sections7 },
-          { key: "sections8", list: textStructureSections.sections8 },
-          { key: "sections9", list: textStructureSections.sections9 },
-          { key: "sections11", list: textStructureSections.sections11 },
-        ];
+      const layoutVal = String(data.layout || "1");
 
-        const colonIndex = itemId.indexOf(":");
-        const hasCompositeRef = colonIndex > -1;
-        const compositeSectionId = hasCompositeRef
-          ? itemId.slice(0, colonIndex)
-          : "";
-        const compositeItemIdx = hasCompositeRef
-          ? Number.parseInt(itemId.slice(colonIndex + 1), 10)
-          : -1;
-        const isCompositeItemRef =
-          hasCompositeRef &&
-          Number.isFinite(compositeItemIdx) &&
-          !Number.isNaN(compositeItemIdx);
-        const allowedSectionTypes =
-          elementKey === "itemLabel" || elementKey === "itemText" || elementKey === "s5labelItem"
-            ? ["labelList"]
-            : elementKey === "s5checkItem"
-              ? ["checklist"]
-            : elementKey === "itemNumber" || elementKey === "itemTitle" || elementKey === "itemDesc"
-              ? ["checklist", "features"]
-              : elementKey === "itemIcon"
-                ? ["checklist", "labelList", "features"]
-                : undefined;
+      if (elementKey === "image") {
+        const multiImageMatch = String(itemId).match(
+          /^s([5-8])img_(.+)_(\d+)$/,
+        );
+        const bannerImageMatch = String(itemId).match(/^s([5-7])banner_(.+)$/);
+        const labelImageMatch = String(itemId).match(/^s5labelimg_(.+)$/);
 
-        for (const bucket of sectionBuckets) {
-          for (let sectionIdx = 0; sectionIdx < bucket.list.length; sectionIdx++) {
-            const section = bucket.list[sectionIdx];
-            if (
-              allowedSectionTypes &&
-              !allowedSectionTypes.includes(section.type)
-            ) {
-              continue;
-            }
-            const items = section?.items || [];
-            let foundIdx = -1;
-            const fallbackSectionIndex =
-              isCompositeItemRef && !section.id
-                ? parseSectionIdxFromGeneratedKey(compositeSectionId, section.type)
-                : -1;
-            if (
-              isCompositeItemRef &&
-              (section.id === compositeSectionId &&
-                compositeItemIdx >= 0 &&
-                compositeItemIdx < items.length)
-            ) {
-              foundIdx = compositeItemIdx;
-            } else if (
-              isCompositeItemRef &&
-              !section.id &&
-              fallbackSectionIndex >= 0 &&
-              fallbackSectionIndex === sectionIdx &&
-              compositeItemIdx >= 0 &&
-              compositeItemIdx < items.length
-            ) {
-              foundIdx = compositeItemIdx;
-            } else if (
-              isCompositeItemRef &&
-              !compositeSectionId &&
-              (elementKey === "itemLabel" ||
-                elementKey === "itemText" ||
-                elementKey === "s5labelItem") &&
-              compositeItemIdx >= 0 &&
-              compositeItemIdx < items.length
-            ) {
-              foundIdx = compositeItemIdx;
-            } else if (
-              isCompositeItemRef &&
-              !compositeSectionId &&
-              (elementKey === "itemIcon" ||
-                elementKey === "itemTitle" ||
-                elementKey === "itemDesc" ||
-                elementKey === "itemNumber") &&
-              compositeItemIdx >= 0 &&
-              compositeItemIdx < items.length
-            ) {
-              foundIdx = compositeItemIdx;
-            } else {
-              foundIdx = items.findIndex((it: any) => it.id === itemId);
-            }
-            if (foundIdx < 0) continue;
-            const found = items[foundIdx];
-
-            const iconProp =
-              found.iconUrl !== undefined
-                ? "iconUrl"
-                : found.icon !== undefined
-                  ? "icon"
-                  : "iconUrl";
-            const targetPropMap: Record<string, string> = {
-              itemNumber: "number",
-              itemTitle: "title",
-              itemDesc: "desc",
-              itemIcon: iconProp,
-              itemLabel: "label",
-              itemText: "content",
-              s5labelItem: "label",
-              s5checkItem: "title",
-            };
-            const stylePropMap: Record<string, string> = {
-              itemNumber: "numberStyle",
-              itemTitle: "titleStyle",
-              itemDesc: "descStyle",
-              itemIcon: "iconStyle",
-              itemLabel: "labelStyle",
-              itemText: "contentStyle",
-              s5labelItem: "labelStyle",
-              s5checkItem: "titleStyle",
-            };
-            const targetProp = targetPropMap[elementKey];
-            const itemStyleKey = stylePropMap[elementKey];
-
-            textValue = found[targetProp] || "";
-            styleKey = itemStyleKey;
-            styleValue = found[itemStyleKey] || {};
-
-            onTextChange = (val) => {
-              const updatedSections = bucket.list.map((s: any) => {
-                if (s !== section) return s;
-                const updatedItems = [...(s.items || [])];
-                if (updatedItems[foundIdx]) {
-                  updatedItems[foundIdx] = {
-                    ...updatedItems[foundIdx],
-                    [targetProp]: val,
-                  };
-                }
-                return { ...s, items: updatedItems };
-              });
-              updateWidgetData(widget.id, { [bucket.key]: updatedSections });
-            };
-            onStyleChange = (k, v) => {
-              const updatedSections = bucket.list.map((s: any) => {
-                if (s !== section) return s;
-                const updatedItems = [...(s.items || [])];
-                if (updatedItems[foundIdx]) {
-                  const targetItem = updatedItems[foundIdx];
-                  updatedItems[foundIdx] = {
-                    ...targetItem,
-                    [itemStyleKey]: {
-                      ...(targetItem[itemStyleKey] || {}),
-                      [k]: v,
-                    },
-                  };
-                }
-                return { ...s, items: updatedItems };
-              });
-              updateWidgetData(widget.id, { [bucket.key]: updatedSections });
-            };
-            return;
-          }
-        }
-      }
-
-      if (elementKey === "image" && /^s(5|6|7|8|9|11)img_/.test(itemId)) {
-        // Generic section-image editor mapping:
-        // s{layout}img_{sectionId}_{imgIdx}
-        const [layoutToken, sectionId, imgIdxToken] = itemId.split("_");
-        const imgIdx = parseInt(imgIdxToken || "0", 10);
-        const parseSectionIdxFromGeneratedKey = (value: string, type: string) => {
-          const match = new RegExp(`^${type}-(\\d+)$`).exec(value || "");
-          if (!match) return -1;
-          const parsed = Number.parseInt(match[1], 10);
-          return Number.isNaN(parsed) ? -1 : parsed;
-        };
-        const sectionsMap: Record<string, { key: string; list: any[] }> = {
-          s5img: {
-            key: "sections5",
-            list: textStructureSections.sections5,
-          },
-          s6img: {
-            key: "sections6",
-            list: textStructureSections.sections6,
-          },
-          s7img: {
-            key: "sections7",
-            list: textStructureSections.sections7,
-          },
-          s8img: {
-            key: "sections8",
-            list: textStructureSections.sections8,
-          },
-          s9img: {
-            key: "sections9",
-            list: textStructureSections.sections9,
-          },
-          s11img: {
-            key: "sections11",
-            list: textStructureSections.sections11,
-          },
-        };
-
-        const target = sectionsMap[layoutToken];
-        if (target) {
-          let section = target.list.find((s: any) => s.id === sectionId);
-          let sectionIndex = target.list.findIndex((s: any) => s.id === sectionId);
-          if (!section && sectionIndex < 0) {
-            const generatedSectionIdx =
-              sectionId && parseSectionIdxFromGeneratedKey(sectionId, "image");
-            if (generatedSectionIdx >= 0) {
-              const generatedSection = target.list[generatedSectionIdx];
-              if (generatedSection?.type === "image") {
-                section = generatedSection;
-                sectionIndex = generatedSectionIdx;
-              }
-            }
-          }
-          if (!section && sectionIndex < 0) {
-            sectionIndex = target.list.findIndex((s: any) => s.type === "image");
-            section = sectionIndex >= 0 ? target.list[sectionIndex] : undefined;
-          }
-          if (section && sectionIndex >= 0) {
-            const images: string[] = section.images || [];
-            const fallbackUrl =
-              section.imageUrl || "/images/placeholder/card-sm.jpg";
-            textValue = images[imgIdx] || fallbackUrl;
-            styleKey = "imageStyle";
-            styleValue = section.imageStyle || {};
-
-            onTextChange = (val) => {
-              const sourceImages: string[] =
-                section.images && section.images.length > 0
-                  ? [...section.images]
-                  : [section.imageUrl || fallbackUrl];
-              while (sourceImages.length <= imgIdx) sourceImages.push("");
-              sourceImages[imgIdx] = val;
-
-              const updatedSections = target.list.map((s: any, idx: number) =>
-                idx === sectionIndex ? { ...s, images: sourceImages } : s,
-              );
-              updateWidgetData(widget.id, { [target.key]: updatedSections });
-            };
-
-            onStyleChange = (k, v) => {
-              const updatedSections = target.list.map((s: any, idx: number) =>
-                idx === sectionIndex
-                  ? {
-                      ...s,
-                      imageStyle: { ...(s.imageStyle || {}), [k]: v },
-                    }
-                  : s,
-                  );
-              updateWidgetData(widget.id, { [target.key]: updatedSections });
-            };
-            autoPlayValue = section.autoPlay || false;
-            mutedValue = section.muted !== undefined ? section.muted : true;
-            loopValue = section.loop || false;
-            onAutoPlayChange = (val) => {
-              const updatedSections = target.list.map((s: any, idx: number) =>
-                idx === sectionIndex
-                  ? { ...s, autoPlay: val, muted: val ? true : s.muted }
-                  : s,
-              );
-              updateWidgetData(widget.id, { [target.key]: updatedSections });
-            };
-            onMutedChange = (val) => {
-              const updatedSections = target.list.map((s: any, idx: number) =>
-                idx === sectionIndex ? { ...s, muted: val } : s,
-              );
-              updateWidgetData(widget.id, { [target.key]: updatedSections });
-            };
-            onLoopChange = (val) => {
-              const updatedSections = target.list.map((s: any, idx: number) =>
-                idx === sectionIndex ? { ...s, loop: val } : s,
-              );
-              updateWidgetData(widget.id, { [target.key]: updatedSections });
-            };
-          }
-        }
-      }
-
-      if (elementKey === "image" && /^s5labelimg_/.test(itemId)) {
-        const [, sectionId] = itemId.split("_");
-        const sections = textStructureSections.sections5;
-        let section = sections.find((s: any) => s.id === sectionId);
-        let sectionIndex = sections.findIndex((s: any) => s.id === sectionId);
-        const parseSectionIdxFromGeneratedKey = (value: string, type: string) => {
-          const match = new RegExp(`^${type}-(\\d+)$`).exec(value || "");
-          if (!match) return -1;
-          const parsed = Number.parseInt(match[1], 10);
-          return Number.isNaN(parsed) ? -1 : parsed;
-        };
-        if (!section && sectionIndex < 0) {
-          const generatedSectionIdx =
-            sectionId && parseSectionIdxFromGeneratedKey(sectionId, "labelList");
-          if (generatedSectionIdx >= 0) {
-            const generatedSection = sections[generatedSectionIdx];
-            if (generatedSection?.type === "labelList") {
-              section = generatedSection;
-              sectionIndex = generatedSectionIdx;
-            }
-          }
-        }
-        if (!section && sectionIndex < 0) {
-          sectionIndex = sections.findIndex((s: any) => s.type === "labelList");
-          section = sectionIndex >= 0 ? sections[sectionIndex] : undefined;
-        }
-        if (section) {
-          textValue =
-            section.imageUrl || "/images/placeholder/card-sm.jpg";
-          styleKey = "imageStyle";
-          styleValue = section.imageStyle || {};
-          onTextChange = (val) => {
-            const updated = sections.map((s: any, idx: number) =>
-              idx === sectionIndex ? { ...s, imageUrl: val } : s,
-            );
-            updateWidgetData(widget.id, { sections5: updated });
-          };
-          onStyleChange = (k, v) => {
-            const updated = sections.map((s: any, idx: number) =>
-              idx === sectionIndex
-                ? { ...s, imageStyle: { ...(s.imageStyle || {}), [k]: v } }
-                : s,
-            );
-            updateWidgetData(widget.id, { sections5: updated });
-          };
-          autoPlayValue = section.autoPlay || false;
-          mutedValue = section.muted !== undefined ? section.muted : true;
-          loopValue = section.loop || false;
-          onAutoPlayChange = (val) => {
-            const updated = sections.map((s: any, idx: number) =>
-              idx === sectionIndex
-                ? { ...s, autoPlay: val, muted: val ? true : s.muted }
-                : s,
-            );
-            updateWidgetData(widget.id, { sections5: updated });
-          };
-          onMutedChange = (val) => {
-            const updated = sections.map((s: any, idx: number) =>
-              idx === sectionIndex ? { ...s, muted: val } : s,
-            );
-            updateWidgetData(widget.id, { sections5: updated });
-          };
-          onLoopChange = (val) => {
-            const updated = sections.map((s: any, idx: number) =>
-              idx === sectionIndex ? { ...s, loop: val } : s,
-            );
-            updateWidgetData(widget.id, { sections5: updated });
-          };
-        }
-      }
-
-      if (elementKey === "image" && /^s(5|6|7)banner_/.test(itemId)) {
-        const [layoutToken, sectionId] = itemId.split("_");
-        const map: Record<string, { key: string; list: any[] }> = {
-          s5banner: {
-            key: "sections5",
-            list: textStructureSections.sections5,
-          },
-          s6banner: {
-            key: "sections6",
-            list: textStructureSections.sections6,
-          },
-          s7banner: {
-            key: "sections7",
-            list: textStructureSections.sections7,
-          },
-        };
-        const target = map[layoutToken];
-        if (target) {
-          const parseSectionIdxFromGeneratedKey = (
-            value: string,
-            type: string,
-          ) => {
-            const match = new RegExp(`^${type}-(\\d+)$`).exec(value || "");
-            if (!match) return -1;
-            const parsed = Number.parseInt(match[1], 10);
-            return Number.isNaN(parsed) ? -1 : parsed;
-          };
-
-          let section = target.list.find((s: any) => s.id === sectionId);
-          let sectionIndex = target.list.findIndex((s: any) => s.id === sectionId);
-
-          if (!section && sectionIndex < 0) {
-            const generatedSectionIdx =
-              sectionId && parseSectionIdxFromGeneratedKey(sectionId, "banner");
-            if (generatedSectionIdx >= 0) {
-              const generatedSection = target.list[generatedSectionIdx];
-              if (generatedSection?.type === "stripBanner") {
-                section = generatedSection;
-                sectionIndex = generatedSectionIdx;
-              }
-            }
-          }
-          if (!section && sectionIndex < 0) {
-            sectionIndex = target.list.findIndex((s: any) => s.type === "stripBanner");
-            section = sectionIndex >= 0 ? target.list[sectionIndex] : undefined;
-          }
+        if (multiImageMatch || bannerImageMatch || labelImageMatch) {
+          const sectionKey = multiImageMatch
+            ? (`sections${multiImageMatch[1]}` as const)
+            : bannerImageMatch
+              ? (`sections${bannerImageMatch[1]}` as const)
+              : "sections5";
+          const sectionId = multiImageMatch
+            ? multiImageMatch[2]
+            : bannerImageMatch
+              ? bannerImageMatch[2]
+              : labelImageMatch![1];
+          const imageIdx = multiImageMatch
+            ? Number.parseInt(multiImageMatch[3], 10)
+            : -1;
+          const sections = (data as any)[sectionKey] || [];
+          const section = sections.find((s: any) => s.id === sectionId);
 
           if (section) {
-            const bannerFallbackMap: Record<string, string> = {
-              s5banner: "/images/placeholder/card-sm.jpg",
-              s6banner: "/images/placeholder/card-sm.jpg",
-              s7banner: "/images/placeholder/card-sm.jpg",
-            };
-            textValue = section.imageUrl || bannerFallbackMap[layoutToken] || "";
+            const isGridImage = imageIdx >= 0;
+            const imageList = isGridImage ? [...(section.images || [])] : [];
+
+            textValue = isGridImage
+              ? imageList[imageIdx] || "/images/placeholder/card-sm.jpg"
+              : section.imageUrl || "/images/placeholder/card-sm.jpg";
             styleKey = "imageStyle";
             styleValue = section.imageStyle || {};
+
             onTextChange = (val) => {
-              const updated = target.list.map((s: any, idx: number) =>
-                idx === sectionIndex ? { ...s, imageUrl: val } : s,
-              );
-              updateWidgetData(widget.id, { [target.key]: updated });
+              const updatedSections = sections.map((s: any) => {
+                if (s.id !== sectionId) return s;
+                if (isGridImage) {
+                  const nextImages = [...(s.images || [])];
+                  while (nextImages.length <= imageIdx) {
+                    nextImages.push("/images/placeholder/card-sm.jpg");
+                  }
+                  nextImages[imageIdx] = val;
+                  return { ...s, images: nextImages };
+                }
+                return { ...s, imageUrl: val };
+              });
+              updateWidgetData(widget.id, { [sectionKey]: updatedSections });
             };
+
             onStyleChange = (k, v) => {
-              const updated = target.list.map((s: any, idx: number) =>
-                idx === sectionIndex
-                  ? { ...s, imageStyle: { ...(s.imageStyle || {}), [k]: v } }
-                  : s,
+              const updatedSections = sections.map((s: any) =>
+                s.id !== sectionId
+                  ? s
+                  : {
+                      ...s,
+                      imageStyle: {
+                        ...(s.imageStyle || {}),
+                        [k]: v,
+                      },
+                    },
               );
-              updateWidgetData(widget.id, { [target.key]: updated });
+              updateWidgetData(widget.id, { [sectionKey]: updatedSections });
             };
-            return;
           }
         }
       }
 
-      const layoutVal = data.layout || "1";
+      if (
+        (layoutVal === "5" ||
+          layoutVal === "8" ||
+          layoutVal === "9" ||
+          layoutVal === "layout5" ||
+          layoutVal === "layout8" ||
+          layoutVal === "layout9") &&
+        ["itemTitle", "itemDesc", "itemIcon"].includes(elementKey)
+      ) {
+        const layoutSectionConfig =
+          layoutVal === "5" || layoutVal === "layout5"
+            ? {
+                key: "sections5",
+                defaults: TEXT_STRUCTURE_5_DEFAULT_SECTIONS,
+              }
+            : layoutVal === "8" || layoutVal === "layout8"
+              ? {
+                  key: "sections8",
+                  defaults: TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
+                }
+              : {
+                  key: "sections9",
+                  defaults: TEXT_STRUCTURE_9_DEFAULT_SECTIONS,
+                };
+        const sections =
+          data[layoutSectionConfig.key] || layoutSectionConfig.defaults;
+        let matchedSectionId: string | null = null;
+        let matchedItem: any = null;
+
+        for (const section of sections) {
+          if (!section?.items) continue;
+          const found = section.items.find((it: any) => it.id === itemId);
+          if (found) {
+            matchedSectionId = section.id;
+            matchedItem = found;
+            break;
+          }
+          if (typeof itemId === "string" && itemId.includes(":")) {
+            const [sectionIdFromRef, itemIdxRaw] = itemId.split(":");
+            const itemIdx = Number.parseInt(itemIdxRaw, 10);
+            if (
+              sectionIdFromRef === section.id &&
+              Number.isInteger(itemIdx) &&
+              itemIdx >= 0 &&
+              itemIdx < section.items.length
+            ) {
+              matchedSectionId = section.id;
+              matchedItem = section.items[itemIdx];
+              break;
+            }
+          }
+        }
+
+        if (matchedSectionId && matchedItem) {
+          const targetProp =
+            elementKey === "itemTitle"
+              ? matchedItem.title !== undefined
+                ? "title"
+                : "label"
+              : elementKey === "itemDesc"
+                ? matchedItem.desc !== undefined
+                  ? "desc"
+                  : "content"
+                : matchedItem.iconUrl !== undefined
+                  ? "iconUrl"
+                  : "icon";
+          const targetStyleProp =
+            elementKey === "itemTitle"
+              ? targetProp === "label"
+                ? "labelStyle"
+                : "titleStyle"
+              : elementKey === "itemDesc"
+                ? targetProp === "content"
+                  ? "contentStyle"
+                  : "descStyle"
+                : "iconStyle";
+
+          textValue = matchedItem[targetProp] || "";
+          styleKey = targetStyleProp;
+          styleValue = matchedItem[targetStyleProp] || {};
+
+          onTextChange = (val) => {
+            const updatedSections = sections.map((section: any) =>
+              section.id !== matchedSectionId
+                ? section
+                : {
+                    ...section,
+                    items: (section.items || []).map((it: any) =>
+                      it.id === itemId ? { ...it, [targetProp]: val } : it,
+                    ),
+                  },
+            );
+            updateWidgetData(widget.id, {
+              [layoutSectionConfig.key]: updatedSections,
+            });
+          };
+          onStyleChange = (k, v) => {
+            const updatedSections = sections.map((section: any) =>
+              section.id !== matchedSectionId
+                ? section
+                : {
+                    ...section,
+                    items: (section.items || []).map((it: any) =>
+                      it.id === itemId
+                        ? {
+                            ...it,
+                            [targetStyleProp]: {
+                              ...(it[targetStyleProp] || {}),
+                              [k]: v,
+                            },
+                          }
+                        : it,
+                    ),
+                  },
+            );
+            updateWidgetData(widget.id, {
+              [layoutSectionConfig.key]: updatedSections,
+            });
+          };
+        }
+      }
+
       if (layoutVal === "4") arrayName = "cases";
+      else if (layoutVal === "5" || layoutVal === "layout5")
+        arrayName = "sections5";
       else if (layoutVal === "6" || layoutVal === "layout6")
         arrayName = "sections6";
       else if (layoutVal === "7" || layoutVal === "layout7")
         arrayName = "sections7";
       else if (layoutVal === "8" || layoutVal === "layout8")
         arrayName = "sections8";
+      else if (layoutVal === "9" || layoutVal === "layout9")
+        arrayName = "sections9";
       else if (layoutVal === "11" || layoutVal === "layout11") {
         if (
           [
@@ -908,7 +612,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         ) {
           // Find which section and which item the element belongs to
           // sectionImage is direct in section, others are in section.items
-          const sections = textStructureSections.sections11;
+          const sections =
+            data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
           if (elementKey === "sectionImage") {
             const section = sections.find((s: any) => s.id === itemId);
             if (section) {
@@ -919,19 +624,19 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 );
                 updateWidgetData(widget.id, { sections11: updated });
               };
-              // No need for further item processing
-              return;
             }
           } else if (elementKey === "image" && itemId?.startsWith("s11img_")) {
             // [Multi-Image Grid Support for Layout 11]
             // itemId: s11img_{sectionId}_{imgIdx}
             const [, sectionId, imgIdxStr] = itemId.split("_");
             const imgIdx = parseInt(imgIdxStr);
-            const sections = textStructureSections.sections11;
+            const sections =
+              data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
             const section = sections.find((s: any) => s.id === sectionId);
             if (section) {
               const images = section.images || [
-                section.imageUrl || "/images/placeholder/card-sm.jpg",
+                section.imageUrl ||
+                  "/images/placeholder/text_structure_img11.png",
               ];
               textValue = images[imgIdx] || "";
               onTextChange = (val) => {
@@ -942,7 +647,6 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 );
                 updateWidgetData(widget.id, { sections11: updatedSections });
               };
-              return;
             }
           } else {
             // For nested items in sections
@@ -1005,7 +709,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                       sections11: updatedSections,
                     });
                   };
-                  return;
+                  break;
                 }
               }
             }
@@ -1160,7 +864,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       } else if (
         elementKey === "itemBadge1" ||
         elementKey === "itemBadge2" ||
-        elementKey === "itemBadge3"
+        elementKey === "itemBadge3" ||
+        elementKey === "itemFeatureLabel"
       ) {
         const badgeProp =
           elementKey === "itemBadge1"
@@ -1192,22 +897,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               : elementKey === "itemBadge3"
                 ? "badgeStyle3"
                 : "featureLabelStyle";
-        const legacyBadgeStyleKey =
-          elementKey === "itemBadge1"
-            ? "badge1Style"
-            : elementKey === "itemBadge2"
-              ? "badge2Style"
-              : "badge3Style";
-        const legacyBadgeStyleValue = legacyBadgeStyleKey
-          ? item?.[legacyBadgeStyleKey]
-          : undefined;
 
         // 현재 아이템에서 실제 스타일 객체 로드 (빈칸 문제 해결 핵심)
-        const mergedBadgeStyle = {
-          ...(legacyBadgeStyleValue || {}),
-          ...(item?.[styleKey] || {}),
-        };
-        styleValue = mergedBadgeStyle;
+        styleValue = item[styleKey] || {};
 
         onTextChange = (val) =>
           updateWidgetData(widget.id, {
@@ -1228,154 +920,6 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             }),
           });
         };
-      } else if (/^itemFeature(Label|Value)(?::(\d+))?$/.test(elementKey)) {
-        const [, kind = "Label", indexText = "0"] =
-          /^itemFeature(Label|Value)(?::(\d+))?$/.exec(elementKey) || [];
-        const featureIdx = Number.parseInt(indexText, 10);
-        const featureMode = kind === "Label";
-        const featureRows = (() => {
-          const rawRows = Array.isArray(item?.features) ? item.features : [];
-          let idx = 0;
-
-          const getDefaultLabel = (idx: number) =>
-            `${item.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`;
-
-          const parseDescRows = (value: any): { label: string; value: string }[] => {
-            const lines =
-              typeof value === "string"
-                ? value
-                    .replace(/\r\n?/g, "\n")
-                    .split(/\n|<br\s*\/?>/gi)
-                    .map((line: string) => line.trim())
-                    .filter((line: string) => line.length > 0)
-                : [];
-
-            const safeLines = lines.length
-              ? lines
-              : ["프로그램 특징 내용 입력", "2줄 입력"];
-
-            return safeLines.map((line: string, idx: number) => ({
-              label: getDefaultLabel(idx),
-              value: line,
-            }));
-          };
-
-          if (!rawRows.length) {
-            return parseDescRows(item.desc);
-          }
-
-          return rawRows
-            .flatMap((row: any) => {
-              if (row === null || row === undefined) {
-                const emptyRow = { label: getDefaultLabel(idx), value: "" };
-                idx += 1;
-                return [emptyRow];
-              }
-
-              if (typeof row === "string") {
-                const sourceRows = parseDescRows(row);
-                return sourceRows.map((sourceRow) => {
-                  const next = {
-                    label: getDefaultLabel(idx),
-                    value: sourceRow.value,
-                  };
-                  idx += 1;
-                  return next;
-                });
-              }
-
-              if (typeof row === "object") {
-                const sourceRows = parseDescRows(row.value);
-                const baseLabel = (row.label || "").trim();
-                return sourceRows.map((sourceRow, sourceIdx) => {
-                  const next = {
-                    label:
-                      sourceIdx === 0
-                        ? baseLabel || getDefaultLabel(idx)
-                        : getDefaultLabel(idx),
-                    value: sourceRow.value,
-                  };
-                  idx += 1;
-                  return next;
-                });
-              }
-
-              return null;
-            })
-            .filter((row: any) => row !== null) as {
-            label: string;
-            value: string;
-          }[];
-        })();
-
-        const ensureRows = (rows: { label: string; value: string }[]) => {
-          const next = [...rows];
-          const baseLabel = item.featureLabel || "특징";
-
-          for (let i = next.length; i <= featureIdx; i += 1) {
-            next.push({
-              label: `${baseLabel} ${String(i + 1).padStart(2, "0")}`,
-              value: "",
-            });
-          }
-
-          return next;
-        };
-
-        const normalizedRows = ensureRows(featureRows);
-        const targetRow = normalizedRows[featureIdx] || {
-          label: `${item.featureLabel || "특징"} ${String(featureIdx + 1).padStart(2, "0")}`,
-          value: "",
-        };
-
-        textValue = featureMode ? targetRow.label : targetRow.value;
-        styleKey = featureMode ? "featureLabelStyle" : "descStyle";
-        styleValue = item[styleKey] || {};
-
-        onTextChange = (val) => {
-          const sourceRows = ensureRows(featureRows);
-          const updatedRows = sourceRows.map((row: any, idx: number) => ({
-            label:
-              row.label ||
-              `${item.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`,
-            value: row.value || "",
-          }));
-          const nextValue =
-            featureMode
-              ? {
-                  ...updatedRows[featureIdx],
-                  label: val,
-                }
-              : {
-                  ...updatedRows[featureIdx],
-                  value: val,
-                };
-
-          updatedRows[featureIdx] = nextValue;
-          const descFromRows = updatedRows
-            .map((r) => r.value)
-              .filter((v) => String(v || "").trim().length > 0)
-              .join("<br/>");
-
-          const newItems = (data[arrayName] || []).map((it: any) =>
-            it.id === itemId
-              ? {
-                  ...it,
-                  features: updatedRows,
-                  desc: descFromRows || "프로그램 특징 내용 입력<br/>2줄 입력",
-                }
-              : it,
-          );
-
-          updateWidgetData(widget.id, { [arrayName]: newItems });
-        };
-        onStyleChange = (k, v) =>
-          updateWidgetData(widget.id, {
-            [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
-              ...styleValue,
-              [k]: v,
-            }),
-          });
       } else if (
         elementKey === "stepDesc" ||
         elementKey === "itemDesc" ||
@@ -1456,10 +1000,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                         ? "url"
                         : elementKey;
 
-        const rawIconCardValue = item[propName] || item.icon || item.image || item.iconUrl || "";
-        textValue = (elementKey === "itemIcon" || elementKey === "iconUrl" || elementKey === "icon")
-          ? resolveIconCardMediaValue(rawIconCardValue)
-          : rawIconCardValue;
+        textValue =
+          item[propName] || item.icon || item.image || item.iconUrl || "";
         // For blocks (blockUrl), use 'style'. For others, use specific style keys.
         if (elementKey === "blockUrl") styleKey = "style";
         else
@@ -1563,22 +1105,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       return "";
     };
     textValue =
-      widget.type === "textStructure"
-        ? (data[elementKey] ??
-          textStructureFallbackText(elementKey))
-        : data[elementKey] !== undefined
-          ? data[elementKey]
-          : getRootDefaultText();
-    if (
-      widget.type === "textStructure" &&
-      elementKey === "imageUrl" &&
-      !textValue
-    ) {
-      const layoutVal = (data.layout || "1").toString();
-      if (layoutVal === "5" || layoutVal === "9") {
-        textValue = "/images/placeholder/card-sm.jpg";
-      }
-    }
+      data[elementKey] !== undefined ? data[elementKey] : getRootDefaultText();
     // Convention: property 'mainTitle' -> style 'mainTitleStyle'
     styleKey =
       elementKey === "contentTitle"
@@ -1616,6 +1143,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     elementKey.toLowerCase().includes("media") ||
     elementKey === "url" ||
     elementKey === "topImage";
+  const isTitleBannerLayout3ImageEditor =
+    widget.type === "titleBanner" &&
+    String((widget.data as any).layout || "1") === "3" &&
+    ["layout3Image", "layout3MobileImage"].includes(elementKey);
 
   // [Banner Section] Default Placeholder Logic
   if (widget.type === "bannerSection") {
@@ -1634,14 +1165,67 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     if (styleValue.width === undefined)
       styleValue = { ...styleValue, width: "100%" };
   }
-  // Keep style inputs source-of-truth only from actual widget data.
-  // Do not inject fallback font sizes/weights/colors, so cleared values stay cleared.
+  // Inject sensible defaults so inputs are never completely blank.
+  const getFallbackStyles = () => {
+    const keyLower = elementKey.toLowerCase();
+    const isTitle =
+      keyLower.includes("title") ||
+      keyLower.includes("question") ||
+      keyLower === "number";
+    const isDesc =
+      keyLower.includes("desc") ||
+      keyLower.includes("answer") ||
+      keyLower.includes("text");
+    const isLabel =
+      keyLower.includes("label") ||
+      keyLower.includes("tag") ||
+      keyLower.includes("badge");
+
+    let fontSize = "";
+    let fontWeight = "";
+    let color = "";
+
+    if (isTitle) {
+      fontSize = "24px";
+      fontWeight = "700";
+      color = "#111111";
+    } else if (isDesc) {
+      fontSize = "16px";
+      fontWeight = "400";
+      color = "#666666";
+    } else if (isLabel) {
+      fontSize = "14px";
+      fontWeight = "700";
+      color = "#ffffff";
+    }
+
+    if (widget.type === "process") {
+      if (isTitle) color = "#000000";
+      if (elementKey === "number") {
+        fontSize = "20px";
+        fontWeight = "700";
+        color = "#285DE1";
+      }
+    }
+
+    return { fontSize, fontWeight, color };
+  };
+
+  if (!isMediaKey && elementKey !== "bannerButton") {
+    const fb = getFallbackStyles();
+    styleValue = {
+      ...styleValue,
+      fontSize: styleValue.fontSize || fb.fontSize || "16px",
+      fontWeight: styleValue.fontWeight || fb.fontWeight || "400",
+      color: styleValue.color || fb.color || "#000000",
+    };
+  }
 
   const getPlaceholderText = () => {
     if (isMediaKey) {
       if (widget.type === "process" || widget.type === "processCard")
-        return "/images/placeholder/step_consult.jpg";
-      return "/images/placeholder/card_img_default.jpg";
+        return "/images/placeholder/like_cat.jpg";
+      return "/images/placeholder/img1.png";
     }
     const keyLower = elementKey.toLowerCase();
     if (keyLower.includes("subtitle")) return "( 서브타이틀 )";
@@ -1654,64 +1238,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   };
 
   const currentPlaceholder = getPlaceholderText();
-  const resolvedStyleValue = styleValue;
 
   const displayValue = textValue ? textValue.replace(/<br\s*\/?>/gi, "\n") : "";
-  const currentLayoutVal = (data.layout || "1").toString();
-  const isLayout11FeaturePanel =
-    widget.type === "textStructure" &&
-    (currentLayoutVal === "11" || currentLayoutVal === "layout11") &&
-    !!itemId &&
-    ["itemNumber", "itemTitle", "itemDesc", "itemIcon"].includes(elementKey);
-  const layout11FeatureContext = (() => {
-    if (!isLayout11FeaturePanel || !itemId) return null;
-    const sections = textStructureSections.sections11 || [];
-    let sectionIndex = -1;
-    let itemIndex = -1;
-    const colonIndex = itemId.indexOf(":");
-    if (colonIndex > 0) {
-      const sectionId = itemId.slice(0, colonIndex);
-      const parsedIdx = Number.parseInt(itemId.slice(colonIndex + 1), 10);
-      const foundSectionIdx = sections.findIndex((s: any) => s.id === sectionId);
-      if (
-        foundSectionIdx >= 0 &&
-        !Number.isNaN(parsedIdx) &&
-        parsedIdx >= 0 &&
-        parsedIdx < (sections[foundSectionIdx]?.items || []).length
-      ) {
-        sectionIndex = foundSectionIdx;
-        itemIndex = parsedIdx;
-      }
-    }
-    for (let sIdx = 0; sIdx < sections.length; sIdx += 1) {
-      if (sectionIndex >= 0 && itemIndex >= 0) break;
-      const items = sections[sIdx]?.items || [];
-      const found = items.findIndex((it: any) => it.id === itemId);
-      if (found >= 0) {
-        sectionIndex = sIdx;
-        itemIndex = found;
-        break;
-      }
-    }
-    if (sectionIndex < 0 || itemIndex < 0) return null;
-    const section = sections[sectionIndex];
-    const item = (section.items || [])[itemIndex] || {};
-    return { sections, sectionIndex, itemIndex, item };
-  })();
-  const updateLayout11FeatureItem = (patch: Record<string, any>) => {
-    if (!layout11FeatureContext) return;
-    const updatedSections = layout11FeatureContext.sections.map(
-      (section: any, sIdx: number) => {
-        if (sIdx !== layout11FeatureContext.sectionIndex) return section;
-        const updatedItems = (section.items || []).map(
-          (it: any, i: number) =>
-            i === layout11FeatureContext.itemIndex ? { ...it, ...patch } : it,
-        );
-        return { ...section, items: updatedItems };
-      },
-    );
-    updateWidgetData(widget.id, { sections11: updatedSections });
-  };
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4 duration-200">
@@ -1728,9 +1256,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           </span>
         </button>
         <h3 className="font-bold text-gray-800">
-          {isLayout11FeaturePanel
-            ? "프로그램 특징 편집"
-            : isMediaKey
+          {isMediaKey
             ? "이미지/영상 편집"
             : elementKey === "itemFeatures"
               ? "특징 항목 관리"
@@ -1744,75 +1270,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       <div>
         {/* Banner Button Link Editor (Exclusive) */}
         {/* Button (Banner/Process Step) Editor */}
-        {isLayout11FeaturePanel && layout11FeatureContext ? (
-          <div className="space-y-4 p-2">
-            <div className="space-y-1.5">
-              <label className="text-[10px] text-gray-400 font-semibold">
-                아이콘 이미지 URL
-              </label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                value={
-                  layout11FeatureContext.item.icon ||
-                  layout11FeatureContext.item.iconUrl ||
-                  ""
-                }
-                onChange={(e) =>
-                  updateLayout11FeatureItem({
-                    icon: e.target.value,
-                    iconUrl: e.target.value,
-                  })
-                }
-                placeholder="/images/placeholder/icon_program.png"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] text-gray-400 font-semibold">
-                숫자
-              </label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                value={layout11FeatureContext.item.number || ""}
-                onChange={(e) =>
-                  updateLayout11FeatureItem({ number: e.target.value })
-                }
-                placeholder="01."
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] text-gray-400 font-semibold">
-                프로그램 특징명
-              </label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                value={layout11FeatureContext.item.title || ""}
-                onChange={(e) =>
-                  updateLayout11FeatureItem({ title: e.target.value })
-                }
-                placeholder="프로그램 특징"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] text-gray-400 font-semibold">
-                프로그램 설명
-              </label>
-              <textarea
-                className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none min-h-[72px]"
-                value={layout11FeatureContext.item.desc || ""}
-                onChange={(e) =>
-                  updateLayout11FeatureItem({ desc: e.target.value })
-                }
-                placeholder="프로그램 설명을 입력하세요."
-              />
-            </div>
-          </div>
-        ) : elementKey === "itemFeatures" && itemId ? (
+        {elementKey === "itemFeatures" && itemId ? (
           <div className="space-y-4 p-2">
             <div className="flex justify-between items-center mb-2">
               <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
@@ -1820,89 +1278,28 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               </label>
               <button
                 onClick={() => {
-                let arrayName = "items";
+                  let arrayName = "items";
                   const itemsList = data[arrayName] || [];
-                  const targetItemIndex = resolveItemIndex(itemsList, itemId);
-                  const targetItem = itemsList[targetItemIndex] || {};
-                  const updateFeatures = (
-                    nextFeatures: { label: string; value: string }[],
-                  ) => {
-                    if (targetItemIndex < 0) return;
-                    const newItems = itemsList.map((it: any, idx: number) =>
-                      idx === targetItemIndex ? { ...it, features: nextFeatures } : it,
-                    );
-                    updateWidgetData(widget.id, { [arrayName]: newItems });
-                  };
-                  const getDefaultLabel = (idx: number) =>
-                    `${targetItem.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`;
-                  const parseFeatureLines = (value: any): string[] => {
-                    const source = typeof value === "string" ? value : "";
-                    const lines = source
-                      .replace(/\r\n?/g, "\n")
-                      .split(/\n|<br\s*\/?>/gi)
-                      .map((line: string) => line.trim())
-                      .filter((line: string) => line.length > 0);
-                    return lines.length > 0
-                      ? lines
-                      : ["프로그램 특징 내용 입력", "2줄 입력"];
-                  };
-                  const resolveFeatures = (
-                    item: any,
-                  ): { label: string; value: string }[] => {
-                    const raws = Array.isArray(item?.features) ? item.features : [];
-                    if (!raws.length) {
-                      return parseFeatureLines(item.desc).map(
-                        (line: string, idx: number) => ({
-                          label: getDefaultLabel(idx),
-                          value: line,
-                        }),
-                      );
-                    }
-
-                    let idx = 0;
-                    return raws.flatMap((row: any) => {
-                      if (row == null) {
-                        const empty = { label: getDefaultLabel(idx), value: "" };
-                        idx += 1;
-                        return [empty];
-                      }
-
-                      if (typeof row === "string") {
-                        return parseFeatureLines(row).map((line: string) => {
-                          const result = {
-                            label: getDefaultLabel(idx),
-                            value: line,
-                          };
-                          idx += 1;
-                          return result;
-                        });
-                      }
-
-                      if (typeof row === "object") {
-                        const baseLabel = (row.label || "").trim();
-                        const lines = parseFeatureLines(row.value);
-                        return lines.map((line: string, lineIdx: number) => {
-                          const result = {
-                            label:
-                              lineIdx === 0
-                                ? baseLabel || getDefaultLabel(idx)
-                                : getDefaultLabel(idx),
-                            value: line,
-                          };
-                          idx += 1;
-                          return result;
-                        });
-                      }
-
-                      return [];
-                    });
-                  };
-                  const currentFeatures = resolveFeatures(targetItem);
+                  const targetItem =
+                    itemsList.find((i: any) => i.id === itemId) || {};
+                  const currentFeatures = targetItem.features || [
+                    {
+                      label: targetItem.featureLabel || "특징 01",
+                      value: "프로그램 특징 내용 입력",
+                    },
+                    {
+                      label: targetItem.featureLabel || "특징 01",
+                      value: "2줄 입력",
+                    },
+                  ];
                   const newFeatures = [
                     ...currentFeatures,
-                    { label: getDefaultLabel(currentFeatures.length), value: "새로운 내용 입력" },
+                    { label: "특징", value: "새로운 내용 입력" },
                   ];
-                  updateFeatures(newFeatures);
+                  const newItems = itemsList.map((it: any) =>
+                    it.id === itemId ? { ...it, features: newFeatures } : it,
+                  );
+                  updateWidgetData(widget.id, { [arrayName]: newItems });
                 }}
                 className="text-[10px] bg-blue-50 text-blue-600 px-2.5 py-1.5 rounded-lg font-bold hover:bg-blue-100 transition-colors flex items-center gap-1"
               >
@@ -1914,82 +1311,18 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               {(() => {
                 let arrayName = "items";
                 const itemsList = data[arrayName] || [];
-                const targetItemIndex = resolveItemIndex(itemsList, itemId);
-                const targetItem = itemsList[targetItemIndex] || {};
-                const updateFeatures = (
-                  nextFeatures: { label: string; value: string }[],
-                ) => {
-                  if (targetItemIndex < 0) return;
-                  const newItems = itemsList.map((it: any, idx: number) =>
-                    idx === targetItemIndex ? { ...it, features: nextFeatures } : it,
-                  );
-                  updateWidgetData(widget.id, { [arrayName]: newItems });
-                };
-                const getDefaultLabel = (idx: number) =>
-                  `${targetItem.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`;
-                const parseFeatureLines = (value: any): string[] => {
-                  const source = typeof value === "string" ? value : "";
-                  const lines = source
-                    .replace(/\r\n?/g, "\n")
-                    .split(/\n|<br\s*\/?>/gi)
-                    .map((line: string) => line.trim())
-                    .filter((line: string) => line.length > 0);
-                  return lines.length > 0
-                    ? lines
-                    : ["프로그램 특징 내용 입력", "2줄 입력"];
-                };
-                const resolveFeatures = (
-                  item: any,
-                ): { label: string; value: string }[] => {
-                  const raws = Array.isArray(item?.features) ? item.features : [];
-                  if (!raws.length) {
-                    return parseFeatureLines(item.desc).map(
-                      (line: string, idx: number) => ({
-                        label: getDefaultLabel(idx),
-                        value: line,
-                      }),
-                    );
-                  }
-
-                  let idx = 0;
-                  return raws.flatMap((row: any) => {
-                    if (row == null) {
-                      const empty = { label: getDefaultLabel(idx), value: "" };
-                      idx += 1;
-                      return [empty];
-                    }
-
-                    if (typeof row === "string") {
-                      return parseFeatureLines(row).map((line: string) => {
-                        const result = {
-                          label: getDefaultLabel(idx),
-                          value: line,
-                        };
-                        idx += 1;
-                        return result;
-                      });
-                    }
-
-                    if (typeof row === "object") {
-                      const baseLabel = (row.label || "").trim();
-                      const lines = parseFeatureLines(row.value);
-                      return lines.map((line: string, lineIdx: number) => {
-                        const result = {
-                          label:
-                            lineIdx === 0
-                              ? baseLabel || getDefaultLabel(idx)
-                              : getDefaultLabel(idx),
-                          value: line,
-                        };
-                        idx += 1;
-                        return result;
-                      });
-                    }
-
-                    return [];
-                  });
-                };
-                const features = resolveFeatures(targetItem);
+                const targetItem =
+                  itemsList.find((i: any) => i.id === itemId) || {};
+                const features = targetItem.features || [
+                  {
+                    label: targetItem.featureLabel || "특징 01",
+                    value: "프로그램 특징 내용 입력",
+                  },
+                  {
+                    label: targetItem.featureLabel || "특징 01",
+                    value: "2줄 입력",
+                  },
+                ];
 
                 return features.map((feat: any, idx: number) => (
                   <div
@@ -2009,7 +1342,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                                 newFeatures[idx],
                                 newFeatures[idx - 1],
                               ];
-                              updateFeatures(newFeatures);
+                              const newItems = itemsList.map((it: any) =>
+                                it.id === itemId
+                                  ? { ...it, features: newFeatures }
+                                  : it,
+                              );
+                              updateWidgetData(widget.id, {
+                                [arrayName]: newItems,
+                              });
                             }}
                             className="p-1 bg-gray-50 rounded text-gray-500 hover:text-blue-500 hover:bg-blue-50"
                             title="위로 이동"
@@ -2027,7 +1367,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                                 newFeatures[idx],
                                 newFeatures[idx + 1],
                               ];
-                              updateFeatures(newFeatures);
+                              const newItems = itemsList.map((it: any) =>
+                                it.id === itemId
+                                  ? { ...it, features: newFeatures }
+                                  : it,
+                              );
+                              updateWidgetData(widget.id, {
+                                [arrayName]: newItems,
+                              });
                             }}
                             className="p-1 bg-gray-50 rounded text-gray-500 hover:text-blue-500 hover:bg-blue-50"
                             title="아래로 이동"
@@ -2042,7 +1389,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             const newFeatures = features.filter(
                               (_: any, i: number) => i !== idx,
                             );
-                            updateFeatures(newFeatures);
+                            const newItems = itemsList.map((it: any) =>
+                              it.id === itemId
+                                ? { ...it, features: newFeatures }
+                                : it,
+                            );
+                            updateWidgetData(widget.id, {
+                              [arrayName]: newItems,
+                            });
                           }}
                           className="p-1 bg-gray-50 rounded text-gray-500 hover:text-red-500 hover:bg-red-50"
                           title="삭제"
@@ -2066,7 +1420,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             ...newFeatures[idx],
                             label: e.target.value,
                           };
-                          updateFeatures(newFeatures);
+                          const newItems = itemsList.map((it: any) =>
+                            it.id === itemId
+                              ? { ...it, features: newFeatures }
+                              : it,
+                          );
+                          updateWidgetData(widget.id, {
+                            [arrayName]: newItems,
+                          });
                         }}
                         className="flex-1 min-w-0 w-full bg-gray-50 border border-gray-100 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-100 font-bold text-gray-700 placeholder-gray-300"
                         placeholder="라벨"
@@ -2084,7 +1445,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             ...newFeatures[idx],
                             value: e.target.value,
                           };
-                          updateFeatures(newFeatures);
+                          const newItems = itemsList.map((it: any) =>
+                            it.id === itemId
+                              ? { ...it, features: newFeatures }
+                              : it,
+                          );
+                          updateWidgetData(widget.id, {
+                            [arrayName]: newItems,
+                          });
                         }}
                         className="flex-1 min-w-0 w-full bg-gray-50 border border-gray-100 p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-100 resize-none min-h-[50px] text-gray-600 placeholder-gray-300 leading-relaxed"
                         placeholder="특징 내용을 입력하세요."
@@ -2170,12 +1538,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 <div className="flex-1 space-y-1">
                   <select
                     className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs font-medium outline-none text-gray-700"
-                    value={styleValue.fontWeight ?? ""}
+                    value={styleValue.fontWeight || "500"}
                     onChange={(e) =>
                       onStyleChange("fontWeight", e.target.value)
                     }
                   >
-                    <option value="">굵기 선택</option>
                     <option value="400">Regular</option>
                     <option value="500">Medium</option>
                     <option value="600">SemiBold</option>
@@ -2186,11 +1553,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   <input
                     type="color"
                     className="w-full h-[32px] rounded-lg cursor-pointer border-none bg-gray-50 p-1"
-                    value={
-                      /^#([0-9a-fA-F]{6})$/.test(styleValue.color || "")
-                        ? styleValue.color
-                        : "#ffffff"
-                    }
+                    value={styleValue.color || "#060606"}
                     onChange={(e) => onStyleChange("color", e.target.value)}
                   />
                 </div>
@@ -2331,45 +1694,132 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         ) : isMediaKey ? (
           <div className="space-y-4">
             <div className="space-y-3">
-              <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide">
-                콘텐츠 업로드 또는 주소
-              </label>
-
-              {/* Image Upload Popup */}
-              <ImgUploadPop
-                onSelect={(url) => onTextChange(url)}
-                button={
-                  <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
-                    <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Upload size={20} />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-bold text-gray-700 text-sm">
-                        이미지 선택하기
-                      </p>
-                      <p className="text-[10px] text-gray-400">
-                        서버에 업로드된 이미지 선택
-                      </p>
-                    </div>
+              {isTitleBannerLayout3ImageEditor ? (
+                <div className="space-y-6 pt-2">
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                      <ImageIcon size={14} className="text-blue-500" /> PC
+                      이미지 설정
+                    </label>
+                    <ImgUploadPop
+                      onSelect={(url) =>
+                        updateWidgetData(widget.id, { layout3Image: url })
+                      }
+                      button={
+                        <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                          <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                            <Upload size={20} />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-bold text-gray-700 text-sm">
+                              PC 이미지 선택
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              서버에 업로드된 이미지 선택
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                      value={(widget.data as any).layout3Image || ""}
+                      onChange={(e) =>
+                        updateWidgetData(widget.id, {
+                          layout3Image: e.target.value,
+                        })
+                      }
+                      placeholder="PC 이미지 URL을 입력하세요"
+                    />
                   </div>
-                }
-              />
 
-              <div className="flex items-center gap-2 py-2">
-                <div className="h-px bg-gray-100 flex-1"></div>
-                <span className="text-[10px] font-bold text-gray-300 uppercase">
-                  또는 URL 직접 입력
-                </span>
-                <div className="h-px bg-gray-100 flex-1"></div>
-              </div>
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                      <Smartphone size={14} className="text-blue-500" /> 모바일
+                      이미지 설정
+                    </label>
+                    <ImgUploadPop
+                      onSelect={(url) =>
+                        updateWidgetData(widget.id, {
+                          layout3MobileImage: url,
+                        })
+                      }
+                      button={
+                        <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                          <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                            <Upload size={20} />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-bold text-gray-700 text-sm">
+                              모바일 이미지 선택
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              서버에 업로드된 이미지 선택
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                      value={(widget.data as any).layout3MobileImage || ""}
+                      onChange={(e) =>
+                        updateWidgetData(widget.id, {
+                          layout3MobileImage: e.target.value,
+                        })
+                      }
+                      placeholder="모바일 이미지 URL을 입력하세요 (선택)"
+                    />
+                    <p className="text-[10px] text-gray-400 leading-tight">
+                      * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
+                      노출됩니다.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide">
+                    콘텐츠 업로드 또는 주소
+                  </label>
 
-              <input
-                type="text"
-                className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
-                value={textValue || ""}
-                onChange={(e) => onTextChange(e.target.value)}
-                placeholder={currentPlaceholder}
-              />
+                  <ImgUploadPop
+                    onSelect={(url) => onTextChange(url)}
+                    button={
+                      <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                        <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Upload size={20} />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-bold text-gray-700 text-sm">
+                            이미지 선택하기
+                          </p>
+                          <p className="text-[10px] text-gray-400">
+                            서버에 업로드된 이미지 선택
+                          </p>
+                        </div>
+                      </div>
+                    }
+                  />
+
+                  <div className="flex items-center gap-2 py-2">
+                    <div className="h-px bg-gray-100 flex-1"></div>
+                    <span className="text-[10px] font-bold text-gray-300 uppercase">
+                      또는 URL 직접 입력
+                    </span>
+                    <div className="h-px bg-gray-100 flex-1"></div>
+                  </div>
+
+                  <input
+                    type="text"
+                    className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                    value={textValue || ""}
+                    onChange={(e) => onTextChange(e.target.value)}
+                    placeholder={currentPlaceholder}
+                  />
+                </>
+              )}
 
               {/* 비교 카드: 배경색 선택 UI */}
               {widget.type === "comparisonCard" &&
@@ -2871,11 +2321,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                     {/* 설정 초기화 버튼 */}
                     <button
                       onClick={() => {
-                        onStyleChange({
-                          width: "100%",
-                          height: "auto",
-                          objectFit: "contain",
-                        });
+                        onStyleChange("width", "100%");
+                        onStyleChange("height", "auto");
+                        onStyleChange("objectFit", "contain");
                       }}
                       className="w-full mt-2 py-2 px-3 text-[10px] font-bold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all"
                     >
@@ -3012,15 +2460,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               <input
                 type="text"
                 placeholder={
-                  resolvedStyleValue.fontSize
-                    ? resolvedStyleValue.fontSize.toString().replace("px", "")
+                  styleValue.fontSize
+                    ? styleValue.fontSize.toString().replace("px", "")
                     : placeholder
                 }
-                value={
-                  resolvedStyleValue.fontSize
-                    ?.toString()
-                    .replace("px", "") || ""
-                }
+                value={styleValue.fontSize?.toString().replace("px", "") || ""}
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === "") onStyleChange("fontSize", "");
@@ -3038,16 +2482,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               <input
                 type="text"
                 placeholder={
-                  resolvedStyleValue.fontSizeMobile
-                    ? resolvedStyleValue.fontSizeMobile.toString().replace("px", "")
-                    : resolvedStyleValue.fontSize
-                      ? resolvedStyleValue.fontSize.toString().replace("px", "")
+                  styleValue.fontSizeMobile
+                    ? styleValue.fontSizeMobile.toString().replace("px", "")
+                    : styleValue.fontSize
+                      ? styleValue.fontSize.toString().replace("px", "")
                       : placeholderMobile || placeholder
                 }
                 value={
-                  resolvedStyleValue.fontSizeMobile
-                    ?.toString()
-                    .replace("px", "") || ""
+                  styleValue.fontSizeMobile?.toString().replace("px", "") || ""
                 }
                 onChange={(e) => {
                   const val = e.target.value;
@@ -3065,11 +2507,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               굵기
             </label>
             <select
-              value={resolvedStyleValue.fontWeight ?? ""}
+              value={styleValue.fontWeight || "400"}
               onChange={(e) => onStyleChange("fontWeight", e.target.value)}
               className="w-full bg-gray-50 border-none p-2.5 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-100 outline-none appearance-none cursor-pointer"
             >
-              <option value="">선택 안 함</option>
               <option value="100">100</option>
               <option value="300">300</option>
               <option value="400">400</option>
@@ -3088,25 +2529,17 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               <div className="relative w-10 h-10 rounded-lg border-none shadow-sm overflow-hidden shrink-0 ring-1 ring-gray-100">
                 <input
                   type="color"
-                  value={
-                    /^#([0-9a-fA-F]{6})$/.test(styleValue.color || "")
-                      ? styleValue.color
-                      : /^#([0-9a-fA-F]{6})$/.test(
-                            resolvedStyleValue.color || "",
-                          )
-                        ? resolvedStyleValue.color
-                      : "#ffffff"
-                  }
+                  value={styleValue.color || "#000000"}
                   onChange={(e) => onStyleChange("color", e.target.value)}
                   className="absolute inset-[0] w-[150%] h-[150%] -translate-x-1/4 -translate-y-1/4 cursor-pointer p-0 border-0"
                 />
               </div>
               <input
                 type="text"
-                value={styleValue.color ?? resolvedStyleValue.color ?? ""}
+                value={styleValue.color || "#000000"}
                 onChange={(e) => onStyleChange("color", e.target.value)}
                 className="flex-1 min-w-0 bg-transparent border-none p-1 text-xs font-bold uppercase font-mono focus:ring-0 text-gray-600"
-                placeholder="#RRGGBB"
+                placeholder="#000000"
               />
             </div>
           </div>

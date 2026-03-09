@@ -267,12 +267,12 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                   key={item.id}
                   className="flex flex-col gap-[16px] border-t border-[#666] py-[24px] md:flex-row md:gap-[24px]"
                 >
-                  <div className="flex size-[100px] items-center justify-center rounded-full md:size-[120px] shrink-0 overflow-hidden cursor-pointer flex justify-center items-center h-auto">
-                    <UniversalMedia
-                      url={item.iconUrl || item.icon || ""}
-                      alt="Service"
-                      className="w-full h-auto object-contain"
-                      style={getElementStyle(item.iconStyle, viewport as any)}
+	                  <div className="flex size-[100px] items-center justify-center rounded-full md:size-[120px] shrink-0 overflow-hidden cursor-pointer flex justify-center items-center h-auto">
+	                    <UniversalMedia
+	                      url={(item as any).iconUrl || item.icon || ""}
+	                      alt="Service"
+	                      className="w-full h-auto object-contain"
+	                      style={getElementStyle(item.iconStyle, viewport as any)}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("itemIcon", item.id);

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -18,11 +18,13 @@ export interface Section9FeatItem {
   title: string;
   desc: string;
   iconUrl?: string;
+  opacity?: string;
 }
 
 export interface Section9Item {
   id: string;
   type: Section9Type;
+  opacity?: string;
   subTitle?: string;
   content?: string;
   items?: Section9FeatItem[];
@@ -59,13 +61,13 @@ function createDefaultSection(type: Section9Type): Section9Item {
           id: `f9-${Date.now()}-1`,
           title: "첫째. 타이틀",
           desc: "설명 텍스트를 입력하세요.",
-          iconUrl: "/images/placeholder/icon_arrow_right.png",
+          iconUrl: "/images/placeholder/icon_arrow.png",
         },
         {
           id: `f9-${Date.now()}-2`,
           title: "둘째. 타이틀",
           desc: "설명 텍스트를 입력하세요.",
-          iconUrl: "/images/placeholder/icon_arrow_right.png",
+          iconUrl: "/images/placeholder/icon_arrow.png",
         },
       ],
     };
@@ -77,23 +79,15 @@ interface Props {
   widgetId: string;
   sections: Section9Item[];
   updateWidgetData: (id: string, data: any) => void;
-  autoExpandSectionId?: string | null;
 }
 
 const TextStructure9Manager: React.FC<Props> = ({
   widgetId,
   sections,
   updateWidgetData,
-  autoExpandSectionId = null,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddPicker, setShowAddPicker] = useState(false);
-
-  useEffect(() => {
-    if (!autoExpandSectionId) return;
-    const exists = sections.some((s) => s.id === autoExpandSectionId);
-    if (exists) setExpandedId(autoExpandSectionId);
-  }, [autoExpandSectionId, sections]);
 
   const update = (newSections: Section9Item[]) => {
     updateWidgetData(widgetId, { sections9: newSections });
@@ -142,7 +136,7 @@ const TextStructure9Manager: React.FC<Props> = ({
       id: `f9-${Date.now()}`,
       title: "타이틀",
       desc: "설명을 입력하세요.",
-      iconUrl: "/images/placeholder/icon_arrow_right.png",
+      iconUrl: "/images/placeholder/icon_arrow.png",
     });
     updateSection(sectionId, { items });
   };
@@ -154,6 +148,13 @@ const TextStructure9Manager: React.FC<Props> = ({
     updateSection(sectionId, { items });
   };
 
+  const normalizeOpacityValue = (value: string) => {
+    if (value === "") return "";
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) return "";
+    return String(Math.max(0, Math.min(100, parsed)));
+  };
+
   return (
     <div className="space-y-2">
       <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
@@ -163,14 +164,10 @@ const TextStructure9Manager: React.FC<Props> = ({
       <div className="space-y-1.5">
         {sections.map((section, idx) => {
           const isExpanded = expandedId === section.id;
-          const isHighlighted =
-            isExpanded || autoExpandSectionId === section.id;
           return (
             <div
               key={section.id}
-              className={`border rounded-xl overflow-hidden transition-colors ${
-                isHighlighted ? "border-blue-500" : "border-gray-200"
-              }`}
+              className="border border-gray-200 rounded-xl overflow-hidden"
             >
               {/* Header row */}
               <div className="flex items-center gap-1 p-2 bg-gray-50/80">
@@ -215,6 +212,24 @@ const TextStructure9Manager: React.FC<Props> = ({
               {/* Expanded content */}
               {isExpanded && (
                 <div className="p-3 space-y-3 border-t border-gray-100 bg-white">
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-gray-500 w-16 shrink-0">
+                      영역 투명도
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
+                      value={section.opacity || ""}
+                      onChange={(e) =>
+                        updateSection(section.id, {
+                          opacity: normalizeOpacityValue(e.target.value),
+                        })
+                      }
+                    />
+                    <span className="text-[10px] text-gray-400">%</span>
+                  </div>
                   {/* TEXT */}
                   {section.type === "text" && (
                     <>
@@ -271,6 +286,27 @@ const TextStructure9Manager: React.FC<Props> = ({
                             >
                               <Trash2 size={10} />
                             </button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="text-[10px] text-gray-400 w-16 shrink-0">
+                              항목 투명도
+                            </label>
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              className="flex-1 bg-white border-none p-1.5 rounded text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
+                              value={item.opacity || ""}
+                              onChange={(e) =>
+                                updateFeatItem(
+                                  section.id,
+                                  itemIdx,
+                                  "opacity",
+                                  normalizeOpacityValue(e.target.value),
+                                )
+                              }
+                            />
+                            <span className="text-[10px] text-gray-400">%</span>
                           </div>
                           <input
                             type="text"
