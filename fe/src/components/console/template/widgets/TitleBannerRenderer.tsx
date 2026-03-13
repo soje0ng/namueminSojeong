@@ -312,7 +312,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div
             className={`self-stretch pl-5 md:pl-10 xl:pl-[280px] pr-0 py-14 inline-flex justify-start items-center gap-20`}
           >
-            <div className="flex-1 h-[575px] inline-flex flex-col justify-between items-start">
+            <div className="flex-1 inline-flex flex-col justify-between items-start">
               {/* 상단 텍스트 그룹 */}
               <div className="flex flex-col justify-start items-start gap-3">
                 {/* 버지니아 해안 리조트 건설 프로젝트 */}
