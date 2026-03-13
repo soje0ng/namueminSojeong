@@ -171,6 +171,12 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   CULTURE_LETTER_DEFAULTS.cultureLetterStyle,
                 viewport,
               ),
+              fontFamily:
+                (data.cultureLetterStyle?.fontFamily ||
+                  CULTURE_LETTER_DEFAULTS.cultureLetterStyle.fontFamily) ===
+                "Tenor Sans"
+                  ? "'Tenor Sans', sans-serif"
+                  : undefined,
             }}
             onDoubleClick={(e) => {
               e.stopPropagation();
