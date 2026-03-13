@@ -379,6 +379,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     display: "flex",
                     flexDirection: isMobile ? "column" : "row",
+                    flexWrap: isDesktop ? "wrap" : "nowrap",
                     gap: "12px",
                     paddingLeft: "24px",
                     paddingRight: "24px",
@@ -392,7 +393,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={item.id || itemSelectId}
                         style={{
-                          flex: "1 0 0",
+                          flex: isDesktop ? "0 0 calc(25% - 9px)" : "1 0 0",
                           display: "flex",
                           flexDirection: "column",
                           gap: "12px",
@@ -694,6 +695,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     display: "flex",
                     flexDirection: isMobile2 ? "column" : "row",
+                    flexWrap: isDesktop2 ? "wrap" : "nowrap",
                     gap: "12px",
                     alignItems: "center",
                     justifyContent: "center",
@@ -705,7 +707,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={item.id || itemSelectId}
                         style={{
-                          flex: "1 0 0",
+                          flex: isDesktop2 ? "0 0 calc(25% - 9px)" : "1 0 0",
                           display: "flex",
                           flexDirection: "column",
                           gap: "20px",

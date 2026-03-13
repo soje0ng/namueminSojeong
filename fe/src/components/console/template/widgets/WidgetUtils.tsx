@@ -435,8 +435,12 @@ export const UniversalMedia: React.FC<{
     return (
       <img
         src={url}
-        className="w-full h-full object-cover"
-        style={{ ...mediaStyle, height: "100%", width: "100%" }}
+        className={naturalSize ? "max-w-full" : "w-full h-full object-cover"}
+        style={
+          naturalSize
+            ? mediaStyle
+            : { ...mediaStyle, height: "100%", width: "100%" }
+        }
         alt={alt}
         onDoubleClick={onDoubleClick}
         onClick={onClick}

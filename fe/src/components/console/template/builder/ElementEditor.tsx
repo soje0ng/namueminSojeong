@@ -25,6 +25,7 @@ import {
   TEXT_STRUCTURE_10_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
+import { CULTURE_LETTER_DEFAULTS } from "../widgets/CultureLetterRenderer";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 import { usePopupStore } from "@/store/console/usePopupStore";
 
@@ -39,6 +40,31 @@ export interface ElementEditorProps {
   uploadProgress: number;
   setUploadProgress: (val: number) => void;
 }
+
+const getCultureLetterBackgroundFields = (layout: string) => {
+  if (layout === "1") {
+    return {
+      desktopKey: "layout1BgImageUrl",
+      mobileKey: "layout1MobileBgImageUrl",
+    };
+  }
+
+  if (layout === "2") {
+    return {
+      desktopKey: "cl2BgUrl",
+      mobileKey: "cl2MobileBgUrl",
+    };
+  }
+
+  if (layout === "3") {
+    return {
+      desktopKey: "cl3BgUrl",
+      mobileKey: "cl3MobileBgUrl",
+    };
+  }
+
+  return null;
+};
 
 export const ElementEditor: React.FC<ElementEditorProps> = ({
   widget,
@@ -119,7 +145,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     sectionType?: string,
     key?: string,
   ) => {
-    const textStyle = (fontSize: string, fontWeight: string, color: string) => ({
+    const textStyle = (
+      fontSize: string,
+      fontWeight: string,
+      color: string,
+    ) => ({
       fontSize,
       fontWeight,
       color,
@@ -138,8 +168,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       if (key === "l5SideTitle") return textStyle("30px", "700", "#131416");
       if (key === "l5SideDesc") return textStyle("20px", "500", "#6D7882");
       if (sectionType === "text") {
-        if (key === "sectionSubTitle") return textStyle("24px", "700", "#131416");
-        if (key === "sectionContent") return textStyle("20px", "400", "#6D7882");
+        if (key === "sectionSubTitle")
+          return textStyle("24px", "700", "#131416");
+        if (key === "sectionContent")
+          return textStyle("20px", "400", "#6D7882");
       }
       if (sectionType === "checklist") {
         if (key === "itemTitle") return textStyle("20px", "700", "#09090b");
@@ -150,15 +182,18 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         if (key === "itemDesc") return textStyle("18px", "400", "#6D7882");
       }
       if (sectionType === "imageBanner") {
-        if (key === "bannerSubTitle") return textStyle("24px", "700", "#131416");
+        if (key === "bannerSubTitle")
+          return textStyle("24px", "700", "#131416");
         if (key === "bannerDesc") return textStyle("20px", "400", "#6D7882");
       }
     }
 
     if (["6", "7", "8", "9"].includes(layoutVal)) {
       if (sectionType === "text") {
-        if (key === "sectionSubTitle") return textStyle("24px", "700", "#131416");
-        if (key === "sectionContent") return textStyle("20px", "400", "#6D7882");
+        if (key === "sectionSubTitle")
+          return textStyle("24px", "700", "#131416");
+        if (key === "sectionContent")
+          return textStyle("20px", "400", "#6D7882");
       }
       if (sectionType === "newsletter") {
         if (key === "sectionNewsletterSubTitle")
@@ -171,7 +206,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         if (key === "itemDesc") return textStyle("20px", "400", "#6D7882");
       }
       if (sectionType === "stripBanner") {
-        if (key === "bannerSubTitle") return textStyle("24px", "700", "#131416");
+        if (key === "bannerSubTitle")
+          return textStyle("24px", "700", "#131416");
         if (key === "bannerDesc") return textStyle("20px", "400", "#6D7882");
       }
       if (sectionType === "basicText") {
@@ -183,9 +219,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
 
     if (layoutVal === "10") {
-      if (key === "sections10_number") return textStyle("20px", "700", "#285DE1");
-      if (key === "sections10_title") return textStyle("28px", "700", "#060606");
-      if (key === "sections10_subTitle") return textStyle("24px", "500", "#131416");
+      if (key === "sections10_number")
+        return textStyle("20px", "700", "#285DE1");
+      if (key === "sections10_title")
+        return textStyle("28px", "700", "#060606");
+      if (key === "sections10_subTitle")
+        return textStyle("24px", "500", "#131416");
       if (key === "sections10_desc") return textStyle("20px", "400", "#6D7882");
       if (key === "sections10_checkTitle")
         return textStyle("20px", "700", "#285DE1");
@@ -195,8 +234,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
     if (layoutVal === "11") {
       if (sectionType === "text") {
-        if (key === "sectionSubTitle") return textStyle("24px", "700", "#1F2937");
-        if (key === "sectionContent") return textStyle("18px", "400", "#6B7280");
+        if (key === "sectionSubTitle")
+          return textStyle("24px", "700", "#1F2937");
+        if (key === "sectionContent")
+          return textStyle("18px", "400", "#6B7280");
       }
       if (sectionType === "features") {
         if (key === "itemNumber") return textStyle("16px", "700", "#285DE1");
@@ -204,7 +245,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         if (key === "itemDesc") return textStyle("18px", "400", "#9CA3AF");
       }
       if (sectionType === "banner") {
-        if (key === "bannerSubTitle") return textStyle("20px", "700", "#285DE1");
+        if (key === "bannerSubTitle")
+          return textStyle("20px", "700", "#285DE1");
         if (key === "bannerDesc") return textStyle("18px", "400", "#9CA3AF");
       }
     }
@@ -219,8 +261,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     const rootStyle = (TEXT_STRUCTURE_DEFAULTS as any)[`${elementKey}Style`];
     if (!itemId) return rootStyle ? { ...rootStyle } : {};
 
-    if (layoutVal === "4" && ["caseTitle", "caseSubTitle"].includes(elementKey)) {
-      return getTextStructureMappedFallbackStyle(layoutVal, undefined, elementKey);
+    if (
+      layoutVal === "4" &&
+      ["caseTitle", "caseSubTitle"].includes(elementKey)
+    ) {
+      return getTextStructureMappedFallbackStyle(
+        layoutVal,
+        undefined,
+        elementKey,
+      );
     }
 
     if (elementKey.startsWith("sections10_")) {
@@ -244,10 +293,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         : getTextStructureMappedFallbackStyle(layoutVal, undefined, elementKey);
     }
 
-    const sectionConfigs: Record<
-      string,
-      { key: string; defaults: any[] }
-    > = {
+    const sectionConfigs: Record<string, { key: string; defaults: any[] }> = {
       "5": { key: "sections5", defaults: TEXT_STRUCTURE_5_DEFAULT_SECTIONS },
       "6": { key: "sections6", defaults: TEXT_STRUCTURE_6_DEFAULT_SECTIONS },
       "7": { key: "sections7", defaults: TEXT_STRUCTURE_7_DEFAULT_SECTIONS },
@@ -273,7 +319,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     };
 
     if (sectionStyleMap[elementKey]) {
-      const sectionIndex = sections.findIndex((section: any) => section.id === itemId);
+      const sectionIndex = sections.findIndex(
+        (section: any) => section.id === itemId,
+      );
       const section = sectionIndex >= 0 ? sections[sectionIndex] : null;
       const defaultSection =
         config.defaults.find((candidate: any) => candidate.id === itemId) ||
@@ -288,7 +336,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           );
     }
 
-    if (!["itemTitle", "itemDesc", "itemIcon", "itemNumber"].includes(elementKey))
+    if (
+      !["itemTitle", "itemDesc", "itemIcon", "itemNumber"].includes(elementKey)
+    )
       return {};
 
     let sectionIndex = -1;
@@ -330,11 +380,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
 
     const defaultSection =
-      (section && config.defaults.find((candidate: any) => candidate.id === section.id)) ||
+      (section &&
+        config.defaults.find(
+          (candidate: any) => candidate.id === section.id,
+        )) ||
       config.defaults[sectionIndex];
     const defaultItem =
-      defaultSection?.items?.find((candidate: any) => candidate.id === item?.id) ||
-      defaultSection?.items?.[itemIndex];
+      defaultSection?.items?.find(
+        (candidate: any) => candidate.id === item?.id,
+      ) || defaultSection?.items?.[itemIndex];
     const styleProp =
       elementKey === "itemTitle"
         ? item?.title !== undefined
@@ -351,7 +405,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
     return fallback
       ? { ...fallback }
-      : getTextStructureMappedFallbackStyle(layoutVal, section?.type, elementKey);
+      : getTextStructureMappedFallbackStyle(
+          layoutVal,
+          section?.type,
+          elementKey,
+        );
   };
 
   const getImageCardFallbackStyle = () => {
@@ -399,12 +457,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               fontWeight: "700",
               color: "#FFFFFF",
             }
-        : {
-            fontSize: "20px",
-            fontSizeMobile: "18px",
-            fontWeight: "700",
-            color: "#131416",
-          },
+          : {
+              fontSize: "20px",
+              fontSizeMobile: "18px",
+              fontWeight: "700",
+              color: "#131416",
+            },
       itemDesc: {
         fontSize: "20px",
         fontSizeMobile: "18px",
@@ -445,6 +503,13 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
 
     return imageCardFallbackMap[elementKey] || {};
+  };
+
+  const getCultureLetterFallbackStyle = () => {
+    if (widget.type !== "cultureLetter" || !styleKey) return {};
+
+    const fallback = (CULTURE_LETTER_DEFAULTS as any)[styleKey];
+    return fallback && typeof fallback === "object" ? { ...fallback } : {};
   };
 
   if (elementKey === "tableHeaderGubun") {
@@ -745,7 +810,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
       onTextChange = (val) => {
         const updatedCases = cases.map((candidate: any) =>
-          candidate.id === itemId ? { ...candidate, [textProp]: val } : candidate,
+          candidate.id === itemId
+            ? { ...candidate, [textProp]: val }
+            : candidate,
         );
         updateWidgetData(widget.id, { cases: updatedCases });
       };
@@ -868,15 +935,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   key: "sections6",
                   defaults: TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
                 }
-            : layoutVal === "8" || layoutVal === "layout8"
-              ? {
-                  key: "sections8",
-                  defaults: TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
-                }
-              : {
-                  key: "sections9",
-                  defaults: TEXT_STRUCTURE_9_DEFAULT_SECTIONS,
-                };
+              : layoutVal === "8" || layoutVal === "layout8"
+                ? {
+                    key: "sections8",
+                    defaults: TEXT_STRUCTURE_8_DEFAULT_SECTIONS,
+                  }
+                : {
+                    key: "sections9",
+                    defaults: TEXT_STRUCTURE_9_DEFAULT_SECTIONS,
+                  };
         const sections =
           data[layoutSectionConfig.key] || layoutSectionConfig.defaults;
         let matchedSectionId: string | null = null;
@@ -1112,13 +1179,13 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                           (it: any, idx: number) =>
                             idx === itemIndex ||
                             (it.id !== undefined && it.id === itemId)
-                            ? {
-                                ...it,
-                                [styleProp]: {
-                                  ...(it[styleProp] || {}),
-                                  [k]: v,
-                                },
-                              }
+                              ? {
+                                  ...it,
+                                  [styleProp]: {
+                                    ...(it[styleProp] || {}),
+                                    [k]: v,
+                                  },
+                                }
                               : it,
                         );
                         return { ...s, items: updatedItems };
@@ -1227,17 +1294,21 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           if (typeof feature !== "object") return [];
 
           const baseLabel = (feature.label || "").trim();
-          return parseLines(feature.value).map((line: string, lineIdx: number) => {
-            const row = {
-              label:
-                lineIdx === 0 ? baseLabel || defaultLabel(idx) : defaultLabel(idx),
-              value: line,
-              labelStyle: feature.labelStyle,
-              valueStyle: feature.valueStyle,
-            };
-            idx += 1;
-            return row;
-          });
+          return parseLines(feature.value).map(
+            (line: string, lineIdx: number) => {
+              const row = {
+                label:
+                  lineIdx === 0
+                    ? baseLabel || defaultLabel(idx)
+                    : defaultLabel(idx),
+                value: line,
+                labelStyle: feature.labelStyle,
+                valueStyle: feature.valueStyle,
+              };
+              idx += 1;
+              return row;
+            },
+          );
         });
       };
 
@@ -1290,8 +1361,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         }
 
         const targetProp = featureField === "Label" ? "label" : "value";
-        styleKey =
-          featureField === "Label" ? "featureLabelStyle" : "descStyle";
+        styleKey = featureField === "Label" ? "featureLabelStyle" : "descStyle";
         const featureStyleProp =
           featureField === "Label" ? "labelStyle" : "valueStyle";
         styleValue = {
@@ -1744,6 +1814,13 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
   } else {
     const getRootDefaultText = () => {
+      if (widget.type === "cultureLetter") {
+        const cultureLetterDefault = (CULTURE_LETTER_DEFAULTS as any)[
+          elementKey
+        ];
+        if (typeof cultureLetterDefault === "string")
+          return cultureLetterDefault;
+      }
       const keyLower = elementKey.toLowerCase();
       if (keyLower.includes("subtitle")) return "( 서브타이틀 )";
       if (keyLower.includes("title")) return "타이틀명 입력";
@@ -1755,8 +1832,19 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           : "설명 내용을 입력하세요";
       return "";
     };
+    // For cultureLetter URL/image keys, treat empty string same as undefined
+    // so the CULTURE_LETTER_DEFAULTS (e.g. YouTube thumbnail URLs) show as value
+    const isCultureLetterMediaKey =
+      widget.type === "cultureLetter" &&
+      (elementKey.toLowerCase().includes("url") ||
+        elementKey.toLowerCase().includes("image") ||
+        elementKey.toLowerCase().includes("icon") ||
+        elementKey.toLowerCase().includes("media"));
     textValue =
-      data[elementKey] !== undefined ? data[elementKey] : getRootDefaultText();
+      data[elementKey] !== undefined &&
+      (!isCultureLetterMediaKey || data[elementKey])
+        ? data[elementKey]
+        : getRootDefaultText();
     // Convention: property 'mainTitle' -> style 'mainTitleStyle'
     styleKey =
       elementKey === "contentTitle" || elementKey === "layout3ContentTitle"
@@ -1776,8 +1864,50 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
     onTextChange = (val) => updateWidgetData(widget.id, { [elementKey]: val });
     onStyleChange = (k, v) => updateStyle(styleKey, k, v);
-    linkValue = data.link || "";
-    onLinkChange = (val) => updateWidgetData(widget.id, { link: val });
+    // cultureLetter Layout 4: 썸네일 URL 자체가 클릭 링크 (YouTube 비디오 URL)
+    if (
+      widget.type === "cultureLetter" &&
+      (elementKey === "cl4C1ThumbUrl" ||
+        elementKey === "cl4C2ThumbUrl" ||
+        elementKey === "cl4C3ThumbUrl")
+    ) {
+      // linkValue = 썸네일 URL 자체 (YouTube URL → 클릭 시 이동)
+      linkValue = data[elementKey] || CULTURE_LETTER_DEFAULTS[elementKey] || "";
+      onLinkChange = (val) =>
+        updateWidgetData(widget.id, { [elementKey]: val });
+    }
+    // cultureLetter Layout 5: 카드별 전용 링크 키 사용 (타이틀/설명/배경이미지 모두)
+    else if (
+      widget.type === "cultureLetter" &&
+      (elementKey === "layout5Card1Title" ||
+        elementKey === "layout5Card1Desc" ||
+        elementKey === "cl5C1CardBgUrl")
+    ) {
+      linkValue = data.layout5Card1Link || "";
+      onLinkChange = (val) =>
+        updateWidgetData(widget.id, { layout5Card1Link: val });
+    } else if (
+      widget.type === "cultureLetter" &&
+      (elementKey === "layout5Card2Title" ||
+        elementKey === "layout5Card2Desc" ||
+        elementKey === "cl5C2CardBgUrl")
+    ) {
+      linkValue = data.layout5Card2Link || "";
+      onLinkChange = (val) =>
+        updateWidgetData(widget.id, { layout5Card2Link: val });
+    } else if (
+      widget.type === "cultureLetter" &&
+      (elementKey === "layout5Card3Title" ||
+        elementKey === "layout5Card3Desc" ||
+        elementKey === "cl5C3CardBgUrl")
+    ) {
+      linkValue = data.layout5Card3Link || "";
+      onLinkChange = (val) =>
+        updateWidgetData(widget.id, { layout5Card3Link: val });
+    } else {
+      linkValue = data.link || "";
+      onLinkChange = (val) => updateWidgetData(widget.id, { link: val });
+    }
 
     autoPlayValue = data.autoPlay || false;
     mutedValue = data.muted !== undefined ? data.muted : true;
@@ -1795,19 +1925,39 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   if (widget.type === "imageCard" && imageCardFallbackStyle) {
     styleValue = { ...imageCardFallbackStyle, ...styleValue };
   }
+  const cultureLetterFallbackStyle = getCultureLetterFallbackStyle();
+  if (widget.type === "cultureLetter" && cultureLetterFallbackStyle) {
+    styleValue = { ...cultureLetterFallbackStyle, ...styleValue };
+  }
 
   const isImageAreaMediaEditor =
     widget.type === "imageArea" &&
     (elementKey === "imageUrl" || elementKey === "mobileImageUrl");
+  const cultureLetterBackgroundFields =
+    widget.type === "cultureLetter"
+      ? getCultureLetterBackgroundFields(
+          String((widget.data as any).layout || "1"),
+        )
+      : null;
+  const isCultureLetterBackgroundMediaEditor = Boolean(
+    cultureLetterBackgroundFields &&
+    [
+      cultureLetterBackgroundFields.desktopKey,
+      cultureLetterBackgroundFields.mobileKey,
+    ].includes(elementKey),
+  );
 
   const isMediaKey =
     elementKey.toLowerCase().includes("url") ||
     elementKey.toLowerCase().includes("image") ||
     elementKey.toLowerCase().includes("icon") ||
     elementKey.toLowerCase().includes("media") ||
+    elementKey.toLowerCase().includes("thumb") || // Added for cultureLetter YouTube thumbs
+    elementKey.toLowerCase().includes("svg") || // Added for cultureLetter layout 5 icons
     elementKey === "url" ||
     elementKey === "topImage" ||
-    isImageAreaMediaEditor;
+    isImageAreaMediaEditor ||
+    isCultureLetterBackgroundMediaEditor;
 
   const isItemBackgroundKey = elementKey === "itemStyle";
   const isTitleBannerLayout3ImageEditor =
@@ -1913,6 +2063,44 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     if (isMediaKey) {
       if (widget.type === "process" || widget.type === "processCard")
         return "/images/placeholder/like_cat.jpg";
+      // cultureLetter: 레이아웃별 이미지 키명 힌트
+      if (widget.type === "cultureLetter") {
+        const cultureLetterImageHints: Record<string, string> = {
+          layout1BgImageUrl:
+            "/images/placeholder/culture_letter_layout1_bg.jpg",
+          layout1MobileBgImageUrl:
+            "/images/placeholder/culture_letter_layout1_bg.jpg",
+          layout1LogoImageUrl:
+            "/images/placeholder/culture_letter_layout1_logo.png",
+          cl2BgUrl: "/images/placeholder/culture_letter_layout2_bg.jpg",
+          cl2MobileBgUrl: "/images/placeholder/culture_letter_layout2_bg.jpg",
+          cl2LogoUrl: "/images/placeholder/culture_letter_layout2_logo.png",
+          cl3BgUrl: "/images/placeholder/img1.png",
+          cl3MobileBgUrl: "/images/placeholder/img1.png",
+          cl3LogoUrl: "/images/placeholder/culture_letter_layout3_logo.png",
+          cl3CardImgUrl: "/images/placeholder/culture_letter_layout3_card.jpg",
+          cl4C1LogoUrl:
+            "/images/placeholder/culture_letter_layout4_card1_logo.png",
+          cl4C1ThumbUrl: "https://www.youtube.com/watch?v=bfeCmROrjXw",
+          cl4C2LogoUrl:
+            "/images/placeholder/culture_letter_layout4_card2_logo.png",
+          cl4C2ThumbUrl: "https://www.youtube.com/watch?v=YAGU3YSwrTU&t=64s",
+          cl4C3LogoUrl:
+            "/images/placeholder/culture_letter_layout4_card3_logo.png",
+          cl4C3ThumbUrl: "https://www.youtube.com/watch?v=DOPXQMX0rio&t=2s",
+          cl5C1SvgUrl: "/images/placeholder/cl5_icon1.svg",
+          cl5C1CardBgUrl:
+            "/images/placeholder/culture_letter_layout5_card1_bg.jpg",
+          cl5C2SvgUrl: "/images/placeholder/cl5_icon2.svg",
+          cl5C2CardBgUrl:
+            "/images/placeholder/culture_letter_layout5_card2_bg.jpg",
+          cl5C3SvgUrl: "/images/placeholder/cl5_icon3.svg",
+          cl5C3CardBgUrl:
+            "/images/placeholder/culture_letter_layout5_card3_bg.jpg",
+        };
+        if (elementKey in cultureLetterImageHints)
+          return cultureLetterImageHints[elementKey];
+      }
       return "/images/placeholder/img1.png";
     }
     const keyLower = elementKey.toLowerCase();
@@ -2548,8 +2736,105 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                       placeholder="모바일 이미지 URL을 입력하세요 (선택)"
                     />
                     <p className="text-[10px] text-gray-400 leading-tight">
-                      * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
-                      노출됩니다.
+                      * 태블릿/모바일 뷰에서는 모바일 이미지가 우선 노출되며,
+                      없으면 PC 이미지가 공통으로 노출됩니다.
+                    </p>
+                  </div>
+                </div>
+              ) : isCultureLetterBackgroundMediaEditor &&
+                cultureLetterBackgroundFields ? (
+                <div className="space-y-6 pt-2">
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                      <ImageIcon size={14} className="text-blue-500" /> PC 배경
+                      이미지 설정
+                    </label>
+                    <ImgUploadPop
+                      onSelect={(url) =>
+                        updateWidgetData(widget.id, {
+                          [cultureLetterBackgroundFields.desktopKey]: url,
+                        })
+                      }
+                      button={
+                        <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                          <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                            <Upload size={20} />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-bold text-gray-700 text-sm">
+                              PC 배경 이미지 선택
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              서버에 업로드된 이미지 선택
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                      value={
+                        ((widget.data as any)[
+                          cultureLetterBackgroundFields.desktopKey
+                        ] as string) || ""
+                      }
+                      onChange={(e) =>
+                        updateWidgetData(widget.id, {
+                          [cultureLetterBackgroundFields.desktopKey]:
+                            e.target.value,
+                        })
+                      }
+                      placeholder="PC 배경 이미지 URL을 입력하세요"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                      <Smartphone size={14} className="text-blue-500" />
+                      모바일 배경 이미지 설정
+                    </label>
+                    <ImgUploadPop
+                      onSelect={(url) =>
+                        updateWidgetData(widget.id, {
+                          [cultureLetterBackgroundFields.mobileKey]: url,
+                        })
+                      }
+                      button={
+                        <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                          <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                            <Upload size={20} />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-bold text-gray-700 text-sm">
+                              모바일 배경 이미지 선택
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              서버에 업로드된 이미지 선택
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                      value={
+                        ((widget.data as any)[
+                          cultureLetterBackgroundFields.mobileKey
+                        ] as string) || ""
+                      }
+                      onChange={(e) =>
+                        updateWidgetData(widget.id, {
+                          [cultureLetterBackgroundFields.mobileKey]:
+                            e.target.value,
+                        })
+                      }
+                      placeholder="모바일 배경 이미지 URL을 입력하세요 (선택)"
+                    />
+                    <p className="text-[10px] text-gray-400 leading-tight">
+                      * 태블릿/모바일 뷰에서는 모바일 배경 이미지가 우선
+                      노출되며, 없으면 PC 배경 이미지가 공통으로 노출됩니다.
                     </p>
                   </div>
                 </div>
@@ -2632,51 +2917,131 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                       placeholder="모바일 이미지 URL을 입력하세요 (선택)"
                     />
                     <p className="text-[10px] text-gray-400 leading-tight">
-                      * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
-                      노출됩니다.
+                      * 태블릿/모바일 뷰에서는 모바일 이미지가 우선 노출되며,
+                      없으면 PC 이미지가 공통으로 노출됩니다.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide">
+                      좌우 여백
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                      value={
+                        (() => {
+                          const value = (widget.data as any).desktopHorizontalPadding;
+                          if (
+                            value === undefined ||
+                            value === null ||
+                            value === ""
+                          ) {
+                            return "";
+                          }
+                          return value.toString().replace("px", "");
+                        })()
+                      }
+                      onChange={(e) =>
+                        updateWidgetData(widget.id, {
+                          desktopHorizontalPadding: e.target.value,
+                        })
+                      }
+                      placeholder="PC 여백(px)"
+                    />
+                    <p className="text-[14px] text-gray-400 leading-tight">
+                      * PC에만 입력값이 적용되며, 태블릿은 40px, 모바일은
+                      20px로 고정 적용됩니다. 비우면 전체 0px입니다.
                     </p>
                   </div>
                 </div>
               ) : (
                 <>
-                  <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide">
-                    콘텐츠 업로드 또는 주소
-                  </label>
-
-                  <ImgUploadPop
-                    onSelect={(url) => onTextChange(url)}
-                    button={
-                      <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
-                        <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Upload size={20} />
-                        </div>
-                        <div className="text-left">
-                          <p className="font-bold text-gray-700 text-sm">
-                            이미지 선택하기
-                          </p>
-                          <p className="text-[10px] text-gray-400">
-                            서버에 업로드된 이미지 선택
-                          </p>
-                        </div>
+                  {/* Culture Letter 전용 미디어 업데이터 (Atomic Data Update) */}
+                  {widget.type === "cultureLetter" ? (
+                    <>
+                      <ImgUploadPop
+                        onSelect={(url) =>
+                          updateWidgetData(widget.id, { [elementKey]: url })
+                        }
+                        button={
+                          <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                            <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <Upload size={20} />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-bold text-gray-700 text-sm">
+                                이미지 선택하기
+                              </p>
+                              <p className="text-[10px] text-gray-400">
+                                서버에 업로드된 이미지 선택
+                              </p>
+                            </div>
+                          </div>
+                        }
+                      />
+                      <div className="flex items-center gap-2 py-2">
+                        <div className="h-px bg-gray-100 flex-1"></div>
+                        <span className="text-[10px] font-bold text-gray-300 uppercase">
+                          또는 URL 직접 입력
+                        </span>
+                        <div className="h-px bg-gray-100 flex-1"></div>
                       </div>
-                    }
-                  />
+                      <input
+                        type="text"
+                        className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                        value={(data as any)[elementKey] || ""}
+                        onChange={(e) =>
+                          updateWidgetData(widget.id, {
+                            [elementKey]: e.target.value,
+                          })
+                        }
+                        placeholder={currentPlaceholder}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide">
+                        콘텐츠 업로드 또는 주소
+                      </label>
 
-                  <div className="flex items-center gap-2 py-2">
-                    <div className="h-px bg-gray-100 flex-1"></div>
-                    <span className="text-[10px] font-bold text-gray-300 uppercase">
-                      또는 URL 직접 입력
-                    </span>
-                    <div className="h-px bg-gray-100 flex-1"></div>
-                  </div>
+                      <ImgUploadPop
+                        onSelect={(url) => onTextChange(url)}
+                        button={
+                          <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                            <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <Upload size={20} />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-bold text-gray-700 text-sm">
+                                이미지 선택하기
+                              </p>
+                              <p className="text-[10px] text-gray-400">
+                                서버에 업로드된 이미지 선택
+                              </p>
+                            </div>
+                          </div>
+                        }
+                      />
 
-                  <input
-                    type="text"
-                    className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
-                    value={textValue || ""}
-                    onChange={(e) => onTextChange(e.target.value)}
-                    placeholder={currentPlaceholder}
-                  />
+                      <div className="flex items-center gap-2 py-2">
+                        <div className="h-px bg-gray-100 flex-1"></div>
+                        <span className="text-[10px] font-bold text-gray-300 uppercase">
+                          또는 URL 직접 입력
+                        </span>
+                        <div className="h-px bg-gray-100 flex-1"></div>
+                      </div>
+
+                      <input
+                        type="text"
+                        className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                        value={textValue || ""}
+                        onChange={(e) => onTextChange(e.target.value)}
+                        placeholder={currentPlaceholder}
+                      />
+                    </>
+                  )}
                 </>
               )}
 

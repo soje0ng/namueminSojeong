@@ -178,6 +178,8 @@ const CULTURE_LETTER_LAYOUT_FIELDS = [
   // Layout 1 - 컬처레터 헤더 좌측정렬
   "layout1BgImageUrl",
   "layout1BgImageUrlStyle",
+  "layout1MobileBgImageUrl",
+  "layout1MobileBgImageUrlStyle",
   "layout1LogoImageUrl",
   "layout1LogoImageUrlStyle",
   "layout1CultureLetter",
@@ -191,10 +193,12 @@ const CULTURE_LETTER_LAYOUT_FIELDS = [
   "layout1Desc",
   "layout1DescStyle",
   // Layout 2 - 컬처레터 헤더 중앙정렬
-  "layout2BgImageUrl",
-  "layout2BgImageUrlStyle",
-  "layout2LogoImageUrl",
-  "layout2LogoImageUrlStyle",
+  "cl2BgUrl",
+  "cl2BgUrlStyle",
+  "cl2MobileBgUrl",
+  "cl2MobileBgUrlStyle",
+  "cl2LogoUrl",
+  "cl2LogoUrlStyle",
   "layout2CultureLetter",
   "layout2CultureLetterStyle",
   "layout2IssueNo",
@@ -206,10 +210,14 @@ const CULTURE_LETTER_LAYOUT_FIELDS = [
   "layout2Desc",
   "layout2DescStyle",
   // Layout 3 - 컬처레터 헤더 우측배너
-  "layout3BgImageUrl",
-  "layout3BgImageUrlStyle",
-  "layout3LogoImageUrl",
-  "layout3LogoImageUrlStyle",
+  "cl3BgUrl",
+  "cl3BgUrlStyle",
+  "cl3MobileBgUrl",
+  "cl3MobileBgUrlStyle",
+  "cl3LogoUrl",
+  "cl3LogoUrlStyle",
+  "cl3CardImgUrl",
+  "cl3CardImgUrlStyle",
   "layout3CultureLetter",
   "layout3CultureLetterStyle",
   "layout3IssueNo",
@@ -221,35 +229,56 @@ const CULTURE_LETTER_LAYOUT_FIELDS = [
   "layout3Desc",
   "layout3DescStyle",
   // Layout 4 - 컬처레터 유튜브 타이틀
-  "layout4BgImageUrl",
-  "layout4BgImageUrlStyle",
-  "layout4LogoImageUrl",
-  "layout4LogoImageUrlStyle",
-  "layout4CultureLetter",
-  "layout4CultureLetterStyle",
-  "layout4IssueNo",
-  "layout4IssueNoStyle",
-  "layout4IssueDate",
-  "layout4IssueDateStyle",
-  "layout4Title",
-  "layout4TitleStyle",
-  "layout4Desc",
-  "layout4DescStyle",
+  "layout4SubLabel",
+  "layout4SubLabelStyle",
+  "layout4MainTitle",
+  "layout4MainTitleStyle",
+  "cl4C1LogoUrl",
+  "cl4C1LogoUrlStyle",
+  "cl4C1ThumbUrl",
+  "cl4C1ThumbUrlStyle",
+  "layout4Card1Title",
+  "layout4Card1TitleStyle",
+  "cl4C2LogoUrl",
+  "cl4C2LogoUrlStyle",
+  "cl4C2ThumbUrl",
+  "cl4C2ThumbUrlStyle",
+  "layout4Card2Title",
+  "layout4Card2TitleStyle",
+  "cl4C3LogoUrl",
+  "cl4C3LogoUrlStyle",
+  "cl4C3ThumbUrl",
+  "cl4C3ThumbUrlStyle",
+  "layout4Card3Title",
+  "layout4Card3TitleStyle",
   // Layout 5 - 컬처레터 바로가기 버튼
-  "layout5BgImageUrl",
-  "layout5BgImageUrlStyle",
-  "layout5LogoImageUrl",
-  "layout5LogoImageUrlStyle",
-  "layout5CultureLetter",
-  "layout5CultureLetterStyle",
-  "layout5IssueNo",
-  "layout5IssueNoStyle",
-  "layout5IssueDate",
-  "layout5IssueDateStyle",
-  "layout5Title",
-  "layout5TitleStyle",
-  "layout5Desc",
-  "layout5DescStyle",
+  "cl5C1SvgUrl",
+  "cl5C1SvgUrlStyle",
+  "cl5C1CardBgUrl",
+  "cl5C1CardBgUrlStyle",
+  "layout5Card1Title",
+  "layout5Card1TitleStyle",
+  "layout5Card1Desc",
+  "layout5Card1DescStyle",
+  "layout5Card1Link",
+  "cl5C2SvgUrl",
+  "cl5C2SvgUrlStyle",
+  "cl5C2CardBgUrl",
+  "cl5C2CardBgUrlStyle",
+  "layout5Card2Title",
+  "layout5Card2TitleStyle",
+  "layout5Card2Desc",
+  "layout5Card2DescStyle",
+  "layout5Card2Link",
+  "cl5C3SvgUrl",
+  "cl5C3SvgUrlStyle",
+  "cl5C3CardBgUrl",
+  "cl5C3CardBgUrlStyle",
+  "layout5Card3Title",
+  "layout5Card3TitleStyle",
+  "layout5Card3Desc",
+  "layout5Card3DescStyle",
+  "layout5Card3Link",
   "items",
 ] as const;
 
@@ -294,6 +323,69 @@ const getCultureLetterDefaultState = (layout: string) => {
     ...pickCultureLetterLayoutState(CULTURE_LETTER_DEFAULTS),
     layout,
   };
+};
+
+const getCultureLetterBackgroundFields = (layout: string) => {
+  if (layout === "1") {
+    return {
+      desktopKey: "layout1BgImageUrl",
+      mobileKey: "layout1MobileBgImageUrl",
+    };
+  }
+
+  if (layout === "2") {
+    return {
+      desktopKey: "cl2BgUrl",
+      mobileKey: "cl2MobileBgUrl",
+    };
+  }
+
+  if (layout === "3") {
+    return {
+      desktopKey: "cl3BgUrl",
+      mobileKey: "cl3MobileBgUrl",
+    };
+  }
+
+  // 레이아웃 4, 5는 위젯 자체 style.backgroundImage를 기본으로 사용하지만,
+  // 일관성을 위해 null을 반환하여 else 브랜치의 일반 배경 설정을 따르도록 합니다.
+  return null;
+};
+
+const getCultureLetterMediaFields = (layout: string) => {
+  if (layout === "1") {
+    return [{ key: "layout1LogoImageUrl", label: "메인 로고" }];
+  }
+  if (layout === "2") {
+    return [{ key: "cl2LogoUrl", label: "메인 로고" }];
+  }
+  if (layout === "3") {
+    return [
+      { key: "cl3LogoUrl", label: "메인 로고" },
+      { key: "cl3CardImgUrl", label: "우측 배너 이미지" },
+    ];
+  }
+  if (layout === "4") {
+    return [
+      { key: "cl4C1LogoUrl", label: "카테고리 로고 1" },
+      { key: "cl4C1ThumbUrl", label: "유튜브 썸네일 1 (URL)" },
+      { key: "cl4C2LogoUrl", label: "카테고리 로고 2" },
+      { key: "cl4C2ThumbUrl", label: "유튜브 썸네일 2 (URL)" },
+      { key: "cl4C3LogoUrl", label: "카테고리 로고 3" },
+      { key: "cl4C3ThumbUrl", label: "유튜브 썸네일 3 (URL)" },
+    ];
+  }
+  if (layout === "5") {
+    return [
+      { key: "cl5C1SvgUrl", label: "카드 1 아이콘" },
+      { key: "cl5C1CardBgUrl", label: "카드 1 배경 이미지" },
+      { key: "cl5C2SvgUrl", label: "카드 2 아이콘" },
+      { key: "cl5C2CardBgUrl", label: "카드 2 배경 이미지" },
+      { key: "cl5C3SvgUrl", label: "카드 3 아이콘" },
+      { key: "cl5C3CardBgUrl", label: "카드 3 배경 이미지" },
+    ];
+  }
+  return [];
 };
 
 export const PropertyPanel: React.FC<PropertyPanelProps> = ({
@@ -691,6 +783,14 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
   const isImageCardLayout3Or4 =
     widget.type === "imageCard" &&
     (imageCardLayout === "3" || imageCardLayout === "4");
+  const cultureLetterLayout =
+    widget.type === "cultureLetter"
+      ? String((widget.data as any).layout || "1")
+      : null;
+  const cultureLetterBackgroundFields =
+    cultureLetterLayout && ["1", "2", "3"].includes(cultureLetterLayout)
+      ? getCultureLetterBackgroundFields(cultureLetterLayout)
+      : null;
 
   const imageCardDefaultItemsPerRow =
     imageCardLayout === "4"
@@ -1663,8 +1763,42 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     placeholder="모바일 이미지 URL을 입력하세요 (선택)"
                   />
                   <p className="text-[10px] text-gray-400 leading-tight">
-                    * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
-                    노출됩니다.
+                    * 태블릿/모바일 뷰에서는 모바일 이미지가 우선 노출되며,
+                    없으면 PC 이미지가 공통으로 노출됩니다.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide">
+                    좌우 여백
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                    value={
+                      (() => {
+                        const value = (widget.data as any).desktopHorizontalPadding;
+                        if (
+                          value === undefined ||
+                          value === null ||
+                          value === ""
+                        ) {
+                          return "";
+                        }
+                        return value.toString().replace("px", "");
+                      })()
+                    }
+                    onChange={(e) =>
+                      updateWidgetData(widget.id, {
+                        desktopHorizontalPadding: e.target.value,
+                      })
+                    }
+                    placeholder="PC 여백(px)"
+                  />
+                  <p className="text-[14px] text-gray-400 leading-tight">
+                    * PC에만 입력값이 적용되며, 태블릿은 40px, 모바일은
+                    20px로 고정 적용됩니다. 비우면 전체 0px입니다.
                   </p>
                 </div>
               </div>
@@ -1672,146 +1806,286 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
             {widget.type !== "codeSection" && (
               <div className="space-y-6">
-                <div className="space-y-4">
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">
-                    {widget.type === "bannerSection"
-                      ? "배너배경 설정"
-                      : "배경 설정"}
-                  </label>
-                  <div className="flex p-1 bg-gray-100 rounded-lg w-full mb-3">
-                    <button
-                      onClick={() =>
-                        updateWidgetStyle(widget.id, {
-                          backgroundImage: undefined,
-                        })
-                      }
-                      className={`flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all ${
-                        widget.style?.backgroundImage === undefined
-                          ? "bg-white text-blue-600 shadow-sm"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      색상
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (widget.style?.backgroundImage === undefined) {
-                          updateWidgetStyle(widget.id, {
-                            backgroundImage: "",
-                          });
-                        }
-                      }}
-                      className={`flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all ${
-                        widget.style?.backgroundImage !== undefined
-                          ? "bg-white text-blue-600 shadow-sm"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      이미지
-                    </button>
-                  </div>
+                {cultureLetterBackgroundFields ? (
+                  <div className="space-y-4">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                      전체 배경 설정
+                    </label>
 
-                  {widget.style?.backgroundImage === undefined ? (
-                    <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border border-gray-50 hover:bg-gray-100 transition-colors">
-                      <input
-                        type="color"
-                        className="w-10 h-10 rounded-lg border-none overflow-hidden cursor-pointer shadow-sm hover:scale-105 transition-transform"
-                        value={
-                          widget.style?.backgroundColor ||
-                          (widget.type === "bannerSection" &&
-                          (widget.data as any).variant === "banner2"
-                            ? "#F8F6F2"
-                            : widget.type === "bannerSection" &&
-                                (widget.data as any).variant === "banner1"
-                              ? "#012E58"
-                              : widget.type === "bannerSection" &&
-                                  (widget.data as any).variant === "banner3"
-                                ? "#21568E"
-                                : widget.type === "stripBanner" &&
-                                    (widget.data as any).layout === "2"
-                                  ? "#01355F"
-                                  : widget.type === "stripBanner"
-                                    ? "#295E92"
-                                    : "#ffffff")
-                        }
-                        onChange={(e) =>
-                          updateWidgetStyle(widget.id, {
-                            backgroundColor: e.target.value,
-                          })
-                        }
-                      />
-                      <span className="text-xs font-mono text-gray-500 bg-white px-2 py-1 rounded border border-gray-100 uppercase">
-                        {widget.style?.backgroundColor ||
-                          (widget.type === "bannerSection" &&
-                          (widget.data as any).variant === "banner2"
-                            ? "#F8F6F2"
-                            : widget.type === "bannerSection" &&
-                                (widget.data as any).variant === "banner1"
-                              ? "#012E58"
-                              : widget.type === "bannerSection" &&
-                                  (widget.data as any).variant === "banner3"
-                                ? "#21568E"
-                                : widget.type === "stripBanner" &&
-                                    (widget.data as any).layout === "2"
-                                  ? "#01355F"
-                                  : widget.type === "stripBanner"
-                                    ? "#295E92"
-                                    : "#ffffff")}
-                      </span>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-wide block">
+                        배경색
+                      </label>
+                      <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border border-gray-50 hover:bg-gray-100 transition-colors">
+                        <input
+                          type="color"
+                          className="w-10 h-10 rounded-lg border-none overflow-hidden cursor-pointer shadow-sm hover:scale-105 transition-transform"
+                          value={widget.style?.backgroundColor || "#ffffff"}
+                          onChange={(e) =>
+                            updateWidgetStyle(widget.id, {
+                              backgroundColor: e.target.value,
+                            })
+                          }
+                        />
+                        <span className="text-xs font-mono text-gray-500 bg-white px-2 py-1 rounded border border-gray-100 uppercase">
+                          {widget.style?.backgroundColor || "#ffffff"}
+                        </span>
+                        <button
+                          onClick={() =>
+                            updateWidgetStyle(widget.id, {
+                              backgroundColor: undefined,
+                            })
+                          }
+                          className="ml-auto shrink-0 text-[10px] bg-gray-100 hover:bg-red-50 hover:text-red-500 px-2.5 py-2 rounded-lg font-bold transition-colors"
+                        >
+                          초기화
+                        </button>
+                      </div>
+                      {cultureLetterLayout === "3" &&
+                        !widget.style?.backgroundColor && (
+                          <p className="text-[10px] text-gray-400 leading-tight">
+                            * 색상을 지정하지 않으면 기본 그라디언트가
+                            유지됩니다.
+                          </p>
+                        )}
                     </div>
-                  ) : (
+
                     <div className="space-y-3">
-                      {/* 이미지 선택 팝업 */}
+                      <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide flex items-center gap-1">
+                        <ImageIcon size={14} className="text-blue-500" /> PC
+                        배경 이미지 설정
+                      </label>
                       <ImgUploadPop
                         onSelect={(url) =>
-                          updateWidgetStyle(widget.id, {
-                            backgroundImage: url,
+                          updateWidgetData(widget.id, {
+                            [cultureLetterBackgroundFields.desktopKey]: url,
                           })
                         }
                         button={
-                          <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                          <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
                             <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                              <Upload size={20} />
+                              <Upload size={18} />
                             </div>
                             <div className="text-left">
                               <p className="font-bold text-gray-700 text-sm">
-                                이미지 선택하기
+                                PC 배경 이미지 선택
                               </p>
                               <p className="text-[10px] text-gray-400">
-                                서버에 업로드된 이미지 선택
+                                서버 업로드 또는 선택
                               </p>
                             </div>
                           </div>
                         }
                       />
-
-                      {/* 구분선 */}
-                      <div className="flex items-center gap-2 py-2">
-                        <div className="h-px bg-gray-100 flex-1"></div>
-                        <span className="text-[10px] font-bold text-gray-300 uppercase">
-                          또는 URL 직접 입력
-                        </span>
-                        <div className="h-px bg-gray-100 flex-1"></div>
-                      </div>
-
-                      {/* URL 직접 입력 */}
                       <input
                         type="text"
-                        className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100"
-                        placeholder="이미지 주소를 입력하세요"
-                        value={widget.style?.backgroundImage || ""}
+                        className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                        value={
+                          ((widget.data as any)[
+                            cultureLetterBackgroundFields.desktopKey
+                          ] as string) || ""
+                        }
                         onChange={(e) =>
-                          updateWidgetStyle(widget.id, {
-                            backgroundImage: e.target.value,
+                          updateWidgetData(widget.id, {
+                            [cultureLetterBackgroundFields.desktopKey]:
+                              e.target.value,
                           })
                         }
+                        placeholder="PC 배경 이미지 URL을 입력하세요"
                       />
-                      <p className="text-[10px] text-gray-400">
-                        * 배경 이미지는 영역에 맞춰 가득 채워집니다 (Cover).
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide flex items-center gap-1">
+                        <Smartphone size={14} className="text-blue-500" />
+                        모바일 배경 이미지 설정
+                      </label>
+                      <ImgUploadPop
+                        onSelect={(url) =>
+                          updateWidgetData(widget.id, {
+                            [cultureLetterBackgroundFields.mobileKey]: url,
+                          })
+                        }
+                        button={
+                          <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                            <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <Upload size={18} />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-bold text-gray-700 text-sm">
+                                모바일 배경 이미지 선택
+                              </p>
+                              <p className="text-[10px] text-gray-400">
+                                서버 업로드 또는 선택
+                              </p>
+                            </div>
+                          </div>
+                        }
+                      />
+                      <input
+                        type="text"
+                        className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                        value={
+                          ((widget.data as any)[
+                            cultureLetterBackgroundFields.mobileKey
+                          ] as string) || ""
+                        }
+                        onChange={(e) =>
+                          updateWidgetData(widget.id, {
+                            [cultureLetterBackgroundFields.mobileKey]:
+                              e.target.value,
+                          })
+                        }
+                        placeholder="모바일 배경 이미지 URL을 입력하세요 (선택)"
+                      />
+                      <p className="text-[10px] text-gray-400 leading-tight">
+                        * 태블릿/모바일 뷰에서는 모바일 배경 이미지가 우선
+                        노출되며, 없으면 PC 배경 이미지가 공통으로 노출됩니다.
                       </p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                      {widget.type === "bannerSection"
+                        ? "배너배경 설정"
+                        : "배경 설정"}
+                    </label>
+                    <div className="flex p-1 bg-gray-100 rounded-lg w-full mb-3">
+                      <button
+                        onClick={() =>
+                          updateWidgetStyle(widget.id, {
+                            backgroundImage: undefined,
+                          })
+                        }
+                        className={`flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all ${
+                          widget.style?.backgroundImage === undefined
+                            ? "bg-white text-blue-600 shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        색상
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (widget.style?.backgroundImage === undefined) {
+                            updateWidgetStyle(widget.id, {
+                              backgroundImage: "",
+                            });
+                          }
+                        }}
+                        className={`flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all ${
+                          widget.style?.backgroundImage !== undefined
+                            ? "bg-white text-blue-600 shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        이미지
+                      </button>
+                    </div>
+
+                    {widget.style?.backgroundImage === undefined ? (
+                      <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border border-gray-50 hover:bg-gray-100 transition-colors">
+                        <input
+                          type="color"
+                          className="w-10 h-10 rounded-lg border-none overflow-hidden cursor-pointer shadow-sm hover:scale-105 transition-transform"
+                          value={
+                            widget.style?.backgroundColor ||
+                            (widget.type === "bannerSection" &&
+                            (widget.data as any).variant === "banner2"
+                              ? "#F8F6F2"
+                              : widget.type === "bannerSection" &&
+                                  (widget.data as any).variant === "banner1"
+                                ? "#012E58"
+                                : widget.type === "bannerSection" &&
+                                    (widget.data as any).variant === "banner3"
+                                  ? "#21568E"
+                                  : widget.type === "stripBanner" &&
+                                      (widget.data as any).layout === "2"
+                                    ? "#01355F"
+                                    : widget.type === "stripBanner"
+                                      ? "#295E92"
+                                      : "#ffffff")
+                          }
+                          onChange={(e) =>
+                            updateWidgetStyle(widget.id, {
+                              backgroundColor: e.target.value,
+                            })
+                          }
+                        />
+                        <span className="text-xs font-mono text-gray-500 bg-white px-2 py-1 rounded border border-gray-100 uppercase">
+                          {widget.style?.backgroundColor ||
+                            (widget.type === "bannerSection" &&
+                            (widget.data as any).variant === "banner2"
+                              ? "#F8F6F2"
+                              : widget.type === "bannerSection" &&
+                                  (widget.data as any).variant === "banner1"
+                                ? "#012E58"
+                                : widget.type === "bannerSection" &&
+                                    (widget.data as any).variant === "banner3"
+                                  ? "#21568E"
+                                  : widget.type === "stripBanner" &&
+                                      (widget.data as any).layout === "2"
+                                    ? "#01355F"
+                                    : widget.type === "stripBanner"
+                                      ? "#295E92"
+                                      : "#ffffff")}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {/* 이미지 선택 팝업 */}
+                        <ImgUploadPop
+                          onSelect={(url) =>
+                            updateWidgetStyle(widget.id, {
+                              backgroundImage: url,
+                            })
+                          }
+                          button={
+                            <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                              <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Upload size={20} />
+                              </div>
+                              <div className="text-left">
+                                <p className="font-bold text-gray-700 text-sm">
+                                  이미지 선택하기
+                                </p>
+                                <p className="text-[10px] text-gray-400">
+                                  서버에 업로드된 이미지 선택
+                                </p>
+                              </div>
+                            </div>
+                          }
+                        />
+
+                        {/* 구분선 */}
+                        <div className="flex items-center gap-2 py-2">
+                          <div className="h-px bg-gray-100 flex-1"></div>
+                          <span className="text-[10px] font-bold text-gray-300 uppercase">
+                            또는 URL 직접 입력
+                          </span>
+                          <div className="h-px bg-gray-100 flex-1"></div>
+                        </div>
+
+                        {/* URL 직접 입력 */}
+                        <input
+                          type="text"
+                          className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100"
+                          placeholder="이미지 주소를 입력하세요"
+                          value={widget.style?.backgroundImage || ""}
+                          onChange={(e) =>
+                            updateWidgetStyle(widget.id, {
+                              backgroundImage: e.target.value,
+                            })
+                          }
+                        />
+                        <p className="text-[10px] text-gray-400">
+                          * 배경 이미지는 영역에 맞춰 가득 채워집니다 (Cover).
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {widget.type === "stripBanner" && (
                   <div className="space-y-2 mt-4">
@@ -3569,40 +3843,40 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                   widget.type,
                                 ) &&
                                   item.desc !== undefined && (
-                                  <div className="flex flex-col gap-1 px-1 mt-1">
-                                    <span className="text-[9px] font-black text-gray-400 pl-1 uppercase tracking-tighter">
-                                      {widget.type === "titleBanner"
-                                        ? "설명"
-                                        : "Description"}
-                                    </span>
-                                    <textarea
-                                      className="w-full text-[10px] text-gray-700 bg-gray-50 border border-gray-200 outline-none focus:ring-1 focus:ring-gray-300 px-2 py-1.5 rounded-lg min-h-[60px] resize-none"
-                                      value={(item.desc || "").replace(
-                                        /<br\s*\/?>/gi,
-                                        "\n",
-                                      )}
-                                      onChange={(e) => {
-                                        const val = e.target.value.replace(
-                                          /\n/g,
-                                          "<br/>",
-                                        );
-                                        updateWidgetData(widget.id, {
-                                          [listArrayName!]: updateItemInArray(
-                                            items,
-                                            item.id,
-                                            "desc",
-                                            val,
-                                          ),
-                                        });
-                                      }}
-                                      onFocus={() => {
-                                        setSelectedItemId(item.id);
-                                        setSelectedElementKey("itemDesc");
-                                      }}
-                                      placeholder="설명 문구 입력"
-                                    />
-                                  </div>
-                                )}
+                                    <div className="flex flex-col gap-1 px-1 mt-1">
+                                      <span className="text-[9px] font-black text-gray-400 pl-1 uppercase tracking-tighter">
+                                        {widget.type === "titleBanner"
+                                          ? "설명"
+                                          : "Description"}
+                                      </span>
+                                      <textarea
+                                        className="w-full text-[10px] text-gray-700 bg-gray-50 border border-gray-200 outline-none focus:ring-1 focus:ring-gray-300 px-2 py-1.5 rounded-lg min-h-[60px] resize-none"
+                                        value={(item.desc || "").replace(
+                                          /<br\s*\/?>/gi,
+                                          "\n",
+                                        )}
+                                        onChange={(e) => {
+                                          const val = e.target.value.replace(
+                                            /\n/g,
+                                            "<br/>",
+                                          );
+                                          updateWidgetData(widget.id, {
+                                            [listArrayName!]: updateItemInArray(
+                                              items,
+                                              item.id,
+                                              "desc",
+                                              val,
+                                            ),
+                                          });
+                                        }}
+                                        onFocus={() => {
+                                          setSelectedItemId(item.id);
+                                          setSelectedElementKey("itemDesc");
+                                        }}
+                                        placeholder="설명 문구 입력"
+                                      />
+                                    </div>
+                                  )}
                               </div>
                             );
                           });
@@ -3676,92 +3950,90 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   {/* Removed duplicate Image Area Controls */}
 
                   {isTitleBannerLayout3 && (
-                      <div className="space-y-6 pt-2">
-                        <div className="space-y-3">
-                          <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
-                            <ImageIcon size={14} className="text-blue-500" /> PC
-                            이미지 설정
-                          </label>
-                          <ImgUploadPop
-                            onSelect={(url) =>
-                              updateWidgetData(widget.id, { layout3Image: url })
-                            }
-                            button={
-                              <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
-                                <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                  <Upload size={18} />
-                                </div>
-                                <div className="text-left">
-                                  <p className="font-bold text-gray-700 text-sm">
-                                    PC 이미지 선택
-                                  </p>
-                                  <p className="text-[10px] text-gray-400">
-                                    서버 업로드 또는 선택
-                                  </p>
-                                </div>
+                    <div className="space-y-6 pt-2">
+                      <div className="space-y-3">
+                        <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                          <ImageIcon size={14} className="text-blue-500" /> PC
+                          이미지 설정
+                        </label>
+                        <ImgUploadPop
+                          onSelect={(url) =>
+                            updateWidgetData(widget.id, { layout3Image: url })
+                          }
+                          button={
+                            <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                              <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Upload size={18} />
                               </div>
-                            }
-                          />
-                          <input
-                            type="text"
-                            className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
-                            value={(widget.data as any).layout3Image || ""}
-                            onChange={(e) =>
-                              updateWidgetData(widget.id, {
-                                layout3Image: e.target.value,
-                              })
-                            }
-                            placeholder="PC 이미지 URL을 입력하세요"
-                          />
-                        </div>
-
-                        <div className="space-y-3">
-                          <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
-                            <Smartphone size={14} className="text-blue-500" />{" "}
-                            모바일 이미지 설정
-                          </label>
-                          <ImgUploadPop
-                            onSelect={(url) =>
-                              updateWidgetData(widget.id, {
-                                layout3MobileImage: url,
-                              })
-                            }
-                            button={
-                              <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
-                                <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                  <Upload size={18} />
-                                </div>
-                                <div className="text-left">
-                                  <p className="font-bold text-gray-700 text-sm">
-                                    모바일 이미지 선택
-                                  </p>
-                                  <p className="text-[10px] text-gray-400">
-                                    서버 업로드 또는 선택
-                                  </p>
-                                </div>
+                              <div className="text-left">
+                                <p className="font-bold text-gray-700 text-sm">
+                                  PC 이미지 선택
+                                </p>
+                                <p className="text-[10px] text-gray-400">
+                                  서버 업로드 또는 선택
+                                </p>
                               </div>
-                            }
-                          />
-                          <input
-                            type="text"
-                            className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
-                            value={
-                              (widget.data as any).layout3MobileImage || ""
-                            }
-                            onChange={(e) =>
-                              updateWidgetData(widget.id, {
-                                layout3MobileImage: e.target.value,
-                              })
-                            }
-                            placeholder="모바일 이미지 URL을 입력하세요 (선택)"
-                          />
-                          <p className="text-[10px] text-gray-400 leading-tight">
-                            * 모바일 이미지를 등록하지 않으면 PC 이미지가
-                            공통으로 노출됩니다.
-                          </p>
-                        </div>
+                            </div>
+                          }
+                        />
+                        <input
+                          type="text"
+                          className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                          value={(widget.data as any).layout3Image || ""}
+                          onChange={(e) =>
+                            updateWidgetData(widget.id, {
+                              layout3Image: e.target.value,
+                            })
+                          }
+                          placeholder="PC 이미지 URL을 입력하세요"
+                        />
                       </div>
-                    )}
+
+                      <div className="space-y-3">
+                        <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                          <Smartphone size={14} className="text-blue-500" />{" "}
+                          모바일 이미지 설정
+                        </label>
+                        <ImgUploadPop
+                          onSelect={(url) =>
+                            updateWidgetData(widget.id, {
+                              layout3MobileImage: url,
+                            })
+                          }
+                          button={
+                            <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                              <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Upload size={18} />
+                              </div>
+                              <div className="text-left">
+                                <p className="font-bold text-gray-700 text-sm">
+                                  모바일 이미지 선택
+                                </p>
+                                <p className="text-[10px] text-gray-400">
+                                  서버 업로드 또는 선택
+                                </p>
+                              </div>
+                            </div>
+                          }
+                        />
+                        <input
+                          type="text"
+                          className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                          value={(widget.data as any).layout3MobileImage || ""}
+                          onChange={(e) =>
+                            updateWidgetData(widget.id, {
+                              layout3MobileImage: e.target.value,
+                            })
+                          }
+                          placeholder="모바일 이미지 URL을 입력하세요 (선택)"
+                        />
+                        <p className="text-[10px] text-gray-400 leading-tight">
+                          * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
+                          노출됩니다.
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {widget.type === "textStructure" && (
                     <div className="space-y-2">

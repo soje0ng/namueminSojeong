@@ -6,7 +6,6 @@ import {
   WidgetRendererProps,
   formatUnit,
   UniversalMedia,
-  getPaddingClass,
   getBorderRadiusStyle,
 } from "./WidgetUtils";
 
@@ -31,7 +30,7 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
   const imageUrl = data.imageUrl || IMAGE_AREA_DEFAULTS.imageUrl;
   const mobileImageUrl =
     data.mobileImageUrl || data.imageUrl || IMAGE_AREA_DEFAULTS.mobileImageUrl;
-  const isMobile = viewport === "mobile";
+  const isMobile = viewport === "mobile" || viewport === "tablet";
   const getImageAreaTextStyle = (
     textStyle: any,
     overrides: React.CSSProperties = {},
@@ -46,6 +45,28 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
         ...(data.mobileImageUrlStyle || {}),
       }
     : data.imageStyle;
+  const rawDesktopHorizontalPadding = data.desktopHorizontalPadding;
+  const hasDesktopHorizontalPadding = (() => {
+    if (
+      rawDesktopHorizontalPadding === undefined ||
+      rawDesktopHorizontalPadding === null
+    ) {
+      return false;
+    }
+
+    const normalized = String(rawDesktopHorizontalPadding).trim().toLowerCase();
+    if (!normalized) return false;
+
+    const numeric = Number(normalized.replace(/px$/, ""));
+    return Number.isNaN(numeric) ? true : numeric !== 0;
+  })();
+  const imageAreaHorizontalPadding = hasDesktopHorizontalPadding
+    ? viewport === "mobile"
+      ? "20px"
+      : viewport === "tablet"
+        ? "40px"
+        : formatUnit(rawDesktopHorizontalPadding) || "0px"
+    : "0px";
 
   if (layout === "1") {
     return (
@@ -55,14 +76,18 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport)} py-14 flex flex-col justify-start items-center gap-10`}
+            className="self-stretch py-14 flex flex-col justify-start items-center gap-10"
+            style={{
+              paddingLeft: imageAreaHorizontalPadding,
+              paddingRight: imageAreaHorizontalPadding,
+            }}
           >
             {/* 
                 이미지 영역 고정 비율 및 높이 제한 전면 해제 
                 이미지 본연의 비율대로 보여지도록 렌더링
             */}
             <div
-              className="w-full max-w-[1200px] cursor-pointer transition-all overflow-hidden flex flex-col items-center justify-center"
+              className="w-full cursor-pointer transition-all overflow-hidden flex flex-col items-center justify-center"
               style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "0px" }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
@@ -77,11 +102,17 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
                 }}
                 url={currentImage}
                 alt={`banner image (${isMobile ? "Mobile" : "PC"})`}
-                className="w-full h-auto hover:ring-4 hover:ring-blue-400"
+                className="hover:ring-4 hover:ring-blue-400"
+                naturalSize={!isMobile}
                 style={{
                   ...getElementStyle(currentImageStyle, viewport),
                   aspectRatio: "auto",
                   objectFit: currentImageStyle?.objectFit || "contain",
+                  width: isMobile ? "100%" : currentImageStyle?.width || "auto",
+                  height: isMobile
+                    ? (data.mobileImageUrlStyle as any)?.height || "auto"
+                    : currentImageStyle?.height || "auto",
+                  maxWidth: "100%",
                 }}
               />
             </div>

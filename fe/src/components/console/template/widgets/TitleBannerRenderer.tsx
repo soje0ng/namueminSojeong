@@ -46,9 +46,7 @@ export const getTitleBannerLayout1Items = (data: any) => {
         idx % TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS.length
       ],
       ...item,
-      id:
-        item?.id ||
-        `title-banner-feature-${idx + 1}`,
+      id: item?.id || `title-banner-feature-${idx + 1}`,
     }));
   }
 
@@ -56,22 +54,14 @@ export const getTitleBannerLayout1Items = (data: any) => {
     const featureIndex = idx + 1;
     return {
       ...defaultItem,
-      image:
-        data?.[`feature${featureIndex}Image`] ||
-        defaultItem.image,
+      image: data?.[`feature${featureIndex}Image`] || defaultItem.image,
       imageStyle: data?.[`feature${featureIndex}ImageStyle`],
-      title:
-        data?.[`feature${featureIndex}Title`] ||
-        defaultItem.title,
+      title: data?.[`feature${featureIndex}Title`] || defaultItem.title,
       titleStyle:
-        data?.[`feature${featureIndex}TitleStyle`] ||
-        defaultItem.titleStyle,
-      desc:
-        data?.[`feature${featureIndex}Desc`] ||
-        defaultItem.desc,
+        data?.[`feature${featureIndex}TitleStyle`] || defaultItem.titleStyle,
+      desc: data?.[`feature${featureIndex}Desc`] || defaultItem.desc,
       descStyle:
-        data?.[`feature${featureIndex}DescStyle`] ||
-        defaultItem.descStyle,
+        data?.[`feature${featureIndex}DescStyle`] || defaultItem.descStyle,
     };
   });
 };
@@ -201,7 +191,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         >
           <div className="mx-auto w-full max-w-[1920px] relative">
             <div
-              className={`${viewport === "tablet" ? "pl-10 pr-0" : viewport === "mobile" ? "pl-5 pr-0" : "pl-5 pr-0 md:pl-10 md:pr-0 xl:pl-[280px] xl:pr-0"} py-[60px] flex flex-col gap-[60px] w-full`}
+              className={`${viewport === "tablet" ? "px-10" : viewport === "mobile" ? "px-5" : "pl-5 pr-0 md:pl-10 md:pr-0 xl:pl-[280px] xl:pr-0"} py-[60px] flex flex-col gap-[60px] w-full`}
             >
               {/* 텍스트 섹션 */}
               <div className="flex flex-col gap-[40px] w-full">
@@ -266,7 +256,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   />
                   <div
                     className="w-full flex flex-wrap justify-center items-start"
-                    style={shouldWrapLayout1Features ? { rowGap: "24px" } : undefined}
+                    style={
+                      shouldWrapLayout1Features ? { rowGap: "24px" } : undefined
+                    }
                   >
                     {layout1Features.map((feature: any, idx: number) => {
                       const isLast = idx === layout1Features.length - 1;
@@ -393,7 +385,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch pl-5 md:pl-10 xl:pl-[280px] pr-0 py-14 inline-flex justify-start items-center gap-20`}
+            className={`self-stretch ${isTablet ? "px-10" : isMobile ? "px-5" : "pl-5 md:pl-10 xl:pl-[280px] pr-0"} py-14 inline-flex justify-start items-center gap-20`}
           >
             <div className="flex-1 inline-flex flex-col justify-between items-start">
               {/* 상단 텍스트 그룹 */}
@@ -457,7 +449,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
 
                 <div
                   className="self-stretch flex flex-wrap justify-center items-start"
-                  style={shouldWrapLayout1Features ? { rowGap: "24px" } : undefined}
+                  style={
+                    shouldWrapLayout1Features ? { rowGap: "24px" } : undefined
+                  }
                 >
                   {layout1Features.map((feature: any, idx: number) => {
                     const isLast = idx === layout1Features.length - 1;
