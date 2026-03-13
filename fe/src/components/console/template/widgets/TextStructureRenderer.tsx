@@ -3463,7 +3463,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className={`self-stretch ${sectionPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}>
             {/* 헤더 영역 */}
             <div className="flex flex-col justify-start items-center">
               {!data.subTitleStyle?.isHidden && (
