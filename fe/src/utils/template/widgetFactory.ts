@@ -26,6 +26,7 @@ import {
 import { IMAGE_CARD_DEFAULTS } from "@/components/console/template/widgets/ImageCardRenderer";
 import { COMPARISON_CARD_DEFAULTS } from "@/components/console/template/widgets/ComparisonCardRenderer";
 import { STRIP_BANNER_DEFAULTS } from "@/components/console/template/widgets/StripBannerRenderer";
+import { CULTURE_LETTER_DEFAULTS } from "@/components/console/template/widgets/CultureLetterRenderer";
 
 /**
  * 위젯 타입에 따른 기본 데이터를 생성합니다.
@@ -57,6 +58,14 @@ export function createWidget(
       widget.style = {
         paddingTop: "60px",
         paddingBottom: "60px",
+        ...widget.style,
+      };
+    }
+    // cultureLetter: 피그마 디자인 기본값 pt=40, pb=120
+    if (type === "cultureLetter") {
+      widget.style = {
+        paddingTop: "40px",
+        paddingBottom: "120px",
         ...widget.style,
       };
     }
@@ -234,6 +243,13 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
         style: {
           backgroundColor: STRIP_BANNER_DEFAULTS.backgroundColor,
         },
+      } as any;
+
+    case "cultureLetter":
+      return {
+        id: widgetId,
+        type,
+        data: cloneDefaults(CULTURE_LETTER_DEFAULTS),
       } as any;
 
     default:

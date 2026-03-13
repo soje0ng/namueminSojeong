@@ -7,6 +7,7 @@ import {
   WidgetRendererProps,
   formatUnit,
   UniversalMedia,
+  getPaddingClass,
 } from "./WidgetUtils";
 import { Check } from "lucide-react";
 import { WidgetHeader } from "./WidgetHeader";
@@ -178,7 +179,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
             />
           </div>
           <div
-            className="-mt-[20px] flex flex-col gap-[16px] px-5 md:px-10 md:-mt-[60px] xl:-mt-[140px] xl:px-72"
+            className={`-mt-[20px] flex flex-col gap-[16px] ${getPaddingClass(viewport, "xl:px-72")} md:-mt-[60px] xl:-mt-[140px]`}
             style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : undefined }}
           >
             {(w.data.items || []).map((item) => (
@@ -241,7 +242,9 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
   if (w.data.variant === "text3") {
     return (
       <section style={style} className="w-full h-auto">
-        <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10">
+        <div
+          className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "xl:px-10")}`}
+        >
           <div
             className={`flex flex-col gap-[16px] ${viewport === "desktop" ? "xl:flex-row xl:items-start xl:gap-0" : "md:gap-[24px]"}`}
           >
@@ -330,7 +333,9 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
 
   return (
     <section style={style} className="w-full h-auto">
-      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 text-center">
+      <div
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "xl:px-10")} text-center`}
+      >
         <div
           className={`flex flex-col gap-[16px] md:gap-[24px] ${w.data.variant === "sticky-left" && viewport === "desktop" ? "xl:flex-row xl:items-start xl:gap-0" : ""}`}
         >

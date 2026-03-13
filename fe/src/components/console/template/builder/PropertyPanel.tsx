@@ -25,12 +25,12 @@ import { UniversalMedia } from "../widgets/WidgetUtils";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 import { reorderItems, updateItemInArray } from "@/utils/template/itemUtils";
 import { usePopupStore } from "@/store/console/usePopupStore";
-import TextStructure5Manager from "./TextStructure5Manager";
-import TextStructure6Manager from "./TextStructure6Manager";
-import TextStructure7Manager from "./TextStructure7Manager";
+import TextStructure5Manager from "../widgets/TextStructure5Manager";
+import TextStructure6Manager from "../widgets/TextStructure6Manager";
+import TextStructure7Manager from "../widgets/TextStructure7Manager";
 import ComparisonDescManager from "./ComparisonDescManager";
-import TextStructure8Manager from "./TextStructure8Manager";
-import TextStructure11Manager from "./TextStructure11Manager";
+import TextStructure8Manager from "../widgets/TextStructure8Manager";
+import TextStructure11Manager from "../widgets/TextStructure11Manager";
 import {
   TEXT_STRUCTURE_5_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
@@ -40,8 +40,8 @@ import {
   TEXT_STRUCTURE_10_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
-import TextStructure9Manager from "./TextStructure9Manager";
-import TextStructure10Manager from "./TextStructure10Manager";
+import TextStructure9Manager from "../widgets/TextStructure9Manager";
+import TextStructure10Manager from "../widgets/TextStructure10Manager";
 import { INFO_BANNER_DEFAULTS } from "../widgets/InfoBannerRenderer";
 
 export interface PropertyPanelProps {
@@ -97,6 +97,7 @@ const getWidgetName = (type: WidgetType) => {
     stripBanner: "띠배너",
     faq: "FAQ",
     table: "테이블",
+    cultureLetter: "컬처레터",
   };
   return names[type] || type;
 };
@@ -169,6 +170,30 @@ const INFO_BANNER_LAYOUT_FIELDS = [
   "items",
 ] as const;
 
+const CULTURE_LETTER_LAYOUT_STATE_KEY = "__layoutStateMap";
+const CULTURE_LETTER_LAYOUT_FIELDS = [
+  "backgroundImage",
+  "backgroundImageStyle",
+  // Layout 1 - 컬처레터 헤더 좌측정렬
+  "layout1BgImageUrl",
+  "layout1BgImageUrlStyle",
+  "layout1LogoFlowerImageUrl",
+  "layout1LogoFlowerImageUrlStyle",
+  "layout1LogoTextImageUrl",
+  "layout1LogoTextImageUrlStyle",
+  "cultureLetter",
+  "cultureLetterStyle",
+  "issueNo",
+  "issueNoStyle",
+  "issueDate",
+  "issueDateStyle",
+  "title",
+  "titleStyle",
+  "desc",
+  "descStyle",
+  "items",
+] as const;
+
 const cloneDeep = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
 const cloneTextStructureDefaults = <T,>(value: T): T =>
   JSON.parse(JSON.stringify(value));
@@ -193,6 +218,24 @@ const getInfoBannerDefaultState = (layout: string) => ({
       }
     : {}),
 });
+
+const pickCultureLetterLayoutState = (data: any) => {
+  const picked: Record<string, any> = {};
+  for (const key of CULTURE_LETTER_LAYOUT_FIELDS) {
+    if (data[key] !== undefined) picked[key] = cloneDeep(data[key]);
+  }
+  return picked;
+};
+
+const getCultureLetterDefaultState = (layout: string) => {
+  const {
+    CULTURE_LETTER_DEFAULTS,
+  } = require("../widgets/CultureLetterRenderer");
+  return {
+    ...pickCultureLetterLayoutState(CULTURE_LETTER_DEFAULTS),
+    layout,
+  };
+};
 
 export const PropertyPanel: React.FC<PropertyPanelProps> = ({
   viewport,
@@ -790,6 +833,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               "comparisonCard",
               "processCard",
               "stripBanner",
+              "cultureLetter",
               "faq",
               "table",
             ].includes(widget.type) && (
@@ -848,6 +892,31 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           return;
                         }
 
+                        if (widget.type === "cultureLetter") {
+                          const currentData = (widget.data as any) || {};
+                          const currentLayout = String(
+                            currentData.layout || "1",
+                          );
+                          const stateMap = cloneDeep(
+                            currentData[CULTURE_LETTER_LAYOUT_STATE_KEY] || {},
+                          );
+
+                          stateMap[currentLayout] =
+                            pickCultureLetterLayoutState(currentData);
+
+                          const nextState =
+                            stateMap[newLayout] ||
+                            getCultureLetterDefaultState(newLayout);
+                          stateMap[newLayout] = cloneDeep(nextState);
+
+                          updateWidgetData(widget.id, {
+                            ...nextState,
+                            layout: newLayout,
+                            [CULTURE_LETTER_LAYOUT_STATE_KEY]: stateMap,
+                          });
+                          return;
+                        }
+
                         const updates: any = { layout: newLayout };
                         if (widget.type === "imageCard") {
                           updates.itemsPerRow = sanitizeImageCardItemsPerRow(
@@ -899,26 +968,36 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                             ? 6
                             : widget.type === "infoBanner"
                               ? 5
-                              : widget.type === "titleText"
-                                ? 4
-                                : widget.type === "table"
+                              : widget.type === "cultureLetter"
+                                ? 5
+                                : widget.type === "titleText"
                                   ? 4
-                                  : widget.type === "titleBanner"
-                                    ? 3
-                                    : widget.type === "processCard"
+                                  : widget.type === "table"
+                                    ? 4
+                                    : widget.type === "titleBanner"
                                       ? 3
-                                      : widget.type === "comparisonCard"
-                                        ? 2
-                                        : widget.type === "stripBanner"
+                                      : widget.type === "processCard"
+                                        ? 3
+                                        : widget.type === "comparisonCard"
                                           ? 2
-                                          : 1,
+                                          : widget.type === "stripBanner"
+                                            ? 2
+                                            : 1,
                   }).map((_, i) => (
                     <option key={i + 1} value={`${i + 1}`}>
                       {widget.type === "table"
                         ? `테이블 0${i + 1}`
                         : widget.type === "iconCard"
                           ? `아이콘 카드 레이아웃 ${i + 1}`
-                          : `${getWidgetName(widget.type)} 레이아웃 ${i + 1}`}
+                          : widget.type === "cultureLetter"
+                            ? [
+                                "컬처레터 헤더 - 좌측정렬",
+                                "컬처레터 헤더 - 중앙정렬",
+                                "컬처레터 헤더 - 우측배너",
+                                "컬처레터 유튜브 타이틀",
+                                "컬처레터 바로가기 버튼",
+                              ][i]
+                            : `${getWidgetName(widget.type)} 레이아웃 ${i + 1}`}
                     </option>
                   ))}
                 </select>

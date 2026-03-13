@@ -8,6 +8,7 @@ import {
   WidgetRendererProps,
   UniversalMedia,
   formatUnit,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
@@ -171,7 +172,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className="px-5 md:px-10 py-6 md:py-10 text-center"
+            className={`${getPaddingClass(viewport)} py-6 md:py-10 text-center`}
             style={{
               ...(w.style?.backgroundImage
                 ? {
@@ -278,7 +279,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`flex flex-col gap-[24px] px-5 md:px-10 py-6 md:py-10 ${viewport === "desktop" ? "xl:flex-row xl:items-center xl:justify-between xl:px-[60px] xl:py-[40px]" : ""}`}
+            className={`flex flex-col gap-[24px] ${getPaddingClass(viewport, "xl:px-[60px]")} py-6 md:py-10 ${viewport === "desktop" ? "xl:flex-row xl:items-center xl:justify-between xl:py-[40px]" : ""}`}
             style={{
               ...(w.style?.backgroundImage
                 ? {
@@ -338,7 +339,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`relative flex flex-col gap-[24px] px-5 md:px-10 py-6 md:py-10 ${viewport === "desktop" ? "xl:px-[500px] xl:pr-[60px] xl:py-[40px]" : ""} ${!w.style?.backgroundImage && !w.style?.backgroundColor ? "bg-gradient-to-r from-[#21568E] to-[#093666]" : ""}`}
+            className={`relative flex flex-col gap-[24px] ${getPaddingClass(viewport, "xl:px-[500px]")} xl:pr-[60px] py-6 md:py-10 ${!w.style?.backgroundImage && !w.style?.backgroundColor ? "bg-gradient-to-r from-[#21568E] to-[#093666]" : ""}`}
             style={{
               ...(w.style?.backgroundImage
                 ? {

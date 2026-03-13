@@ -720,6 +720,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
 
     let item = findItem(data[arrayName] || [], itemId);
+    if (
+      !item &&
+      typeof itemId === "string" &&
+      itemId.startsWith("__idx_") &&
+      Number.isInteger(Number.parseInt(itemId.replace("__idx_", ""), 10))
+    ) {
+      const fallbackIndex = Number.parseInt(itemId.replace("__idx_", ""), 10);
+      item = (data[arrayName] || [])[fallbackIndex];
+    }
     if (item) {
       linkValue = item.link || "";
       onLinkChange = (val) =>
@@ -745,7 +754,26 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               ? "textStyle"
               : "style";
 
-      if (
+      if (elementKey === "itemStyle") {
+        styleKey = "itemStyle";
+        styleValue = item[styleKey] || {};
+        onStyleChange = (k, v) => {
+          const updates = typeof k === "object" ? k : { [k]: v };
+          const currentItems = data[arrayName] || [];
+          const fallbackIndex =
+            typeof itemId === "string" && itemId.startsWith("__idx_")
+              ? Number.parseInt(itemId.replace("__idx_", ""), 10)
+              : -1;
+          const updatedItems = currentItems.map((it: any, idx: number) => {
+            const isTarget =
+              fallbackIndex >= 0 ? idx === fallbackIndex : it.id === itemId;
+            if (!isTarget) return it;
+            const oldStyle = it[styleKey] || {};
+            return { ...it, [styleKey]: { ...oldStyle, ...updates } };
+          });
+          updateWidgetData(widget.id, { [arrayName]: updatedItems });
+        };
+      } else if (
         elementKey === "item" ||
         elementKey === "itemText" ||
         elementKey === "text" ||
@@ -1143,6 +1171,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     elementKey.toLowerCase().includes("media") ||
     elementKey === "url" ||
     elementKey === "topImage";
+  const isItemBackgroundKey = elementKey === "itemStyle";
   const isTitleBannerLayout3ImageEditor =
     widget.type === "titleBanner" &&
     String((widget.data as any).layout || "1") === "3" &&
@@ -1211,7 +1240,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     return { fontSize, fontWeight, color };
   };
 
-  if (!isMediaKey && elementKey !== "bannerButton") {
+  if (!isMediaKey && elementKey !== "bannerButton" && !isItemBackgroundKey) {
     const fb = getFallbackStyles();
     styleValue = {
       ...styleValue,
@@ -1258,6 +1287,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         <h3 className="font-bold text-gray-800">
           {isMediaKey
             ? "이미지/영상 편집"
+            : isItemBackgroundKey
+              ? "카드 배경 편집"
             : elementKey === "itemFeatures"
               ? "특징 항목 관리"
               : elementKey === "bannerButton"
@@ -1690,6 +1721,85 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 </div>
               </>
             )}
+          </div>
+        ) : isItemBackgroundKey ? (
+          <div className="space-y-4 p-2">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide">
+                배경 이미지
+              </label>
+              <ImgUploadPop
+                onSelect={(url) => {
+                  onStyleChange({
+                    backgroundImage: url,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  });
+                }}
+                button={
+                  <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                    <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                      <Upload size={20} />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold text-gray-700 text-sm">
+                        배경 이미지 선택
+                      </p>
+                      <p className="text-[10px] text-gray-400">
+                        서버에 업로드된 이미지 선택
+                      </p>
+                    </div>
+                  </div>
+                }
+              />
+              <input
+                type="text"
+                className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                value={styleValue.backgroundImage || ""}
+                onChange={(e) => onStyleChange("backgroundImage", e.target.value)}
+                placeholder="배경 이미지 URL 입력"
+              />
+              <p className="text-[11px] text-gray-400">
+                * 배경 이미지는 카드 영역에 Cover로 적용됩니다.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide">
+                배경색
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  className="w-12 h-10 rounded-lg cursor-pointer border border-gray-100 p-0.5 bg-white shrink-0"
+                  value={styleValue.backgroundColor || "#ffffff"}
+                  onChange={(e) => onStyleChange("backgroundColor", e.target.value)}
+                />
+                <input
+                  type="text"
+                  className="flex-1 bg-gray-50 border-none p-2.5 rounded-lg text-sm font-mono outline-none text-gray-700"
+                  value={styleValue.backgroundColor || ""}
+                  onChange={(e) => onStyleChange("backgroundColor", e.target.value)}
+                  placeholder="#ffffff"
+                />
+                <button
+                  onClick={() => onStyleChange("backgroundColor", "")}
+                  className="shrink-0 text-[10px] bg-gray-100 hover:bg-red-50 hover:text-red-500 px-2.5 py-2 rounded-lg font-bold transition-colors"
+                >
+                  초기화
+                </button>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => onStyleChange("backgroundImage", "")}
+                className="flex-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold transition-colors"
+              >
+                이미지 제거
+              </button>
+            </div>
           </div>
         ) : isMediaKey ? (
           <div className="space-y-4">
@@ -2424,7 +2534,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       </div>
 
       {/* Typography Settings Panel */}
-      {!isMediaKey && elementKey !== "bannerButton" && (
+      {!isMediaKey && elementKey !== "bannerButton" && !isItemBackgroundKey && (
         <div className="space-y-6 pt-6 border-t border-gray-100/50">
           {/* Text Visibility Toggle */}
           <div className="flex items-center justify-between bg-gray-50/50 p-3 rounded-xl border border-gray-100 mb-4">

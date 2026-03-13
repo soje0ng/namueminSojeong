@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   PageData,
@@ -32,6 +38,7 @@ import { TabButtonRenderer } from "./widgets/TabButtonRenderer";
 import { TextStructureRenderer } from "./widgets/TextStructureRenderer";
 import { ComparisonCardRenderer } from "./widgets/ComparisonCardRenderer";
 import { StripBannerRenderer } from "./widgets/StripBannerRenderer";
+import { CultureLetterRenderer } from "./widgets/CultureLetterRenderer";
 import { isVideoUrl } from "./widgets/WidgetUtils";
 import {
   Trash2,
@@ -81,6 +88,28 @@ interface BuilderProps {
   onPreview: (data: PageData) => void;
 }
 
+const DEFAULT_CANVAS_ZOOM = 1;
+const MIN_CANVAS_ZOOM = 0.25;
+const MAX_CANVAS_ZOOM = 2;
+const KEYBOARD_ZOOM_STEP = 0.1;
+const WHEEL_ZOOM_STEP = 0.05;
+
+const clampCanvasZoom = (zoom: number) =>
+  Math.min(MAX_CANVAS_ZOOM, Math.max(MIN_CANVAS_ZOOM, Number(zoom.toFixed(2))));
+
+const isEditableTarget = (target: EventTarget | null) => {
+  const element = target as HTMLElement | null;
+  if (!element) return false;
+
+  return (
+    element.tagName === "INPUT" ||
+    element.tagName === "TEXTAREA" ||
+    element.tagName === "SELECT" ||
+    element.isContentEditable ||
+    !!element.closest("[contenteditable='true']")
+  );
+};
+
 const Builder: React.FC<BuilderProps> = ({
   initialData,
   onSave,
@@ -102,6 +131,9 @@ const Builder: React.FC<BuilderProps> = ({
     "desktop",
   );
   const [canvasWidth, setCanvasWidth] = useState<number>(1920);
+  const [canvasZoom, setCanvasZoom] = useState<number>(DEFAULT_CANVAS_ZOOM);
+  const [canvasContentHeight, setCanvasContentHeight] = useState<number>(0);
+  const [isCanvasHovered, setIsCanvasHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
@@ -114,11 +146,124 @@ const Builder: React.FC<BuilderProps> = ({
   const [sizeUnit, setSizeUnit] = useState<"%" | "px">("%");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const { setConfirmPop } = usePopupStore();
+  const canvasViewportRef = useRef<HTMLDivElement | null>(null);
+  const canvasScaleWrapperRef = useRef<HTMLDivElement | null>(null);
+  const canvasContentRef = useRef<HTMLDivElement | null>(null);
+  const canvasZoomRef = useRef<number>(DEFAULT_CANVAS_ZOOM);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 2500);
   };
+
+  useEffect(() => {
+    canvasZoomRef.current = canvasZoom;
+  }, [canvasZoom]);
+
+  useLayoutEffect(() => {
+    const contentNode = canvasContentRef.current;
+    if (!contentNode) return;
+
+    const updateCanvasHeight = () => {
+      setCanvasContentHeight(contentNode.offsetHeight);
+    };
+
+    updateCanvasHeight();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateCanvasHeight);
+      return () => window.removeEventListener("resize", updateCanvasHeight);
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateCanvasHeight();
+    });
+
+    resizeObserver.observe(contentNode);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  const isCanvasShortcutScope = useCallback(
+    (target: EventTarget | null) => {
+      const canvasNode = canvasViewportRef.current;
+      if (!canvasNode) return false;
+
+      const activeElement = document.activeElement as HTMLElement | null;
+      const targetElement = target as HTMLElement | null;
+
+      return (
+        isCanvasHovered ||
+        (!!activeElement && canvasNode.contains(activeElement)) ||
+        (!!targetElement && canvasNode.contains(targetElement))
+      );
+    },
+    [isCanvasHovered],
+  );
+
+  const setCanvasZoomLevel = useCallback(
+    (
+      nextZoom: number,
+      anchor?: {
+        clientX: number;
+        clientY: number;
+      },
+    ) => {
+      const currentZoom = canvasZoomRef.current;
+      const clampedZoom = clampCanvasZoom(nextZoom);
+      if (clampedZoom === currentZoom) return;
+
+      const viewportNode = canvasViewportRef.current;
+      const wrapperNode = canvasScaleWrapperRef.current;
+
+      let anchorViewportX = 0;
+      let anchorViewportY = 0;
+      let contentX: number | null = null;
+      let contentY: number | null = null;
+
+      if (viewportNode && wrapperNode) {
+        const viewportRect = viewportNode.getBoundingClientRect();
+        anchorViewportX = anchor
+          ? anchor.clientX - viewportRect.left
+          : viewportRect.width / 2;
+        anchorViewportY = anchor
+          ? anchor.clientY - viewportRect.top
+          : viewportRect.height / 2;
+
+        contentX =
+          (viewportNode.scrollLeft + anchorViewportX - wrapperNode.offsetLeft) /
+          currentZoom;
+        contentY =
+          (viewportNode.scrollTop + anchorViewportY - wrapperNode.offsetTop) /
+          currentZoom;
+      }
+
+      setCanvasZoom(clampedZoom);
+
+      if (viewportNode && wrapperNode && contentX !== null && contentY !== null) {
+        const nextContentX = contentX;
+        const nextContentY = contentY;
+
+        window.requestAnimationFrame(() => {
+          const nextViewportNode = canvasViewportRef.current;
+          const nextWrapperNode = canvasScaleWrapperRef.current;
+          if (!nextViewportNode || !nextWrapperNode) return;
+
+          nextViewportNode.scrollLeft =
+            nextWrapperNode.offsetLeft +
+            nextContentX * clampedZoom -
+            anchorViewportX;
+          nextViewportNode.scrollTop =
+            nextWrapperNode.offsetTop +
+            nextContentY * clampedZoom -
+            anchorViewportY;
+        });
+      }
+    },
+    [],
+  );
 
   // Sync sizeUnit when element selection changes
   useEffect(() => {
@@ -173,13 +318,7 @@ const Builder: React.FC<BuilderProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (
-        target &&
-        (target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.isContentEditable)
-      ) {
+      if (isEditableTarget(e.target)) {
         return; // Allow native undo inside input elements
       }
       if (
@@ -188,11 +327,58 @@ const Builder: React.FC<BuilderProps> = ({
       ) {
         e.preventDefault();
         undo();
+        return;
+      }
+
+      if (!(e.ctrlKey || e.metaKey) || !isCanvasShortcutScope(e.target)) {
+        return;
+      }
+
+      if (e.key === "+" || e.key === "=" || e.code === "NumpadAdd") {
+        e.preventDefault();
+        setCanvasZoomLevel(canvasZoomRef.current + KEYBOARD_ZOOM_STEP);
+        return;
+      }
+
+      if (e.key === "-" || e.code === "NumpadSubtract") {
+        e.preventDefault();
+        setCanvasZoomLevel(canvasZoomRef.current - KEYBOARD_ZOOM_STEP);
+        return;
+      }
+
+      if (e.key === "0" || e.code === "Digit0" || e.code === "Numpad0") {
+        e.preventDefault();
+        setCanvasZoomLevel(DEFAULT_CANVAS_ZOOM);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [history, pageData]);
+  }, [history, isCanvasShortcutScope, setCanvasZoomLevel]);
+
+  useEffect(() => {
+    const viewportNode = canvasViewportRef.current;
+    if (!viewportNode) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || isEditableTarget(e.target)) {
+        return;
+      }
+
+      e.preventDefault();
+
+      const zoomDelta = e.deltaY < 0 ? WHEEL_ZOOM_STEP : -WHEEL_ZOOM_STEP;
+      setCanvasZoomLevel(canvasZoomRef.current + zoomDelta, {
+        clientX: e.clientX,
+        clientY: e.clientY,
+      });
+    };
+
+    viewportNode.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      viewportNode.removeEventListener("wheel", handleWheel);
+    };
+  }, [setCanvasZoomLevel]);
 
   // Auto-migration: Convert fontSize from 16px to 18px
   // Auto-migration: Globally convert fontSize from 16px to 18px
@@ -256,7 +442,10 @@ const Builder: React.FC<BuilderProps> = ({
       // Mouse x is center - width/2 - handleOffset(24)
       // So width/2 = center - 24 - x
       // So width = 2 * (center - 24 - e.clientX)
-      const newWidth = Math.max(375, 2 * (center - 24 - e.clientX));
+      const newWidth = Math.max(
+        375,
+        (2 * (center - 24 - e.clientX)) / canvasZoomRef.current,
+      );
       setCanvasWidth(newWidth);
       if (newWidth < 768) setViewport("mobile");
       else if (newWidth < 1024) setViewport("tablet");
@@ -275,7 +464,7 @@ const Builder: React.FC<BuilderProps> = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, isSidebarOpen]);
 
   const setViewportPreset = (mode: "desktop" | "tablet" | "mobile") => {
     setViewport(mode);
@@ -1216,6 +1405,8 @@ const Builder: React.FC<BuilderProps> = ({
   };
 
   const isFloatingMode = viewport === "desktop";
+  const scaledCanvasWidth = canvasWidth * canvasZoom;
+  const scaledCanvasHeight = canvasContentHeight * canvasZoom;
 
   return (
     <div className="flex flex-col h-full bg-gray-200 overflow-hidden font-sans relative">
@@ -1274,6 +1465,15 @@ const Builder: React.FC<BuilderProps> = ({
               className="w-[50px] bg-transparent text-center focus:outline-none focus:text-blue-600 font-bold"
             />
             <span>px</span>
+          </div>
+          <div
+            className="flex items-center gap-2 text-xs font-semibold text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100/50 shadow-sm"
+            title="Cmd/Ctrl + +/- 또는 Cmd/Ctrl + 휠로 배율 조절, Cmd/Ctrl + 0 초기화"
+          >
+            <span>배율:</span>
+            <span className="min-w-[40px] text-center font-bold text-gray-700">
+              {Math.round(canvasZoom * 100)}%
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -1357,6 +1557,11 @@ const Builder: React.FC<BuilderProps> = ({
           </div>
           {[
             {
+              type: "cultureLetter",
+              label: "컬처레터",
+              color: "text-blue-700",
+            },
+            {
               type: "titleBanner",
               label: "타이틀 배너",
               color: "text-blue-700",
@@ -1408,7 +1613,16 @@ const Builder: React.FC<BuilderProps> = ({
       <div className={`flex-1 flex overflow-hidden bg-[#F8F9FA]`}>
         {/* Main Canvas Area */}
         <div
+          ref={canvasViewportRef}
+          tabIndex={-1}
           className={`flex-1 overflow-auto py-14 relative scroll-smooth bg-gray-200/50${selectedWidgetId && isSidebarOpen ? " pr-[240px]" : ""}`}
+          onMouseEnter={() => setIsCanvasHovered(true)}
+          onMouseLeave={() => setIsCanvasHovered(false)}
+          onMouseDownCapture={(e) => {
+            if (!isEditableTarget(e.target)) {
+              canvasViewportRef.current?.focus();
+            }
+          }}
           onClick={() => {
             setSelectedSectionId(null);
             setSelectedWidgetId(null);
@@ -1421,16 +1635,29 @@ const Builder: React.FC<BuilderProps> = ({
           }}
         >
           <div
-            className="transition-all duration-300 ease-in-out mx-auto bg-white shadow-2xl h-max flex flex-col relative"
-            style={{ width: `${canvasWidth}px` }}
+            ref={canvasScaleWrapperRef}
+            className="transition-all duration-300 ease-in-out mx-auto relative"
+            style={{
+              width: `${scaledCanvasWidth}px`,
+              height: `${scaledCanvasHeight}px`,
+            }}
           >
             <div
-              onMouseDown={handleMouseDown}
-              className="absolute left-[-40px] top-1/2 -translate-y-1/2 w-8 h-20 bg-white/70 backdrop-blur border border-gray-200 hover:bg-white hover:shadow-lg rounded-full cursor-ew-resize flex items-center justify-center text-gray-400 hover:text-blue-500 z-50 transition-all shadow-sm group"
-              title="너비 조절"
+              ref={canvasContentRef}
+              className="absolute top-0 left-0 transition-all duration-300 ease-in-out bg-white shadow-2xl h-max flex flex-col relative"
+              style={{
+                width: `${canvasWidth}px`,
+                transform: `scale(${canvasZoom})`,
+                transformOrigin: "top left",
+              }}
             >
-              <GripVertical size={16} />
-            </div>
+              <div
+                onMouseDown={handleMouseDown}
+                className="absolute left-[-40px] top-1/2 -translate-y-1/2 w-8 h-20 bg-white/70 backdrop-blur border border-gray-200 hover:bg-white hover:shadow-lg rounded-full cursor-ew-resize flex items-center justify-center text-gray-400 hover:text-blue-500 z-50 transition-all shadow-sm group"
+                title="너비 조절"
+              >
+                <GripVertical size={16} />
+              </div>
 
             {pageData.sections.length === 0 && (
               <div className="h-80 flex flex-col items-center justify-center text-gray-400 border-4 border-dashed border-gray-300 m-12 rounded-3xl">
@@ -1651,10 +1878,20 @@ const Builder: React.FC<BuilderProps> = ({
                         }
                       />
                     )}
+                    {w.type === "cultureLetter" && (
+                      <CultureLetterRenderer
+                        widget={w}
+                        viewport={viewport}
+                        onElementSelect={(k: any, i?: any) =>
+                          handleElementSelect(section.id, w.id, k, i)
+                        }
+                      />
+                    )}
                   </div>
                 ))}
               </div>
             ))}
+            </div>
           </div>
         </div>
 

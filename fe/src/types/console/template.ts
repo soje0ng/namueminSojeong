@@ -33,7 +33,8 @@ export type WidgetType =
   | "textStructure"
   | "imageCard"
   | "comparisonCard" // ADDED
-  | "processCard";
+  | "processCard"
+  | "cultureLetter";
 
 export interface WidgetStyle {
   paddingTop?: number | string;
@@ -59,6 +60,10 @@ export interface ElementStyle {
   link?: string;
   target?: "_blank" | "_self"; // Link target
   backgroundColor?: string;
+  backgroundImage?: string;
+  backgroundSize?: string;
+  backgroundPosition?: string;
+  backgroundRepeat?: string;
   borderColor?: string;
   borderWidth?: string;
   textAlign?: "left" | "center" | "right";
@@ -713,7 +718,8 @@ export interface GenericNewWidget extends BaseWidget {
     | "textStructure"
     | "imageCard"
     | "comparisonCard" // ADDED
-    | "processCard";
+    | "processCard"
+    | "cultureLetter";
   data: {
     layout?: string;
     [key: string]: any;

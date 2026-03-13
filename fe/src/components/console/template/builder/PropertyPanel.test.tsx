@@ -24,11 +24,11 @@ import { ElementEditor } from "./ElementEditor";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 import { reorderItems, updateItemInArray } from "@/utils/template/itemUtils";
 import { usePopupStore } from "@/store/console/usePopupStore";
-import TextStructure6Manager from "./TextStructure6Manager";
-import TextStructure7Manager from "./TextStructure7Manager";
+import TextStructure6Manager from "../widgets/TextStructure6Manager";
+import TextStructure7Manager from "../widgets/TextStructure7Manager";
 import ComparisonDescManager from "./ComparisonDescManager";
-import TextStructure8Manager from "./TextStructure8Manager";
-import TextStructure11Manager from "./TextStructure11Manager";
+import TextStructure8Manager from "../widgets/TextStructure8Manager";
+import TextStructure11Manager from "../widgets/TextStructure11Manager";
 import {
   TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
   TEXT_STRUCTURE_7_DEFAULT_SECTIONS,

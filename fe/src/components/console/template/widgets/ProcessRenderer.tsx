@@ -108,6 +108,12 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
   const isLayout3 = layout === "3" || layout === "layout3";
   const isComparisonCard =
     typeStr === "comparisonCard" && (layout === "1" || layout === "layout1");
+  const containerPaddingClass =
+    viewport === "tablet"
+      ? "px-10"
+      : viewport === "desktop"
+        ? "px-5 xl:px-72"
+        : "px-5";
 
   const pcCols = w.data.itemsPerRow || 3;
   const gridColsClass =
@@ -131,7 +137,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -285,7 +291,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -453,7 +459,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -608,7 +614,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");

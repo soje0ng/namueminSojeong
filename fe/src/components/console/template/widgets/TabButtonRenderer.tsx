@@ -6,6 +6,7 @@ import {
   SafeHtml,
   WidgetRendererProps,
   formatUnit,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 export const TAB_BUTTON_DEFAULTS = {
@@ -96,7 +97,9 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div
+            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+          >
             {/* Header Area */}
             <div className="flex flex-col justify-start items-center text-center w-full max-w-[800px]">
               {!data.subTitleStyle?.isHidden && (
