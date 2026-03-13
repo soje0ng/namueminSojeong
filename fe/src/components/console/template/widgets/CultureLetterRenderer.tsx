@@ -21,7 +21,7 @@ export const CULTURE_LETTER_DEFAULTS = {
   cultureLetterStyle: {
     fontFamily: "'Tenor Sans', sans-serif",
     fontSize: "40px",
-    fontSizeMobile: "28px",
+    fontSizeMobile: "40px",
     color: "#FFFFFF",
     letterSpacing: "-0.8px",
     lineHeight: "1",
@@ -164,7 +164,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {/* Culture Letter */}
           <SafeHtml
             html={data.cultureLetter || CULTURE_LETTER_DEFAULTS.cultureLetter}
-            className={`not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
+            className={`not-italic absolute left-1/2 -translate-x-1/2 shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
             style={{
               ...getElementStyle(
                 data.cultureLetterStyle ||
