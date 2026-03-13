@@ -78,6 +78,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
   const style = useWidgetStyle(w.style);
   const data = w.data;
   const layout = String(data.layout || "1");
+  const toHtmlWithBreaks = (value?: string) => String(value || "").replace(/\n/g, "<br/>");
 
   /* ─────────────── Layout 1 : 컬처레터 헤더 - 좌측정렬 ─────────────── */
   if (layout === "1") {
@@ -181,9 +182,81 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             }}
             onDoubleClick={(e) => {
               e.stopPropagation();
-              onElementSelect?.("desc");
+              onElementSelect?.("cultureLetter");
             }}
           />
+
+          <div className="content-stretch flex flex-col items-end justify-center relative shrink-0">
+            {!data.issueNoStyle?.isHidden && (
+              <SafeHtml
+                html={data.issueNo || CULTURE_LETTER_DEFAULTS.issueNo}
+                className={`not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
+                style={{
+                  ...getElementStyle(
+                    data.issueNoStyle || CULTURE_LETTER_DEFAULTS.issueNoStyle,
+                    viewport,
+                  ),
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("issueNo");
+                }}
+              />
+            )}
+            {!data.issueDateStyle?.isHidden && (
+              <SafeHtml
+                html={data.issueDate || CULTURE_LETTER_DEFAULTS.issueDate}
+                className={`text-right cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getElementStyle(
+                    data.issueDateStyle ||
+                      CULTURE_LETTER_DEFAULTS.issueDateStyle,
+                    viewport,
+                  ),
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("issueDate");
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="content-stretch flex flex-col gap-[20px] items-start justify-start relative shrink-0 w-full">
+          {!data.titleStyle?.isHidden && (
+            <SafeHtml
+              html={toHtmlWithBreaks(data.title || CULTURE_LETTER_DEFAULTS.title)}
+              className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+              style={{
+                ...getElementStyle(
+                  data.titleStyle || CULTURE_LETTER_DEFAULTS.titleStyle,
+                  viewport,
+                ),
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("title");
+              }}
+            />
+          )}
+
+          {!data.descStyle?.isHidden && (
+            <SafeHtml
+              html={toHtmlWithBreaks(data.desc || CULTURE_LETTER_DEFAULTS.desc)}
+              className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+              style={{
+                ...getElementStyle(
+                  data.descStyle || CULTURE_LETTER_DEFAULTS.descStyle,
+                  viewport,
+                ),
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("desc");
+              }}
+            />
+          )}
         </div>
       </div>
     );
