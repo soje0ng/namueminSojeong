@@ -8,18 +8,15 @@ import {
   getImageUrl,
   getPaddingClass,
   getBorderRadiusClass,
+  UniversalMedia,
 } from "./WidgetUtils";
 
 export const CULTURE_LETTER_DEFAULTS = {
   layout: "1",
   layout1BgImageUrl: "/images/placeholder/culture_letter_layout1_bg.jpg",
   layout1BgImageUrlStyle: { objectFit: "cover" },
-  layout1LogoFlowerImageUrl:
-    "/images/placeholder/culture_letter_layout1_logo_flower.png",
-  layout1LogoFlowerImageUrlStyle: { objectFit: "contain" },
-  layout1LogoTextImageUrl:
-    "/images/placeholder/culture_letter_layout1_logo_text.png",
-  layout1LogoTextImageUrlStyle: { objectFit: "contain" },
+  layout1LogoImageUrl: "/images/placeholder/culture_letter_layout1_logo.png",
+  layout1LogoImageUrlStyle: { objectFit: "contain" },
   cultureLetter: "Culture Letter",
   cultureLetterStyle: {
     fontFamily: "'Tenor Sans', sans-serif",
@@ -78,18 +75,20 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
   const style = useWidgetStyle(w.style);
   const data = w.data;
   const layout = String(data.layout || "1");
-  const toHtmlWithBreaks = (value?: string) => String(value || "").replace(/\n/g, "<br/>");
+  const toHtmlWithBreaks = (value?: string) =>
+    String(value || "").replace(/\n/g, "<br/>");
 
   /* ─────────────── Layout 1 : 컬처레터 헤더 - 좌측정렬 ─────────────── */
   if (layout === "1") {
     const bgImage =
       data.layout1BgImageUrl || CULTURE_LETTER_DEFAULTS.layout1BgImageUrl;
-    const logoFlower =
-      data.layout1LogoFlowerImageUrl ||
-      CULTURE_LETTER_DEFAULTS.layout1LogoFlowerImageUrl;
-    const logoText =
-      data.layout1LogoTextImageUrl ||
-      CULTURE_LETTER_DEFAULTS.layout1LogoTextImageUrl;
+    const bgImageStyle = getElementStyle(
+      data.layout1BgImageUrlStyle ||
+        CULTURE_LETTER_DEFAULTS.layout1BgImageUrlStyle,
+      viewport,
+    );
+    const logoImage =
+      data.layout1LogoImageUrl || CULTURE_LETTER_DEFAULTS.layout1LogoImageUrl;
 
     return (
       <div
@@ -106,19 +105,26 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
         }}
       >
         {/* img 레이어 — 배경 통이미지 (pointer-events-none: 클릭 이벤트 콘텐츠에 전달) */}
-        <div className="absolute h-[492px] left-0 overflow-clip top-0 w-[1920px] pointer-events-none">
-          <div className="absolute contents left-0 top-[-47px]">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute inset-0">
             <div
-              className="absolute h-[539px] left-0 top-[-47px] w-[1920px]"
+              className="absolute inset-0"
               style={{
                 backgroundImage:
                   "linear-gradient(180deg, rgb(35, 55, 89) 8.5623%, rgb(33, 52, 83) 28.645%, rgb(28, 43, 68) 52.379%, rgb(19, 30, 43) 79.764%, rgb(12, 18, 20) 99.847%), linear-gradient(180.00000000000006deg, rgb(240, 207, 214) 0%, rgb(219, 159, 171) 100%)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
               }}
             />
             {bgImage && (
               <img
                 alt=""
-                className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
+                className="absolute inset-0 max-w-none pointer-events-none w-full h-full"
+                style={{
+                  objectFit: bgImageStyle.objectFit || "cover",
+                  objectPosition: "center",
+                }}
                 src={getImageUrl(
                   data.layout1BgImageUrlStyle,
                   viewport,
@@ -133,40 +139,26 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
         <div className="border-[#b1b8be] border-b border-solid content-stretch flex items-center justify-between overflow-clip pb-[20px] relative shrink-0 w-full">
           {/* 나무이민 로고 (flower symbol + text) */}
           <div
-            className="content-stretch flex gap-[9px] items-center relative shrink-0 w-[299px] cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+            className="content-stretch flex items-center relative shrink-0 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
             onDoubleClick={(e) => {
               e.stopPropagation();
-              onElementSelect?.("layout1LogoFlowerImageUrl");
+              onElementSelect?.("layout1LogoImageUrl");
             }}
           >
-            <div className="h-[40.004px] relative shrink-0 w-[39.742px]">
-              <img
-                alt=""
-                className={`absolute block max-w-none size-full ${getBorderRadiusClass(viewport, "")}`}
-                src={getImageUrl(
-                  data.layout1LogoFlowerImageUrlStyle,
-                  viewport,
-                  logoFlower,
-                )}
-              />
-            </div>
-            <div
-              className="h-[28.28px] relative shrink-0 w-[104.122px] cursor-pointer"
+            <UniversalMedia
+              alt="logo"
+              className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+              url={logoImage}
+              style={{
+                height: "auto",
+                maxHeight: viewport === "mobile" ? "40px" : "60px",
+                width: "auto",
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
-                onElementSelect?.("layout1LogoTextImageUrl");
+                onElementSelect?.("layout1LogoImageUrl");
               }}
-            >
-              <img
-                alt=""
-                className={`absolute block max-w-none size-full ${getBorderRadiusClass(viewport, "")}`}
-                src={getImageUrl(
-                  data.layout1LogoTextImageUrlStyle,
-                  viewport,
-                  logoText,
-                )}
-              />
-            </div>
+            />
           </div>
 
           {/* Culture Letter */}
@@ -226,7 +218,9 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
         <div className="content-stretch flex flex-col gap-[20px] items-start justify-start relative shrink-0 w-full">
           {!data.titleStyle?.isHidden && (
             <SafeHtml
-              html={toHtmlWithBreaks(data.title || CULTURE_LETTER_DEFAULTS.title)}
+              html={toHtmlWithBreaks(
+                data.title || CULTURE_LETTER_DEFAULTS.title,
+              )}
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={{
                 ...getElementStyle(
