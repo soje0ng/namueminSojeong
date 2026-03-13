@@ -651,7 +651,13 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
   const getImageCardFeatureRows = (
     item: any,
-  ): { label: string; value: string; id: string }[] => {
+  ): {
+    label: string;
+    value: string;
+    id: string;
+    labelStyle?: any;
+    valueStyle?: any;
+  }[] => {
     const getDefaultLabel = (idx: number) => {
       const base = item?.featureLabel || "특징";
       const numbered = `${base} ${String(idx + 1).padStart(2, "0")}`;
@@ -703,6 +709,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             id: `slot-${idx}`,
             label: getDefaultLabel(idx),
             value: line,
+            labelStyle: undefined,
+            valueStyle: undefined,
           };
           idx += 1;
           return itemRow;
@@ -720,6 +728,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                 ? label || getDefaultLabel(idx)
                 : getDefaultLabel(idx),
             value: line,
+            labelStyle: row.labelStyle,
+            valueStyle: row.valueStyle,
           };
           idx += 1;
           return itemRow;
@@ -780,7 +790,12 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
   const updateImageCardFeatures = (
     itemId: string | number | null | undefined,
-    nextRows: { label: string; value: string }[],
+    nextRows: {
+      label: string;
+      value: string;
+      labelStyle?: any;
+      valueStyle?: any;
+    }[],
     fallbackIndex = -1,
   ) => {
     const currentItems = (widget.data as any).items || [];
@@ -798,6 +813,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
       return {
         label: (r.label || fallbackLabel).trim(),
         value: (r.value || "").trim(),
+        labelStyle: r.labelStyle,
+        valueStyle: r.valueStyle,
       };
     });
     const descFromRows = normalizedRows
@@ -812,6 +829,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             features: normalizedRows.map((r) => ({
               label: r.label,
               value: r.value,
+              ...(r.labelStyle ? { labelStyle: r.labelStyle } : {}),
+              ...(r.valueStyle ? { valueStyle: r.valueStyle } : {}),
             })),
             desc: descFromRows || "프로그램 특징 내용 입력<br/>2줄 입력",
           }
@@ -3691,7 +3710,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections5}
                           updateWidgetData={updateWidgetData}
-                          autoExpandSectionId={layout5AutoExpandSectionId}
+                          autoExpandSectionId={
+                            selectedElementKey ? null : layout5AutoExpandSectionId
+                          }
                         />
                       )}
 
@@ -3701,7 +3722,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections6}
                           updateWidgetData={updateWidgetData}
-                          autoExpandSectionId={layout6AutoExpandSectionId}
+                          autoExpandSectionId={
+                            selectedElementKey ? null : layout6AutoExpandSectionId
+                          }
                         />
                       )}
 
@@ -3711,7 +3734,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections7}
                           updateWidgetData={updateWidgetData}
-                          autoExpandSectionId={layout7AutoExpandSectionId}
+                          autoExpandSectionId={
+                            selectedElementKey ? null : layout7AutoExpandSectionId
+                          }
                         />
                       )}
 
@@ -3721,7 +3746,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections8}
                           updateWidgetData={updateWidgetData}
-                          autoExpandSectionId={layout8AutoExpandSectionId}
+                          autoExpandSectionId={
+                            selectedElementKey ? null : layout8AutoExpandSectionId
+                          }
                         />
                       )}
 
@@ -3731,7 +3758,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections9}
                           updateWidgetData={updateWidgetData}
-                          autoExpandSectionId={layout9AutoExpandSectionId}
+                          autoExpandSectionId={
+                            selectedElementKey ? null : layout9AutoExpandSectionId
+                          }
                         />
                       )}
 
@@ -3741,7 +3770,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections11}
                           updateWidgetData={updateWidgetData}
-                          autoExpandSectionId={layout11AutoExpandSectionId}
+                          autoExpandSectionId={
+                            selectedElementKey ? null : layout11AutoExpandSectionId
+                          }
                         />
                       )}
                     </div>
@@ -4055,10 +4086,117 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             );
           })()}
 
+        {selectedElementKey &&
+          widget.type === "textStructure" &&
+          ((widget.data as any).layout || "1").toString() === "6" &&
+          selectedElementKey === "s6featureItem" &&
+          selectedItemId &&
+          (() => {
+            const resolved = resolveLayout6FeatureItem(selectedItemId);
+            const section = resolved?.section;
+            const featureItem = resolved?.item;
+            const featureItemIndex = resolved?.itemIndex ?? -1;
+
+            const handleChange = (prop: string, val: string) => {
+              if (!section || featureItemIndex < 0) return;
+              const updated = (textStructureSections.sections6 || []).map(
+                (s: any) => {
+                  if (s.id !== section.id) return s;
+                  const items = [...(s.items || [])];
+                  if (!items[featureItemIndex]) return s;
+                  items[featureItemIndex] = {
+                    ...items[featureItemIndex],
+                    [prop]: val,
+                  };
+                  return { ...s, items };
+                },
+              );
+              updateWidgetData(widget.id, { sections6: updated });
+            };
+
+            return (
+              <div className="absolute inset-0 bg-white z-10 flex flex-col overflow-y-auto">
+                <div className="flex items-center gap-2 p-3 border-b border-gray-100 bg-white sticky top-0">
+                  <button
+                    onClick={() => setSelectedElementKey(null)}
+                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 font-semibold"
+                  >
+                    <ChevronLeft size={14} />
+                    뒤로
+                  </button>
+                  <span className="text-xs font-bold text-gray-700 flex-1 text-center pr-6">
+                    프로그램 특징 항목 편집
+                  </span>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-gray-400 font-semibold">
+                      제목
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                      value={featureItem?.title || ""}
+                      onChange={(e) => handleChange("title", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-gray-400 font-semibold">
+                      내용
+                    </label>
+                    <textarea
+                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
+                      rows={3}
+                      value={(featureItem?.desc || "").replace(
+                        /<br\s*\/?>/gi,
+                        "\n",
+                      )}
+                      onChange={(e) =>
+                        handleChange(
+                          "desc",
+                          e.target.value.replace(/\n/g, "<br/>"),
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-gray-400 font-semibold uppercase flex items-center gap-1">
+                      <ImageIcon size={10} /> 아이콘/이미지
+                    </label>
+                    <ImgUploadPop
+                      onSelect={(url) => handleChange("iconUrl", url)}
+                      button={
+                        <div className="flex items-center justify-center p-3 bg-gray-50 border border-dashed border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer transition-all">
+                          <UniversalMedia
+                            url={featureItem?.iconUrl || ""}
+                            className="w-6 h-6 object-contain"
+                          />
+                        </div>
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-[10px] focus:ring-2 focus:ring-blue-100 outline-none text-blue-600 font-mono"
+                      value={featureItem?.iconUrl || ""}
+                      onChange={(e) => handleChange("iconUrl", e.target.value)}
+                      placeholder="이미지 URL을 입력하세요"
+                    />
+                  </div>
+                  {!featureItem && (
+                    <p className="text-xs text-gray-400 text-center py-4">
+                      항목을 찾을 수 없습니다.
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
         {/* 섹션 하위 요소 설정 패널 */}
         {selectedElementKey &&
           selectedElementKey !== "s5checkItem" &&
           selectedElementKey !== "s5labelItem" &&
+          selectedElementKey !== "s6featureItem" &&
           !["comparisonCard", "stripBanner"].includes(widget.type) &&
           !(
             selectedElementKey === "leftDescItems" ||
@@ -4087,7 +4225,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                 widgetId={widget.id}
                 sections={textStructureSections.sections10}
                 updateWidgetData={updateWidgetData}
-                autoExpandSectionId={layout10AutoExpandSectionId}
+                autoExpandSectionId={
+                  selectedElementKey ? null : layout10AutoExpandSectionId
+                }
               />
             </div>
           </div>
