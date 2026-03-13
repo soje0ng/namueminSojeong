@@ -516,6 +516,31 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
   const layout2ImageUrl =
     (data as any).layout2ImageUrl || "/images/placeholder/ts_layout2_img.jpg";
   const layout2ImageStyle = (data as any).layout2ImageStyle;
+  const sectionPaddingClass =
+    viewport === "tablet"
+      ? "px-10"
+      : viewport === "desktop"
+        ? "px-5 xl:px-72"
+        : "px-5";
+  const sectionPaddingWideClass =
+    viewport === "tablet"
+      ? "px-10"
+      : viewport === "desktop"
+        ? "px-5 xl:px-[280px]"
+        : "px-5";
+  const sectionPaddingFallbackClass =
+    viewport === "tablet"
+      ? "px-10"
+      : viewport === "desktop"
+        ? "px-5 xl:px-32"
+        : "px-5";
+  const sectionPaddingPanelClass =
+    viewport === "tablet"
+      ? "px-10"
+      : viewport === "desktop"
+        ? "px-5 xl:px-14"
+        : "px-5";
+  const sectionPadding40Class = viewport === "mobile" ? "px-5" : "px-10";
 
   if (layout === "10") {
     const sections10 =

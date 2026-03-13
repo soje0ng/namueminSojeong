@@ -6,6 +6,7 @@ import {
   SafeHtml,
   WidgetRendererProps,
   UniversalMedia,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 export const TITLE_TEXT_DEFAULTS = {
@@ -165,7 +166,9 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
         onDoubleClick={() => onElementSelect?.("style")}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-14 w-full">
+          <div
+            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-14 inline-flex flex-col justify-start items-center gap-14 w-full`}
+          >
             <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
               {/* Left Image Area Slot */}
               <div
@@ -290,7 +293,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               e.stopPropagation();
               onElementSelect?.("layout2BackgroundImageUrl");
             }}
-            className="self-stretch px-5 md:px-10 xl:px-72 py-16 xl:py-28 inline-flex flex-col justify-start items-center gap-14 w-full"
+            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-16 xl:py-28 inline-flex flex-col justify-start items-center gap-14 w-full`}
           >
             <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
               {/* Left Image Area Slot */}
@@ -402,7 +405,9 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
         onDoubleClick={() => onElementSelect?.("style")}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-3 w-full text-center hover:ring-2 hover:ring-transparent transition-all">
+          <div
+            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-14 inline-flex flex-col justify-start items-center gap-3 w-full text-center hover:ring-2 hover:ring-transparent transition-all`}
+          >
             {!subTitleStyle?.isHidden && (
               <SafeHtml
                 html={subTitle}
@@ -485,7 +490,9 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
         onDoubleClick={() => onElementSelect?.("style")}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div
+            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+          >
             <div className="flex flex-col justify-start items-center text-center w-full max-w-[800px]">
               {!subTitleStyle?.isHidden && (
                 <SafeHtml
