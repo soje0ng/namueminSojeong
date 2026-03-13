@@ -836,6 +836,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               "cultureLetter",
               "faq",
               "table",
+              "imageArea",
             ].includes(widget.type) && (
               <div className="space-y-4">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
@@ -980,8 +981,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                         ? 3
                                         : widget.type === "comparisonCard"
                                           ? 2
-                                          : widget.type === "stripBanner"
-                                            ? 2
+                                          : widget.type === "imageArea"
+                                            ? 4
                                             : 1,
                   }).map((_, i) => (
                     <option key={i + 1} value={`${i + 1}`}>
@@ -997,7 +998,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                 "컬처레터 유튜브 타이틀",
                                 "컬처레터 바로가기 버튼",
                               ][i]
-                            : `${getWidgetName(widget.type)} 레이아웃 ${i + 1}`}
+                            : widget.type === "imageArea"
+                              ? `이미지 영역 레이아웃 ${i + 1}`
+                              : `${getWidgetName(widget.type)} 레이아웃 ${i + 1}`}
                     </option>
                   ))}
                 </select>
@@ -1396,6 +1399,91 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     안내배너 3 (그라디언트 + 2버튼)
                   </option>
                 </select>
+              </div>
+            )}
+
+            {/* Image Area Controls */}
+            {widget.type === "imageArea" && (
+              <div className="space-y-6 mb-6">
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide flex items-center gap-1">
+                    <ImageIcon size={14} className="text-blue-500" /> PC 이미지
+                    설정
+                  </label>
+                  <ImgUploadPop
+                    onSelect={(url) =>
+                      updateWidgetData(widget.id, { imageUrl: url })
+                    }
+                    button={
+                      <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                        <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Upload size={18} />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-bold text-gray-700 text-sm">
+                            PC 이미지 선택
+                          </p>
+                          <p className="text-[10px] text-gray-400">
+                            서버 업로드 또는 선택
+                          </p>
+                        </div>
+                      </div>
+                    }
+                  />
+                  <input
+                    type="text"
+                    className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                    value={(widget.data as any).imageUrl || ""}
+                    onChange={(e) =>
+                      updateWidgetData(widget.id, {
+                        imageUrl: e.target.value,
+                      })
+                    }
+                    placeholder="PC 이미지 URL을 입력하세요"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-gray-400 block uppercase tracking-wide flex items-center gap-1">
+                    <Smartphone size={14} className="text-blue-500" /> 모바일
+                    이미지 설정
+                  </label>
+                  <ImgUploadPop
+                    onSelect={(url) =>
+                      updateWidgetData(widget.id, { mobileImageUrl: url })
+                    }
+                    button={
+                      <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
+                        <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Upload size={18} />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-bold text-gray-700 text-sm">
+                            모바일 이미지 선택
+                          </p>
+                          <p className="text-[10px] text-gray-400">
+                            서버 업로드 또는 선택
+                          </p>
+                        </div>
+                      </div>
+                    }
+                  />
+                  <input
+                    type="text"
+                    className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
+                    value={(widget.data as any).mobileImageUrl || ""}
+                    onChange={(e) =>
+                      updateWidgetData(widget.id, {
+                        mobileImageUrl: e.target.value,
+                      })
+                    }
+                    placeholder="모바일 이미지 URL을 입력하세요 (선택)"
+                  />
+                  <p className="text-[10px] text-gray-400 leading-tight">
+                    * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
+                    노출됩니다.
+                  </p>
+                </div>
               </div>
             )}
 
@@ -3397,90 +3485,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     </div>
                   )}
 
-                  {/* Image Area Controls */}
-                  {widget.type === "imageArea" && (
-                    <div className="space-y-6 pt-2">
-                      <div className="space-y-3">
-                        <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
-                          <ImageIcon size={14} className="text-blue-500" /> PC
-                          이미지 설정
-                        </label>
-                        <ImgUploadPop
-                          onSelect={(url) =>
-                            updateWidgetData(widget.id, { imageUrl: url })
-                          }
-                          button={
-                            <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
-                              <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Upload size={18} />
-                              </div>
-                              <div className="text-left">
-                                <p className="font-bold text-gray-700 text-sm">
-                                  PC 이미지 선택
-                                </p>
-                                <p className="text-[10px] text-gray-400">
-                                  서버 업로드 또는 선택
-                                </p>
-                              </div>
-                            </div>
-                          }
-                        />
-                        <input
-                          type="text"
-                          className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
-                          value={(widget.data as any).imageUrl || ""}
-                          onChange={(e) =>
-                            updateWidgetData(widget.id, {
-                              imageUrl: e.target.value,
-                            })
-                          }
-                          placeholder="PC 이미지 URL을 입력하세요"
-                        />
-                      </div>
-
-                      <div className="space-y-3">
-                        <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
-                          <Smartphone size={14} className="text-blue-500" />{" "}
-                          모바일 이미지 설정
-                        </label>
-                        <ImgUploadPop
-                          onSelect={(url) =>
-                            updateWidgetData(widget.id, { mobileImageUrl: url })
-                          }
-                          button={
-                            <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all group">
-                              <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Upload size={18} />
-                              </div>
-                              <div className="text-left">
-                                <p className="font-bold text-gray-700 text-sm">
-                                  모바일 이미지 선택
-                                </p>
-                                <p className="text-[10px] text-gray-400">
-                                  서버 업로드 또는 선택
-                                </p>
-                              </div>
-                            </div>
-                          }
-                        />
-                        <input
-                          type="text"
-                          className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
-                          value={(widget.data as any).mobileImageUrl || ""}
-                          onChange={(e) =>
-                            updateWidgetData(widget.id, {
-                              mobileImageUrl: e.target.value,
-                            })
-                          }
-                          placeholder="모바일 이미지 URL을 입력하세요 (선택)"
-                        />
-                        <p className="text-[10px] text-gray-400 leading-tight">
-                          * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
-                          노출됩니다.
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  {/* Removed duplicate Image Area Controls */}
 
                   {widget.type === "titleBanner" &&
                     String((widget.data as any).layout || "1") === "3" && (

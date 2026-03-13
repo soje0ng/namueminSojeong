@@ -7,6 +7,7 @@ import {
   WidgetRendererProps,
   UniversalMedia,
   getPaddingClass,
+  getBorderRadiusClass,
 } from "./WidgetUtils";
 
 export const TITLE_TEXT_DEFAULTS = {
@@ -15,7 +16,12 @@ export const TITLE_TEXT_DEFAULTS = {
   subTitle: "이민 프로그램명 입력",
   subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
   title: "타이틀 문구를 적는 곳입니다.",
-  titleStyle: { fontSize: "48px", fontWeight: "700", color: "#111827" },
+  titleStyle: {
+    fontSize: "48px",
+    fontSizeMobile: "28px",
+    fontWeight: "700",
+    color: "#111827",
+  },
   desc: "서브타이틀 입력 영역",
   descStyle: { fontSize: "20px", fontWeight: "500", color: "#6B7280" },
   quoteLeftUrl: "/images/placeholder/icon-quote.jpg",
@@ -25,7 +31,12 @@ export const TITLE_TEXT_DEFAULTS = {
 
   // Layout 1
   layout1Title: "타이틀 문구를 적는 곳입니다.",
-  layout1TitleStyle: { fontSize: "48px", fontWeight: "700", color: "#111827" },
+  layout1TitleStyle: {
+    fontSize: "48px",
+    fontSizeMobile: "28px",
+    fontWeight: "700",
+    color: "#111827",
+  },
   layout1SubTitle: "이민 프로그램명 입력",
   layout1SubTitleStyle: {
     fontSize: "20px",
@@ -38,7 +49,12 @@ export const TITLE_TEXT_DEFAULTS = {
   // Layout 2
   layout2Title:
     "자녀를 미국에서 교육시키는 이유는<br/>世界 대학 순위가 증명하고 있습니다.",
-  layout2TitleStyle: { fontSize: "48px", fontWeight: "700", color: "#ffffff" },
+  layout2TitleStyle: {
+    fontSize: "48px",
+    fontSizeMobile: "28px",
+    fontWeight: "700",
+    color: "#ffffff",
+  },
   layout2SubTitle:
     "국내 최고 대학 서울대도 세계 순위에서는 62위 … 결국 전세계 상위권의 학교 중 70%는 미국 대학이 차지합니다.",
   layout2SubTitleStyle: {
@@ -88,7 +104,12 @@ export const TITLE_TEXT_DEFAULTS = {
     color: "#285DE1",
   },
   layout4Title: "타이틀명 입력",
-  layout4TitleStyle: { fontSize: "36px", fontWeight: "700", color: "#111827" },
+  layout4TitleStyle: {
+    fontSize: "40px",
+    fontSizeMobile: "28px",
+    fontWeight: "700",
+    color: "#111827",
+  },
   layout4Desc: "이민 프로그램명 입력",
   layout4DescStyle: { fontSize: "20px", fontWeight: "500", color: "#6B7280" },
 };
@@ -167,9 +188,27 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-14 inline-flex flex-col justify-start items-center gap-14 w-full`}
+            className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center w-full`}
+            style={{
+              gap:
+                viewport === "mobile"
+                  ? "8px"
+                  : viewport === "tablet"
+                    ? "20px"
+                    : "60px",
+            }}
           >
-            <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
+            <div
+              className="inline-flex flex-col xl:flex-row justify-start items-start xl:items-start w-full xl:w-auto"
+              style={{
+                gap:
+                  viewport === "mobile"
+                    ? "8px"
+                    : viewport === "tablet"
+                      ? "20px"
+                      : "60px",
+              }}
+            >
               {/* Left Image Area Slot */}
               <div
                 className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400"
@@ -191,8 +230,31 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                   <div className="justify-start transition-all w-fit mx-auto">
                     <SafeHtml
                       html={title}
-                      className="text-시안-mode-gray90 text-3xl xl:text-5xl font-bold leading-tight xl:leading-[72px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
-                      style={getElementStyle(titleStyle, viewport)}
+                      className={`text-시안-mode-gray90 text-2xl xl:text-5xl font-bold leading-tight xl:leading-[72px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
+                      style={{
+                        ...getElementStyle(titleStyle, viewport),
+                        ...(viewport === "mobile" &&
+                        (titleStyle?.fontSize === "20px" ||
+                          titleStyle?.fontSizeMobile === "20px" ||
+                          (titleStyle as any)?.fontSize === 20 ||
+                          (titleStyle as any)?.fontSizeMobile === 20)
+                          ? { fontSize: "18px" }
+                          : {}),
+                        ...(viewport === "mobile" &&
+                        (titleStyle?.fontSize === "24px" ||
+                          titleStyle?.fontSizeMobile === "24px" ||
+                          (titleStyle as any)?.fontSize === 24 ||
+                          (titleStyle as any)?.fontSizeMobile === 24)
+                          ? { fontSize: "20px" }
+                          : {}),
+                        ...(viewport === "mobile" &&
+                        (titleStyle?.fontSize === "30px" ||
+                          titleStyle?.fontSizeMobile === "30px" ||
+                          (titleStyle as any)?.fontSize === 30 ||
+                          (titleStyle as any)?.fontSizeMobile === 30)
+                          ? { fontSize: "24px" }
+                          : {}),
+                      }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("layout1Title");
@@ -203,8 +265,31 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 {!subTitleStyle?.isHidden && (
                   <SafeHtml
                     html={subTitle}
-                    className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all mt-2 cursor-text break-keep"
-                    style={getElementStyle(subTitleStyle, viewport)}
+                    className={`text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-2 cursor-text break-keep`}
+                    style={{
+                      ...getElementStyle(subTitleStyle, viewport),
+                      ...(viewport === "mobile" &&
+                      (subTitleStyle?.fontSize === "20px" ||
+                        subTitleStyle?.fontSizeMobile === "20px" ||
+                        (subTitleStyle as any)?.fontSize === 20 ||
+                        (subTitleStyle as any)?.fontSizeMobile === 20)
+                        ? { fontSize: "18px" }
+                        : {}),
+                      ...(viewport === "mobile" &&
+                      (subTitleStyle?.fontSize === "24px" ||
+                        subTitleStyle?.fontSizeMobile === "24px" ||
+                        (subTitleStyle as any)?.fontSize === 24 ||
+                        (subTitleStyle as any)?.fontSizeMobile === 24)
+                        ? { fontSize: "20px" }
+                        : {}),
+                      ...(viewport === "mobile" &&
+                      (subTitleStyle?.fontSize === "30px" ||
+                        subTitleStyle?.fontSizeMobile === "30px" ||
+                        (subTitleStyle as any)?.fontSize === 30 ||
+                        (subTitleStyle as any)?.fontSizeMobile === 30)
+                        ? { fontSize: "24px" }
+                        : {}),
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("layout1SubTitle");
@@ -293,7 +378,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               e.stopPropagation();
               onElementSelect?.("layout2BackgroundImageUrl");
             }}
-            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-16 xl:py-28 inline-flex flex-col justify-start items-center gap-14 w-full`}
+            className={`self-stretch ${getPaddingClass(viewport)} py-16 xl:py-28 inline-flex flex-col justify-start items-center gap-14 w-full`}
           >
             <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
               {/* Left Image Area Slot */}
@@ -317,7 +402,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                   <div className="justify-start transition-all w-fit mx-auto">
                     <SafeHtml
                       html={title}
-                      className="text-white text-3xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded cursor-text transition-all"
+                      className={`text-white text-2xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-200 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
                       style={{
                         ...getElementStyle(titleStyle, viewport),
                         backgroundColor: "transparent",
@@ -332,10 +417,31 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 {!subTitleStyle?.isHidden && (
                   <SafeHtml
                     html={subTitle}
-                    className="text-center justify-start text-white/90 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded transition-all mt-4 cursor-text break-keep"
+                    className={`text-center justify-start text-white/90 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-200 ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-4 cursor-text break-keep`}
                     style={{
                       ...getElementStyle(subTitleStyle, viewport),
                       backgroundColor: "transparent",
+                      ...(viewport === "mobile" &&
+                      (subTitleStyle?.fontSize === "20px" ||
+                        subTitleStyle?.fontSizeMobile === "20px" ||
+                        (subTitleStyle as any)?.fontSize === 20 ||
+                        (subTitleStyle as any)?.fontSizeMobile === 20)
+                        ? { fontSize: "18px" }
+                        : {}),
+                      ...(viewport === "mobile" &&
+                      (subTitleStyle?.fontSize === "24px" ||
+                        subTitleStyle?.fontSizeMobile === "24px" ||
+                        (subTitleStyle as any)?.fontSize === 24 ||
+                        (subTitleStyle as any)?.fontSizeMobile === 24)
+                        ? { fontSize: "20px" }
+                        : {}),
+                      ...(viewport === "mobile" &&
+                      (subTitleStyle?.fontSize === "30px" ||
+                        subTitleStyle?.fontSizeMobile === "30px" ||
+                        (subTitleStyle as any)?.fontSize === 30 ||
+                        (subTitleStyle as any)?.fontSizeMobile === 30)
+                        ? { fontSize: "24px" }
+                        : {}),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -406,13 +512,36 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-14 inline-flex flex-col justify-start items-center gap-3 w-full text-center hover:ring-2 hover:ring-transparent transition-all`}
+            className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-3 w-full text-center hover:ring-2 hover:ring-transparent transition-all`}
           >
             {!subTitleStyle?.isHidden && (
               <SafeHtml
                 html={subTitle}
-                className="text-center justify-start break-keep leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                style={getElementStyle(subTitleStyle, viewport)}
+                className={`text-center justify-start break-keep leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all cursor-text`}
+                style={{
+                  ...getElementStyle(subTitleStyle, viewport),
+                  ...(viewport === "mobile" &&
+                  (subTitleStyle?.fontSize === "20px" ||
+                    subTitleStyle?.fontSizeMobile === "20px" ||
+                    (subTitleStyle as any)?.fontSize === 20 ||
+                    (subTitleStyle as any)?.fontSizeMobile === 20)
+                    ? { fontSize: "18px" }
+                    : {}),
+                  ...(viewport === "mobile" &&
+                  (subTitleStyle?.fontSize === "24px" ||
+                    subTitleStyle?.fontSizeMobile === "24px" ||
+                    (subTitleStyle as any)?.fontSize === 24 ||
+                    (subTitleStyle as any)?.fontSizeMobile === 24)
+                    ? { fontSize: "20px" }
+                    : {}),
+                  ...(viewport === "mobile" &&
+                  (subTitleStyle?.fontSize === "30px" ||
+                    subTitleStyle?.fontSizeMobile === "30px" ||
+                    (subTitleStyle as any)?.fontSize === 30 ||
+                    (subTitleStyle as any)?.fontSizeMobile === 30)
+                    ? { fontSize: "24px" }
+                    : {}),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("layout3SubTitle");
@@ -424,8 +553,31 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               <div className="justify-start transition-all w-fit mx-auto">
                 <SafeHtml
                   html={title}
-                  className="text-center justify-start break-keep leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
-                  style={getElementStyle(titleStyle, viewport)}
+                  className={`text-center justify-start break-keep leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
+                  style={{
+                    ...getElementStyle(titleStyle, viewport),
+                    ...(viewport === "mobile" &&
+                    (titleStyle?.fontSize === "20px" ||
+                      titleStyle?.fontSizeMobile === "20px" ||
+                      (titleStyle as any)?.fontSize === 20 ||
+                      (titleStyle as any)?.fontSizeMobile === 20)
+                      ? { fontSize: "18px" }
+                      : {}),
+                    ...(viewport === "mobile" &&
+                    (titleStyle?.fontSize === "24px" ||
+                      titleStyle?.fontSizeMobile === "24px" ||
+                      (titleStyle as any)?.fontSize === 24 ||
+                      (titleStyle as any)?.fontSizeMobile === 24)
+                      ? { fontSize: "20px" }
+                      : {}),
+                    ...(viewport === "mobile" &&
+                    (titleStyle?.fontSize === "30px" ||
+                      titleStyle?.fontSizeMobile === "30px" ||
+                      (titleStyle as any)?.fontSize === 30 ||
+                      (titleStyle as any)?.fontSizeMobile === 30)
+                      ? { fontSize: "24px" }
+                      : {}),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout3Title");
@@ -438,8 +590,31 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
             {!descStyle?.isHidden && (
               <SafeHtml
                 html={desc}
-                className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all mt-2 cursor-text break-keep"
-                style={getElementStyle(descStyle, viewport)}
+                className={`text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-2 cursor-text break-keep`}
+                style={{
+                  ...getElementStyle(descStyle, viewport),
+                  ...(viewport === "mobile" &&
+                  (descStyle?.fontSize === "20px" ||
+                    descStyle?.fontSizeMobile === "20px" ||
+                    (descStyle as any)?.fontSize === 20 ||
+                    (descStyle as any)?.fontSizeMobile === 20)
+                    ? { fontSize: "18px" }
+                    : {}),
+                  ...(viewport === "mobile" &&
+                  (descStyle?.fontSize === "24px" ||
+                    descStyle?.fontSizeMobile === "24px" ||
+                    (descStyle as any)?.fontSize === 24 ||
+                    (descStyle as any)?.fontSizeMobile === 24)
+                    ? { fontSize: "20px" }
+                    : {}),
+                  ...(viewport === "mobile" &&
+                  (descStyle?.fontSize === "30px" ||
+                    descStyle?.fontSizeMobile === "30px" ||
+                    (descStyle as any)?.fontSize === 30 ||
+                    (descStyle as any)?.fontSizeMobile === 30)
+                    ? { fontSize: "24px" }
+                    : {}),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("layout3Desc");
@@ -491,14 +666,37 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport, "xl:px-72")} py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+            className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
           >
             <div className="flex flex-col justify-start items-center text-center w-full max-w-[800px]">
               {!subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={subTitle}
-                  className="text-center justify-start text-blue-500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(subTitleStyle, viewport)}
+                  className={`text-center justify-start text-blue-500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all cursor-text break-keep`}
+                  style={{
+                    ...getElementStyle(subTitleStyle, viewport),
+                    ...(viewport === "mobile" &&
+                    (subTitleStyle?.fontSize === "20px" ||
+                      subTitleStyle?.fontSizeMobile === "20px" ||
+                      (subTitleStyle as any)?.fontSize === 20 ||
+                      (subTitleStyle as any)?.fontSizeMobile === 20)
+                      ? { fontSize: "18px" }
+                      : {}),
+                    ...(viewport === "mobile" &&
+                    (subTitleStyle?.fontSize === "24px" ||
+                      subTitleStyle?.fontSizeMobile === "24px" ||
+                      (subTitleStyle as any)?.fontSize === 24 ||
+                      (subTitleStyle as any)?.fontSizeMobile === 24)
+                      ? { fontSize: "20px" }
+                      : {}),
+                    ...(viewport === "mobile" &&
+                    (subTitleStyle?.fontSize === "30px" ||
+                      subTitleStyle?.fontSizeMobile === "30px" ||
+                      (subTitleStyle as any)?.fontSize === 30 ||
+                      (subTitleStyle as any)?.fontSizeMobile === 30)
+                      ? { fontSize: "24px" }
+                      : {}),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout4SubTitle");
@@ -510,7 +708,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 <div className="justify-start transition-all w-fit mx-auto mt-2 mb-2">
                   <SafeHtml
                     html={title}
-                    className="justify-start text-시안-mode-gray90 text-3xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
+                    className={`justify-start text-시안-mode-gray90 text-2xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
                     style={getElementStyle(titleStyle, viewport)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -523,8 +721,31 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               {!descStyle?.isHidden && (
                 <SafeHtml
                   html={desc}
-                  className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(descStyle, viewport)}
+                  className={`text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all cursor-text break-keep`}
+                  style={{
+                    ...getElementStyle(descStyle, viewport),
+                    ...(viewport === "mobile" &&
+                    (descStyle?.fontSize === "20px" ||
+                      descStyle?.fontSizeMobile === "20px" ||
+                      (descStyle as any)?.fontSize === 20 ||
+                      (descStyle as any)?.fontSizeMobile === 20)
+                      ? { fontSize: "18px" }
+                      : {}),
+                    ...(viewport === "mobile" &&
+                    (descStyle?.fontSize === "24px" ||
+                      descStyle?.fontSizeMobile === "24px" ||
+                      (descStyle as any)?.fontSize === 24 ||
+                      (descStyle as any)?.fontSizeMobile === 24)
+                      ? { fontSize: "20px" }
+                      : {}),
+                    ...(viewport === "mobile" &&
+                    (descStyle?.fontSize === "30px" ||
+                      descStyle?.fontSizeMobile === "30px" ||
+                      (descStyle as any)?.fontSize === 30 ||
+                      (descStyle as any)?.fontSizeMobile === 30)
+                      ? { fontSize: "24px" }
+                      : {}),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout4Desc");
@@ -547,7 +768,9 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       <div
         className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "xl:px-32")} py-12 md:py-24 relative z-10`}
       >
-        <div className="flex flex-col max-w-4xl mx-auto items-center text-center opacity-50 p-10 bg-시안-mode-gray10 rounded-xl">
+        <div
+          className={`flex flex-col max-w-4xl mx-auto items-center text-center opacity-50 p-10 bg-시안-mode-gray10 ${getBorderRadiusClass(viewport, "rounded-xl")}`}
+        >
           <p className="text-시안-mode-gray50 font-bold mb-2">
             TitleText 위젯 레이아웃 영역입니다.
           </p>

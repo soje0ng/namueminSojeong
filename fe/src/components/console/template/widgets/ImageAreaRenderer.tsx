@@ -7,6 +7,7 @@ import {
   formatUnit,
   UniversalMedia,
   getPaddingClass,
+  getBorderRadiusStyle,
 } from "./WidgetUtils";
 
 export const IMAGE_AREA_DEFAULTS = {
@@ -31,6 +32,21 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
   const mobileImageUrl =
     data.mobileImageUrl || data.imageUrl || IMAGE_AREA_DEFAULTS.mobileImageUrl;
   const isMobile = viewport === "mobile";
+  const getImageAreaTextStyle = (
+    textStyle: any,
+    overrides: React.CSSProperties = {},
+  ) => {
+    const resolvedStyle = {
+      ...getElementStyle(textStyle, viewport),
+      ...overrides,
+    };
+    const fontSize = resolvedStyle.fontSize;
+
+    return viewport === "mobile" &&
+      (fontSize === "20px" || fontSize === "20" || fontSize === 20)
+      ? { ...resolvedStyle, fontSize: "18px" }
+      : resolvedStyle;
+  };
   const currentImage = isMobile ? mobileImageUrl : imageUrl;
   const currentImageStyle = isMobile
     ? {
@@ -187,14 +203,15 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
               <div
                 style={{
                   fontFamily: "Pretendard, sans-serif",
-                  fontSize: "20px",
-                  fontWeight: 500,
-                  color: "#6d7882",
-                  letterSpacing: "-0.4px",
-                  lineHeight: 1.5,
-                  whiteSpace: "pre",
-                  textAlign: "center",
-                  cursor: "pointer",
+                  ...getImageAreaTextStyle(data.descriptionStyle, {
+                    fontWeight: 500,
+                    color: "#6d7882",
+                    letterSpacing: "-0.4px",
+                    lineHeight: 1.5,
+                    whiteSpace: "pre",
+                    textAlign: "center",
+                    cursor: "pointer",
+                  }),
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
@@ -233,7 +250,7 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
             style={{
               height: "400px",
               overflow: "hidden",
-              borderRadius: "24px",
+              borderRadius: getBorderRadiusStyle(viewport, "24px"),
               width: "100%",
               position: "relative",
               flexShrink: 0,
@@ -305,7 +322,7 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
       }}
     >
       <div className="text-center font-bold text-gray-400">
-        <p className="text-xl">이미지 영역 디자인 대기중</p>
+        <p className="text-lg xl:text-xl">이미지 영역 디자인 대기중</p>
         <p className="text-sm mt-2 font-mono bg-white px-3 py-1 inline-block shadow-sm">
           레이아웃 {layout}
         </p>

@@ -8,6 +8,7 @@ import {
   formatUnit,
   UniversalMedia,
   getPaddingClass,
+  getBorderRadiusClass,
 } from "./WidgetUtils";
 
 export const IMAGE_CARD_DEFAULTS = {
@@ -289,8 +290,32 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
-              className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "20px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 20 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 20 ||
+                  w.data.subTitleStyle?.fontSize === undefined)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "24px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 24 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "30px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 30 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -298,8 +323,32 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.titleStyle, viewport)}
+              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.titleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "20px" ||
+                  w.data.titleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.titleStyle as any)?.fontSize === 20 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 20 ||
+                  w.data.titleStyle?.fontSize === undefined)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "24px" ||
+                  w.data.titleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.titleStyle as any)?.fontSize === 24 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "30px" ||
+                  w.data.titleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.titleStyle as any)?.fontSize === 30 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("title");
@@ -307,8 +356,32 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.descStyle, viewport)}
+              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.descStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "20px" ||
+                  w.data.descStyle?.fontSizeMobile === "20px" ||
+                  (w.data.descStyle as any)?.fontSize === 20 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 20 ||
+                  w.data.descStyle?.fontSize === undefined)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "24px" ||
+                  w.data.descStyle?.fontSizeMobile === "24px" ||
+                  (w.data.descStyle as any)?.fontSize === 24 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "30px" ||
+                  w.data.descStyle?.fontSizeMobile === "30px" ||
+                  (w.data.descStyle as any)?.fontSize === 30 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("desc");
@@ -339,7 +412,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
                   key={item.id || idx}
-                  className="flex-1 inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
+                  className={`flex-1 inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
                   style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -354,33 +427,87 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <UniversalMedia
                     className="self-stretch w-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
-                    url={item.image}
+                    url={item.image || item.imageUrl}
                     alt="card_image"
                     style={getItemImageStyle(item.imageStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("image", item.id);
+                      onElementSelect?.("image", item.id || idx.toString());
                     }}
                   />
                   {!item.titleStyle?.isHidden && (
                     <SafeHtml
                       html={item.title || "프로그램 특징"}
-                      className="justify-start text-시안-mode-gray95 text-2xl font-medium font-['Pretendard'] leading-9 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                      style={getElementStyle(item.titleStyle, viewport)}
+                      className={`justify-start text-시안-mode-gray95 font-medium font-['Pretendard'] leading-9 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
+                      style={{
+                        ...getElementStyle(item.titleStyle, viewport),
+                        ...(viewport === "mobile" &&
+                        (item.titleStyle?.fontSize === "20px" ||
+                          item.titleStyle?.fontSizeMobile === "20px" ||
+                          (item.titleStyle as any)?.fontSize === 20 ||
+                          (item.titleStyle as any)?.fontSizeMobile === 20 ||
+                          item.titleStyle?.fontSize === undefined)
+                          ? { fontSize: "18px" }
+                          : {}),
+                        ...(viewport === "mobile" &&
+                        (item.titleStyle?.fontSize === "24px" ||
+                          item.titleStyle?.fontSizeMobile === "24px" ||
+                          (item.titleStyle as any)?.fontSize === 24 ||
+                          (item.titleStyle as any)?.fontSizeMobile === 24)
+                          ? { fontSize: "20px" }
+                          : {}),
+                        ...(viewport === "mobile" &&
+                        (item.titleStyle?.fontSize === "30px" ||
+                          item.titleStyle?.fontSizeMobile === "30px" ||
+                          (item.titleStyle as any)?.fontSize === 30 ||
+                          (item.titleStyle as any)?.fontSizeMobile === 30)
+                          ? { fontSize: "24px" }
+                          : {}),
+                      }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("itemTitle", item.id);
+                        onElementSelect?.(
+                          "itemTitle",
+                          item.id || idx.toString(),
+                        );
                       }}
                     />
                   )}
                   {!item.descStyle?.isHidden && (
                     <SafeHtml
                       html={item.desc || "프로그램 특징 내용 입력<br/>2줄 입력"}
-                      className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                      style={getElementStyle(item.descStyle, viewport)}
+                      className={`text-center justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
+                      style={{
+                        ...getElementStyle(item.descStyle, viewport),
+                        ...(viewport === "mobile" &&
+                        (item.descStyle?.fontSize === "20px" ||
+                          item.descStyle?.fontSizeMobile === "20px" ||
+                          (item.descStyle as any)?.fontSize === 20 ||
+                          (item.descStyle as any)?.fontSizeMobile === 20 ||
+                          item.descStyle?.fontSize === undefined)
+                          ? { fontSize: "18px" }
+                          : {}),
+                        ...(viewport === "mobile" &&
+                        (item.descStyle?.fontSize === "24px" ||
+                          item.descStyle?.fontSizeMobile === "24px" ||
+                          (item.descStyle as any)?.fontSize === 24 ||
+                          (item.descStyle as any)?.fontSizeMobile === 24)
+                          ? { fontSize: "20px" }
+                          : {}),
+                        ...(viewport === "mobile" &&
+                        (item.descStyle?.fontSize === "30px" ||
+                          item.descStyle?.fontSizeMobile === "30px" ||
+                          (item.descStyle as any)?.fontSize === 30 ||
+                          (item.descStyle as any)?.fontSizeMobile === 30)
+                          ? { fontSize: "24px" }
+                          : {}),
+                      }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("itemDesc", item.id);
+                        onElementSelect?.(
+                          "itemDesc",
+                          item.id || idx.toString(),
+                        );
                       }}
                     />
                   )}
@@ -403,8 +530,32 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
-              className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "20px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 20 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 20 ||
+                  w.data.subTitleStyle?.fontSize === undefined)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "24px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 24 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "30px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 30 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -412,8 +563,32 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.titleStyle, viewport)}
+              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.titleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "20px" ||
+                  w.data.titleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.titleStyle as any)?.fontSize === 20 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 20 ||
+                  w.data.titleStyle?.fontSize === undefined)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "24px" ||
+                  w.data.titleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.titleStyle as any)?.fontSize === 24 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "30px" ||
+                  w.data.titleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.titleStyle as any)?.fontSize === 30 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("title");
@@ -421,8 +596,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.descStyle, viewport)}
+              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.descStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "20px" ||
+                  w.data.descStyle?.fontSizeMobile === "20px" ||
+                  (w.data.descStyle as any)?.fontSize === 20 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "24px" ||
+                  w.data.descStyle?.fontSizeMobile === "24px" ||
+                  (w.data.descStyle as any)?.fontSize === 24 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "30px" ||
+                  w.data.descStyle?.fontSizeMobile === "30px" ||
+                  (w.data.descStyle as any)?.fontSize === 30 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("desc");
@@ -453,7 +651,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
                   key={item.id || idx}
-                  className="flex-1 inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
+                  className={`flex-1 inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
                   style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -468,12 +666,12 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <UniversalMedia
                     className="self-stretch w-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
-                    url={item.image}
+                    url={item.image || item.imageUrl}
                     alt="card_image"
                     style={getItemImageStyle(item.imageStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("image", item.id);
+                      onElementSelect?.("image", item.id || idx.toString());
                     }}
                   />
                   {!item.titleStyle?.isHidden && (
@@ -486,19 +684,70 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <SafeHtml
                         html={item.title || "프로그램 특징"}
-                        className="justify-start text-white text-2xl font-bold font-['Pretendard'] leading-9 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all rounded"
-                        style={getElementStyle(item.titleStyle, viewport)}
+                        className={`justify-start text-white font-bold font-['Pretendard'] leading-9 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all ${getBorderRadiusClass(viewport, "rounded")}`}
+                        style={{
+                          ...getElementStyle(item.titleStyle, viewport),
+                          ...(viewport === "mobile" &&
+                          (item.titleStyle?.fontSize === "20px" ||
+                            item.titleStyle?.fontSizeMobile === "20px" ||
+                            (item.titleStyle as any)?.fontSize === 20 ||
+                            (item.titleStyle as any)?.fontSizeMobile === 20 ||
+                            item.titleStyle?.fontSize === undefined)
+                            ? { fontSize: "18px" }
+                            : {}),
+                          ...(viewport === "mobile" &&
+                          (item.titleStyle?.fontSize === "24px" ||
+                            item.titleStyle?.fontSizeMobile === "24px" ||
+                            (item.titleStyle as any)?.fontSize === 24 ||
+                            (item.titleStyle as any)?.fontSizeMobile === 24)
+                            ? { fontSize: "20px" }
+                            : {}),
+                          ...(viewport === "mobile" &&
+                          (item.titleStyle?.fontSize === "30px" ||
+                            item.titleStyle?.fontSizeMobile === "30px" ||
+                            (item.titleStyle as any)?.fontSize === 30 ||
+                            (item.titleStyle as any)?.fontSizeMobile === 30)
+                            ? { fontSize: "24px" }
+                            : {}),
+                        }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
-                          onElementSelect?.("itemTitle", item.id);
+                          onElementSelect?.(
+                            "itemTitle",
+                            item.id || idx.toString(),
+                          );
                         }}
                       />
                     </div>
                   )}
                   <SafeHtml
                     html={item.desc || "프로그램 특징 내용 입력<br/>2줄 입력"}
-                    className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                    style={getElementStyle(item.descStyle, viewport)}
+                    className="text-center justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                    style={{
+                      ...getElementStyle(item.descStyle, viewport),
+                      ...(viewport === "mobile" &&
+                      (item.descStyle?.fontSize === "20px" ||
+                        item.descStyle?.fontSizeMobile === "20px" ||
+                        (item.descStyle as any)?.fontSize === 20 ||
+                        (item.descStyle as any)?.fontSizeMobile === 20 ||
+                        item.descStyle?.fontSize === undefined)
+                        ? { fontSize: "18px" }
+                        : {}),
+                      ...(viewport === "mobile" &&
+                      (item.descStyle?.fontSize === "24px" ||
+                        item.descStyle?.fontSizeMobile === "24px" ||
+                        (item.descStyle as any)?.fontSize === 24 ||
+                        (item.descStyle as any)?.fontSizeMobile === 24)
+                        ? { fontSize: "20px" }
+                        : {}),
+                      ...(viewport === "mobile" &&
+                      (item.descStyle?.fontSize === "30px" ||
+                        item.descStyle?.fontSizeMobile === "30px" ||
+                        (item.descStyle as any)?.fontSize === 30 ||
+                        (item.descStyle as any)?.fontSizeMobile === 30)
+                        ? { fontSize: "24px" }
+                        : {}),
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("itemDesc", item.id);
@@ -523,8 +772,32 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
-              className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "20px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 20 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 20 ||
+                  w.data.subTitleStyle?.fontSize === undefined)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "24px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 24 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "30px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 30 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -532,8 +805,32 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.titleStyle, viewport)}
+              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.titleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "20px" ||
+                  w.data.titleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.titleStyle as any)?.fontSize === 20 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 20 ||
+                  w.data.titleStyle?.fontSize === undefined)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "24px" ||
+                  w.data.titleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.titleStyle as any)?.fontSize === 24 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "30px" ||
+                  w.data.titleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.titleStyle as any)?.fontSize === 30 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("title");
@@ -541,8 +838,32 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.descStyle, viewport)}
+              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.descStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "20px" ||
+                  w.data.descStyle?.fontSizeMobile === "20px" ||
+                  (w.data.descStyle as any)?.fontSize === 20 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 20 ||
+                  w.data.descStyle?.fontSize === undefined)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "24px" ||
+                  w.data.descStyle?.fontSizeMobile === "24px" ||
+                  (w.data.descStyle as any)?.fontSize === 24 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "30px" ||
+                  w.data.descStyle?.fontSizeMobile === "30px" ||
+                  (w.data.descStyle as any)?.fontSize === 30 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("desc");
@@ -577,7 +898,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 return (
                   <div
                     key={item.id || idx}
-                    className="flex-1 outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-start items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all bg-white h-full"
+                    className={`flex-1 outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-start items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded")} transition-all bg-white h-full`}
                     style={getItemCardBackgroundStyle(item.itemStyle)}
                     onClick={(e) => {
                       const cardItemId = item.id ?? `__idx_${idx}`;
@@ -605,10 +926,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       <UniversalMedia
                         onDoubleClick={(e) => {
                           e.stopPropagation();
-                          onElementSelect?.("image", item.id);
+                          onElementSelect?.("image", item.id || idx.toString());
                         }}
                         className="w-full object-cover"
-                        url={item.image}
+                        url={item.image || item.imageUrl}
                         alt="card_image"
                         style={getItemImageStyle(item.imageStyle)}
                       />
@@ -617,7 +938,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                           <SafeHtml
                             html={item.badge1 || "우선심사"}
                             className="px-3 py-2 text-base font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center transition-all text-center"
-                            style={getBadgeStyle(item, 1)}
+                            style={{
+                              ...getBadgeStyle(item, 1),
+                              fontSize: "14px",
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("itemBadge1", item.id);
@@ -628,7 +952,19 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                           <SafeHtml
                             html={item.badge2 || "I-956F"}
                             className="px-3 py-2 text-base font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center transition-all text-center"
-                            style={getBadgeStyle(item, 2)}
+                            style={{
+                              ...getBadgeStyle(item, 2),
+                              ...(viewport === "mobile" &&
+                              (getBadgeStyle(item, 2) as any)?.fontSize ===
+                                "20px"
+                                ? { fontSize: "18px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (getBadgeStyle(item, 2) as any)?.fontSize ===
+                                "24px"
+                                ? { fontSize: "20px" }
+                                : {}),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("itemBadge2", item.id);
@@ -639,7 +975,19 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                           <SafeHtml
                             html={item.badge3 || "높은 고용창출"}
                             className="px-3 py-2 text-base font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center transition-all text-center"
-                            style={getBadgeStyle(item, 3)}
+                            style={{
+                              ...getBadgeStyle(item, 3),
+                              ...(viewport === "mobile" &&
+                              (getBadgeStyle(item, 3) as any)?.fontSize ===
+                                "20px"
+                                ? { fontSize: "18px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (getBadgeStyle(item, 3) as any)?.fontSize ===
+                                "24px"
+                                ? { fontSize: "20px" }
+                                : {}),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("itemBadge3", item.id);
@@ -656,11 +1004,34 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         {!item.subTitleStyle?.isHidden && (
                           <SafeHtml
                             html={item.subTitle || "( 서브타이틀 )"}
-                            className="text-center justify-start text-[#285DE1] text-lg font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                            style={getElementStyle(
-                              item.subTitleStyle,
-                              viewport,
-                            )}
+                            className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                            style={{
+                              ...getElementStyle(item.subTitleStyle, viewport),
+                              ...(viewport === "mobile" &&
+                              (item.subTitleStyle?.fontSize === "20px" ||
+                                item.subTitleStyle?.fontSizeMobile === "20px" ||
+                                (item.subTitleStyle as any)?.fontSize === 20 ||
+                                (item.subTitleStyle as any)?.fontSizeMobile ===
+                                  20)
+                                ? { fontSize: "18px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.subTitleStyle?.fontSize === "24px" ||
+                                item.subTitleStyle?.fontSizeMobile === "24px" ||
+                                (item.subTitleStyle as any)?.fontSize === 24 ||
+                                (item.subTitleStyle as any)?.fontSizeMobile ===
+                                  24)
+                                ? { fontSize: "20px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.subTitleStyle?.fontSize === "30px" ||
+                                item.subTitleStyle?.fontSizeMobile === "30px" ||
+                                (item.subTitleStyle as any)?.fontSize === 30 ||
+                                (item.subTitleStyle as any)?.fontSizeMobile ===
+                                  30)
+                                ? { fontSize: "24px" }
+                                : {}),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("itemSubTitle", item.id);
@@ -670,8 +1041,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         {!item.titleStyle?.isHidden && (
                           <SafeHtml
                             html={item.title || "프로그램 특징"}
-                            className="justify-start text-zinc-950 text-3xl font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                            style={getElementStyle(item.titleStyle, viewport)}
+                            className="justify-start text-zinc-950 font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                            style={{
+                              ...getElementStyle(item.titleStyle, viewport),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "20px" ||
+                                item.titleStyle?.fontSizeMobile === "20px" ||
+                                (item.titleStyle as any)?.fontSize === 20 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 20)
+                                ? { fontSize: "18px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "24px" ||
+                                item.titleStyle?.fontSizeMobile === "24px" ||
+                                (item.titleStyle as any)?.fontSize === 24 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 24)
+                                ? { fontSize: "20px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "30px" ||
+                                item.titleStyle?.fontSizeMobile === "30px" ||
+                                (item.titleStyle as any)?.fontSize === 30 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 30)
+                                ? { fontSize: "24px" }
+                                : {}),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("itemTitle", item.id);
@@ -696,7 +1090,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                                     {!item.featureLabelStyle?.isHidden && (
                                       <SafeHtml
                                         html={feature.label}
-                                        className="w-24 justify-start text-시안-mode-Primary70 text-lg font-medium font-['Pretendard'] leading-7 shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text"
+                                        className={`w-24 justify-start text-시안-mode-Primary70 font-medium font-['Pretendard'] leading-7 shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text`}
                                         style={getElementStyle(
                                           item.featureLabelStyle,
                                           viewport,
@@ -713,7 +1107,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                                     {!item.descStyle?.isHidden && (
                                       <SafeHtml
                                         html={feature.value}
-                                        className="flex-1 justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
+                                        className={`flex-1 justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
                                         style={getElementStyle(
                                           item.descStyle,
                                           viewport,
@@ -794,8 +1188,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
-              className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              className={`text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "20px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 20 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "24px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 24 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "30px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 30 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -803,8 +1220,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.titleStyle, viewport)}
+              className={`justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-2`}
+              style={{
+                ...getElementStyle(w.data.titleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "20px" ||
+                  w.data.titleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.titleStyle as any)?.fontSize === 20 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "24px" ||
+                  w.data.titleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.titleStyle as any)?.fontSize === 24 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "30px" ||
+                  w.data.titleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.titleStyle as any)?.fontSize === 30 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("title");
@@ -812,8 +1252,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.descStyle, viewport)}
+              className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-2`}
+              style={{
+                ...getElementStyle(w.data.descStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "20px" ||
+                  w.data.descStyle?.fontSizeMobile === "20px" ||
+                  (w.data.descStyle as any)?.fontSize === 20 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "24px" ||
+                  w.data.descStyle?.fontSizeMobile === "24px" ||
+                  (w.data.descStyle as any)?.fontSize === 24 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "30px" ||
+                  w.data.descStyle?.fontSizeMobile === "30px" ||
+                  (w.data.descStyle as any)?.fontSize === 30 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("desc");
@@ -864,10 +1327,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     <UniversalMedia
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("image", item.id);
+                        onElementSelect?.("image", item.id || idx.toString());
                       }}
                       className="w-full object-cover"
-                      url={item.image}
+                      url={item.image || item.imageUrl}
                       alt="card_image"
                       style={getItemImageStyle(item.imageStyle)}
                     />
@@ -875,8 +1338,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       {!item.badgeStyle1?.isHidden && (
                         <SafeHtml
                           html={item.badge1 || "우선심사"}
-                          className="px-3 py-2 text-base font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center gap-2.5 transition-all text-center"
-                          style={getBadgeStyle(item, 1)}
+                          className="px-3 py-2 font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center gap-2.5 transition-all text-center"
+                          style={{
+                            ...getBadgeStyle(item, 1),
+                            ...(viewport === "mobile" &&
+                            ((getBadgeStyle(item, 1) as any)?.fontSize ===
+                              "20px" ||
+                              (getBadgeStyle(item, 1) as any)
+                                ?.fontSizeMobile === "20px")
+                              ? { fontSize: "18px" }
+                              : {}),
+                            ...(viewport === "mobile" &&
+                            ((getBadgeStyle(item, 1) as any)?.fontSize ===
+                              "24px" ||
+                              (getBadgeStyle(item, 1) as any)
+                                ?.fontSizeMobile === "24px")
+                              ? { fontSize: "20px" }
+                              : {}),
+                            ...(viewport === "mobile" &&
+                            ((getBadgeStyle(item, 1) as any)?.fontSize ===
+                              "30px" ||
+                              (getBadgeStyle(item, 1) as any)
+                                ?.fontSizeMobile === "30px")
+                              ? { fontSize: "24px" }
+                              : {}),
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("itemBadge1", item.id);
@@ -886,7 +1372,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       {!item.badgeStyle2?.isHidden && (
                         <SafeHtml
                           html={item.badge2 || "I-956F"}
-                          className="px-3 py-2 text-base font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center gap-2.5 transition-all text-center"
+                          className="px-3 py-2 font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center gap-2.5 transition-all text-center"
                           style={getBadgeStyle(item, 2)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -897,7 +1383,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       {!item.badgeStyle3?.isHidden && (
                         <SafeHtml
                           html={item.badge3 || "높은 고용창출"}
-                          className="px-3 py-2 text-base font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center gap-2.5 transition-all text-center"
+                          className="px-3 py-2 font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center gap-2.5 transition-all text-center"
                           style={getBadgeStyle(item, 3)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -915,8 +1401,34 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       {!item.subTitleStyle?.isHidden && (
                         <SafeHtml
                           html={item.subTitle || "( 서브타이틀 )"}
-                          className="text-center justify-start text-[#285DE1] text-lg font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                          style={getElementStyle(item.subTitleStyle, viewport)}
+                          className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                          style={{
+                            ...getElementStyle(item.subTitleStyle, viewport),
+                            ...(viewport === "mobile" &&
+                            (item.subTitleStyle?.fontSize === "20px" ||
+                              item.subTitleStyle?.fontSizeMobile === "20px" ||
+                              (item.subTitleStyle as any)?.fontSize === 20 ||
+                              (item.subTitleStyle as any)?.fontSizeMobile ===
+                                20)
+                              ? { fontSize: "18px" }
+                              : {}),
+                            ...(viewport === "mobile" &&
+                            (item.subTitleStyle?.fontSize === "24px" ||
+                              item.subTitleStyle?.fontSizeMobile === "24px" ||
+                              (item.subTitleStyle as any)?.fontSize === 24 ||
+                              (item.subTitleStyle as any)?.fontSizeMobile ===
+                                24)
+                              ? { fontSize: "20px" }
+                              : {}),
+                            ...(viewport === "mobile" &&
+                            (item.subTitleStyle?.fontSize === "30px" ||
+                              item.subTitleStyle?.fontSizeMobile === "30px" ||
+                              (item.subTitleStyle as any)?.fontSize === 30 ||
+                              (item.subTitleStyle as any)?.fontSizeMobile ===
+                                30)
+                              ? { fontSize: "24px" }
+                              : {}),
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("itemSubTitle", item.id);
@@ -926,8 +1438,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       {!item.titleStyle?.isHidden && (
                         <SafeHtml
                           html={item.title || "프로그램 특징"}
-                          className="justify-start text-zinc-950 text-3xl font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                          style={getElementStyle(item.titleStyle, viewport)}
+                          className="justify-start text-zinc-950 font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                          style={{
+                            ...getElementStyle(item.titleStyle, viewport),
+                            ...(viewport === "mobile" &&
+                            (item.titleStyle?.fontSize === "20px" ||
+                              item.titleStyle?.fontSizeMobile === "20px" ||
+                              (item.titleStyle as any)?.fontSize === 20 ||
+                              (item.titleStyle as any)?.fontSizeMobile === 20)
+                              ? { fontSize: "18px" }
+                              : {}),
+                            ...(viewport === "mobile" &&
+                            (item.titleStyle?.fontSize === "24px" ||
+                              item.titleStyle?.fontSizeMobile === "24px" ||
+                              (item.titleStyle as any)?.fontSize === 24 ||
+                              (item.titleStyle as any)?.fontSizeMobile === 24)
+                              ? { fontSize: "20px" }
+                              : {}),
+                            ...(viewport === "mobile" &&
+                            (item.titleStyle?.fontSize === "30px" ||
+                              item.titleStyle?.fontSizeMobile === "30px" ||
+                              (item.titleStyle as any)?.fontSize === 30 ||
+                              (item.titleStyle as any)?.fontSizeMobile === 30)
+                              ? { fontSize: "24px" }
+                              : {}),
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("itemTitle", item.id);
@@ -952,11 +1487,46 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                                   {!item.featureLabelStyle?.isHidden && (
                                     <SafeHtml
                                       html={feature.label || "특징 01"}
-                                      className="w-24 justify-start text-시안-mode-Primary70 text-lg font-medium font-['Pretendard'] leading-7 shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text"
-                                      style={getElementStyle(
-                                        item.featureLabelStyle,
-                                        viewport,
-                                      )}
+                                      className={`w-24 justify-start text-시안-mode-Primary70 font-medium font-['Pretendard'] leading-7 shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text`}
+                                      style={{
+                                        ...getElementStyle(
+                                          item.featureLabelStyle,
+                                          viewport,
+                                        ),
+                                        ...(viewport === "mobile" &&
+                                        (item.featureLabelStyle?.fontSize ===
+                                          "20px" ||
+                                          item.featureLabelStyle
+                                            ?.fontSizeMobile === "20px" ||
+                                          (item.featureLabelStyle as any)
+                                            ?.fontSize === 20 ||
+                                          (item.featureLabelStyle as any)
+                                            ?.fontSizeMobile === 20)
+                                          ? { fontSize: "18px" }
+                                          : {}),
+                                        ...(viewport === "mobile" &&
+                                        (item.featureLabelStyle?.fontSize ===
+                                          "24px" ||
+                                          item.featureLabelStyle
+                                            ?.fontSizeMobile === "24px" ||
+                                          (item.featureLabelStyle as any)
+                                            ?.fontSize === 24 ||
+                                          (item.featureLabelStyle as any)
+                                            ?.fontSizeMobile === 24)
+                                          ? { fontSize: "20px" }
+                                          : {}),
+                                        ...(viewport === "mobile" &&
+                                        (item.featureLabelStyle?.fontSize ===
+                                          "30px" ||
+                                          item.featureLabelStyle
+                                            ?.fontSizeMobile === "30px" ||
+                                          (item.featureLabelStyle as any)
+                                            ?.fontSize === 30 ||
+                                          (item.featureLabelStyle as any)
+                                            ?.fontSizeMobile === 30)
+                                          ? { fontSize: "24px" }
+                                          : {}),
+                                      }}
                                       onDoubleClick={(e) => {
                                         e.stopPropagation();
                                         onElementSelect?.(
@@ -969,11 +1539,37 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                                   {!item.descStyle?.isHidden && (
                                     <SafeHtml
                                       html={feature.value || ""}
-                                      className="flex-1 justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
-                                      style={getElementStyle(
-                                        item.descStyle,
-                                        viewport,
-                                      )}
+                                      className={`flex-1 justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
+                                      style={{
+                                        ...getElementStyle(
+                                          item.descStyle,
+                                          viewport,
+                                        ),
+                                        ...(viewport === "mobile" &&
+                                        (item.descStyle?.fontSize === "20px" ||
+                                          item.descStyle?.fontSizeMobile ===
+                                            "20px" ||
+                                          (item.descStyle as any)?.fontSize ===
+                                            20)
+                                          ? { fontSize: "18px" }
+                                          : {}),
+                                        ...(viewport === "mobile" &&
+                                        (item.descStyle?.fontSize === "24px" ||
+                                          item.descStyle?.fontSizeMobile ===
+                                            "24px" ||
+                                          (item.descStyle as any)?.fontSize ===
+                                            24)
+                                          ? { fontSize: "20px" }
+                                          : {}),
+                                        ...(viewport === "mobile" &&
+                                        (item.descStyle?.fontSize === "30px" ||
+                                          item.descStyle?.fontSizeMobile ===
+                                            "30px" ||
+                                          (item.descStyle as any)?.fontSize ===
+                                            24)
+                                          ? { fontSize: "24px" }
+                                          : {}),
+                                      }}
                                       onDoubleClick={(e) => {
                                         e.stopPropagation();
                                         onElementSelect?.(
@@ -996,10 +1592,45 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                                   "특징 01"
                                 }
                                 className="w-24 justify-start text-시안-mode-Primary70 text-lg font-medium font-['Pretendard'] leading-7 shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text"
-                                style={getElementStyle(
-                                  item.featureLabelStyle,
-                                  viewport,
-                                )}
+                                style={{
+                                  ...getElementStyle(
+                                    item.featureLabelStyle,
+                                    viewport,
+                                  ),
+                                  ...(viewport === "mobile" &&
+                                  (item.featureLabelStyle?.fontSize ===
+                                    "20px" ||
+                                    item.featureLabelStyle?.fontSizeMobile ===
+                                      "20px" ||
+                                    (item.featureLabelStyle as any)
+                                      ?.fontSize === 20 ||
+                                    (item.featureLabelStyle as any)
+                                      ?.fontSizeMobile === 20)
+                                    ? { fontSize: "18px" }
+                                    : {}),
+                                  ...(viewport === "mobile" &&
+                                  (item.featureLabelStyle?.fontSize ===
+                                    "24px" ||
+                                    item.featureLabelStyle?.fontSizeMobile ===
+                                      "24px" ||
+                                    (item.featureLabelStyle as any)
+                                      ?.fontSize === 24 ||
+                                    (item.featureLabelStyle as any)
+                                      ?.fontSizeMobile === 24)
+                                    ? { fontSize: "20px" }
+                                    : {}),
+                                  ...(viewport === "mobile" &&
+                                  (item.featureLabelStyle?.fontSize ===
+                                    "30px" ||
+                                    item.featureLabelStyle?.fontSizeMobile ===
+                                      "30px" ||
+                                    (item.featureLabelStyle as any)
+                                      ?.fontSize === 30 ||
+                                    (item.featureLabelStyle as any)
+                                      ?.fontSizeMobile === 30)
+                                    ? { fontSize: "24px" }
+                                    : {}),
+                                }}
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.(
@@ -1016,10 +1647,33 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                                   "프로그램 특징 내용 입력"
                                 }
                                 className="flex-1 justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text transition-all"
-                                style={getElementStyle(
-                                  item.descStyle,
-                                  viewport,
-                                )}
+                                style={{
+                                  ...getElementStyle(item.descStyle, viewport),
+                                  ...(viewport === "mobile" &&
+                                  (item.descStyle?.fontSize === "20px" ||
+                                    item.descStyle?.fontSizeMobile === "20px" ||
+                                    (item.descStyle as any)?.fontSize === 20 ||
+                                    (item.descStyle as any)?.fontSizeMobile ===
+                                      20)
+                                    ? { fontSize: "18px" }
+                                    : {}),
+                                  ...(viewport === "mobile" &&
+                                  (item.descStyle?.fontSize === "24px" ||
+                                    item.descStyle?.fontSizeMobile === "24px" ||
+                                    (item.descStyle as any)?.fontSize === 24 ||
+                                    (item.descStyle as any)?.fontSizeMobile ===
+                                      24)
+                                    ? { fontSize: "20px" }
+                                    : {}),
+                                  ...(viewport === "mobile" &&
+                                  (item.descStyle?.fontSize === "30px" ||
+                                    item.descStyle?.fontSizeMobile === "30px" ||
+                                    (item.descStyle as any)?.fontSize === 30 ||
+                                    (item.descStyle as any)?.fontSizeMobile ===
+                                      30)
+                                    ? { fontSize: "24px" }
+                                    : {}),
+                                }}
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.(
@@ -1056,8 +1710,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
-              className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "20px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 20 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "24px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 24 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "30px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 30 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -1065,8 +1742,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.titleStyle, viewport)}
+              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.titleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "20px" ||
+                  w.data.titleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.titleStyle as any)?.fontSize === 20 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "24px" ||
+                  w.data.titleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.titleStyle as any)?.fontSize === 24 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "30px" ||
+                  w.data.titleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.titleStyle as any)?.fontSize === 30 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("title");
@@ -1074,8 +1774,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.descStyle, viewport)}
+              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.descStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "20px" ||
+                  w.data.descStyle?.fontSizeMobile === "20px" ||
+                  (w.data.descStyle as any)?.fontSize === 20 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "24px" ||
+                  w.data.descStyle?.fontSizeMobile === "24px" ||
+                  (w.data.descStyle as any)?.fontSize === 24 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "30px" ||
+                  w.data.descStyle?.fontSizeMobile === "30px" ||
+                  (w.data.descStyle as any)?.fontSize === 30 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("desc");
@@ -1090,7 +1813,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             {(w.data.items || []).slice(0, 4).map((item: any, idx: number) => (
               <div
                 key={item.id || idx}
-                className="flex flex-col md:flex-row justify-start items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all bg-white overflow-hidden shadow-sm"
+                className={`flex flex-col md:flex-row justify-start items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded")} transition-all bg-white overflow-hidden shadow-sm`}
                 style={getItemCardBackgroundStyle(item.itemStyle)}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1111,47 +1834,55 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                   <UniversalMedia
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("image", item.id);
+                      onElementSelect?.("image", item.id || idx.toString());
                     }}
                     className="w-full object-cover"
-                    url={item.image}
+                    url={item.image || item.imageUrl}
                     alt="card_image"
                     style={getItemImageStyle(item.imageStyle)}
                   />
                 </div>
                 <div
                   className="flex-1 h-80 px-6 py-10 border-t-2 border-시안-mode-gray95 flex flex-col justify-between items-start overflow-hidden xl:-ml-[180px] relative z-10 shadow-lg"
-                  style={getItemCardBackgroundStyle(item.itemStyle, {
-                    backgroundImage: 'url("/images/placeholder/box.png")',
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  })}
+                  style={getItemCardBackgroundStyle(item.itemStyle)}
                 >
                   <div className="self-stretch inline-flex justify-start items-start gap-2">
                     <div className="flex-1 inline-flex flex-col justify-start items-start gap-2">
                       <div className="flex flex-col justify-start items-start">
-                        {!item.subTitleStyle?.isHidden && (
-                          <SafeHtml
-                            html={item.subTitle || "( 서브타이틀 )"}
-                            className="text-center justify-start text-[#285DE1] text-lg font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                            style={getElementStyle(
-                              item.subTitleStyle,
-                              viewport,
-                            )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.("itemSubTitle", item.id);
-                            }}
-                          />
-                        )}
                         {!item.titleStyle?.isHidden && (
                           <SafeHtml
                             html={item.title || "프로그램 특징"}
-                            className="justify-start text-zinc-950 text-3xl font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                            style={getElementStyle(item.titleStyle, viewport)}
+                            className="justify-start text-zinc-950 font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                            style={{
+                              ...getElementStyle(item.titleStyle, viewport),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "20px" ||
+                                item.titleStyle?.fontSizeMobile === "20px" ||
+                                (item.titleStyle as any)?.fontSize === 20 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 20)
+                                ? { fontSize: "18px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "24px" ||
+                                item.titleStyle?.fontSizeMobile === "24px" ||
+                                (item.titleStyle as any)?.fontSize === 24 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 24)
+                                ? { fontSize: "20px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "30px" ||
+                                item.titleStyle?.fontSizeMobile === "30px" ||
+                                (item.titleStyle as any)?.fontSize === 30 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 30)
+                                ? { fontSize: "24px" }
+                                : {}),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.("itemTitle", item.id);
+                              onElementSelect?.(
+                                "itemTitle",
+                                item.id || idx.toString(),
+                              );
                             }}
                           />
                         )}
@@ -1162,11 +1893,14 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                             item.desc ||
                             "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
                           }
-                          className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 line-clamp-2 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                          className={`self-stretch justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 line-clamp-2 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
                           style={getElementStyle(item.descStyle, viewport)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
-                            onElementSelect?.("itemDesc", item.id);
+                            onElementSelect?.(
+                              "itemDesc",
+                              item.id || idx.toString(),
+                            );
                           }}
                         />
                       )}
@@ -1226,8 +1960,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
-              className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
-              style={getElementStyle(w.data.subTitleStyle, viewport)}
+              className="text-center justify-start text-시안-mode-Primary50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
+              style={{
+                ...getElementStyle(w.data.subTitleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "20px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 20 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "24px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 24 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.subTitleStyle?.fontSize === "30px" ||
+                  w.data.subTitleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.subTitleStyle as any)?.fontSize === 30 ||
+                  (w.data.subTitleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("subTitle");
@@ -1235,8 +1992,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.titleStyle, viewport)}
+              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.titleStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "20px" ||
+                  w.data.titleStyle?.fontSizeMobile === "20px" ||
+                  (w.data.titleStyle as any)?.fontSize === 20 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "24px" ||
+                  w.data.titleStyle?.fontSizeMobile === "24px" ||
+                  (w.data.titleStyle as any)?.fontSize === 24 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.titleStyle?.fontSize === "30px" ||
+                  w.data.titleStyle?.fontSizeMobile === "30px" ||
+                  (w.data.titleStyle as any)?.fontSize === 30 ||
+                  (w.data.titleStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("title");
@@ -1244,8 +2024,31 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
-              style={getElementStyle(w.data.descStyle, viewport)}
+              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              style={{
+                ...getElementStyle(w.data.descStyle, viewport),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "20px" ||
+                  w.data.descStyle?.fontSizeMobile === "20px" ||
+                  (w.data.descStyle as any)?.fontSize === 20 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 20)
+                  ? { fontSize: "18px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "24px" ||
+                  w.data.descStyle?.fontSizeMobile === "24px" ||
+                  (w.data.descStyle as any)?.fontSize === 24 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 24)
+                  ? { fontSize: "20px" }
+                  : {}),
+                ...(viewport === "mobile" &&
+                (w.data.descStyle?.fontSize === "30px" ||
+                  w.data.descStyle?.fontSizeMobile === "30px" ||
+                  (w.data.descStyle as any)?.fontSize === 30 ||
+                  (w.data.descStyle as any)?.fontSizeMobile === 30)
+                  ? { fontSize: "24px" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("desc");
@@ -1278,7 +2081,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                   <div className="flex-1 flex justify-start items-start gap-6 xl:gap-10">
                     {/* Number Icon */}
                     <div className="w-14 h-14 bg-시안-mode-Primary5 rounded-full outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
-                      <div className="text-center justify-start text-시안-mode-Primary50 text-xl font-bold font-['Pretendard'] leading-8">
+                      <div className="text-center justify-start text-시안-mode-Primary50 font-bold font-['Pretendard'] leading-8">
                         {(idx + 1).toString().padStart(2, "0")}
                       </div>
                     </div>
@@ -1289,11 +2092,37 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         <div className="self-stretch pb-5 border-b border-시안-mode-gray1 inline-flex justify-start items-start gap-2.5">
                           <SafeHtml
                             html={item.title || "프로그램의 특징을 적는 곳"}
-                            className="justify-start text-zinc-950 text-3xl font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                            style={getElementStyle(item.titleStyle, viewport)}
+                            className="justify-start text-zinc-950 font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                            style={{
+                              ...getElementStyle(item.titleStyle, viewport),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "20px" ||
+                                item.titleStyle?.fontSizeMobile === "20px" ||
+                                (item.titleStyle as any)?.fontSize === 20 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 20)
+                                ? { fontSize: "18px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "24px" ||
+                                item.titleStyle?.fontSizeMobile === "24px" ||
+                                (item.titleStyle as any)?.fontSize === 24 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 24)
+                                ? { fontSize: "20px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.titleStyle?.fontSize === "30px" ||
+                                item.titleStyle?.fontSizeMobile === "30px" ||
+                                (item.titleStyle as any)?.fontSize === 30 ||
+                                (item.titleStyle as any)?.fontSizeMobile === 30)
+                                ? { fontSize: "24px" }
+                                : {}),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.("itemTitle", item.id);
+                              onElementSelect?.(
+                                "itemTitle",
+                                item.id || idx.toString(),
+                              );
                             }}
                           />
                         </div>
@@ -1307,11 +2136,37 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                               (item.desc || "").split(/<br\s*\/?>|\n/gi)[0] ||
                               "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
                             }
-                            className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                            style={getElementStyle(item.descStyle, viewport)}
+                            className={`self-stretch justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
+                            style={{
+                              ...getElementStyle(item.descStyle, viewport),
+                              ...(viewport === "mobile" &&
+                              (item.descStyle?.fontSize === "20px" ||
+                                item.descStyle?.fontSizeMobile === "20px" ||
+                                (item.descStyle as any)?.fontSize === 20 ||
+                                (item.descStyle as any)?.fontSizeMobile === 20)
+                                ? { fontSize: "18px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.descStyle?.fontSize === "24px" ||
+                                item.descStyle?.fontSizeMobile === "24px" ||
+                                (item.descStyle as any)?.fontSize === 24 ||
+                                (item.descStyle as any)?.fontSizeMobile === 24)
+                                ? { fontSize: "20px" }
+                                : {}),
+                              ...(viewport === "mobile" &&
+                              (item.descStyle?.fontSize === "30px" ||
+                                item.descStyle?.fontSizeMobile === "30px" ||
+                                (item.descStyle as any)?.fontSize === 30 ||
+                                (item.descStyle as any)?.fontSizeMobile === 30)
+                                ? { fontSize: "24px" }
+                                : {}),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.("itemDesc", item.id);
+                              onElementSelect?.(
+                                "itemDesc",
+                                item.id || idx.toString(),
+                              );
                             }}
                           />
 
@@ -1324,10 +2179,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                                   className="flex justify-start items-center gap-2"
                                 >
                                   <div className="w-2 h-2 bg-시안-mode-Primary50 rounded-full shrink-0"></div>
-                                  <div className="justify-start text-시안-mode-gray50 text-base font-normal font-['Pretendard'] leading-7 flex-1">
+                                  <div className="justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 flex-1">
                                     <SafeHtml
                                       html={feature.value}
-                                      className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
+                                      className={`hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
                                       style={getElementStyle(
                                         item.descStyle,
                                         viewport,
@@ -1360,10 +2215,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     <UniversalMedia
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("image", item.id);
+                        onElementSelect?.("image", item.id || idx.toString());
                       }}
                       className="w-full h-full object-cover"
-                      url={item.image}
+                      url={item.image || item.imageUrl}
                       alt="card_image"
                       style={getItemImageStyle(item.imageStyle)}
                     />
@@ -1382,7 +2237,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
       style={style}
       className="w-full text-center py-20 bg-시안-mode-gray5 border-y border-시안-mode-gray20"
     >
-      <div className="text-시안-mode-gray40 font-bold mb-2 text-xl">
+      <div className="text-시안-mode-gray40 font-bold mb-2">
         이미지 카드 레이아웃 {layout}
       </div>
       <div className="text-시안-mode-gray40 text-sm">

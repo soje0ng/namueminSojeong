@@ -120,7 +120,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     onTextChange = (val) =>
       updateWidgetData(widget.id, { comparisonGubun: val });
     onStyleChange = (k, v) =>
-      updateWidgetData(widget.id, { [styleKey]: { ...styleValue, [k]: v } });
+      updateWidgetData(widget.id, {
+        [styleKey]: { ...(data[styleKey] || {}), [k]: v },
+      });
   } else if (elementKey === "tableHeader") {
     const idx = parseInt(itemId || "0");
     const isComparison = data.variant === "comparison";
@@ -198,7 +200,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     styleKey = "middleTitleStyle";
     styleValue = data.middleTitleStyle || {};
     onStyleChange = (k, v) =>
-      updateWidgetData(widget.id, { [styleKey]: { ...styleValue, [k]: v } });
+      updateWidgetData(widget.id, {
+        [styleKey]: { ...(data[styleKey] || {}), [k]: v },
+      });
   } else if (elementKey === "rowLabel") {
     const idx = parseInt(itemId || "0");
     const currentLabels = data.rowLabels || [];
@@ -212,7 +216,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     styleKey = "rowLabelStyle";
     styleValue = data.rowLabelStyle || {};
     onStyleChange = (k, v) =>
-      updateWidgetData(widget.id, { [styleKey]: { ...styleValue, [k]: v } });
+      updateWidgetData(widget.id, {
+        [styleKey]: { ...(data[styleKey] || {}), [k]: v },
+      });
   } else if (
     widget.type === "textStructure" &&
     [
@@ -885,7 +891,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         onStyleChange = (k, v) =>
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
-              ...styleValue,
+              ...(item[styleKey] || {}),
               [k]: v,
             }),
           });
@@ -994,7 +1000,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         onStyleChange = (k, v) =>
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
-              ...styleValue,
+              ...(item[styleKey] || {}),
               [k]: v,
             }),
           });
@@ -1052,7 +1058,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         onStyleChange = (k, v) =>
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
-              ...styleValue,
+              ...(item[styleKey] || {}),
               [k]: v,
             }),
           });
@@ -1109,7 +1115,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         onStyleChange = (k, v) =>
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
-              ...styleValue,
+              ...(item[styleKey] || {}),
               [k]: v,
             }),
           });
@@ -1136,9 +1142,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       data[elementKey] !== undefined ? data[elementKey] : getRootDefaultText();
     // Convention: property 'mainTitle' -> style 'mainTitleStyle'
     styleKey =
-      elementKey === "contentTitle"
+      elementKey === "contentTitle" || elementKey === "layout3ContentTitle"
         ? "contentTitleStyle"
-        : elementKey === "contentDesc"
+        : elementKey === "contentDesc" || elementKey === "layout3ContentDesc"
           ? "contentDescStyle"
           : elementKey === "image" ||
               elementKey === "imageUrl" ||
@@ -1164,13 +1170,19 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     onLoopChange = (val) => updateWidgetData(widget.id, { loop: val });
   }
 
+  const isImageAreaMediaEditor =
+    widget.type === "imageArea" &&
+    (elementKey === "imageUrl" || elementKey === "mobileImageUrl");
+
   const isMediaKey =
     elementKey.toLowerCase().includes("url") ||
     elementKey.toLowerCase().includes("image") ||
     elementKey.toLowerCase().includes("icon") ||
     elementKey.toLowerCase().includes("media") ||
     elementKey === "url" ||
-    elementKey === "topImage";
+    elementKey === "topImage" ||
+    isImageAreaMediaEditor;
+
   const isItemBackgroundKey = elementKey === "itemStyle";
   const isTitleBannerLayout3ImageEditor =
     widget.type === "titleBanner" &&
@@ -1219,13 +1231,33 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       fontWeight = "700";
       color = "#111111";
     } else if (isDesc) {
-      fontSize = "16px";
+      fontSize = "20px";
       fontWeight = "400";
       color = "#666666";
     } else if (isLabel) {
       fontSize = "14px";
       fontWeight = "700";
       color = "#ffffff";
+    }
+
+    if (widget.type === "cultureLetter") {
+      if (elementKey === "cultureLetter") {
+        fontSize = "40px";
+        fontWeight = "400";
+        color = "#FFFFFF";
+      } else if (elementKey === "issueNo" || elementKey === "issueDate") {
+        fontSize = "24px";
+        fontWeight = elementKey === "issueDate" ? "700" : "400";
+        color = "#FFFFFF";
+      } else if (elementKey === "title") {
+        fontSize = "48px";
+        fontWeight = "700";
+        color = "#FFFFFF";
+      } else if (elementKey === "desc") {
+        fontSize = "24px";
+        fontWeight = "500";
+        color = "#FFFFFF";
+      }
     }
 
     if (widget.type === "process") {
@@ -1244,9 +1276,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     const fb = getFallbackStyles();
     styleValue = {
       ...styleValue,
-      fontSize: styleValue.fontSize || fb.fontSize || "16px",
-      fontWeight: styleValue.fontWeight || fb.fontWeight || "400",
-      color: styleValue.color || fb.color || "#000000",
+      fontSize: styleValue.fontSize ?? "",
+      fontWeight: styleValue.fontWeight ?? fb.fontWeight ?? "400",
+      color: styleValue.color ?? fb.color ?? "#000000",
     };
   }
 
@@ -1289,11 +1321,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             ? "이미지/영상 편집"
             : isItemBackgroundKey
               ? "카드 배경 편집"
-            : elementKey === "itemFeatures"
-              ? "특징 항목 관리"
-              : elementKey === "bannerButton"
-                ? "버튼 편집"
-                : "텍스트 편집"}
+              : elementKey === "itemFeatures"
+                ? "특징 항목 관리"
+                : elementKey === "bannerButton"
+                  ? "버튼 편집"
+                  : "텍스트 편집"}
         </h3>
       </div>
 
@@ -1757,7 +1789,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 type="text"
                 className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
                 value={styleValue.backgroundImage || ""}
-                onChange={(e) => onStyleChange("backgroundImage", e.target.value)}
+                onChange={(e) =>
+                  onStyleChange("backgroundImage", e.target.value)
+                }
                 placeholder="배경 이미지 URL 입력"
               />
               <p className="text-[11px] text-gray-400">
@@ -1774,13 +1808,17 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   type="color"
                   className="w-12 h-10 rounded-lg cursor-pointer border border-gray-100 p-0.5 bg-white shrink-0"
                   value={styleValue.backgroundColor || "#ffffff"}
-                  onChange={(e) => onStyleChange("backgroundColor", e.target.value)}
+                  onChange={(e) =>
+                    onStyleChange("backgroundColor", e.target.value)
+                  }
                 />
                 <input
                   type="text"
                   className="flex-1 bg-gray-50 border-none p-2.5 rounded-lg text-sm font-mono outline-none text-gray-700"
                   value={styleValue.backgroundColor || ""}
-                  onChange={(e) => onStyleChange("backgroundColor", e.target.value)}
+                  onChange={(e) =>
+                    onStyleChange("backgroundColor", e.target.value)
+                  }
                   placeholder="#ffffff"
                 />
                 <button
@@ -1878,6 +1916,90 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                       onChange={(e) =>
                         updateWidgetData(widget.id, {
                           layout3MobileImage: e.target.value,
+                        })
+                      }
+                      placeholder="모바일 이미지 URL을 입력하세요 (선택)"
+                    />
+                    <p className="text-[10px] text-gray-400 leading-tight">
+                      * 모바일 이미지를 등록하지 않으면 PC 이미지가 공통으로
+                      노출됩니다.
+                    </p>
+                  </div>
+                </div>
+              ) : isImageAreaMediaEditor ? (
+                <div className="space-y-6 pt-2">
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                      <ImageIcon size={14} className="text-blue-500" /> PC
+                      이미지 설정
+                    </label>
+                    <ImgUploadPop
+                      onSelect={(url) =>
+                        updateWidgetData(widget.id, { imageUrl: url })
+                      }
+                      button={
+                        <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                          <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                            <Upload size={20} />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-bold text-gray-700 text-sm">
+                              PC 이미지 선택
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              서버에 업로드된 이미지 선택
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                      value={(widget.data as any).imageUrl || ""}
+                      onChange={(e) =>
+                        updateWidgetData(widget.id, {
+                          imageUrl: e.target.value,
+                        })
+                      }
+                      placeholder="PC 이미지 URL을 입력하세요"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
+                      <Smartphone size={14} className="text-blue-500" /> 모바일
+                      이미지 설정
+                    </label>
+                    <ImgUploadPop
+                      onSelect={(url) =>
+                        updateWidgetData(widget.id, {
+                          mobileImageUrl: url,
+                        })
+                      }
+                      button={
+                        <div className="flex flex-row items-center justify-center gap-4 w-full bg-gray-50 border-2 border-dashed border-gray-200 p-3 rounded-2xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 hover:shadow-md transition-all">
+                          <div className="w-10 h-10 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                            <Upload size={20} />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-bold text-gray-700 text-sm">
+                              모바일 이미지 선택
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              서버에 업로드된 이미지 선택
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm transition-all text-blue-600 font-medium placeholder-gray-400"
+                      value={(widget.data as any).mobileImageUrl || ""}
+                      onChange={(e) =>
+                        updateWidgetData(widget.id, {
+                          mobileImageUrl: e.target.value,
                         })
                       }
                       placeholder="모바일 이미지 URL을 입력하세요 (선택)"
@@ -2569,11 +2691,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               </label>
               <input
                 type="text"
-                placeholder={
-                  styleValue.fontSize
-                    ? styleValue.fontSize.toString().replace("px", "")
-                    : placeholder
-                }
+                placeholder="Size"
                 value={styleValue.fontSize?.toString().replace("px", "") || ""}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -2591,13 +2709,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               </label>
               <input
                 type="text"
-                placeholder={
-                  styleValue.fontSizeMobile
-                    ? styleValue.fontSizeMobile.toString().replace("px", "")
-                    : styleValue.fontSize
-                      ? styleValue.fontSize.toString().replace("px", "")
-                      : placeholderMobile || placeholder
-                }
+                placeholder="Size"
                 value={
                   styleValue.fontSizeMobile?.toString().replace("px", "") || ""
                 }
