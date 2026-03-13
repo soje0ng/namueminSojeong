@@ -58,7 +58,7 @@ export const CULTURE_LETTER_DEFAULTS = {
   descStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "24px",
-    fontWeight: "500",
+    fontWeight: "400",
     letterSpacing: "-0.48px",
     color: "#FFFFFF",
   },
