@@ -45,7 +45,7 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 lg:px-72 py-14 flex flex-col justify-start items-center gap-10">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 flex flex-col justify-start items-center gap-10">
             {/* 
                 이미지 영역 고정 비율 및 높이 제한 전면 해제 
                 이미지 본연의 비율대로 보여지도록 렌더링
@@ -73,6 +73,217 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
                   objectFit: currentImageStyle?.objectFit || "contain",
                 }}
               />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (layout === "4") {
+    const subtitle = data.subtitle || "";
+    const title = data.title || "";
+    const description = data.description || "";
+    const overlayText1 = data.overlayText1 || "";
+    const overlayText2 = data.overlayText2 || "";
+    const quoteImageUrl = data.quoteImageUrl || "";
+
+    return (
+      <section
+        style={style}
+        className="w-full relative overflow-hidden bg-white"
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "40px",
+            alignItems: "center",
+            padding: "60px 40px",
+            width: "100%",
+            boxSizing: "border-box",
+          }}
+        >
+          {/* 헤더: 인용부호 + 텍스트 */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            {/* 여는 인용부호 */}
+            <div
+              style={{ width: "50px", height: "40px", flexShrink: 0 }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("quoteImageUrl");
+              }}
+            >
+              {quoteImageUrl && (
+                <img
+                  src={quoteImageUrl}
+                  alt=""
+                  style={{ width: "100%", height: "100%", display: "block" }}
+                />
+              )}
+            </div>
+
+            {/* 중앙 텍스트 블록 */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+                alignItems: "center",
+                lineHeight: 1.5,
+                fontStyle: "normal",
+                textAlign: "center",
+                flexShrink: 0,
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: "Pretendard, sans-serif",
+                  fontSize: "24px",
+                  fontWeight: 500,
+                  color: "#131416",
+                  letterSpacing: "-0.48px",
+                  lineHeight: 1.5,
+                  margin: 0,
+                  whiteSpace: "nowrap",
+                  cursor: "pointer",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subtitle");
+                }}
+              >
+                {subtitle}
+              </p>
+              <p
+                style={{
+                  fontFamily: "Pretendard, sans-serif",
+                  fontSize: "48px",
+                  fontWeight: 700,
+                  color: "#131416",
+                  letterSpacing: "-0.96px",
+                  lineHeight: 1.5,
+                  margin: 0,
+                  whiteSpace: "nowrap",
+                  cursor: "pointer",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              >
+                {title}
+              </p>
+              <div
+                style={{
+                  fontFamily: "Pretendard, sans-serif",
+                  fontSize: "20px",
+                  fontWeight: 500,
+                  color: "#6d7882",
+                  letterSpacing: "-0.4px",
+                  lineHeight: 1.5,
+                  whiteSpace: "pre",
+                  textAlign: "center",
+                  cursor: "pointer",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("description");
+                }}
+              >
+                {description}
+              </div>
+            </div>
+
+            {/* 닫는 인용부호 (180도 회전) */}
+            <div
+              style={{
+                width: "50px",
+                height: "40px",
+                flexShrink: 0,
+                transform: "rotate(180deg)",
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("quoteImageUrl");
+              }}
+            >
+              {quoteImageUrl && (
+                <img
+                  src={quoteImageUrl}
+                  alt=""
+                  style={{ width: "100%", height: "100%", display: "block" }}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* 이미지 + 오버레이 영역 */}
+          <div
+            style={{
+              height: "400px",
+              overflow: "hidden",
+              borderRadius: "24px",
+              width: "100%",
+              position: "relative",
+              flexShrink: 0,
+            }}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              onElementSelect?.(isMobile ? "mobileImageUrl" : "imageUrl");
+            }}
+          >
+            <UniversalMedia
+              url={currentImage}
+              alt={`image area (${isMobile ? "Mobile" : "PC"})`}
+              style={{
+                width: "100%",
+                height: "400px",
+                objectFit: "cover",
+              }}
+            />
+            {/* 그라디언트 오버레이 */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(89,161,185,0.6) 100%)",
+                pointerEvents: "none",
+              }}
+            />
+            {/* 텍스트 오버레이 */}
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                textAlign: "center",
+                color: "#ffffff",
+                fontFamily: "Tenor Sans, serif",
+                fontStyle: "normal",
+                lineHeight: 1.2,
+                letterSpacing: "-2.4px",
+                textShadow: "0px 0px 8px rgba(0,0,0,0.25)",
+                whiteSpace: "nowrap",
+                cursor: "pointer",
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("overlayText1");
+              }}
+            >
+              <p style={{ fontSize: "80px", margin: 0 }}>{overlayText1}</p>
+              <p style={{ fontSize: "60px", margin: 0 }}>{overlayText2}</p>
             </div>
           </div>
         </div>

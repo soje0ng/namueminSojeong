@@ -89,9 +89,9 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
           paddingBottom: widget.style?.paddingBottom || "0px",
         }}
       >
-        <div className="self-stretch px-5 xl:px-72 inline-flex flex-col justify-center items-center gap-2.5 w-full">
+        <div className="self-stretch px-10 inline-flex flex-col justify-center items-center gap-2.5 w-full">
           <div
-            className="self-stretch px-5 xl:pl-20 inline-flex flex-col xl:flex-row justify-start items-center gap-2 w-full min-h-[16rem] rounded-xl overflow-hidden relative"
+            className="self-stretch px-5 md:px-10 xl:pl-20 inline-flex flex-col xl:flex-row justify-start items-center gap-2 w-full min-h-[16rem] rounded-xl overflow-hidden relative"
             style={{ backgroundColor: sectionStyle.backgroundColor }}
           >
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-2 py-10 xl:py-0 w-full z-10">
@@ -175,7 +175,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
         paddingBottom: widget.style?.paddingBottom || "0px",
       }}
     >
-      <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+      <div className="self-stretch px-10 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
         <div
           className="self-stretch h-auto xl:h-96 rounded-[20px] inline-flex flex-col xl:flex-row justify-start items-stretch overflow-hidden w-full relative"
           style={{ backgroundColor: bg2Color }}

@@ -7,10 +7,24 @@ import {
   WidgetRendererProps,
   formatUnit,
   UniversalMedia,
+  getPaddingClass,
 } from "./WidgetUtils";
 
-const getGridColsClass = (itemsPerRow?: number, defaultCols: number = 3) => {
+const getGridColsClass = (
+  itemsPerRow?: number,
+  viewport?: string,
+  defaultCols: number = 3,
+) => {
   const cols = itemsPerRow || defaultCols;
+  // viewport prop 기반 컬럼 결정 (빌더 프리뷰는 항상 넓은 DOM으로 렌더링됨)
+  if (viewport === "mobile") return "grid-cols-1";
+  if (viewport === "tablet") {
+    if (cols === 1) return "grid-cols-1";
+    if (cols >= 4) return "grid-cols-2";
+    if (cols >= 3) return "grid-cols-2";
+    return "grid-cols-2";
+  }
+  // desktop (Tailwind 반응형 사용)
   if (cols === 1) return "grid-cols-1";
   if (cols === 2) return "grid-cols-1 xl:grid-cols-2";
   if (cols === 4) return "grid-cols-1 md:grid-cols-2 xl:grid-cols-4";
@@ -150,21 +164,55 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     ...(isNaturalIconLayout ? {} : { height: "100%" }),
     objectFit: iconStyle?.objectFit || "contain",
   });
-  const getIconFrameStyle = (iconStyle: any) =>
-    iconStyle?.width || iconStyle?.height || iconCardImageHeight
-      ? {
-          ...(iconStyle?.width ? { width: formatUnit(iconStyle.width) } : {}),
-          ...(iconStyle?.height || iconCardImageHeight
-            ? { height: formatUnit(iconStyle?.height || iconCardImageHeight) }
-            : {}),
-        }
-      : undefined;
+  const getIconFrameStyle = (iconStyle: any) => ({
+    ...(iconStyle?.width ? { width: formatUnit(iconStyle.width) } : {}),
+    ...(iconStyle?.height || iconCardImageHeight
+      ? { height: formatUnit(iconStyle?.height || iconCardImageHeight) }
+      : {}),
+    backgroundColor: iconStyle?.backgroundColor || "transparent",
+  });
   const bannerImageStyle = (() => {
     const resolvedStyle = getElementStyle((w.data as any).imageStyle, viewport);
     return iconCardImageHeight && !resolvedStyle.height
       ? { ...resolvedStyle, height: iconCardImageHeight }
       : resolvedStyle;
   })();
+  const isLayout1BannerHidden = !!(w.data as any).imageStyle?.isHidden;
+  const getItemCardBackgroundStyle = (
+    itemStyle: any,
+    baseStyle: React.CSSProperties = {},
+  ) => {
+    const resolvedStyle = getElementStyle(itemStyle, viewport) as any;
+    const mergedBaseStyle = { ...baseStyle } as React.CSSProperties;
+    if (resolvedStyle.backgroundColor && !resolvedStyle.backgroundImage) {
+      delete (mergedBaseStyle as any).backgroundImage;
+      delete (mergedBaseStyle as any).backgroundSize;
+      delete (mergedBaseStyle as any).backgroundPosition;
+      delete (mergedBaseStyle as any).backgroundRepeat;
+    }
+    return {
+      ...mergedBaseStyle,
+      ...(resolvedStyle.backgroundColor
+        ? { backgroundColor: resolvedStyle.backgroundColor }
+        : {}),
+      ...(resolvedStyle.backgroundImage
+        ? {
+            backgroundImage: resolvedStyle.backgroundImage,
+            backgroundSize: resolvedStyle.backgroundSize || "cover",
+            backgroundPosition: resolvedStyle.backgroundPosition || "center",
+            backgroundRepeat: resolvedStyle.backgroundRepeat || "no-repeat",
+          }
+        : {}),
+    } as React.CSSProperties;
+  };
+  const handleItemBackgroundDoubleClick = (
+    e: React.MouseEvent,
+    itemId?: string,
+  ) => {
+    e.stopPropagation();
+    if (!itemId) return;
+    onElementSelect?.("itemStyle", itemId);
+  };
 
   if (
     currentLayout === "1" ||
@@ -174,7 +222,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className={`self-stretch w-full ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -239,17 +287,23 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               />
             </div>
             <div
-              className={`self-stretch px-5 xl:px-14 grid ${getGridColsClass(w.data.itemsPerRow)} -mt-20 relative z-10`}
+              className={`self-stretch px-5 md:px-10 grid ${getGridColsClass(
+                w.data.itemsPerRow,
+                viewport,
+              )} ${isLayout1BannerHidden ? "" : "-mt-20"} relative z-10`}
               style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
             >
               {(w.data.items || []).map((item: any, i: number) => (
                 <div
                   key={item.id || i}
-                  style={{
+                  style={getItemCardBackgroundStyle(item.itemStyle, {
                     backgroundImage:
                       "linear-gradient(to bottom right, #f8fafc, #eff6ff)",
-                  }}
-                  className="w-full p-6 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all relative z-20"
+                  })}
+                  className="w-full px-5 py-6 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all relative z-20"
+                  onDoubleClick={(e) =>
+                    handleItemBackgroundDoubleClick(e, item.id || `__idx_${i}`)
+                  }
                 >
                   <SafeHtml
                     html={item.title || "프로그램 특징"}
@@ -260,7 +314,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                       onElementSelect?.("itemTitle", item.id || i.toString());
                     }}
                   />
-                  <div className="relative z-20 bg-시안-mode-gray5 overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center">
+                  <div
+                    className="relative z-20 bg-시안-mode-gray5 overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center"
+                    style={getIconFrameStyle(item.iconStyle)}
+                  >
                     <UniversalMedia
                       url={(() => {
                         const currentImg = item.iconUrl || item.icon;
@@ -303,7 +360,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -349,13 +406,17 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           <div
-            className={`self-stretch px-5 xl:px-14 bg-시안-mode-gray5 rounded-[20px] grid ${getGridColsClass(w.data.itemsPerRow, 4)} overflow-hidden`}
+            className={`self-stretch ${getPaddingClass(viewport, "")} bg-시안-mode-gray5 rounded-[20px] grid ${getGridColsClass(w.data.itemsPerRow, viewport, 4)} overflow-hidden`}
             style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "0px" }}
           >
             {(w.data.items || []).map((item: any, i: number) => (
               <div
                 key={item.id || i}
-                className="w-full p-6 rounded-2xl inline-flex flex-col justify-start items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                className="w-full px-5 py-6 rounded-2xl inline-flex flex-col justify-start items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                style={getItemCardBackgroundStyle(item.itemStyle)}
+                onDoubleClick={(e) =>
+                  handleItemBackgroundDoubleClick(e, item.id || `__idx_${i}`)
+                }
               >
                 <div
                   className="relative bg-시안-mode-gray5 overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
@@ -426,7 +487,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -472,96 +533,73 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           <div
-            className="self-stretch flex flex-col justify-start items-start"
-            style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "40px" }}
+            className={`self-stretch grid ${getGridColsClass(w.data.itemsPerRow, viewport)}`}
+            style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "24px" }}
           >
-            {rows.map((row, rowIndex) => (
+            {(w.data.items || []).map((item: any, i: number) => (
               <div
-                key={rowIndex}
-                className="self-stretch inline-flex justify-start items-stretch flex-wrap"
-                style={{ gap: rowItemGap }}
+                key={item.id || i}
+                className="w-full px-5 py-8 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_12px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                style={getItemCardBackgroundStyle(item.itemStyle)}
+                onDoubleClick={(e) =>
+                  handleItemBackgroundDoubleClick(e, item.id || `__idx_${i}`)
+                }
               >
-                {row.map((item: any, i: number) => {
-                  const itemIndex = rowIndex * itemsPerRow + i;
-                  return (
-                    <div
-                      key={item.id || itemIndex}
-                      className="w-full px-6 py-8 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_12px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
-                      style={rowItemWidthStyle}
-                    >
-                      <SafeHtml
-                        html={(item as any).subTitle || "( 서브타이틀 )"}
-                        className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                        style={getElementStyle(
-                          (item as any).subTitleStyle,
-                          viewport,
-                        )}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.(
-                            "itemSubTitle",
-                            item.id || itemIndex.toString(),
-                          );
-                        }}
-                      />
+                <SafeHtml
+                  html={(item as any).subTitle || "( 서브타이틀 )"}
+                  className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                  style={getElementStyle((item as any).subTitleStyle, viewport)}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("itemSubTitle", item.id || i.toString());
+                  }}
+                />
 
-                      <div
-                        className="relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
-                        style={getIconFrameStyle(item.iconStyle)}
-                      >
-                        <UniversalMedia
-                          url={(() => {
-                            const currentImg = item.iconUrl || item.icon;
-                            if (
-                              currentImg &&
-                              !currentImg.includes("/images/placeholder/")
-                            )
-                              return currentImg;
-                            return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
-                          })()}
-                          alt="icon"
-                          className="max-w-full"
-                          naturalSize
-                          style={getIconMediaStyle(item.iconStyle)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemIcon",
-                              item.id || itemIndex.toString(),
-                            );
-                          }}
-                        />
-                      </div>
+                <div
+                  className="relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
+                  style={getIconFrameStyle(item.iconStyle)}
+                >
+                  <UniversalMedia
+                    url={(() => {
+                      const currentImg = item.iconUrl || item.icon;
+                      if (
+                        currentImg &&
+                        !currentImg.includes("/images/placeholder/")
+                      )
+                        return currentImg;
+                      return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                    })()}
+                    alt="icon"
+                    className="max-w-full"
+                    naturalSize
+                    style={getIconMediaStyle(item.iconStyle)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemIcon", item.id || i.toString());
+                    }}
+                  />
+                </div>
 
-                      <div className="flex flex-col justify-start items-center gap-2">
-                        <SafeHtml
-                          html={item.title || "프로그램 특징"}
-                          className="justify-start text-시안-mode-gray95 text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                          style={getElementStyle(item.titleStyle, viewport)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemTitle",
-                              item.id || itemIndex.toString(),
-                            );
-                          }}
-                        />
-                        <SafeHtml
-                          html={item.desc || "프로그램 특징 내용 입력"}
-                          className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                          style={getElementStyle(item.descStyle, viewport)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemDesc",
-                              item.id || itemIndex.toString(),
-                            );
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+                <div className="flex flex-col justify-start items-center gap-2">
+                  <SafeHtml
+                    html={item.title || "프로그램 특징"}
+                    className="justify-start text-시안-mode-gray95 text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                    style={getElementStyle(item.titleStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemTitle", item.id || i.toString());
+                    }}
+                  />
+                  <SafeHtml
+                    html={item.desc || "프로그램 특징 내용 입력"}
+                    className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded text-center"
+                    style={getElementStyle(item.descStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("itemDesc", item.id || i.toString());
+                    }}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -586,7 +624,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -646,8 +684,17 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                   return (
                     <div
                       key={item.id || itemIndex}
-                      className="w-full p-6 bg-시안-mode-gray5 rounded-2xl flex justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
-                      style={rowItemWidthStyle}
+                      className="w-full px-5 py-6 bg-시안-mode-gray5 rounded-2xl flex justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                      style={{
+                        ...rowItemWidthStyle,
+                        ...getItemCardBackgroundStyle(item.itemStyle),
+                      }}
+                      onDoubleClick={(e) =>
+                        handleItemBackgroundDoubleClick(
+                          e,
+                          item.id || `__idx_${itemIndex}`,
+                        )
+                      }
                     >
                       <div className="inline-flex flex-col justify-start items-start gap-2 flex-1 min-w-0">
                         <SafeHtml
@@ -730,7 +777,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -776,97 +823,80 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           <div
-            className="self-stretch flex flex-col justify-start items-start"
+            className={`self-stretch grid ${getGridColsClass(w.data.itemsPerRow, viewport)}`}
             style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "40px" }}
           >
-            {rows.map((row, rowIndex) => (
+            {(w.data.items || []).map((item: any, i: number) => (
               <div
-                key={rowIndex}
-                className="self-stretch inline-flex justify-start items-center flex-wrap"
-                style={{ gap: rowItemGap }}
+                key={item.id || i}
+                className="w-full px-5 py-6 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_16px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-start gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                style={getItemCardBackgroundStyle(item.itemStyle)}
+                onDoubleClick={(e) =>
+                  handleItemBackgroundDoubleClick(e, item.id || `__idx_${i}`)
+                }
               >
-                {row.map((item: any, i: number) => {
-                  const itemIndex = rowIndex * itemsPerRow + i;
-                  return (
-                    <div
-                      key={item.id || itemIndex}
-                      className="w-full p-6 bg-시안-mode-gray0 rounded-2xl shadow-[2px_2px_16px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-start gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
-                      style={rowItemWidthStyle}
-                    >
-                      <div className="self-stretch inline-flex justify-between items-start">
-                        <div className="inline-flex flex-col justify-start items-start">
-                          <SafeHtml
-                            html={(item as any).subTitle || "( 서브타이틀 )"}
-                            className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                            style={getElementStyle(
-                              (item as any).subTitleStyle,
-                              viewport,
-                            )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(
-                                "itemSubTitle",
-                                item.id || itemIndex.toString(),
-                              );
-                            }}
-                          />
-                          <SafeHtml
-                            html={item.title || "프로그램 특징"}
-                            className="justify-start text-시안-mode-gray95 text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                            style={getElementStyle(item.titleStyle, viewport)}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(
-                                "itemTitle",
-                                item.id || itemIndex.toString(),
-                              );
-                            }}
-                          />
-                        </div>
+                <div className="self-stretch inline-flex justify-between items-start">
+                  <div className="inline-flex flex-col justify-start items-start">
+                    <SafeHtml
+                      html={(item as any).subTitle || "( 서브타이틀 )"}
+                      className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                      style={getElementStyle(
+                        (item as any).subTitleStyle,
+                        viewport,
+                      )}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.(
+                          "itemSubTitle",
+                          item.id || i.toString(),
+                        );
+                      }}
+                    />
+                    <SafeHtml
+                      html={item.title || "프로그램 특징"}
+                      className="justify-start text-시안-mode-gray95 text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
+                      style={getElementStyle(item.titleStyle, viewport)}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("itemTitle", item.id || i.toString());
+                      }}
+                    />
+                  </div>
 
-                        <div
-                          className="w-14 h-14 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
-                          style={getIconFrameStyle(item.iconStyle)}
-                        >
-                          <UniversalMedia
-                            url={(() => {
-                              const currentImg = item.iconUrl || item.icon;
-                              if (
-                                currentImg &&
-                                !currentImg.includes("/images/placeholder/")
-                              )
-                                return currentImg;
-                              return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
-                            })()}
-                            alt="icon"
-                            className="w-10 h-10 object-contain"
-                            style={getIconMediaStyle(item.iconStyle)}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(
-                                "itemIcon",
-                                item.id || itemIndex.toString(),
-                              );
-                            }}
-                          />
-                        </div>
-                      </div>
+                  <div
+                    className="w-14 h-14 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
+                    style={getIconFrameStyle(item.iconStyle)}
+                  >
+                    <UniversalMedia
+                      url={(() => {
+                        const currentImg = item.iconUrl || item.icon;
+                        if (
+                          currentImg &&
+                          !currentImg.includes("/images/placeholder/")
+                        )
+                          return currentImg;
+                        return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                      })()}
+                      alt="icon"
+                      className="w-10 h-10 object-contain"
+                      style={getIconMediaStyle(item.iconStyle)}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("itemIcon", item.id || i.toString());
+                      }}
+                    />
+                  </div>
+                </div>
 
-                      <SafeHtml
-                        html={item.desc || "프로그램 특징 내용 입력"}
-                        className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded w-full"
-                        style={getElementStyle(item.descStyle, viewport)}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.(
-                            "itemDesc",
-                            item.id || itemIndex.toString(),
-                          );
-                        }}
-                      />
-                    </div>
-                  );
-                })}
+                <SafeHtml
+                  html={item.desc || "프로그램 특징 내용 입력"}
+                  className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded w-full"
+                  style={getElementStyle(item.descStyle, viewport)}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("itemDesc", item.id || i.toString());
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -879,7 +909,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -929,16 +959,19 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "24px" }}
           >
             <div
-              className={`self-stretch grid ${getGridColsClass(w.data.itemsPerRow)}`}
+              className={`self-stretch grid ${getGridColsClass(w.data.itemsPerRow, viewport)}`}
               style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
             >
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
                   key={item.id || idx}
-                  className="w-full px-6 py-10 bg-시안-mode-gray0 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                  className="w-full px-5 py-10 bg-시안-mode-gray0 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all"
+                  style={getItemCardBackgroundStyle(item.itemStyle)}
                   onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("items", item.id);
+                    handleItemBackgroundDoubleClick(
+                      e,
+                      item.id || `__idx_${idx}`,
+                    );
                   }}
                 >
                   <div

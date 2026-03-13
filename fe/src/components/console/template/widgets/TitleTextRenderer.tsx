@@ -26,7 +26,11 @@ export const TITLE_TEXT_DEFAULTS = {
   layout1Title: "타이틀 문구를 적는 곳입니다.",
   layout1TitleStyle: { fontSize: "48px", fontWeight: "700", color: "#111827" },
   layout1SubTitle: "이민 프로그램명 입력",
-  layout1SubTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
+  layout1SubTitleStyle: {
+    fontSize: "20px",
+    fontWeight: "500",
+    color: "#285DE1",
+  },
   layout1LeftImageUrl: "/images/placeholder/banner_quote_left.jpg",
   layout1RightImageUrl: "/images/placeholder/banner_quote_right.jpg",
 
@@ -36,7 +40,11 @@ export const TITLE_TEXT_DEFAULTS = {
   layout2TitleStyle: { fontSize: "48px", fontWeight: "700", color: "#ffffff" },
   layout2SubTitle:
     "국내 최고 대학 서울대도 세계 순위에서는 62위 … 결국 전세계 상위권의 학교 중 70%는 미국 대학이 차지합니다.",
-  layout2SubTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#ffffff" },
+  layout2SubTitleStyle: {
+    fontSize: "20px",
+    fontWeight: "500",
+    color: "#ffffff",
+  },
   layout2LeftImageUrl: "/images/placeholder/tt_layout2_left_01.png",
   layout2RightImageUrl: "/images/placeholder/tt_layout2_right_01.png",
   layout2BackgroundImageUrl: "/images/placeholder/tt_layout2_bg_01.jpg",
@@ -73,7 +81,11 @@ export const TITLE_TEXT_DEFAULTS = {
 
   // Layout 4
   layout4SubTitle: "( 서브타이틀 )",
-  layout4SubTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
+  layout4SubTitleStyle: {
+    fontSize: "20px",
+    fontWeight: "500",
+    color: "#285DE1",
+  },
   layout4Title: "타이틀명 입력",
   layout4TitleStyle: { fontSize: "36px", fontWeight: "700", color: "#111827" },
   layout4Desc: "이민 프로그램명 입력",
@@ -153,7 +165,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
         onDoubleClick={() => onElementSelect?.("style")}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-14 w-full">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-14 w-full">
             <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
               {/* Left Image Area Slot */}
               <div
@@ -278,7 +290,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               e.stopPropagation();
               onElementSelect?.("layout2BackgroundImageUrl");
             }}
-            className="self-stretch px-5 xl:px-72 py-16 xl:py-28 inline-flex flex-col justify-start items-center gap-14 w-full"
+            className="self-stretch px-5 md:px-10 xl:px-72 py-16 xl:py-28 inline-flex flex-col justify-start items-center gap-14 w-full"
           >
             <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
               {/* Left Image Area Slot */}
@@ -390,7 +402,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
         onDoubleClick={() => onElementSelect?.("style")}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-3 w-full text-center hover:ring-2 hover:ring-transparent transition-all">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-3 w-full text-center hover:ring-2 hover:ring-transparent transition-all">
             {!subTitleStyle?.isHidden && (
               <SafeHtml
                 html={subTitle}
@@ -473,7 +485,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
         onDoubleClick={() => onElementSelect?.("style")}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
             <div className="flex flex-col justify-start items-center text-center w-full max-w-[800px]">
               {!subTitleStyle?.isHidden && (
                 <SafeHtml
@@ -525,7 +537,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       style={style}
       className={`w-full relative overflow-hidden group hover:ring-2 hover:ring-blue-500 transition-all ${!data.imageUrl && !data.videoUrl ? "bg-white" : ""}`}
     >
-      <div className="mx-auto w-full max-w-[1920px] px-4 md:px-12 xl:px-32 py-12 md:py-24 relative z-10">
+      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 xl:px-32 py-12 md:py-24 relative z-10">
         <div className="flex flex-col max-w-4xl mx-auto items-center text-center opacity-50 p-10 bg-시안-mode-gray10 rounded-xl">
           <p className="text-시안-mode-gray50 font-bold mb-2">
             TitleText 위젯 레이아웃 영역입니다.

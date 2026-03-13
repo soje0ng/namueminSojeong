@@ -370,7 +370,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
     <section style={style} className="w-full h-auto">
       <div className="mx-auto w-full max-w-[1920px]">
         <div
-          className={`flex flex-col gap-[32px] ${isHorizontal && viewport === "desktop" ? "xl:flex-row xl:items-start" : ""}`}
+          className={`flex flex-col gap-[32px] px-5 md:px-10 ${isHorizontal && viewport === "desktop" ? "xl:flex-row xl:items-start xl:px-72" : ""}`}
         >
           <WidgetHeader
             title={w.data.title}

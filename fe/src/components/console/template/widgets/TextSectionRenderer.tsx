@@ -178,7 +178,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
             />
           </div>
           <div
-            className="-mt-[20px] flex flex-col gap-[16px] md:-mt-[60px] xl:-mt-[140px]"
+            className="-mt-[20px] flex flex-col gap-[16px] px-5 md:px-10 md:-mt-[60px] xl:-mt-[140px] xl:px-72"
             style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : undefined }}
           >
             {(w.data.items || []).map((item) => (
@@ -241,7 +241,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
   if (w.data.variant === "text3") {
     return (
       <section style={style} className="w-full h-auto">
-        <div className="mx-auto w-full max-w-[1920px]">
+        <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10">
           <div
             className={`flex flex-col gap-[16px] ${viewport === "desktop" ? "xl:flex-row xl:items-start xl:gap-0" : "md:gap-[24px]"}`}
           >
@@ -267,12 +267,12 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                   key={item.id}
                   className="flex flex-col gap-[16px] border-t border-[#666] py-[24px] md:flex-row md:gap-[24px]"
                 >
-	                  <div className="flex size-[100px] items-center justify-center rounded-full md:size-[120px] shrink-0 overflow-hidden cursor-pointer flex justify-center items-center h-auto">
-	                    <UniversalMedia
-	                      url={(item as any).iconUrl || item.icon || ""}
-	                      alt="Service"
-	                      className="w-full h-auto object-contain"
-	                      style={getElementStyle(item.iconStyle, viewport as any)}
+                  <div className="flex size-[100px] items-center justify-center rounded-full md:size-[120px] shrink-0 overflow-hidden cursor-pointer flex justify-center items-center h-auto">
+                    <UniversalMedia
+                      url={(item as any).iconUrl || item.icon || ""}
+                      alt="Service"
+                      className="w-full h-auto object-contain"
+                      style={getElementStyle(item.iconStyle, viewport as any)}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("itemIcon", item.id);
@@ -330,7 +330,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
 
   return (
     <section style={style} className="w-full h-auto">
-      <div className="mx-auto w-full max-w-[1920px] text-center">
+      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 text-center">
         <div
           className={`flex flex-col gap-[16px] md:gap-[24px] ${w.data.variant === "sticky-left" && viewport === "desktop" ? "xl:flex-row xl:items-start xl:gap-0" : ""}`}
         >

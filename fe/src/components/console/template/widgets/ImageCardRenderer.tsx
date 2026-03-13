@@ -7,6 +7,7 @@ import {
   WidgetRendererProps,
   formatUnit,
   UniversalMedia,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 export const IMAGE_CARD_DEFAULTS = {
@@ -170,6 +171,41 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
     if (!itemId) return;
     onElementSelect?.(elementKey, itemId);
   };
+  const getItemCardBackgroundStyle = (
+    itemStyle: any,
+    baseStyle: React.CSSProperties = {},
+  ) => {
+    const resolvedStyle = getElementStyle(itemStyle, viewport) as any;
+    const mergedBaseStyle = { ...baseStyle } as React.CSSProperties;
+    if (resolvedStyle.backgroundColor && !resolvedStyle.backgroundImage) {
+      delete (mergedBaseStyle as any).backgroundImage;
+      delete (mergedBaseStyle as any).backgroundSize;
+      delete (mergedBaseStyle as any).backgroundPosition;
+      delete (mergedBaseStyle as any).backgroundRepeat;
+    }
+    return {
+      ...mergedBaseStyle,
+      ...(resolvedStyle.backgroundColor
+        ? { backgroundColor: resolvedStyle.backgroundColor }
+        : {}),
+      ...(resolvedStyle.backgroundImage
+        ? {
+            backgroundImage: resolvedStyle.backgroundImage,
+            backgroundSize: resolvedStyle.backgroundSize || "cover",
+            backgroundPosition: resolvedStyle.backgroundPosition || "center",
+            backgroundRepeat: resolvedStyle.backgroundRepeat || "no-repeat",
+          }
+        : {}),
+    } as React.CSSProperties;
+  };
+  const handleItemBackgroundDoubleClick = (
+    e: React.MouseEvent,
+    itemId?: string,
+  ) => {
+    e.stopPropagation();
+    if (!itemId) return;
+    onElementSelect?.("itemStyle", itemId);
+  };
 
   const parseFeatureLines = (value: any): string[] => {
     const source = typeof value === "string" ? value : "";
@@ -246,7 +282,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   if (layout === "1") {
     return (
       <section style={style} className="w-full">
-        <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto">
+        <div
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+        >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
@@ -302,10 +340,17 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 <div
                   key={item.id || idx}
                   className="flex-1 inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
+                  style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     e.stopPropagation();
                     selectCardItem(item.id ?? `__idx_${idx}`);
                   }}
+                  onDoubleClick={(e) =>
+                    handleItemBackgroundDoubleClick(
+                      e,
+                      item.id ?? `__idx_${idx}`,
+                    )
+                  }
                 >
                   <UniversalMedia
                     className="self-stretch w-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
@@ -351,7 +396,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   if (layout === "2") {
     return (
       <section style={style} className="w-full">
-        <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto">
+        <div
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+        >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
@@ -407,10 +454,17 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 <div
                   key={item.id || idx}
                   className="flex-1 inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
+                  style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     e.stopPropagation();
                     selectCardItem(item.id ?? `__idx_${idx}`);
                   }}
+                  onDoubleClick={(e) =>
+                    handleItemBackgroundDoubleClick(
+                      e,
+                      item.id ?? `__idx_${idx}`,
+                    )
+                  }
                 >
                   <UniversalMedia
                     className="self-stretch w-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all"
@@ -462,7 +516,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   if (layout === "3") {
     return (
       <section style={style} className="w-full">
-        <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto">
+        <div
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+        >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
@@ -522,6 +578,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                   <div
                     key={item.id || idx}
                     className="flex-1 outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-start items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all bg-white h-full"
+                    style={getItemCardBackgroundStyle(item.itemStyle)}
                     onClick={(e) => {
                       const cardItemId = item.id ?? `__idx_${idx}`;
                       e.stopPropagation();
@@ -530,6 +587,12 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         layout === "3" ? "itemFeatures" : "item",
                       );
                     }}
+                    onDoubleClick={(e) =>
+                      handleItemBackgroundDoubleClick(
+                        e,
+                        item.id ?? `__idx_${idx}`,
+                      )
+                    }
                   >
                     <div
                       className="self-stretch relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
@@ -585,7 +648,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         )}
                       </div>
                     </div>
-                    <div className="self-stretch p-6 flex flex-col justify-start items-start gap-3 bg-white flex-grow">
+                    <div
+                      className="self-stretch px-5 md:px-10 py-6 flex flex-col justify-start items-start gap-3 bg-white flex-grow"
+                      style={getItemCardBackgroundStyle(item.itemStyle)}
+                    >
                       <div className="flex flex-col justify-start items-start">
                         {!item.subTitleStyle?.isHidden && (
                           <SafeHtml
@@ -721,7 +787,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   if (layout === "4") {
     return (
       <section style={style} className="w-full">
-        <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto">
+        <div
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+        >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
@@ -773,10 +841,17 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 <div
                   key={item.id || idx}
                   className="flex-1 min-w-[300px] xl:min-w-[660px] outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] flex flex-col xl:flex-row justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all bg-white"
+                  style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     e.stopPropagation();
                     selectCardItem(item.id ?? `__idx_${idx}`, "itemFeatures");
                   }}
+                  onDoubleClick={(e) =>
+                    handleItemBackgroundDoubleClick(
+                      e,
+                      item.id ?? `__idx_${idx}`,
+                    )
+                  }
                 >
                   <div
                     className="flex-1 relative overflow-hidden w-full xl:w-auto shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
@@ -832,7 +907,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       )}
                     </div>
                   </div>
-                  <div className="flex-1 p-6 bg-white inline-flex flex-col justify-start items-start gap-3 w-full xl:w-auto">
+                  <div
+                    className="flex-1 p-6 bg-white inline-flex flex-col justify-start items-start gap-3 w-full xl:w-auto"
+                    style={getItemCardBackgroundStyle(item.itemStyle)}
+                  >
                     <div className="flex flex-col justify-start items-start">
                       {!item.subTitleStyle?.isHidden && (
                         <SafeHtml
@@ -971,7 +1049,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
         style={style}
         className="w-full relative overflow-hidden bg-white border-t border-b border-시안-mode-gray1"
       >
-        <div className="max-w-[1920px] mx-auto px-5 xl:px-64 py-20 relative min-h-[800px] flex flex-col items-center gap-10">
+        <div
+          className={`max-w-[1920px] mx-auto ${getPaddingClass(viewport, "xl:px-64")} py-20 relative min-h-[800px] flex flex-col items-center gap-10`}
+        >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
@@ -1011,10 +1091,14 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               <div
                 key={item.id || idx}
                 className="flex flex-col md:flex-row justify-start items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all bg-white overflow-hidden shadow-sm"
+                style={getItemCardBackgroundStyle(item.itemStyle)}
                 onClick={(e) => {
                   e.stopPropagation();
                   selectCardItem(item.id ?? `__idx_${idx}`);
                 }}
+                onDoubleClick={(e) =>
+                  handleItemBackgroundDoubleClick(e, item.id ?? `__idx_${idx}`)
+                }
               >
                 <div
                   className="w-full md:w-[480px] relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
@@ -1037,11 +1121,11 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
                 <div
                   className="flex-1 h-80 px-6 py-10 border-t-2 border-시안-mode-gray95 flex flex-col justify-between items-start overflow-hidden xl:-ml-[180px] relative z-10 shadow-lg"
-                  style={{
+                  style={getItemCardBackgroundStyle(item.itemStyle, {
                     backgroundImage: 'url("/images/placeholder/box.png")',
                     backgroundSize: "cover",
                     backgroundPosition: "center",
-                  }}
+                  })}
                 >
                   <div className="self-stretch inline-flex justify-start items-start gap-2">
                     <div className="flex-1 inline-flex flex-col justify-start items-start gap-2">
@@ -1135,7 +1219,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   if (layout === "6") {
     return (
       <section style={style} className="w-full">
-        <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto">
+        <div
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+        >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
@@ -1175,12 +1261,19 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               return (
                 <div
                   key={item.id || idx}
-                  className="self-stretch px-5 xl:px-14 py-10 border-b border-시안-mode-gray1 inline-flex flex-col md:flex-row justify-start items-start gap-10 xl:gap-14 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all bg-white"
+                  className={`self-stretch ${getPaddingClass(viewport, "")} py-10 border-b border-시안-mode-gray1 inline-flex flex-col md:flex-row justify-start items-start gap-10 xl:gap-14 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all bg-white`}
+                  style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     const cardItemId = item.id ?? `__idx_${idx}`;
                     e.stopPropagation();
                     selectCardItem(cardItemId, "itemFeatures");
                   }}
+                  onDoubleClick={(e) =>
+                    handleItemBackgroundDoubleClick(
+                      e,
+                      item.id ?? `__idx_${idx}`,
+                    )
+                  }
                 >
                   <div className="flex-1 flex justify-start items-start gap-6 xl:gap-10">
                     {/* Number Icon */}

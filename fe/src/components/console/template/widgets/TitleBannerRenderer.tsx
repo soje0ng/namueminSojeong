@@ -7,6 +7,7 @@ import {
   UniversalMedia,
   WidgetRendererProps,
   getImageUrl,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 export const TITLE_BANNER_DEFAULTS = {
@@ -72,8 +73,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   const data = w.data;
   const layout = String(data.layout || "1");
   const isMobile = viewport === "mobile";
-  const layout3Image =
-    data.layout3Image || TITLE_BANNER_DEFAULTS.layout3Image;
+  const isTablet = viewport === "tablet";
+  const layout3Image = data.layout3Image || TITLE_BANNER_DEFAULTS.layout3Image;
   const layout3MobileImage =
     data.layout3MobileImage ||
     data.layout3Image ||
@@ -88,6 +89,205 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
 
   /* ─────────────────────────────────────────── 레이아웃 1 (구조 원복) ─── */
   if (layout === "1") {
+    /* ── 태블릿: 세로 스택 레이아웃 ── */
+    if (isTablet) {
+      return (
+        <section
+          style={{
+            ...style,
+            backgroundImage: data.backgroundImage
+              ? `url(${getImageUrl(data.backgroundImageStyle, viewport, data.backgroundImage)})`
+              : undefined,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+          className="w-full relative overflow-hidden transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("backgroundImage");
+          }}
+        >
+          <div className="mx-auto w-full max-w-[1920px] relative">
+            <div
+              className={`${getPaddingClass(viewport, "xl:px-72")} py-[60px] flex flex-col gap-[60px] w-full`}
+            >
+              {/* 텍스트 섹션 */}
+              <div className="flex flex-col gap-[40px] w-full">
+                {/* 타이틀 그룹 */}
+                <div className="flex flex-col gap-3 items-start">
+                  <SafeHtml
+                    className="font-bold font-['Pretendard'] leading-none hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                    style={{
+                      ...getElementStyle(data.subTitleStyle, viewport),
+                      color: "#285DE1",
+                      fontSize: "20px",
+                      letterSpacing: "-0.4px",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("subTitle");
+                    }}
+                    html={data.subTitle || "버지니아 해안 리조트 건설 프로젝트"}
+                  />
+                  <div
+                    className="justify-start hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("title");
+                    }}
+                  >
+                    <SafeHtml
+                      className="font-['Pretendard']"
+                      style={{
+                        fontSize: "48px",
+                        fontWeight: "700",
+                        lineHeight: "1.5",
+                        letterSpacing: "-0.96px",
+                        color: "#131416",
+                        ...getElementStyle(data.titleStyle, viewport),
+                      }}
+                      html={
+                        data.title ||
+                        `<span class="text-gray-950 font-bold">2026년 </span><span class="text-[#285DE1] font-bold">미국 투자이민,<br/></span><span class="text-gray-950 font-bold">꼭 알아야 할 3가지 핵심 트렌드</span>`
+                      }
+                    />
+                  </div>
+                  <SafeHtml
+                    className="font-medium font-['Pretendard'] leading-[1.5] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                    style={{
+                      ...getElementStyle(data.descStyle, viewport),
+                      color: "#6d7882",
+                      fontSize: "20px",
+                      letterSpacing: "-0.4px",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("desc");
+                    }}
+                    html={data.desc || "설명을 쓰는 곳입니다."}
+                  />
+                </div>
+
+                {/* 본문 + 특징 그룹 */}
+                <div className="flex flex-col gap-[20px] w-full">
+                  <SafeHtml
+                    className="w-full font-medium font-['Pretendard'] leading-[1.5] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                    style={{
+                      ...getElementStyle(data.textContentStyle, viewport),
+                      color: "#6d7882",
+                      fontSize: "20px",
+                      letterSpacing: "-0.4px",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("textContent");
+                    }}
+                    html={
+                      data.textContent ||
+                      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
+                    }
+                  />
+                  <div className="w-full flex justify-center items-start">
+                    {[1, 2, 3].map((idx) => {
+                      const fImg =
+                        (data as any)[`feature${idx}Image`] ||
+                        "/images/placeholder/banner_feature.png";
+                      const fTitle =
+                        (data as any)[`feature${idx}Title`] || "프로그램 특징";
+                      const fDesc =
+                        (data as any)[`feature${idx}Desc`] ||
+                        "프로그램 특징 내용 입력";
+                      const fImageStyle = (data as any)[
+                        `feature${idx}ImageStyle`
+                      ];
+                      const fTitleStyle = (data as any)[
+                        `feature${idx}TitleStyle`
+                      ];
+                      const fDescStyle = (data as any)[
+                        `feature${idx}DescStyle`
+                      ];
+                      const isLast = idx === 3;
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`flex-1 max-w-[440px] ${!isLast ? "border-r border-gray-200" : ""} flex flex-col justify-start items-center gap-4`}
+                        >
+                          <UniversalMedia
+                            className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                            style={{
+                              width: "100px",
+                              height: "100px",
+                              objectFit: "contain",
+                              ...getElementStyle(fImageStyle, viewport),
+                            }}
+                            url={getImageUrl(fImageStyle, viewport, fImg)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(`feature${idx}Image`);
+                            }}
+                          />
+                          <div className="flex flex-col justify-start items-center gap-2">
+                            <SafeHtml
+                              className="text-center font-bold font-['Pretendard'] leading-[1.5] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                              style={{
+                                ...getElementStyle(fTitleStyle, viewport),
+                                color: "#295e92",
+                                fontSize: "24px",
+                                letterSpacing: "-0.48px",
+                              }}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(`feature${idx}Title`);
+                              }}
+                              html={fTitle || "프로그램 특징"}
+                            />
+                            <SafeHtml
+                              className="text-center font-normal font-['Pretendard'] leading-[1.5] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                              style={{
+                                ...getElementStyle(fDescStyle, viewport),
+                                color: "#6d7882",
+                                fontSize: "18px",
+                                letterSpacing: "-0.36px",
+                              }}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(`feature${idx}Desc`);
+                              }}
+                              html={fDesc || "프로그램 특징 내용 입력"}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* 하단 이미지 */}
+              <div className="relative shrink-0 w-full h-[360px] overflow-hidden">
+                <UniversalMedia
+                  className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                  url={getImageUrl(
+                    data.layout1ImageStyle,
+                    viewport,
+                    data.layout1Image,
+                  )}
+                  style={getElementStyle(data.layout1ImageStyle, viewport)}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1Image");
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* ── 데스크톱: 기존 가로 레이아웃 ── */
     return (
       <section
         style={{
@@ -106,7 +306,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         }}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch pl-72 py-14 inline-flex justify-start items-center gap-20">
+          <div
+            className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex justify-start items-center gap-20`}
+          >
             <div className="flex-1 h-[575px] inline-flex flex-col justify-between items-start">
               {/* 상단 텍스트 그룹 */}
               <div className="flex flex-col justify-start items-start gap-3">
@@ -181,7 +383,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                     const fDesc =
                       (data as any)[`feature${idx}Desc`] ||
                       "프로그램 특징 내용 입력";
-                    const fImageStyle = (data as any)[`feature${idx}ImageStyle`];
+                    const fImageStyle = (data as any)[
+                      `feature${idx}ImageStyle`
+                    ];
                     const fTitleStyle = (data as any)[
                       `feature${idx}TitleStyle`
                     ];
@@ -201,11 +405,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                             objectFit: "contain",
                             ...getElementStyle(fImageStyle, viewport),
                           }}
-                          url={getImageUrl(
-                            fImageStyle,
-                            viewport,
-                            fImg,
-                          )}
+                          url={getImageUrl(fImageStyle, viewport, fImg)}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(`feature${idx}Image`);
@@ -257,6 +457,187 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "2") {
+    /* ── 태블릿: 세로 스택 레이아웃 (피그마 이미지타이틀02) ── */
+    if (isTablet) {
+      return (
+        <section
+          style={style}
+          className="w-full relative transition-all cursor-pointer"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("backgroundImage");
+          }}
+        >
+          <div className="mx-auto w-full max-w-[1920px] relative">
+            {/* 피그마 스펙: flex-col gap-[40px] padding: 60px 40px */}
+            <div
+              className={`${getPaddingClass(viewport)} py-14 flex flex-col gap-[40px] items-start w-full`}
+            >
+              {/* subtit 그룹: flex-col gap-[12px] */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                  alignItems: "flex-start",
+                }}
+              >
+                {/* subTitle: 20px medium leading-none #295e92 tracking:-0.4px */}
+                <SafeHtml
+                  html={data.subTitle || "Program Name."}
+                  className="font-medium font-['Pretendard'] leading-none hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                  style={{
+                    ...getElementStyle(data.subTitleStyle, viewport),
+                    color: "#295e92",
+                    fontSize: "20px",
+                    letterSpacing: "-0.4px",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("subTitle");
+                  }}
+                />
+                {/* title: 48px bold leading-1.5 #131416 tracking:-0.96px */}
+                <SafeHtml
+                  html={data.title || "타이틀명 입력"}
+                  className="font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                  style={{
+                    ...getElementStyle(data.titleStyle, viewport),
+                    color: "#131416",
+                    fontSize: "48px",
+                    lineHeight: "1.5",
+                    letterSpacing: "-0.96px",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("title");
+                  }}
+                />
+                {/* desc: 20px medium leading-1.5 #6d7882 tracking:-0.4px */}
+                <SafeHtml
+                  html={data.desc || "서브타이틀 입력 영역"}
+                  className="font-medium font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                  style={{
+                    ...getElementStyle(data.descStyle, viewport),
+                    color: "#6d7882",
+                    fontSize: "20px",
+                    lineHeight: "1.5",
+                    letterSpacing: "-0.4px",
+                    width: "100%",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("desc");
+                  }}
+                />
+              </div>
+
+              {/* 하단 row: flex gap-[40px] items-end justify-center w-full */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "40px",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                {/* 이미지: w-360px h-440px rounded-tl-[60px] */}
+                <div
+                  style={{
+                    position: "relative",
+                    width: "360px",
+                    height: "440px",
+                    borderRadius: "60px 0 0 0",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                  }}
+                >
+                  <UniversalMedia
+                    className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                    url={getImageUrl(
+                      data.layout2HeroImageStyle,
+                      viewport,
+                      data.layout2HeroImage ||
+                        "/images/placeholder/title_banner_img2.png",
+                    )}
+                    style={{
+                      ...getElementStyle(data.layout2HeroImageStyle, viewport),
+                      borderRadius: "60px 0 0 0",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout2HeroImage");
+                    }}
+                  />
+                </div>
+
+                {/* txt01: flex-1 flex-col gap-[8px] items-start justify-center */}
+                <div
+                  style={{
+                    flex: "1 0 0",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    alignItems: "flex-start",
+                    justifyContent: "center",
+                  }}
+                >
+                  {/* textContentTitle: 24px medium leading-1.5 #131416 tracking:-0.48px */}
+                  <SafeHtml
+                    html={data.textContentTitle || "서브 타이틀 입력"}
+                    className="font-medium font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                    style={{
+                      ...getElementStyle(data.textContentTitleStyle, viewport),
+                      color: "#131416",
+                      fontSize: "24px",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.48px",
+                      width: "100%",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("textContentTitle");
+                    }}
+                  />
+                  {/* 구분선: bg-[#e6e8ea] h-1px w-60px */}
+                  <div
+                    style={{
+                      backgroundColor: "#e6e8ea",
+                      height: "1px",
+                      width: "60px",
+                      flexShrink: 0,
+                    }}
+                  />
+                  {/* textContent: 20px medium leading-1.5 #6d7882 tracking:-0.4px */}
+                  <SafeHtml
+                    html={
+                      data.textContent ||
+                      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
+                    }
+                    className="font-medium font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                    style={{
+                      ...getElementStyle(data.textContentStyle, viewport),
+                      color: "#6d7882",
+                      fontSize: "20px",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.4px",
+                      width: "100%",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("textContent");
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* ── 데스크톱: 기존 가로 레이아웃 ── */
     return (
       <section
         style={style}
@@ -268,14 +649,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            style={{
-              display: "flex",
-              padding: "60px 280px",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              alignSelf: "stretch",
-            }}
-            className="w-full"
+            className={`w-full ${getPaddingClass(viewport, "xl:px-[280px]")} py-[60px] flex justify-between items-start self-stretch`}
           >
             <div className="inline-flex flex-col justify-start items-start gap-3">
               <SafeHtml
@@ -367,6 +741,203 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "3") {
+    /* ── 공통 이미지 배너 렌더 (tablet/desktop 공유) ── */
+    /* ── 태블릿: 피그마 이미지박스04 스펙 ── */
+    if (isTablet) {
+      return (
+        <section
+          style={style}
+          className="w-full relative overflow-hidden bg-white cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-100 transition-all"
+          onDoubleClick={() => onElementSelect?.("style")}
+        >
+          <div className="mx-auto w-full max-w-[1920px] relative">
+            {/* 피그마: flex-col gap-[40px] items-center padding:60px 40px */}
+            <div
+              className={`${getPaddingClass(viewport)} py-14 flex flex-col gap-[40px] items-center w-full`}
+            >
+              {/* 상단: 따옴표 + 텍스트 | flex gap-[60px] items-start */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "60px",
+                  alignItems: "flex-start",
+                }}
+              >
+                {/* 좌측 따옴표: w-[50px] h-[40px] */}
+                <div
+                  style={{
+                    position: "relative",
+                    width: "50px",
+                    height: "40px",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("quoteLeftUrl");
+                  }}
+                >
+                  <UniversalMedia
+                    url={getImageUrl(
+                      data.quoteLeftUrlStyle,
+                      viewport,
+                      data.quoteLeftUrl,
+                    )}
+                    style={{
+                      ...getElementStyle(data.quoteLeftUrlStyle, viewport),
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    }}
+                    className="absolute inset-0 w-full h-full"
+                    alt="Left Quote"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("quoteLeftUrl");
+                    }}
+                  />
+                </div>
+
+                {/* subtit 그룹: flex-col gap-[8px] items-center text-center */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  {/* layout3SmallTitle: 24px medium leading-1.5 #131416 tracking:-0.48px */}
+                  <SafeHtml
+                    html={
+                      data.layout3SmallTitle ||
+                      "1명당 유학 비용 30억원의 시대, 가장 합리적인 선택!"
+                    }
+                    className="font-medium font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                    style={{
+                      ...getElementStyle(data.layout3SmallTitleStyle, viewport),
+                      color: "#131416",
+                      fontSize: "24px",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.48px",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout3SmallTitle");
+                    }}
+                  />
+                  {/* layout3Title: 48px bold leading-1.5 #131416 tracking:-0.96px */}
+                  <SafeHtml
+                    html={data.layout3Title || "학부모 영주권 프로그램"}
+                    className="font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                    style={{
+                      ...getElementStyle(data.layout3TitleStyle, viewport),
+                      color: "#131416",
+                      fontSize: "48px",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.96px",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout3Title");
+                    }}
+                  />
+                  {/* layout3Desc: 20px medium leading-1.5 #6d7882 tracking:-0.4px */}
+                  <SafeHtml
+                    html={
+                      data.layout3Desc ||
+                      "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램"
+                    }
+                    className="font-medium font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                    style={{
+                      ...getElementStyle(data.layout3DescStyle, viewport),
+                      color: "#6d7882",
+                      fontSize: "20px",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.4px",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout3Desc");
+                    }}
+                  />
+                </div>
+
+                {/* 우측 따옴표: w-[50px] h-[40px] rotate-180 */}
+                <div
+                  style={{
+                    position: "relative",
+                    width: "50px",
+                    height: "40px",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("quoteRightUrl");
+                  }}
+                >
+                  <UniversalMedia
+                    url={getImageUrl(
+                      data.quoteRightUrlStyle,
+                      viewport,
+                      data.quoteRightUrl,
+                    )}
+                    style={{
+                      ...getElementStyle(data.quoteRightUrlStyle, viewport),
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    }}
+                    className="absolute inset-0 w-full h-full"
+                    alt="Right Quote"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("quoteRightUrl");
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* 하단 이미지 배너: h-[400px] rounded-[24px] overflow-hidden w-full */}
+              <div
+                style={{
+                  position: "relative",
+                  height: "400px",
+                  borderRadius: "24px",
+                  overflow: "hidden",
+                  width: "100%",
+                  flexShrink: 0,
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.(
+                    isMobile ? "layout3MobileImage" : "layout3Image",
+                  );
+                }}
+              >
+                <UniversalMedia
+                  className="absolute inset-0 w-full h-full object-cover"
+                  url={layout3CurrentImage}
+                  style={getElementStyle(layout3CurrentImageStyle, viewport)}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.(
+                      isMobile ? "layout3MobileImage" : "layout3Image",
+                    );
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* ── 데스크톱: 기존 레이아웃 ── */
     return (
       <section
         style={style}
@@ -374,7 +945,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         onDoubleClick={() => onElementSelect?.("style")}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-14 pt-28 pb-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className="self-stretch px-5 md:px-10 xl:px-14 pt-28 pb-14 inline-flex flex-col justify-start items-center gap-10 w-full">
             {/* 상단: 따옴표 + 텍스트 */}
             <div className="inline-flex justify-start items-start gap-14">
               {/* 좌측 따옴표 이미지 */}

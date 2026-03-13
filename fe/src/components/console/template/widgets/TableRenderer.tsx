@@ -75,6 +75,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
     w.data.variant === "table03" || (w.data as any).layout === "3";
   const isTable04 =
     w.data.variant === "table04" || (w.data as any).layout === "4";
+  const containerPaddingClass =
+    viewport === "tablet"
+      ? "px-10"
+      : viewport === "desktop"
+        ? "px-5 xl:px-72"
+        : "px-5";
 
   if (isTable04) {
     const tableHeaders = w.data.comparisonHeaders ||
@@ -90,7 +96,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}>
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
@@ -249,7 +255,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}>
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
@@ -393,7 +399,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}>
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
@@ -707,7 +713,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
   return (
     <section style={sectionStyle} className="w-full h-auto">
       <div className="mx-auto w-full max-w-[1920px]">
-        <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+        <div className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}>
           <div className="flex flex-col justify-start items-center">
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml

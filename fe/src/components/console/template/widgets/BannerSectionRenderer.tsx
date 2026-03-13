@@ -171,7 +171,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className="p-[24px_20px] text-center md:p-[40px_24px]"
+            className="px-5 md:px-10 py-6 md:py-10 text-center"
             style={{
               ...(w.style?.backgroundImage
                 ? {
@@ -278,7 +278,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`flex flex-col gap-[24px] p-[24px_20px] md:p-[40px_24px] ${viewport === "desktop" ? "xl:flex-row xl:items-center xl:justify-between xl:p-[40px_60px]" : ""}`}
+            className={`flex flex-col gap-[24px] px-5 md:px-10 py-6 md:py-10 ${viewport === "desktop" ? "xl:flex-row xl:items-center xl:justify-between xl:px-[60px] xl:py-[40px]" : ""}`}
             style={{
               ...(w.style?.backgroundImage
                 ? {
@@ -338,7 +338,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`relative flex flex-col gap-[24px] p-[24px_20px] md:p-[40px_24px] ${viewport === "desktop" ? "xl:p-[40px_60px_40px_500px]" : ""} ${!w.style?.backgroundImage && !w.style?.backgroundColor ? "bg-gradient-to-r from-[#21568E] to-[#093666]" : ""}`}
+            className={`relative flex flex-col gap-[24px] px-5 md:px-10 py-6 md:py-10 ${viewport === "desktop" ? "xl:px-[500px] xl:pr-[60px] xl:py-[40px]" : ""} ${!w.style?.backgroundImage && !w.style?.backgroundColor ? "bg-gradient-to-r from-[#21568E] to-[#093666]" : ""}`}
             style={{
               ...(w.style?.backgroundImage
                 ? {

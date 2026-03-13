@@ -89,7 +89,7 @@ export const VideoRenderer: React.FC<WidgetRendererProps> = ({
 
   return (
     <section style={style} className="w-full h-auto">
-      <div className="mx-auto w-full max-w-[1920px]">
+      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10">
         <div
           className={`flex gap-[0px] md:gap-[0px] ${isSideBySide && isDesktop ? "flex-row items-start" : "flex-col"} ${!isSideBySide ? "items-center text-center" : ""}`}
         >

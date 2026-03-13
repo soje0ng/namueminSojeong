@@ -44,12 +44,39 @@ export const getElementStyle = (
       ? formatUnit(style.fontSizeMobile)
       : formatUnit(style.fontSize);
 
+  const rawBackgroundImage = (style as any).backgroundImage;
+  const normalizedBackgroundImage =
+    typeof rawBackgroundImage === "string" && rawBackgroundImage.trim()
+      ? (() => {
+          const trimmed = rawBackgroundImage.trim();
+          if (trimmed.toLowerCase() === "none") return "none";
+          const isCssBackgroundValue =
+            /^url\(/i.test(trimmed) ||
+            /gradient\(/i.test(trimmed) ||
+            /^var\(/i.test(trimmed);
+          return isCssBackgroundValue ? trimmed : `url(${trimmed})`;
+        })()
+      : undefined;
+
   const result = {
     fontSize,
     fontWeight: style.fontWeight,
     color: style.color,
     lineHeight: (style as any).lineHeight || "150%",
     backgroundColor: style.backgroundColor,
+    backgroundImage: normalizedBackgroundImage,
+    backgroundSize:
+      normalizedBackgroundImage && normalizedBackgroundImage !== "none"
+        ? (style as any).backgroundSize || "cover"
+        : undefined,
+    backgroundPosition:
+      normalizedBackgroundImage && normalizedBackgroundImage !== "none"
+        ? (style as any).backgroundPosition || "center"
+        : undefined,
+    backgroundRepeat:
+      normalizedBackgroundImage && normalizedBackgroundImage !== "none"
+        ? (style as any).backgroundRepeat || "no-repeat"
+        : undefined,
     borderColor: style.borderColor,
     borderWidth: style.borderColor ? style.borderWidth || "1px" : undefined,
     borderStyle: style.borderColor ? "solid" : undefined,
@@ -93,6 +120,19 @@ export const getImageUrl = (
 
   // 2. Default/PC view: Use src if it exists, else defaultUrl
   return styleAny.src || defaultUrl;
+};
+
+/**
+ * getPaddingClass helper to handle responsive padding based on viewport prop
+ * Ensures tablet/mobile have fixed safe padding even in high-res builder preview.
+ */
+export const getPaddingClass = (
+  viewport: string,
+  desktopPadding: string = "xl:px-72",
+) => {
+  if (viewport === "tablet") return "px-10"; // 40px fixed
+  if (viewport === "mobile") return "px-5"; // 20px fixed
+  return `px-5 md:px-10 ${desktopPadding}`.trim(); // Desktop (Responsive)
 };
 
 // Safe HTML Component with placeholder support for empty content

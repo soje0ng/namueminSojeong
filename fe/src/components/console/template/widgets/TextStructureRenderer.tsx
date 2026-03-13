@@ -528,7 +528,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
             {/* 헤더 영역 */}
             <div className="flex flex-col justify-start items-center">
               {!data.subTitleStyle?.isHidden && (
@@ -657,11 +657,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         className="self-stretch justify-start text-[#131416] text-2xl font-medium font-['Pretendard'] leading-[150%] tracking-[-0.48px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onElementSelect?.("sections10_subTitle", i.toString());
+                          onElementSelect?.(
+                            "sections10_subTitle",
+                            i.toString(),
+                          );
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
-                          onElementSelect?.("sections10_subTitle", i.toString());
+                          onElementSelect?.(
+                            "sections10_subTitle",
+                            i.toString(),
+                          );
                         }}
                       />
                     )}
@@ -763,7 +769,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
             <div
               className={`self-stretch flex flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"} justify-start items-center gap-10 xl:gap-20 w-full`}
             >
@@ -940,7 +946,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-[280px] py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div className="self-stretch px-5 md:px-10 xl:px-[280px] py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
             {/* Top Common Header Area */}
             <div
               className="flex flex-col justify-start items-center w-full cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all"
@@ -997,7 +1003,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             >
               {/* Left Image Area */}
               <div
-                className={`w-full xl:w-[700px] px-5 xl:px-14 py-10 relative border-b xl:border-b-0 ${reverseLayout ? "xl:border-l" : "xl:border-r"} border-시안-mode-gray1 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden group/img hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                className={`w-full xl:w-[700px] px-5 md:px-10 xl:px-14 py-10 relative border-b xl:border-b-0 ${reverseLayout ? "xl:border-l" : "xl:border-r"} border-시안-mode-gray1 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden group/img hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("layout3ImageUrl");
@@ -1018,7 +1024,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               </div>
 
               {/* Right Text Area */}
-              <div className="flex-1 self-stretch px-5 xl:px-14 py-10 inline-flex flex-col justify-start items-start gap-12 w-full">
+              <div className="flex-1 self-stretch px-5 md:px-10 xl:px-14 py-10 inline-flex flex-col justify-start items-start gap-12 w-full">
                 <div className="self-stretch flex flex-col justify-start items-start gap-7 w-full">
                   <div className="self-stretch py-5 border-b border-시안-mode-gray95 flex flex-col justify-center items-start gap-2">
                     {!l3ContentTitleStyle?.isHidden && (
@@ -1083,7 +1089,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-0 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-0 inline-flex flex-col justify-start items-center gap-10 w-full">
             {/* 글로벌 헤더 */}
             <div className="flex flex-col justify-start items-center">
               {!data.subTitleStyle?.isHidden && (
@@ -1340,7 +1346,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
             {/* 글로벌 헤더 (중앙 정렬) */}
             <div className="flex flex-col justify-start items-center w-full gap-1">
               {!data.l5SubTitleStyle?.isHidden && (
@@ -1922,7 +1928,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
             <div
               className={`self-stretch flex flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"} justify-start items-center gap-10 xl:gap-20 w-full`}
             >
@@ -2095,7 +2101,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
             {/* Fixed Header */}
             <div className="flex flex-col justify-start items-center w-full">
               {!data.subTitleStyle?.isHidden && (
@@ -2189,7 +2195,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl w-full flex justify-center items-center h-auto"
                           style={{
                             height: "auto",
-                            ...getOpacityStyle(section.imageOpacities?.[imgIdx]),
+                            ...getOpacityStyle(
+                              section.imageOpacities?.[imgIdx],
+                            ),
                           }}
                         >
                           <UniversalMedia
@@ -2521,7 +2529,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
             {/* 고정 헤더 */}
             <div className="flex flex-col justify-start items-center w-full">
               {!data.subTitleStyle?.isHidden && (
@@ -2784,15 +2792,18 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={section.id}
                         className="self-stretch bg-시안-mode-gray5 rounded-[20px] inline-flex flex-col md:flex-row justify-center md:items-stretch items-center overflow-hidden w-full"
-                      style={
-                        bannerHeight
-                          ? mergeWithOpacity(
-                              { minHeight: bannerHeight, height: bannerHeight },
-                              section.opacity,
-                            )
-                          : getOpacityStyle(section.opacity)
-                      }
-                    >
+                        style={
+                          bannerHeight
+                            ? mergeWithOpacity(
+                                {
+                                  minHeight: bannerHeight,
+                                  height: bannerHeight,
+                                },
+                                section.opacity,
+                              )
+                            : getOpacityStyle(section.opacity)
+                        }
+                      >
                         <div
                           className="w-full md:w-96 h-auto shrink-0 self-stretch cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all overflow-hidden"
                           style={
@@ -2882,7 +2893,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
             {/* 헤더 영역 */}
             <div className="flex flex-col justify-start items-center">
               {!data.subTitleStyle?.isHidden && (
@@ -2956,7 +2967,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-xl w-full flex justify-center items-center h-auto"
                           style={{
                             height: "auto",
-                            ...getOpacityStyle(section.imageOpacities?.[imgIdx]),
+                            ...getOpacityStyle(
+                              section.imageOpacities?.[imgIdx],
+                            ),
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -3155,7 +3168,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
             {/* 헤더 영역 */}
             <div className="flex flex-col justify-start items-center w-full">
               {!data.subTitleStyle?.isHidden && (
@@ -3201,9 +3214,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 2열 레이아웃: 왼쪽 고정 이미지 + 오른쪽 동적 섹션 */}
-	            <div
-	              className={`self-stretch inline-flex flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"} justify-center items-start gap-14 w-full`}
-	            >
+            <div
+              className={`self-stretch inline-flex flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"} justify-center items-start gap-14 w-full`}
+            >
               {/* 왼쪽: 고정 이미지 */}
               <div
                 className="w-full xl:flex-1 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl shrink-0 flex justify-center items-center h-auto"
@@ -3425,7 +3438,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 inline-flex flex-col justify-start items-center gap-10 w-full">
             {/* 헤더 영역 */}
             <div className="flex flex-col justify-start items-center">
               {!data.subTitleStyle?.isHidden && (
@@ -3942,7 +3955,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       style={style}
       className={`w-full relative overflow-hidden group hover:ring-2 hover:ring-blue-500 transition-all ${!data.imageUrl && !data.videoUrl ? "bg-white" : ""}`}
     >
-      <div className="mx-auto w-full max-w-[1920px] px-4 md:px-12 xl:px-32 py-12 md:py-24 relative z-10">
+      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 xl:px-32 py-12 md:py-24 relative z-10">
         <div className="flex flex-col max-w-4xl mx-auto items-center text-center opacity-50 p-10 bg-시안-mode-gray10 rounded-xl">
           <p className="text-시안-mode-gray50 font-bold mb-2">
             TextStructure 위젯 레이아웃 영역입니다.
