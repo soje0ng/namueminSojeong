@@ -7,6 +7,7 @@ import {
   WidgetRendererProps,
   formatUnit,
   UniversalMedia,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
@@ -88,7 +89,9 @@ export const GridCardRenderer: React.FC<
       style={style}
       className={`w-full h-auto ${w.data.variant === "large" ? "bg-시안-mode-gray5" : ""}`}
     >
-      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 xl:px-[260px] pb-[80px] md:pb-[120px]">
+      <div
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "xl:px-[260px]")} pb-[80px] md:pb-[120px]`}
+      >
         <div
           className={`flex flex-col gap-[24px] ${w.data.layout === "left-title" ? "xl:flex-row xl:items-start xl:gap-0" : ""}`}
         >

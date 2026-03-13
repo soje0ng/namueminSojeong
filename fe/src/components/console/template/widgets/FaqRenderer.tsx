@@ -5,6 +5,7 @@ import {
   getElementStyle,
   SafeHtml,
   WidgetRendererProps,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
@@ -61,7 +62,9 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
   return (
     <section style={style} className="w-full h-auto bg-white">
       <div className="mx-auto w-full max-w-[1920px]">
-        <div className="self-stretch px-10 py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all">
+        <div
+          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+        >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center text-center w-full">
             {!w.data.subTitleStyle?.isHidden && (
@@ -109,7 +112,7 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
               return (
                 <div
                   key={item.id}
-                  className="self-stretch px-5 md:px-10 xl:px-10 py-4 bg-시안-mode-gray0 border-t border-시안-mode-gray95 flex flex-col justify-start items-start gap-3 w-full hover:bg-시안-mode-gray5 transition-all group"
+                  className={`self-stretch ${getPaddingClass(viewport, "xl:px-10")} py-4 bg-시안-mode-gray0 border-t border-시안-mode-gray95 flex flex-col justify-start items-start gap-3 w-full hover:bg-시안-mode-gray5 transition-all group`}
                 >
                   <div className="self-stretch inline-flex justify-start items-start gap-6 w-full">
                     <div className="flex-1 inline-flex flex-col justify-center items-start gap-4">

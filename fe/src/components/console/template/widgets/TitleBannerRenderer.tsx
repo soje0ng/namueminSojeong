@@ -945,7 +945,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         onDoubleClick={() => onElementSelect?.("style")}
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 md:px-10 xl:px-14 pt-28 pb-14 inline-flex flex-col justify-start items-center gap-10 w-full">
+          <div
+            className={`self-stretch ${getPaddingClass(viewport, "xl:px-14")} pt-28 pb-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+          >
             {/* 상단: 따옴표 + 텍스트 */}
             <div className="inline-flex justify-start items-start gap-14">
               {/* 좌측 따옴표 이미지 */}

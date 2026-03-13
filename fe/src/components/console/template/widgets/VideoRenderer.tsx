@@ -8,6 +8,7 @@ import {
   WidgetRendererProps,
   UniversalMedia,
   formatUnit,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
@@ -89,7 +90,9 @@ export const VideoRenderer: React.FC<WidgetRendererProps> = ({
 
   return (
     <section style={style} className="w-full h-auto">
-      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10">
+      <div
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "")}`}
+      >
         <div
           className={`flex gap-[0px] md:gap-[0px] ${isSideBySide && isDesktop ? "flex-row items-start" : "flex-col"} ${!isSideBySide ? "items-center text-center" : ""}`}
         >

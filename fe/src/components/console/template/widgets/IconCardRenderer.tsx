@@ -287,7 +287,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               />
             </div>
             <div
-              className={`self-stretch px-5 md:px-10 grid ${getGridColsClass(
+              className={`self-stretch ${getPaddingClass(viewport, "")} grid ${getGridColsClass(
                 w.data.itemsPerRow,
                 viewport,
               )} ${isLayout1BannerHidden ? "" : "-mt-20"} relative z-10`}

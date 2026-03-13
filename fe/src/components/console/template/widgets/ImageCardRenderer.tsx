@@ -649,7 +649,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       </div>
                     </div>
                     <div
-                      className="self-stretch px-5 md:px-10 py-6 flex flex-col justify-start items-start gap-3 bg-white flex-grow"
+                      className={`self-stretch ${getPaddingClass(viewport, "")} py-6 flex flex-col justify-start items-start gap-3 bg-white flex-grow`}
                       style={getItemCardBackgroundStyle(item.itemStyle)}
                     >
                       <div className="flex flex-col justify-start items-start">

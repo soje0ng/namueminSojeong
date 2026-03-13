@@ -7,6 +7,7 @@ import {
   WidgetRendererProps,
   formatUnit,
   UniversalMedia,
+  getPaddingClass,
 } from "./WidgetUtils";
 import { Check, ChevronRight, ChevronDown } from "lucide-react";
 import { WidgetHeader } from "./WidgetHeader";
@@ -108,12 +109,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
   const isLayout3 = layout === "3" || layout === "layout3";
   const isComparisonCard =
     typeStr === "comparisonCard" && (layout === "1" || layout === "layout1");
-  const containerPaddingClass =
-    viewport === "tablet"
-      ? "px-10"
-      : viewport === "desktop"
-        ? "px-5 xl:px-72"
-        : "px-5";
+  const containerPaddingClass = getPaddingClass(viewport);
 
   const pcCols = w.data.itemsPerRow || 3;
   const gridColsClass =

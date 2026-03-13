@@ -255,7 +255,9 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
       style={style}
       className={`w-full relative overflow-hidden group hover:ring-2 hover:ring-blue-500 transition-all ${!data.imageUrl && !data.videoUrl ? "bg-white" : ""}`}
     >
-      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 xl:px-32 py-12 md:py-24 relative z-10">
+      <div
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "xl:px-32")} py-12 md:py-24 relative z-10`}
+      >
         <div className="flex flex-col max-w-4xl mx-auto items-center text-center opacity-50 p-10 bg-시안-mode-gray10 rounded-xl">
           <p className="text-시안-mode-gray50 font-bold mb-2">
             TabButton 위젯 레이아웃 영역입니다.

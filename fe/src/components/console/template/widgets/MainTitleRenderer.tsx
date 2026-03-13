@@ -5,6 +5,7 @@ import {
   getElementStyle,
   SafeHtml,
   WidgetRendererProps,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
@@ -37,7 +38,9 @@ export const MainTitleRenderer: React.FC<WidgetRendererProps> = ({
   const style = useWidgetStyle(w.style);
   return (
     <section style={style} className="w-full h-auto">
-      <div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 text-center">
+      <div
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "")} text-center`}
+      >
         <SafeHtml
           html={w.data.subTitle}
           className="mb-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all inline-block text-[#666666] font-medium"

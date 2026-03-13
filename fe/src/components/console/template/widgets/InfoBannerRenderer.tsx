@@ -571,7 +571,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               </div>
 
               {/* Offset Card Overlapping the Image Slightly */}
-              <div className="w-full px-5 xl:px-10 flex flex-col justify-start items-end gap-2.5 -mt-20 z-10 relative">
+              <div
+                className={`w-full ${getPaddingClass(viewport, "xl:px-10")} flex flex-col justify-start items-end gap-2.5 -mt-20 z-10 relative`}
+              >
                 <div className="w-full max-w-[680px] p-6 bg-white rounded-2xl shadow-[2px_2px_16px_0px_rgba(0,0,0,0.08)] flex flex-col justify-start items-start gap-4">
                   <div className="self-stretch inline-flex justify-between items-start w-full">
                     <div className="inline-flex flex-col justify-start items-start">

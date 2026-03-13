@@ -6,6 +6,7 @@ import {
   WidgetRendererProps,
   formatUnit,
   UniversalMedia,
+  getPaddingClass,
 } from "./WidgetUtils";
 
 export const IMAGE_AREA_DEFAULTS = {
@@ -45,7 +46,9 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
         className="w-full relative overflow-hidden bg-white"
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
-          <div className="self-stretch px-5 md:px-10 xl:px-72 py-14 flex flex-col justify-start items-center gap-10">
+          <div
+            className={`self-stretch ${getPaddingClass(viewport)} py-14 flex flex-col justify-start items-center gap-10`}
+          >
             {/* 
                 이미지 영역 고정 비율 및 높이 제한 전면 해제 
                 이미지 본연의 비율대로 보여지도록 렌더링
