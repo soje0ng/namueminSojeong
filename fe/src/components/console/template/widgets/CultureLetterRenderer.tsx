@@ -150,9 +150,9 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
               url={logoImage}
               style={{
-                height: "auto",
-                maxHeight: viewport === "mobile" ? "40px" : "60px",
+                height: viewport === "mobile" ? "40px" : "60px",
                 width: "auto",
+                objectFit: "contain",
               }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
