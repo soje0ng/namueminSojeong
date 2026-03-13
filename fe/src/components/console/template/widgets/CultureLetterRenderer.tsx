@@ -2,66 +2,27 @@ import React from "react";
 import { GenericNewWidget } from "@/types/console/template";
 import {
   useWidgetStyle,
-  getElementStyle,
-  SafeHtml,
   WidgetRendererProps,
   getImageUrl,
   getPaddingClass,
   getBorderRadiusClass,
   UniversalMedia,
+  SafeHtml,
+  getElementStyle,
 } from "./WidgetUtils";
 
 export const CULTURE_LETTER_DEFAULTS = {
   layout: "1",
+  // Layout 1 - 컬처레터 헤더 좌측정렬
   layout1BgImageUrl: "/images/placeholder/culture_letter_layout1_bg.jpg",
   layout1BgImageUrlStyle: { objectFit: "cover" },
   layout1LogoImageUrl: "/images/placeholder/culture_letter_layout1_logo.png",
   layout1LogoImageUrlStyle: { objectFit: "contain" },
-  cultureLetter: "Culture Letter",
-  cultureLetterStyle: {
-    fontFamily: "Tenor Sans",
-    fontSize: "40px",
-    fontSizeMobile: "40px",
-    color: "#FFFFFF",
-    letterSpacing: "-0.8px",
-    lineHeight: "1",
-    fontWeight: "400",
-  },
-  issueNo: "No.15",
-  issueNoStyle: {
-    fontFamily: "'Tenor Sans', sans-serif",
-    fontSize: "24px",
-    color: "#FFFFFF",
-    letterSpacing: "-0.48px",
-    lineHeight: "1",
-    fontWeight: "400",
-  },
-  issueDate: "2026년 1월호 컬처레터",
-  issueDateStyle: {
-    fontFamily: "Pretendard, sans-serif",
-    fontSize: "24px",
-    color: "#FFFFFF",
-    letterSpacing: "-0.48px",
-    lineHeight: "1.5",
-    fontWeight: "500",
-  },
-  title: "텍스트 영역입니다.\n텍스트 타이틀 영역",
-  titleStyle: {
-    fontFamily: "Pretendard, sans-serif",
-    fontSize: "48px",
-    fontSizeMobile: "28px",
-    fontWeight: "700",
-    letterSpacing: "-0.96px",
-    color: "#FFFFFF",
-  },
-  desc: "배너 타이틀 서브 영역입니다. 필요 없을 땐 노출 숨김.",
-  descStyle: {
-    fontFamily: "Pretendard, sans-serif",
-    fontSize: "24px",
-    fontWeight: "400",
-    letterSpacing: "-0.48px",
-    color: "#FFFFFF",
-  },
+  layout1CultureLetter: "Culture Letter",
+  layout1IssueNo: "No.15",
+  layout1IssueDate: "2026년 1월호 컬처레터",
+  layout1Title: "텍스트 영역입니다.\n텍스트 타이틀 영역",
+  layout1Desc: "배너 타이틀 서브 영역입니다. 필요 없을 땐 노출 숨김.",
   backgroundImage: "",
   backgroundImageStyle: {},
 };
@@ -100,11 +61,11 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             "linear-gradient(164.85485871944843deg, rgb(40, 93, 225) 2.8894%, rgb(89, 161, 185) 48.555%, rgb(68, 160, 117) 100%)",
           ...style,
         }}
-        onDoubleClick={(e) => {
+        onDoubleClick={() => {
           onElementSelect?.("layout1BgImageUrl");
         }}
       >
-        {/* img 레이어 — 배경 통이미지 (pointer-events-none: 클릭 이벤트 콘텐츠에 전달) */}
+        {/* img 레이어 — 배경 통이미지 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute inset-0">
             <div
@@ -135,11 +96,22 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           </div>
         </div>
 
-        {/* tit — 로고 | Culture Letter | No. + 날짜 */}
-        <div className="border-[#b1b8be] border-b border-solid content-stretch flex items-center justify-between overflow-clip pb-[20px] relative shrink-0 w-full">
-          {/* 나무이민 로고 (flower symbol + text) */}
+        {/* tit — 로고 | Culture Letter(정중앙) | No. + 날짜 */}
+        <div
+          style={{
+            borderBottom: "1px solid #b1b8be",
+            paddingBottom: "20px",
+            display: "grid",
+            gridTemplateColumns: "1fr auto 1fr",
+            alignItems: "center",
+            position: "relative",
+            width: "100%",
+          }}
+        >
+          {/* 나무이민 로고 (좌측) */}
           <div
-            className="content-stretch flex items-center relative shrink-0 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+            className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+            style={{ display: "flex", alignItems: "center" }}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("layout1LogoImageUrl");
@@ -153,6 +125,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                 height: "40px",
                 width: "auto",
                 objectFit: "contain",
+                display: "block",
               }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
@@ -161,99 +134,112 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             />
           </div>
 
-          {/* Culture Letter */}
+          {/* Culture Letter (그리드 정중앙, 스타일 고정) */}
           <SafeHtml
-            html={data.cultureLetter || CULTURE_LETTER_DEFAULTS.cultureLetter}
-            className={`not-italic absolute left-1/2 -translate-x-1/2 shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
+            html={
+              data.layout1CultureLetter ||
+              CULTURE_LETTER_DEFAULTS.layout1CultureLetter
+            }
+            className={`not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
             style={{
-              ...getElementStyle(
-                data.cultureLetterStyle ||
-                  CULTURE_LETTER_DEFAULTS.cultureLetterStyle,
-                viewport,
-              ),
-              fontFamily:
-                (data.cultureLetterStyle?.fontFamily ||
-                  CULTURE_LETTER_DEFAULTS.cultureLetterStyle.fontFamily) ===
-                "Tenor Sans"
-                  ? "'Tenor Sans', sans-serif"
-                  : undefined,
+              justifySelf: "center",
+              fontFamily: "'Tenor Sans', sans-serif",
+              fontSize: "40px",
+              fontWeight: "400",
+              color: "#FFFFFF",
+              letterSpacing: "-0.8px",
+              lineHeight: "1",
             }}
             onDoubleClick={(e) => {
               e.stopPropagation();
-              onElementSelect?.("cultureLetter");
+              onElementSelect?.("layout1CultureLetter");
             }}
           />
 
+          {/* No. + 날짜 (우측, 세로 스택, 스타일 고정) */}
           <div className="content-stretch flex flex-col items-end justify-center relative shrink-0">
-            {!data.issueNoStyle?.isHidden && (
+            {!data.layout1IssueNoStyle?.isHidden && (
               <SafeHtml
-                html={data.issueNo || CULTURE_LETTER_DEFAULTS.issueNo}
+                html={
+                  data.layout1IssueNo ||
+                  CULTURE_LETTER_DEFAULTS.layout1IssueNo
+                }
                 className={`not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
                 style={{
-                  ...getElementStyle(
-                    data.issueNoStyle || CULTURE_LETTER_DEFAULTS.issueNoStyle,
-                    viewport,
-                  ),
+                  fontFamily: "'Tenor Sans', sans-serif",
+                  fontSize: "24px",
+                  fontWeight: "400",
+                  color: "#FFFFFF",
+                  letterSpacing: "-0.48px",
+                  lineHeight: "1",
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("issueNo");
+                  onElementSelect?.("layout1IssueNo");
                 }}
               />
             )}
-            {!data.issueDateStyle?.isHidden && (
+            {!data.layout1IssueDateStyle?.isHidden && (
               <SafeHtml
-                html={data.issueDate || CULTURE_LETTER_DEFAULTS.issueDate}
+                html={
+                  data.layout1IssueDate ||
+                  CULTURE_LETTER_DEFAULTS.layout1IssueDate
+                }
                 className={`text-right cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
-                  ...getElementStyle(
-                    data.issueDateStyle ||
-                      CULTURE_LETTER_DEFAULTS.issueDateStyle,
-                    viewport,
-                  ),
+                  fontFamily: "Pretendard, sans-serif",
+                  fontSize: "24px",
+                  fontWeight: "500",
+                  color: "#FFFFFF",
+                  letterSpacing: "-0.48px",
+                  lineHeight: "1.5",
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("issueDate");
+                  onElementSelect?.("layout1IssueDate");
                 }}
               />
             )}
           </div>
         </div>
 
+        {/* 본문 — 타이틀 + 설명 (좌측, 스타일 고정) */}
         <div className="content-stretch flex flex-col gap-[20px] items-start justify-start relative shrink-0 w-full">
-          {!data.titleStyle?.isHidden && (
+          {!data.layout1TitleStyle?.isHidden && (
             <SafeHtml
               html={toHtmlWithBreaks(
-                data.title || CULTURE_LETTER_DEFAULTS.title,
+                data.layout1Title || CULTURE_LETTER_DEFAULTS.layout1Title,
               )}
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={{
-                ...getElementStyle(
-                  data.titleStyle || CULTURE_LETTER_DEFAULTS.titleStyle,
-                  viewport,
-                ),
+                fontFamily: "Pretendard, sans-serif",
+                fontSize: viewport === "mobile" ? "28px" : "48px",
+                fontWeight: "700",
+                color: "#FFFFFF",
+                letterSpacing: "-0.96px",
               }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
-                onElementSelect?.("title");
+                onElementSelect?.("layout1Title");
               }}
             />
           )}
-
-          {!data.descStyle?.isHidden && (
+          {!data.layout1DescStyle?.isHidden && (
             <SafeHtml
-              html={toHtmlWithBreaks(data.desc || CULTURE_LETTER_DEFAULTS.desc)}
+              html={toHtmlWithBreaks(
+                data.layout1Desc || CULTURE_LETTER_DEFAULTS.layout1Desc,
+              )}
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={{
-                ...getElementStyle(
-                  data.descStyle || CULTURE_LETTER_DEFAULTS.descStyle,
-                  viewport,
-                ),
+                fontFamily: "Pretendard, sans-serif",
+                fontSize: "24px",
+                fontWeight: "400",
+                color: "#FFFFFF",
+                letterSpacing: "-0.48px",
               }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
-                onElementSelect?.("desc");
+                onElementSelect?.("layout1Desc");
               }}
             />
           )}

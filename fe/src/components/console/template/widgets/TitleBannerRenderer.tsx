@@ -12,6 +12,70 @@ import {
   getBorderRadiusStyle,
 } from "./WidgetUtils";
 
+export const TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS = [
+  {
+    id: "title-banner-feature-1",
+    image: "/images/placeholder/banner_feature.png",
+    title: "프로그램 특징",
+    titleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
+    desc: "프로그램 특징 내용 입력",
+    descStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+  },
+  {
+    id: "title-banner-feature-2",
+    image: "/images/placeholder/banner_feature.png",
+    title: "프로그램 특징",
+    titleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
+    desc: "프로그램 특징 내용 입력",
+    descStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+  },
+  {
+    id: "title-banner-feature-3",
+    image: "/images/placeholder/banner_feature.png",
+    title: "프로그램 특징",
+    titleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
+    desc: "프로그램 특징 내용 입력",
+    descStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+  },
+] as const;
+
+export const getTitleBannerLayout1Items = (data: any) => {
+  if (Array.isArray(data?.items)) {
+    return data.items.map((item: any, idx: number) => ({
+      ...TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS[
+        idx % TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS.length
+      ],
+      ...item,
+      id:
+        item?.id ||
+        `title-banner-feature-${idx + 1}`,
+    }));
+  }
+
+  return TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS.map((defaultItem, idx) => {
+    const featureIndex = idx + 1;
+    return {
+      ...defaultItem,
+      image:
+        data?.[`feature${featureIndex}Image`] ||
+        defaultItem.image,
+      imageStyle: data?.[`feature${featureIndex}ImageStyle`],
+      title:
+        data?.[`feature${featureIndex}Title`] ||
+        defaultItem.title,
+      titleStyle:
+        data?.[`feature${featureIndex}TitleStyle`] ||
+        defaultItem.titleStyle,
+      desc:
+        data?.[`feature${featureIndex}Desc`] ||
+        defaultItem.desc,
+      descStyle:
+        data?.[`feature${featureIndex}DescStyle`] ||
+        defaultItem.descStyle,
+    };
+  });
+};
+
 export const TITLE_BANNER_DEFAULTS = {
   subTitle: "버지니아 해안 리조트 건설 프로젝트",
   subTitleStyle: { color: "#285DE1", fontSize: "20px", fontWeight: "700" }, // blue-600
@@ -45,6 +109,7 @@ export const TITLE_BANNER_DEFAULTS = {
   feature3TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
   feature3Desc: "프로그램 특징 내용 입력",
   feature3DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+  items: TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS,
   backgroundImage: "/images/placeholder/titlebanner_banckground.png",
   layout1Image: "/images/placeholder/title_banner_img.png",
   layout2HeroImage: "/images/placeholder/title_banner_img2.png",
@@ -79,7 +144,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   const w = widget as GenericNewWidget;
   const style = useWidgetStyle(w.style);
   const data = w.data;
-  const layout = String(data.layout || "1");
+  const layout = String(data.layout || "1")
+    .trim()
+    .replace(/^layout/, "");
+  const hasLayout1Items = Array.isArray(data.items);
+  const layout1Features = getTitleBannerLayout1Items(data);
   const isMobile = viewport === "mobile";
   const isTablet = viewport === "tablet";
   const layout3Image = data.layout3Image || TITLE_BANNER_DEFAULTS.layout3Image;
@@ -94,6 +163,13 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         ...(data.layout3MobileImageStyle || {}),
       }
     : data.layout3ImageStyle;
+  const shouldWrapLayout1Features = layout1Features.length > 3;
+  const getLayout1FeatureCardStyle = (): React.CSSProperties =>
+    shouldWrapLayout1Features
+      ? isMobile
+        ? { flex: "0 0 100%", maxWidth: "100%" }
+        : { flex: "0 0 33.333333%", maxWidth: "33.333333%" }
+      : {};
   const getTitleBannerTextStyle = (
     textStyle: any,
     overrides: React.CSSProperties = {},
@@ -188,31 +264,19 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
                     }
                   />
-                  <div className="w-full flex justify-center items-start">
-                    {[1, 2, 3].map((idx) => {
-                      const fImg =
-                        (data as any)[`feature${idx}Image`] ||
-                        "/images/placeholder/banner_feature.png";
-                      const fTitle =
-                        (data as any)[`feature${idx}Title`] || "프로그램 특징";
-                      const fDesc =
-                        (data as any)[`feature${idx}Desc`] ||
-                        "프로그램 특징 내용 입력";
-                      const fImageStyle = (data as any)[
-                        `feature${idx}ImageStyle`
-                      ];
-                      const fTitleStyle = (data as any)[
-                        `feature${idx}TitleStyle`
-                      ];
-                      const fDescStyle = (data as any)[
-                        `feature${idx}DescStyle`
-                      ];
-                      const isLast = idx === 3;
+                  <div
+                    className="w-full flex flex-wrap justify-center items-start"
+                    style={shouldWrapLayout1Features ? { rowGap: "24px" } : undefined}
+                  >
+                    {layout1Features.map((feature: any, idx: number) => {
+                      const isLast = idx === layout1Features.length - 1;
+                      const useDivider = layout1Features.length <= 3 && !isLast;
 
                       return (
                         <div
-                          key={idx}
-                          className={`flex-1 max-w-[440px] ${!isLast ? "border-r border-gray-200" : ""} flex flex-col justify-start items-center gap-4`}
+                          key={feature.id || idx}
+                          className={`w-full sm:flex-1 max-w-[440px] ${useDivider ? "border-r border-gray-200" : ""} flex flex-col justify-start items-center gap-4`}
+                          style={getLayout1FeatureCardStyle()}
                         >
                           <UniversalMedia
                             className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
@@ -220,12 +284,20 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                               width: "100px",
                               height: "100px",
                               objectFit: "contain",
-                              ...getElementStyle(fImageStyle, viewport),
+                              ...getElementStyle(feature.imageStyle, viewport),
                             }}
-                            url={getImageUrl(fImageStyle, viewport, fImg)}
+                            url={getImageUrl(
+                              feature.imageStyle,
+                              viewport,
+                              feature.image,
+                            )}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.(`feature${idx}Image`);
+                              if (hasLayout1Items) {
+                                onElementSelect?.("itemImage", feature.id);
+                                return;
+                              }
+                              onElementSelect?.(`feature${idx + 1}Image`);
                             }}
                           />
                           <div className="flex flex-col justify-start items-center gap-2">
@@ -233,7 +305,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                               className="text-center font-bold font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                               style={{
                                 ...getElementStyle(
-                                  fTitleStyle,
+                                  feature.titleStyle,
                                   viewport as any,
                                 ),
                                 color: "#295e92",
@@ -242,23 +314,34 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                               }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
-                                onElementSelect?.(`feature${idx}Title`);
+                                if (hasLayout1Items) {
+                                  onElementSelect?.("itemTitle", feature.id);
+                                  return;
+                                }
+                                onElementSelect?.(`feature${idx + 1}Title`);
                               }}
-                              html={fTitle || "프로그램 특징"}
+                              html={feature.title || "프로그램 특징"}
                             />
                             <SafeHtml
                               className="text-center font-normal font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                               style={{
-                                ...getElementStyle(fDescStyle, viewport as any),
+                                ...getElementStyle(
+                                  feature.descStyle,
+                                  viewport as any,
+                                ),
                                 color: "#6d7882",
                                 fontSize: "18px",
                                 letterSpacing: "-0.36px",
                               }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
-                                onElementSelect?.(`feature${idx}Desc`);
+                                if (hasLayout1Items) {
+                                  onElementSelect?.("itemDesc", feature.id);
+                                  return;
+                                }
+                                onElementSelect?.(`feature${idx + 1}Desc`);
                               }}
-                              html={fDesc || "프로그램 특징 내용 입력"}
+                              html={feature.desc || "프로그램 특징 내용 입력"}
                             />
                           </div>
                         </div>
@@ -372,29 +455,19 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }
                 />
 
-                <div className="self-stretch inline-flex justify-center items-start">
-                  {[1, 2, 3].map((idx) => {
-                    const fImg =
-                      (data as any)[`feature${idx}Image`] ||
-                      "/images/placeholder/banner_feature.png";
-                    const fTitle =
-                      (data as any)[`feature${idx}Title`] || "프로그램 특징";
-                    const fDesc =
-                      (data as any)[`feature${idx}Desc`] ||
-                      "프로그램 특징 내용 입력";
-                    const fImageStyle = (data as any)[
-                      `feature${idx}ImageStyle`
-                    ];
-                    const fTitleStyle = (data as any)[
-                      `feature${idx}TitleStyle`
-                    ];
-                    const fDescStyle = (data as any)[`feature${idx}DescStyle`];
-                    const isLast = idx === 3;
+                <div
+                  className="self-stretch flex flex-wrap justify-center items-start"
+                  style={shouldWrapLayout1Features ? { rowGap: "24px" } : undefined}
+                >
+                  {layout1Features.map((feature: any, idx: number) => {
+                    const isLast = idx === layout1Features.length - 1;
+                    const useDivider = layout1Features.length <= 3 && !isLast;
 
                     return (
                       <div
-                        key={idx}
-                        className={`flex-1 max-w-96 ${!isLast ? "border-r border-gray-200" : ""} inline-flex flex-col justify-start items-center gap-4`}
+                        key={feature.id || idx}
+                        className={`w-full md:flex-1 max-w-96 ${useDivider ? "border-r border-gray-200" : ""} inline-flex flex-col justify-start items-center gap-4`}
+                        style={getLayout1FeatureCardStyle()}
                       >
                         <UniversalMedia
                           className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
@@ -402,36 +475,52 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                             width: "96px",
                             height: "96px",
                             objectFit: "contain",
-                            ...getElementStyle(fImageStyle, viewport),
+                            ...getElementStyle(feature.imageStyle, viewport),
                           }}
-                          url={getImageUrl(fImageStyle, viewport, fImg)}
+                          url={getImageUrl(
+                            feature.imageStyle,
+                            viewport,
+                            feature.image,
+                          )}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
-                            onElementSelect?.(`feature${idx}Image`);
+                            if (hasLayout1Items) {
+                              onElementSelect?.("itemImage", feature.id);
+                              return;
+                            }
+                            onElementSelect?.(`feature${idx + 1}Image`);
                           }}
                         />
                         <div className="flex flex-col justify-start items-center gap-2">
                           <SafeHtml
                             className="text-center justify-start text-[#0369a1] text-2xl font-bold font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                             style={{
-                              ...getElementStyle(fTitleStyle, viewport),
+                              ...getElementStyle(feature.titleStyle, viewport),
                             }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.(`feature${idx}Title`);
+                              if (hasLayout1Items) {
+                                onElementSelect?.("itemTitle", feature.id);
+                                return;
+                              }
+                              onElementSelect?.(`feature${idx + 1}Title`);
                             }}
-                            html={fTitle || "프로그램 특징"}
+                            html={feature.title || "프로그램 특징"}
                           />
                           <SafeHtml
                             className="text-center justify-start text-gray-500 text-lg font-normal font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                             style={{
-                              ...getElementStyle(fDescStyle, viewport),
+                              ...getElementStyle(feature.descStyle, viewport),
                             }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
-                              onElementSelect?.(`feature${idx}Desc`);
+                              if (hasLayout1Items) {
+                                onElementSelect?.("itemDesc", feature.id);
+                                return;
+                              }
+                              onElementSelect?.(`feature${idx + 1}Desc`);
                             }}
-                            html={fDesc || "프로그램 특징 내용 입력"}
+                            html={feature.desc || "프로그램 특징 내용 입력"}
                           />
                         </div>
                       </div>

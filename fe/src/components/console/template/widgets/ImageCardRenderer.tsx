@@ -148,6 +148,12 @@ const IMAGE_CARD_STYLE_DEFAULTS = {
     fontWeight: "700",
     color: "#131416",
   },
+  itemTitleOverlay: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
   itemTitleLarge: {
     fontSize: "30px",
     fontSizeMobile: "24px",
@@ -200,11 +206,13 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   };
   const getImageCardTextStyle = (role: string, style?: any) => {
     const fallback =
-      role === "itemTitle" && ["3", "4", "5", "6"].includes(layout)
-        ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleLarge
-        : role === "itemTitle"
-          ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleSmall
-          : (IMAGE_CARD_STYLE_DEFAULTS as Record<string, any>)[role] || {};
+      role === "itemTitle" && layout === "2"
+        ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleOverlay
+        : role === "itemTitle" && ["3", "4", "5", "6"].includes(layout)
+          ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleLarge
+          : role === "itemTitle"
+            ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleSmall
+            : (IMAGE_CARD_STYLE_DEFAULTS as Record<string, any>)[role] || {};
 
     return getElementStyle(
       {
@@ -1350,6 +1358,17 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                   className="flex-1 h-80 px-6 py-10 border-t-2 border-시안-mode-gray95 flex flex-col justify-between items-start overflow-hidden xl:-ml-[180px] relative z-10 shadow-lg"
                   style={getItemCardBackgroundStyle(item.itemStyle)}
                 >
+                  {/* Background Pattern Image */}
+                  <div
+                    className="absolute top-0 right-0 w-full h-full pointer-events-none"
+                    style={{
+                      backgroundImage: 'url("/images/placeholder/box.png")',
+                      backgroundSize: "cover",
+                      backgroundPosition: "top right",
+                      backgroundRepeat: "no-repeat",
+                      zIndex: -1,
+                    }}
+                  />
                   <div className="self-stretch inline-flex justify-start items-start gap-2">
                     <div className="flex-1 inline-flex flex-col justify-start items-start gap-2">
                       <div className="flex flex-col justify-start items-start">
@@ -1449,7 +1468,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           <div className="flex flex-col justify-start items-center">
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
-              className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
+              className="text-center justify-start text-시안-mode-Primary50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
               style={{
                 ...getImageCardTextStyle("rootSubTitle", w.data.subTitleStyle),
               }}
@@ -1482,86 +1501,42 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
           </div>
 
-          {/* Grid Area */}
-          <div className="self-stretch flex flex-col justify-start items-start gap-6 w-full">
-            <div
-              className={`grid ${
-                itemsPerRow === 1
-                  ? "grid-cols-1"
-                  : itemsPerRow === 3
-                    ? "grid-cols-1 xl:grid-cols-3"
-                    : itemsPerRow === 4
-                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-                      : "grid-cols-1 xl:grid-cols-2"
-              } w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-x-10 gap-y-6"}`}
-              style={{
-                gap: w.style?.gap
-                  ? formatUnit(w.style.gap)
-                  : w.data.rowGap
-                    ? formatUnit(w.data.rowGap)
-                    : undefined,
-              }}
-            >
-              {(w.data.items || []).map((item: any, idx: number) => {
-                const featureRows = getItemFeatureRows(item);
-                return (
-                  <div
-                    key={item.id || idx}
-                    className={`flex-1 inline-flex flex-col justify-start items-start bg-white overflow-hidden shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded-2xl")} transition-all h-full`}
-                    style={getItemCardBackgroundStyle(item.itemStyle)}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      selectCardItem(item.id ?? `__idx_${idx}`);
-                    }}
-                    onDoubleClick={(e) =>
-                      handleItemBackgroundDoubleClick(
-                        e,
-                        item.id ?? `__idx_${idx}`,
-                      )
-                    }
-                  >
-                    <div
-                      className="self-stretch relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
-                      style={getItemImageFrameStyle(item.imageStyle)}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("image", item.id);
-                      }}
-                    >
-                      <UniversalMedia
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("image", item.id || idx.toString());
-                        }}
-                        className="w-full object-cover"
-                        url={item.image || item.imageUrl}
-                        alt="card_image"
-                        style={getItemImageStyle(item.imageStyle)}
-                      />
+          {/* List Area */}
+          <div className="w-full border-t border-시안-mode-gray95 flex flex-col justify-start items-start">
+            {(w.data.items || []).map((item: any, idx: number) => {
+              const featureRows = getItemFeatureRows(item);
+
+              return (
+                <div
+                  key={item.id || idx}
+                  className={`self-stretch ${getPaddingClass(viewport, "")} py-10 border-b border-시안-mode-gray1 inline-flex flex-col md:flex-row justify-start items-start gap-10 xl:gap-14 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all bg-white`}
+                  style={getItemCardBackgroundStyle(item.itemStyle)}
+                  onClick={(e) => {
+                    const cardItemId = item.id ?? `__idx_${idx}`;
+                    e.stopPropagation();
+                    selectCardItem(cardItemId, "itemFeatures");
+                  }}
+                  onDoubleClick={(e) =>
+                    handleItemBackgroundDoubleClick(
+                      e,
+                      item.id ?? `__idx_${idx}`,
+                    )
+                  }
+                >
+                  <div className="flex-1 flex justify-start items-start gap-6 xl:gap-10">
+                    {/* Number Icon */}
+                    <div className="w-14 h-14 bg-시안-mode-Primary5 rounded-full outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
+                      <div className="text-center justify-start text-시안-mode-Primary50 font-bold font-['Pretendard'] leading-8">
+                        {(idx + 1).toString().padStart(2, "0")}
+                      </div>
                     </div>
-                    <div
-                      className={`self-stretch ${getPaddingClass(viewport, "")} py-8 flex flex-col justify-start items-start gap-5`}
-                    >
-                      <div className="flex flex-col justify-start items-start w-full">
-                        {!item.subTitleStyle?.isHidden && (
+
+                    <div className="flex-1 inline-flex flex-col justify-start items-start">
+                      {/* Item Title */}
+                      {!item.titleStyle?.isHidden && (
+                        <div className="self-stretch pb-5 border-b border-시안-mode-gray1 inline-flex justify-start items-start gap-2.5">
                           <SafeHtml
-                            html={item.subTitle || "( 서브타이틀 )"}
-                            className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                            style={{
-                              ...getImageCardTextStyle(
-                                "itemSubTitle",
-                                item.subTitleStyle,
-                              ),
-                            }}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.("itemSubTitle", item.id);
-                            }}
-                          />
-                        )}
-                        {!item.titleStyle?.isHidden && (
-                          <SafeHtml
-                            html={item.title || "프로그램 특징"}
+                            html={item.title || "프로그램의 특징을 적는 곳"}
                             className="justify-start text-zinc-950 font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
                             style={{
                               ...getImageCardTextStyle(
@@ -1577,18 +1552,24 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                               );
                             }}
                           />
-                        )}
-                        {!item.descStyle?.isHidden && (
+                        </div>
+                      )}
+
+                      {/* Item Description & Features */}
+                      {!item.descStyle?.isHidden && (
+                        <div className="self-stretch pt-5 flex flex-col justify-start items-start">
                           <SafeHtml
                             html={
-                              item.desc ||
+                              (item.desc || "").split(/<br\s*\/?>|\n/gi)[0] ||
                               "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
                             }
-                            className={`self-stretch justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 line-clamp-2 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-2`}
-                            style={getImageCardTextStyle(
-                              "itemDesc",
-                              item.descStyle,
-                            )}
+                            className={`self-stretch justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
+                            style={{
+                              ...getImageCardTextStyle(
+                                "itemDesc",
+                                item.descStyle,
+                              ),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.(
@@ -1597,39 +1578,69 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                               );
                             }}
                           />
-                        )}
-                      </div>
 
-                      {/* Feature Badges (Horizontal) */}
-                      <div className="flex flex-wrap justify-start items-center gap-2">
-                        {featureRows.slice(0, 3).map((f: any, fIdx: number) => (
-                          <SafeHtml
-                            key={fIdx}
-                            html={f.value}
-                            className={`px-3 py-2 text-[14px] font-semibold font-['Pretendard'] leading-4 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded-lg flex justify-center items-center transition-all text-center whitespace-nowrap`}
-                            style={{
-                              ...getImageCardTextStyle("badge", {
-                                backgroundColor:
-                                  fIdx === 0 ? "#285DE1" : "#F1F5F9",
-                                color: fIdx === 0 ? "#FFFFFF" : "#131416",
-                                ...(f.valueStyle || {}),
-                              }),
-                            }}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.(
-                                `itemFeatureValue:${fIdx}`,
-                                item.id,
-                              );
-                            }}
-                          />
-                        ))}
-                      </div>
+                          <div className="self-stretch pt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4">
+                            {featureRows
+                              .slice(0, 6)
+                              .map((feature: any, fIdx: number) =>
+                                (feature.valueStyle?.isHidden ??
+                                item.descStyle?.isHidden) ? null : (
+                                  <div
+                                    key={fIdx}
+                                    className="flex justify-start items-center gap-2"
+                                  >
+                                    <div className="w-2 h-2 bg-시안-mode-Primary50 rounded-full shrink-0"></div>
+                                    <div className="justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 flex-1">
+                                      <SafeHtml
+                                        html={feature.value}
+                                        className={`hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
+                                        style={getImageCardTextStyle(
+                                          "featureValue",
+                                          {
+                                            ...(item.descStyle || {}),
+                                            ...(feature.valueStyle || {}),
+                                          },
+                                        )}
+                                        onDoubleClick={(e) => {
+                                          e.stopPropagation();
+                                          onElementSelect?.(
+                                            `itemFeatureValue:${fIdx}`,
+                                            item.id,
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                ),
+                              )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+
+                  <div
+                    className="w-48 h-48 relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
+                    style={getItemImageFrameStyle(item.imageStyle)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("image", item.id);
+                    }}
+                  >
+                    <UniversalMedia
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("image", item.id || idx.toString());
+                      }}
+                      className="w-full h-full object-cover"
+                      url={item.image || item.imageUrl}
+                      alt="card_image"
+                      style={getItemImageStyle(item.imageStyle)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

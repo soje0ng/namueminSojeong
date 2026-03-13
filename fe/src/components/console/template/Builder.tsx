@@ -894,6 +894,17 @@ const Builder: React.FC<BuilderProps> = ({
           desc: "프로그램 특징 내용 입력",
           descStyle: { fontSize: "16px", fontWeight: "400", color: "#FFFFFF" },
         };
+      } else if (widget.type === "titleBanner") {
+        const defaultFeature =
+          ((TITLE_BANNER_DEFAULTS as any).items || [])[0] || {};
+        newItem = {
+          ...JSON.parse(JSON.stringify(defaultFeature)),
+          id,
+          image:
+            defaultFeature.image || "/images/placeholder/banner_feature.png",
+          title: "프로그램 특징",
+          desc: "프로그램 특징 내용 입력",
+        };
       } else if (widget.type === "tabButton") {
         newItem = {
           id,

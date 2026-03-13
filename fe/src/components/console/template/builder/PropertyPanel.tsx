@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -43,6 +43,7 @@ import {
 import TextStructure9Manager from "../widgets/TextStructure9Manager";
 import TextStructure10Manager from "../widgets/TextStructure10Manager";
 import { INFO_BANNER_DEFAULTS } from "../widgets/InfoBannerRenderer";
+import { getTitleBannerLayout1Items } from "../widgets/TitleBannerRenderer";
 
 export interface PropertyPanelProps {
   viewport: "desktop" | "tablet" | "mobile";
@@ -177,20 +178,78 @@ const CULTURE_LETTER_LAYOUT_FIELDS = [
   // Layout 1 - 컬처레터 헤더 좌측정렬
   "layout1BgImageUrl",
   "layout1BgImageUrlStyle",
-  "layout1LogoFlowerImageUrl",
-  "layout1LogoFlowerImageUrlStyle",
-  "layout1LogoTextImageUrl",
-  "layout1LogoTextImageUrlStyle",
-  "cultureLetter",
-  "cultureLetterStyle",
-  "issueNo",
-  "issueNoStyle",
-  "issueDate",
-  "issueDateStyle",
-  "title",
-  "titleStyle",
-  "desc",
-  "descStyle",
+  "layout1LogoImageUrl",
+  "layout1LogoImageUrlStyle",
+  "layout1CultureLetter",
+  "layout1CultureLetterStyle",
+  "layout1IssueNo",
+  "layout1IssueNoStyle",
+  "layout1IssueDate",
+  "layout1IssueDateStyle",
+  "layout1Title",
+  "layout1TitleStyle",
+  "layout1Desc",
+  "layout1DescStyle",
+  // Layout 2 - 컬처레터 헤더 중앙정렬
+  "layout2BgImageUrl",
+  "layout2BgImageUrlStyle",
+  "layout2LogoImageUrl",
+  "layout2LogoImageUrlStyle",
+  "layout2CultureLetter",
+  "layout2CultureLetterStyle",
+  "layout2IssueNo",
+  "layout2IssueNoStyle",
+  "layout2IssueDate",
+  "layout2IssueDateStyle",
+  "layout2Title",
+  "layout2TitleStyle",
+  "layout2Desc",
+  "layout2DescStyle",
+  // Layout 3 - 컬처레터 헤더 우측배너
+  "layout3BgImageUrl",
+  "layout3BgImageUrlStyle",
+  "layout3LogoImageUrl",
+  "layout3LogoImageUrlStyle",
+  "layout3CultureLetter",
+  "layout3CultureLetterStyle",
+  "layout3IssueNo",
+  "layout3IssueNoStyle",
+  "layout3IssueDate",
+  "layout3IssueDateStyle",
+  "layout3Title",
+  "layout3TitleStyle",
+  "layout3Desc",
+  "layout3DescStyle",
+  // Layout 4 - 컬처레터 유튜브 타이틀
+  "layout4BgImageUrl",
+  "layout4BgImageUrlStyle",
+  "layout4LogoImageUrl",
+  "layout4LogoImageUrlStyle",
+  "layout4CultureLetter",
+  "layout4CultureLetterStyle",
+  "layout4IssueNo",
+  "layout4IssueNoStyle",
+  "layout4IssueDate",
+  "layout4IssueDateStyle",
+  "layout4Title",
+  "layout4TitleStyle",
+  "layout4Desc",
+  "layout4DescStyle",
+  // Layout 5 - 컬처레터 바로가기 버튼
+  "layout5BgImageUrl",
+  "layout5BgImageUrlStyle",
+  "layout5LogoImageUrl",
+  "layout5LogoImageUrlStyle",
+  "layout5CultureLetter",
+  "layout5CultureLetterStyle",
+  "layout5IssueNo",
+  "layout5IssueNoStyle",
+  "layout5IssueDate",
+  "layout5IssueDateStyle",
+  "layout5Title",
+  "layout5TitleStyle",
+  "layout5Desc",
+  "layout5DescStyle",
   "items",
 ] as const;
 
@@ -545,6 +604,20 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     setItemDragOverIdx(null);
   };
 
+  useEffect(() => {
+    if (!widget || widget.type !== "titleBanner") return;
+
+    const layout = String((widget.data as any).layout || "1")
+      .trim()
+      .replace(/^layout/, "");
+    if (layout !== "1") return;
+    if (Array.isArray((widget.data as any).items)) return;
+
+    updateWidgetData(widget.id, {
+      items: getTitleBannerLayout1Items(widget.data),
+    });
+  }, [updateWidgetData, widget]);
+
   if (!widget) return null;
 
   // Detect List Type
@@ -606,6 +679,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     const raw = String(layout || "1").trim();
     return raw.startsWith("layout") ? raw.replace(/^layout/, "") : raw;
   };
+  const normalizeTitleBannerLayout = (layout: any): string => {
+    const raw = String(layout || "1").trim();
+    return raw.startsWith("layout") ? raw.replace(/^layout/, "") : raw;
+  };
 
   const isImageCardLayout4 =
     widget.type === "imageCard" &&
@@ -648,6 +725,17 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
   const activeImageCardItemsPerRow = isImageCardLayout4
     ? resolvedImageCardItemsPerRow
     : null;
+  const titleBannerLayout =
+    widget.type === "titleBanner"
+      ? normalizeTitleBannerLayout((widget.data as any).layout)
+      : "";
+  const isTitleBannerLayout1 =
+    widget.type === "titleBanner" && titleBannerLayout === "1";
+  const isTitleBannerLayout3 =
+    widget.type === "titleBanner" && titleBannerLayout === "3";
+  if (widget.type === "titleBanner") {
+    listArrayName = isTitleBannerLayout1 ? "items" : null;
+  }
 
   const getImageCardFeatureRows = (
     item: any,
@@ -3477,10 +3565,15 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     </div>
                                   )}
 
-                                {widget.type === "imageCard" && (
+                                {["imageCard", "titleBanner"].includes(
+                                  widget.type,
+                                ) &&
+                                  item.desc !== undefined && (
                                   <div className="flex flex-col gap-1 px-1 mt-1">
                                     <span className="text-[9px] font-black text-gray-400 pl-1 uppercase tracking-tighter">
-                                      Description
+                                      {widget.type === "titleBanner"
+                                        ? "설명"
+                                        : "Description"}
                                     </span>
                                     <textarea
                                       className="w-full text-[10px] text-gray-700 bg-gray-50 border border-gray-200 outline-none focus:ring-1 focus:ring-gray-300 px-2 py-1.5 rounded-lg min-h-[60px] resize-none"
@@ -3582,8 +3675,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
                   {/* Removed duplicate Image Area Controls */}
 
-                  {widget.type === "titleBanner" &&
-                    String((widget.data as any).layout || "1") === "3" && (
+                  {isTitleBannerLayout3 && (
                       <div className="space-y-6 pt-2">
                         <div className="space-y-3">
                           <label className="text-xs font-bold text-gray-500 block uppercase tracking-wide flex items-center gap-1">
@@ -3711,7 +3803,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           sections={textStructureSections.sections5}
                           updateWidgetData={updateWidgetData}
                           autoExpandSectionId={
-                            selectedElementKey ? null : layout5AutoExpandSectionId
+                            selectedElementKey
+                              ? null
+                              : layout5AutoExpandSectionId
                           }
                         />
                       )}
@@ -3723,7 +3817,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           sections={textStructureSections.sections6}
                           updateWidgetData={updateWidgetData}
                           autoExpandSectionId={
-                            selectedElementKey ? null : layout6AutoExpandSectionId
+                            selectedElementKey
+                              ? null
+                              : layout6AutoExpandSectionId
                           }
                         />
                       )}
@@ -3735,7 +3831,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           sections={textStructureSections.sections7}
                           updateWidgetData={updateWidgetData}
                           autoExpandSectionId={
-                            selectedElementKey ? null : layout7AutoExpandSectionId
+                            selectedElementKey
+                              ? null
+                              : layout7AutoExpandSectionId
                           }
                         />
                       )}
@@ -3747,7 +3845,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           sections={textStructureSections.sections8}
                           updateWidgetData={updateWidgetData}
                           autoExpandSectionId={
-                            selectedElementKey ? null : layout8AutoExpandSectionId
+                            selectedElementKey
+                              ? null
+                              : layout8AutoExpandSectionId
                           }
                         />
                       )}
@@ -3759,7 +3859,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           sections={textStructureSections.sections9}
                           updateWidgetData={updateWidgetData}
                           autoExpandSectionId={
-                            selectedElementKey ? null : layout9AutoExpandSectionId
+                            selectedElementKey
+                              ? null
+                              : layout9AutoExpandSectionId
                           }
                         />
                       )}
@@ -3771,7 +3873,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           sections={textStructureSections.sections11}
                           updateWidgetData={updateWidgetData}
                           autoExpandSectionId={
-                            selectedElementKey ? null : layout11AutoExpandSectionId
+                            selectedElementKey
+                              ? null
+                              : layout11AutoExpandSectionId
                           }
                         />
                       )}
@@ -4203,8 +4307,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             selectedElementKey === "rightDescItems"
           ) &&
           selectedElementKey !== "caseFeatureText" &&
-          selectedElementKey !== "caseLogoUrl" &&
-          (
+          selectedElementKey !== "caseLogoUrl" && (
             <ElementEditor
               widget={widget}
               elementKey={selectedElementKey}

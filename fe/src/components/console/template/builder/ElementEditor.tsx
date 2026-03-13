@@ -358,6 +358,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     if (widget.type !== "imageCard") return {};
 
     const layoutVal = String(data.layout || "1").replace(/^layout/, "");
+    const overlayTitle = layoutVal === "2";
     const largeTitle = ["3", "4", "5", "6"].includes(layoutVal);
     const imageCardFallbackMap: Record<string, any> = {
       subTitle: {
@@ -391,6 +392,13 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             fontWeight: "700",
             color: "#131416",
           }
+        : overlayTitle
+          ? {
+              fontSize: "20px",
+              fontSizeMobile: "18px",
+              fontWeight: "700",
+              color: "#FFFFFF",
+            }
         : {
             fontSize: "20px",
             fontSizeMobile: "18px",
@@ -1859,19 +1867,20 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
 
     if (widget.type === "cultureLetter") {
-      if (elementKey === "cultureLetter") {
+      const k = elementKey.toLowerCase();
+      if (k.endsWith("cultureletter")) {
         fontSize = "40px";
         fontWeight = "400";
         color = "#FFFFFF";
-      } else if (elementKey === "issueNo" || elementKey === "issueDate") {
+      } else if (k.endsWith("issueno") || k.endsWith("issuedate")) {
         fontSize = "24px";
-        fontWeight = elementKey === "issueDate" ? "700" : "400";
+        fontWeight = k.endsWith("issuedate") ? "700" : "400";
         color = "#FFFFFF";
-      } else if (elementKey === "title") {
+      } else if (k.endsWith("title")) {
         fontSize = "48px";
         fontWeight = "700";
         color = "#FFFFFF";
-      } else if (elementKey === "desc") {
+      } else if (k.endsWith("desc")) {
         fontSize = "24px";
         fontWeight = "500";
         color = "#FFFFFF";
