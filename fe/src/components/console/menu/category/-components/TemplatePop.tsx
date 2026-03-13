@@ -27,6 +27,7 @@ import {
   TextStructureRenderer,
   ImageCardRenderer,
   StripBannerRenderer,
+  CultureLetterRenderer,
 } from "@/components/console/template/Widgets";
 import { ComparisonCardRenderer } from "@/components/console/template/widgets/ComparisonCardRenderer";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
@@ -54,6 +55,7 @@ const RENDERER_MAP: Record<string, React.ComponentType<any>> = {
   comparisonCard: ComparisonCardRenderer,
   processCard: ProcessRenderer,
   stripBanner: StripBannerRenderer,
+  cultureLetter: CultureLetterRenderer,
 };
 
 const convertPageDataToHtml = (data: PageData): string => {
@@ -252,6 +254,9 @@ export default function TemplatePop({
                         )}
                         {widget.type === "stripBanner" && (
                           <StripBannerRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "cultureLetter" && (
+                          <CultureLetterRenderer widget={widget as any} />
                         )}
                       </div>
                     ))}

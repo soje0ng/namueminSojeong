@@ -17,3 +17,4 @@ export * from "./widgets/TabButtonRenderer";
 export * from "./widgets/TextStructureRenderer";
 export * from "./widgets/ImageCardRenderer";
 export * from "./widgets/StripBannerRenderer";
+export * from "./widgets/CultureLetterRenderer";

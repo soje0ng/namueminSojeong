@@ -76,7 +76,7 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className="self-stretch py-14 flex flex-col justify-start items-center gap-10"
+            className="self-stretch py-0 flex flex-col justify-start items-center gap-10"
             style={{
               paddingLeft: imageAreaHorizontalPadding,
               paddingRight: imageAreaHorizontalPadding,

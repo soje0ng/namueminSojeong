@@ -466,6 +466,12 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             isMobileViewport ? "layout1MobileBgImageUrl" : "layout1BgImageUrl",
           );
         }}
+        onClick={(e) => {
+          if (!onElementSelect) {
+            // 이소정 님, 여기에 레이아웃 1 클릭 시 동작할 미리보기 로직(팝업 등)을 추가할 예정입니다.
+            console.log("Layout 1 Clicked");
+          }
+        }}
       >
         {/* 배경 레이어 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -1085,6 +1091,12 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               e.stopPropagation();
               onElementSelect?.("cl3CardImgUrl");
             }}
+            onClick={(e) => {
+              if (!onElementSelect) {
+                // 레이아웃 3 카드 클릭 시 미리보기 동작
+                console.log("Layout 3 Card Clicked");
+              }
+            }}
           >
             {cardImg ? (
               <img
@@ -1417,6 +1429,11 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.(card.cardBgImgKey);
+                }}
+                onClick={(e) => {
+                  if (!onElementSelect && linkHref) {
+                    window.open(linkHref, "_blank", "noopener,noreferrer");
+                  }
                 }}
               >
                 {/* 카드 배경 이미지 — borderRadius는 카드와 동일하게 */}

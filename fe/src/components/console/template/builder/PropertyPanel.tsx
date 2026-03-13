@@ -103,6 +103,11 @@ const getWidgetName = (type: WidgetType) => {
   return names[type] || type;
 };
 
+const getSpacingInputValue = (value?: string | number) => {
+  if (value === undefined || value === null || value === "") return "0";
+  return value.toString().replace("px", "");
+};
+
 const INFO_BANNER_LAYOUT_STATE_KEY = "__layoutStateMap";
 const INFO_BANNER_LAYOUT_FIELDS = [
   "subTitle",
@@ -2118,11 +2123,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                       type="text"
                       placeholder="Top"
                       className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-center"
-                      value={
-                        widget.style?.paddingTop
-                          ?.toString()
-                          .replace("px", "") || ""
-                      }
+                      value={getSpacingInputValue(widget.style?.paddingTop)}
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "")
@@ -2138,11 +2139,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                       type="text"
                       placeholder="Bottom"
                       className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-center"
-                      value={
-                        widget.style?.paddingBottom
-                          ?.toString()
-                          .replace("px", "") || ""
-                      }
+                      value={getSpacingInputValue(widget.style?.paddingBottom)}
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "")
