@@ -8,11 +8,12 @@ import {
   formatUnit,
   UniversalMedia,
   getPaddingClass,
+  getBorderRadiusClass,
 } from "./WidgetUtils";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
 // 이 영역의 값을 수정하면 그리드 카드 위젯이 처음 추가될 때의 기본 크기가 변경됩니다.
-// - 위젯 메인 타이틀: titleStyle (fontSize: "36px", fontSizeMobile: "28px")
+// - 위젯 메인 타이틀: titleStyle (fontSize: "40px", fontSizeMobile: "28px")
 // - 위젯 서브 타이틀: subTitleStyle (fontSize: "18px")
 // - 개별 카드 제목: items[].titleStyle (fontSize: "20px")
 // - 개별 카드 설명: items[].descStyle (fontSize: "18px")
@@ -22,7 +23,7 @@ export const GRID_CARD_DEFAULTS = {
   variant: "standard",
   layout: "top-title",
   title: "좌측타이틀영역",
-  titleStyle: { fontSize: "36px", fontSizeMobile: "28px", fontWeight: "700" },
+  titleStyle: { fontSize: "40px", fontSizeMobile: "28px", fontWeight: "700" },
   subTitle: "서브타이틀영역입니다.",
   subTitleStyle: { fontSize: "18px" },
   items: [
@@ -36,7 +37,8 @@ export const GRID_CARD_DEFAULTS = {
       tagStyle: { fontSize: "14px", fontWeight: "700" },
       label: "NEW",
       labelStyle: {
-        fontSize: "16px",
+        fontSize: "20px",
+        fontSizeMobile: "18px",
         fontWeight: "700",
         color: "#ffffff",
         backgroundColor: "#104893",
@@ -53,7 +55,8 @@ export const GRID_CARD_DEFAULTS = {
       tagStyle: { fontSize: "14px", fontWeight: "700" },
       label: "NEW",
       labelStyle: {
-        fontSize: "16px",
+        fontSize: "20px",
+        fontSizeMobile: "18px",
         fontWeight: "700",
         color: "#ffffff",
         backgroundColor: "#104893",
@@ -70,7 +73,8 @@ export const GRID_CARD_DEFAULTS = {
       tagStyle: { fontSize: "14px", fontWeight: "700" },
       label: "NEW",
       labelStyle: {
-        fontSize: "16px",
+        fontSize: "20px",
+        fontSizeMobile: "18px",
         fontWeight: "700",
         color: "#ffffff",
         backgroundColor: "#104893",
@@ -90,7 +94,7 @@ export const GridCardRenderer: React.FC<
       className={`w-full h-auto ${w.data.variant === "large" ? "bg-시안-mode-gray5" : ""}`}
     >
       <div
-        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "xl:px-[260px]")} pb-[80px] md:pb-[120px]`}
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport)} pb-[80px] md:pb-[120px]`}
       >
         <div
           className={`flex flex-col gap-[24px] ${w.data.layout === "left-title" ? "xl:flex-row xl:items-start xl:gap-0" : ""}`}
@@ -100,7 +104,7 @@ export const GridCardRenderer: React.FC<
           >
             <SafeHtml
               html={w.data.title}
-              className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
+              className={`font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} inline-block`}
               style={getElementStyle(w.data.titleStyle, viewport as any)}
               onDoubleClick={(e) => {
                 e.stopPropagation();
@@ -110,7 +114,7 @@ export const GridCardRenderer: React.FC<
             <br />
             <SafeHtml
               html={w.data.subTitle}
-              className="pt-[4px] text-[#666666] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
+              className={`pt-[4px] text-[#666666] hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} inline-block`}
               style={getElementStyle(w.data.subTitleStyle, viewport as any)}
               onDoubleClick={(e) => {
                 e.stopPropagation();
@@ -152,7 +156,7 @@ export const GridCardRenderer: React.FC<
                     {item.label && (
                       <SafeHtml
                         html={item.label}
-                        className="absolute top-4 left-4 p-[6px_12px] bg-[#104893] text-white font-bold text-[16px] shadow-sm hover:outline-dashed hover:outline-2 hover:outline-white/50 cursor-text"
+                        className="absolute top-4 left-4 p-[6px_12px] bg-[#104893] text-white font-bold shadow-sm hover:outline-dashed hover:outline-2 hover:outline-white/50 cursor-text"
                         style={getElementStyle(
                           item.labelStyle,
                           viewport as any,
@@ -168,7 +172,7 @@ export const GridCardRenderer: React.FC<
                     <div>
                       <SafeHtml
                         html={item.title}
-                        className="font-bold hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded leading-tight"
+                        className={`font-bold hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} leading-tight`}
                         style={getElementStyle(
                           item.titleStyle,
                           viewport as any,
@@ -180,7 +184,7 @@ export const GridCardRenderer: React.FC<
                       />
                       <SafeHtml
                         html={item.desc}
-                        className="text-시안-mode-gray60 mt-1 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded leading-snug"
+                        className={`text-시안-mode-gray60 mt-1 hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} leading-snug`}
                         style={getElementStyle(item.descStyle, viewport as any)}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -193,7 +197,7 @@ export const GridCardRenderer: React.FC<
                         <SafeHtml
                           key={i}
                           html={tag}
-                          className="border border-[#104893] text-[#104893] px-3 py-1 rounded-full font-bold hover:bg-blue-50 cursor-text"
+                          className={`border border-[#104893] text-[#104893] px-3 py-1 ${getBorderRadiusClass(viewport, "rounded-full")} font-bold hover:bg-blue-50 cursor-text`}
                           style={getElementStyle(
                             item.tagStyle,
                             viewport as any,

@@ -7,26 +7,64 @@ import {
   WidgetRendererProps,
   getImageUrl,
   getPaddingClass,
+  getBorderRadiusClass,
 } from "./WidgetUtils";
 
 export const CULTURE_LETTER_DEFAULTS = {
   layout: "1",
   layout1BgImageUrl: "/images/placeholder/culture_letter_layout1_bg.jpg",
-  layout1BgImageUrlStyle: {},
+  layout1BgImageUrlStyle: { objectFit: "cover" },
   layout1LogoFlowerImageUrl:
     "/images/placeholder/culture_letter_layout1_logo_flower.png",
+  layout1LogoFlowerImageUrlStyle: { objectFit: "contain" },
   layout1LogoTextImageUrl:
     "/images/placeholder/culture_letter_layout1_logo_text.png",
+  layout1LogoTextImageUrlStyle: { objectFit: "contain" },
   cultureLetter: "Culture Letter",
-  cultureLetterStyle: {},
+  cultureLetterStyle: {
+    fontFamily: "'Tenor Sans', sans-serif",
+    fontSize: "40px",
+    fontSizeMobile: "28px",
+    color: "#FFFFFF",
+    letterSpacing: "-0.8px",
+    lineHeight: "1",
+    fontWeight: "400",
+  },
   issueNo: "No.15",
-  issueNoStyle: {},
+  issueNoStyle: {
+    fontFamily: "'Tenor Sans', sans-serif",
+    fontSize: "24px",
+    color: "#FFFFFF",
+    letterSpacing: "-0.48px",
+    lineHeight: "1",
+    fontWeight: "400",
+  },
   issueDate: "2026년 1월호 컬처레터",
-  issueDateStyle: {},
+  issueDateStyle: {
+    fontFamily: "Pretendard, sans-serif",
+    fontSize: "24px",
+    color: "#FFFFFF",
+    letterSpacing: "-0.48px",
+    lineHeight: "1.5",
+    fontWeight: "700",
+  },
   title: "텍스트 영역입니다.\n텍스트 타이틀 영역",
-  titleStyle: {},
+  titleStyle: {
+    fontFamily: "Pretendard, sans-serif",
+    fontSize: "48px",
+    fontSizeMobile: "28px",
+    fontWeight: "700",
+    letterSpacing: "-0.96px",
+    color: "#FFFFFF",
+  },
   desc: "배너 타이틀 서브 영역입니다. 필요 없을 땐 노출 숨김.",
-  descStyle: {},
+  descStyle: {
+    fontFamily: "Pretendard, sans-serif",
+    fontSize: "24px",
+    fontWeight: "500",
+    letterSpacing: "-0.48px",
+    color: "#FFFFFF",
+  },
   backgroundImage: "",
   backgroundImageStyle: {},
 };
@@ -54,11 +92,13 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
 
     return (
       <div
-        className={`content-stretch flex flex-col gap-[80px] items-start justify-center ${getPaddingClass(viewport, "xl:px-[280px]")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+        className={`content-stretch flex flex-col gap-[80px] items-start justify-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
         style={{
-          ...style,
+          backgroundColor: style.backgroundColor || "transparent",
           backgroundImage:
+            style.backgroundImage ||
             "linear-gradient(164.85485871944843deg, rgb(40, 93, 225) 2.8894%, rgb(89, 161, 185) 48.555%, rgb(68, 160, 117) 100%)",
+          ...style,
         }}
         onDoubleClick={(e) => {
           onElementSelect?.("layout1BgImageUrl");
@@ -101,7 +141,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             <div className="h-[40.004px] relative shrink-0 w-[39.742px]">
               <img
                 alt=""
-                className="absolute block max-w-none size-full"
+                className={`absolute block max-w-none size-full ${getBorderRadiusClass(viewport, "")}`}
                 src={getImageUrl(
                   data.layout1LogoFlowerImageUrlStyle,
                   viewport,
@@ -118,7 +158,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             >
               <img
                 alt=""
-                className="absolute block max-w-none size-full"
+                className={`absolute block max-w-none size-full ${getBorderRadiusClass(viewport, "")}`}
                 src={getImageUrl(
                   data.layout1LogoTextImageUrlStyle,
                   viewport,
@@ -131,89 +171,13 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {/* Culture Letter */}
           <SafeHtml
             html={data.cultureLetter || CULTURE_LETTER_DEFAULTS.cultureLetter}
-            className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+            className={`not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
             style={{
-              fontFamily: "'Tenor Sans', sans-serif",
-              fontSize: "40px",
-              color: "#FFFFFF",
-              letterSpacing: "-0.8px",
-              lineHeight: 1,
-              fontWeight: "400",
-              ...getElementStyle(data.cultureLetterStyle, viewport),
-            }}
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-              onElementSelect?.("cultureLetter");
-            }}
-          />
-
-          {/* No. + 날짜 */}
-          <div className="content-stretch flex gap-[16px] items-center not-italic relative shrink-0 whitespace-nowrap">
-            <SafeHtml
-              html={data.issueNo || CULTURE_LETTER_DEFAULTS.issueNo}
-              className="relative shrink-0 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
-              style={{
-                fontFamily: "'Tenor Sans', sans-serif",
-                fontSize: "24px",
-                color: "#FFFFFF",
-                letterSpacing: "-0.48px",
-                lineHeight: 1,
-                fontWeight: "400",
-                ...getElementStyle(data.issueNoStyle, viewport),
-              }}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("issueNo");
-              }}
-            />
-            <SafeHtml
-              html={data.issueDate || CULTURE_LETTER_DEFAULTS.issueDate}
-              className="relative shrink-0 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
-              style={{
-                fontFamily: "Pretendard, sans-serif",
-                fontSize: "24px",
-                color: "#FFFFFF",
-                letterSpacing: "-0.48px",
-                lineHeight: 1.5,
-                fontWeight: "700",
-                ...getElementStyle(data.issueDateStyle, viewport),
-              }}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("issueDate");
-              }}
-            />
-          </div>
-        </div>
-
-        {/* 텍스트 콘텐츠 */}
-        <div className="content-stretch flex flex-col gap-[12px] items-start leading-[1.5] not-italic relative shrink-0 text-white whitespace-nowrap">
-          <SafeHtml
-            html={data.title || CULTURE_LETTER_DEFAULTS.title}
-            className="relative shrink-0 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
-            style={{
-              fontFamily: "Pretendard, sans-serif",
-              fontSize: "48px",
-              fontWeight: "700",
-              letterSpacing: "-0.96px",
-              color: "#FFFFFF",
-              ...getElementStyle(data.titleStyle, viewport),
-            }}
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-              onElementSelect?.("title");
-            }}
-          />
-          <SafeHtml
-            html={data.desc || CULTURE_LETTER_DEFAULTS.desc}
-            className="relative shrink-0 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
-            style={{
-              fontFamily: "Pretendard, sans-serif",
-              fontSize: "24px",
-              fontWeight: "500",
-              letterSpacing: "-0.48px",
-              color: "#FFFFFF",
-              ...getElementStyle(data.descStyle, viewport),
+              ...getElementStyle(
+                data.cultureLetterStyle ||
+                  CULTURE_LETTER_DEFAULTS.cultureLetterStyle,
+                viewport,
+              ),
             }}
             onDoubleClick={(e) => {
               e.stopPropagation();

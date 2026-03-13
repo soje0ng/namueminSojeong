@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -125,15 +125,22 @@ interface Props {
   widgetId: string;
   sections: Section6Item[];
   updateWidgetData: (id: string, data: any) => void;
+  autoExpandSectionId?: string | null;
 }
 
 const TextStructure6Manager: React.FC<Props> = ({
   widgetId,
   sections,
   updateWidgetData,
+  autoExpandSectionId = null,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddPicker, setShowAddPicker] = useState(false);
+  useEffect(() => {
+    if (!autoExpandSectionId) return;
+    const exists = sections.some((section) => section.id === autoExpandSectionId);
+    if (exists) setExpandedId(autoExpandSectionId);
+  }, [autoExpandSectionId, sections]);
 
   const update = (newSections: Section6Item[]) => {
     updateWidgetData(widgetId, { sections6: newSections });

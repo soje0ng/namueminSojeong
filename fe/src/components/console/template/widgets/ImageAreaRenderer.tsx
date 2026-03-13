@@ -35,18 +35,10 @@ export const ImageAreaRenderer: React.FC<WidgetRendererProps> = ({
   const getImageAreaTextStyle = (
     textStyle: any,
     overrides: React.CSSProperties = {},
-  ) => {
-    const resolvedStyle = {
-      ...getElementStyle(textStyle, viewport),
-      ...overrides,
-    };
-    const fontSize = resolvedStyle.fontSize;
-
-    return viewport === "mobile" &&
-      (fontSize === "20px" || fontSize === "20" || fontSize === 20)
-      ? { ...resolvedStyle, fontSize: "18px" }
-      : resolvedStyle;
-  };
+  ) => ({
+    ...getElementStyle(textStyle, viewport),
+    ...overrides,
+  });
   const currentImage = isMobile ? mobileImageUrl : imageUrl;
   const currentImageStyle = isMobile
     ? {

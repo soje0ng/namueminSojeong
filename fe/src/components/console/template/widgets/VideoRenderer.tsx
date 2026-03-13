@@ -13,12 +13,12 @@ import {
 
 // 💡 [기본 폰트 사이즈 설정 안내]
 // 이 영역의 값을 수정하면 비디오 위젯이 처음 추가될 때의 기본 크기가 변경됩니다.
-// - PC 버전: fontSize: "36px"
+// - PC 버전: fontSize: "40px"
 // - 모바일 버전: fontSizeMobile: "28px"
 export const VIDEO_DEFAULTS = {
   variant: "grid",
   title: "좌측타이틀영역",
-  titleStyle: { fontSize: "36px", fontSizeMobile: "28px", fontWeight: "700" },
+  titleStyle: { fontSize: "40px", fontSizeMobile: "28px", fontWeight: "700" },
   subTitle: "서브타이틀영역입니다.",
   subTitleStyle: { fontSize: "18px" },
   items: [
@@ -28,7 +28,7 @@ export const VIDEO_DEFAULTS = {
       url: "https://www.youtube.com/watch?v=jicErY0RiMg",
       title: "영상 제목 1",
       desc: "설명 1",
-      itemTitleStyle: { fontSize: "24px", fontSizeMobile: "20px" },
+      itemTitleStyle: { fontSize: "24px" },
       itemDescStyle: { fontSize: "18px" },
     },
     {
@@ -37,14 +37,14 @@ export const VIDEO_DEFAULTS = {
       url: "/images/placeholder/video_thumb.jpg",
       title: "이미지 제목",
       desc: "설명",
-      itemTitleStyle: { fontSize: "24px", fontSizeMobile: "20px" },
+      itemTitleStyle: { fontSize: "24px" },
       itemDescStyle: { fontSize: "18px" },
     },
   ],
   autoPlay: false,
   muted: true,
   layout: "horizontal",
-  itemTitleStyle: { fontSize: "24px", fontSizeMobile: "20px" },
+  itemTitleStyle: { fontSize: "24px" },
   itemDescStyle: { fontSize: "18px" },
 };
 
@@ -53,7 +53,7 @@ export const VIDEO_ITEM_DEFAULT = {
   url: "https://www.youtube.com/watch?v=jicErY0RiMg",
   title: "새 항목",
   desc: "설명",
-  itemTitleStyle: { fontSize: "24px", fontSizeMobile: "20px" },
+  itemTitleStyle: { fontSize: "24px" },
   itemDescStyle: { fontSize: "18px" },
 };
 
@@ -91,7 +91,7 @@ export const VideoRenderer: React.FC<WidgetRendererProps> = ({
   return (
     <section style={style} className="w-full h-auto">
       <div
-        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "")}`}
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport)}`}
       >
         <div
           className={`flex gap-[0px] md:gap-[0px] ${isSideBySide && isDesktop ? "flex-row items-start" : "flex-col"} ${!isSideBySide ? "items-center text-center" : ""}`}

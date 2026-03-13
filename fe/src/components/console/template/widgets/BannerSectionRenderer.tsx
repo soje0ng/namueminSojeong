@@ -9,23 +9,24 @@ import {
   UniversalMedia,
   formatUnit,
   getPaddingClass,
+  getBorderRadiusClass,
 } from "./WidgetUtils";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
 // 이 영역의 값을 수정하면 배너 섹션이 처음 추가될 때의 기본 크기가 변경됩니다.
 // - PC 버전: fontSize: "28px" (데스크탑 크기)
-// - 모바일 버전: fontSizeMobile: "24px" (모바일 크기)
+// - 모바일 버전: 렌더 분기에서 24px로 처리
 export const BANNER_SECTION_DEFAULTS = {
   variant: "banner1",
   title: "배너 타이틀",
   titleStyle: {
-    fontSize: "32px",
-    fontSizeMobile: "24px",
+    fontSize: "20px",
+    fontSizeMobile: "18px",
     fontWeight: "600",
     color: "#ffffff",
   },
   desc: "보다 정확한 자격 판정을 위해 양식을 다운받아 작성하여, 이메일(likweb@likeweb.com)로 보내 주시면\n24시간 이내 연락을 드리겠습니다.\n고객님의 소중한 정보는 안전하게 보장되오니, 정확한 판정을 위해 상세하기 기재 바랍니다.",
-  descStyle: { fontSize: "18px", color: "#ffffff" }, // 설명 기본 크기
+  descStyle: { fontSize: "20px", fontSizeMobile: "18px", color: "#ffffff" }, // 설명 기본 크기
   buttonText: "무료 자격판정 양식 받기",
   items: [
     {
@@ -91,7 +92,7 @@ export const BannerButton: React.FC<{
     return {
       ...s,
       // Ensure defaults if not set in textStyle
-      fontSize: s.fontSize || (viewport === "mobile" ? "14px" : "18px"),
+      fontSize: s.fontSize,
       fontWeight: s.fontWeight || "500",
       color: s.color || "#060606",
     };
@@ -116,10 +117,10 @@ export const BannerButton: React.FC<{
       <SafeHtml
         html={textOverride ?? item.text}
         placeholder="버튼 텍스트를 입력하세요"
-        className="rounded"
+        className={`flex-1 ${getBorderRadiusClass(viewport, "rounded")}`}
         style={style}
       />
-      <span className="material-symbols-outlined ml-2 text-[20px] md:text-[24px]">
+      <span className="material-symbols-outlined ml-2">
         {item.icon || "download"}
       </span>
     </a>
@@ -147,8 +148,6 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
   // 모든 안내배너 타입(1, 2, 3)에서 공통으로 처리하기 위해 스타일을 미리 계산합니다.
   const titleStyle = getElementStyle(
     {
-      fontSize: "32px",
-      fontSizeMobile: "24px",
       fontWeight: "600",
       color: "#ffffff",
       ...w.data.titleStyle,
@@ -158,13 +157,13 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
 
   const descStyle = getElementStyle(
     {
-      fontSize: "18px",
-      fontSizeMobile: "14px",
       color: "#ffffff",
       ...w.data.descStyle,
     },
     viewport as any,
   );
+
+  // Removed hardcoded mobile font scaling
 
   // Default to 'banner1' rendering
   if (w.data.variant === "banner1") {
@@ -279,7 +278,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`flex flex-col gap-[24px] ${getPaddingClass(viewport, "xl:px-[60px]")} py-6 md:py-10 ${viewport === "desktop" ? "xl:flex-row xl:items-center xl:justify-between xl:py-[40px]" : ""}`}
+            className={`flex flex-col gap-[24px] ${getPaddingClass(viewport)} py-6 md:py-10 ${viewport === "desktop" ? "xl:flex-row xl:items-center xl:justify-between xl:py-[40px]" : ""}`}
             style={{
               ...(w.style?.backgroundImage
                 ? {
@@ -296,7 +295,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title}
                 placeholder="배너 타이틀을 입력하세요"
-                className="font-[600] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
+                className={`font-[600] hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} inline-block`}
                 style={b2TitleStyle}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
@@ -307,7 +306,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={w.data.desc}
                   placeholder="설명을 입력하세요"
-                  className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
+                  className={`hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} inline-block`}
                   style={b2DescStyle}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -339,7 +338,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`relative flex flex-col gap-[24px] ${getPaddingClass(viewport, "xl:px-[500px]")} xl:pr-[60px] py-6 md:py-10 ${!w.style?.backgroundImage && !w.style?.backgroundColor ? "bg-gradient-to-r from-[#21568E] to-[#093666]" : ""}`}
+            className={`relative flex flex-col gap-[24px] ${getPaddingClass(viewport)} xl:pr-[60px] py-6 md:py-10 ${!w.style?.backgroundImage && !w.style?.backgroundColor ? "bg-gradient-to-r from-[#21568E] to-[#093666]" : ""}`}
             style={{
               ...(w.style?.backgroundImage
                 ? {
@@ -380,7 +379,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title}
                 placeholder="배너 타이틀을 입력하세요"
-                className="font-[600] text-white hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
+                className={`font-[600] text-white hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} inline-block`}
                 style={titleStyle}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
@@ -391,7 +390,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={w.data.desc}
                   placeholder="설명을 입력하세요"
-                  className="text-white hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
+                  className={`text-white hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} inline-block`}
                   style={descStyle}
                   onDoubleClick={(e) => {
                     e.stopPropagation();

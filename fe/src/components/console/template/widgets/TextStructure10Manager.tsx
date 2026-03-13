@@ -365,10 +365,10 @@ const TextStructure10Manager: React.FC<Props> = ({
 	                    />
 	                  </div>
 
-	                  <div className="space-y-1">
-	                    <div className="flex items-center justify-between gap-2">
-	                      <label className="text-[10px] text-gray-400 font-semibold">
-	                        체크리스트 타이틀
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-[10px] text-gray-400 font-semibold">
+                        체크리스트 타이틀
 	                      </label>
 	                      <button
 	                        type="button"
@@ -390,7 +390,35 @@ const TextStructure10Manager: React.FC<Props> = ({
 	                            checkTitle: toHtmlBreakValue(e.target.value),
 	                          })
 	                        }
-	                      />
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-gray-400 font-semibold">
+                      체크 아이콘
+                    </label>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
+                        value={section.checkIconUrl || ""}
+                        onChange={(e) =>
+                          updateSection(section.id, {
+                            checkIconUrl: e.target.value,
+                          })
+                        }
+                      />
+                      <ImgUploadPop
+                        button={
+                          <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 shrink-0">
+                            <ImageIcon size={12} />
+                          </button>
+                        }
+                        onSelect={(url) =>
+                          updateSection(section.id, { checkIconUrl: url })
+                        }
+                      />
                     </div>
                   </div>
 

@@ -15,11 +15,11 @@ import { WidgetHeader } from "./WidgetHeader";
 // 💡 [기본 폰트 사이즈 설정 안내]
 // 이 영역의 값을 수정하면 프로세스 위젯이 처음 추가될 때의 기본 크기가 변경됩니다.
 // - PC 버전: fontSize: "20px"
-// - 모바일 버전: fontSizeMobile: "20px"
+// - 모바일 버전: 렌더 분기에서 18px로 처리
 export const PROCESS_DEFAULTS = {
   variant: "horizontal",
   title: "좌측타이틀영역",
-  titleStyle: { fontSize: "36px", fontSizeMobile: "28px", fontWeight: "700" },
+  titleStyle: { fontSize: "40px", fontSizeMobile: "28px", fontWeight: "700" },
   subTitle: "서브타이틀영역입니다.",
   subTitleStyle: { fontSize: "18px" },
   steps: [
@@ -33,7 +33,6 @@ export const PROCESS_DEFAULTS = {
       titleStyle: {
         fontWeight: "700",
         fontSize: "20px",
-        fontSizeMobile: "20px",
       },
       descStyle: { fontSize: "18px" },
     },
@@ -47,7 +46,6 @@ export const PROCESS_DEFAULTS = {
       titleStyle: {
         fontWeight: "700",
         fontSize: "20px",
-        fontSizeMobile: "20px",
       },
       descStyle: { fontSize: "18px" },
     },
@@ -61,7 +59,6 @@ export const PROCESS_DEFAULTS = {
       titleStyle: {
         fontWeight: "700",
         fontSize: "20px",
-        fontSizeMobile: "20px",
       },
       descStyle: { fontSize: "18px" },
     },
@@ -74,7 +71,7 @@ export const PROCESS_STEP_DEFAULT = {
   desc: "설명",
   icon: "/images/placeholder/step_consult.jpg",
   label: "안내 문구",
-  titleStyle: { fontWeight: "700", fontSize: "20px", fontSizeMobile: "20px" },
+  titleStyle: { fontWeight: "700", fontSize: "20px" },
   descStyle: { fontSize: "18px" },
 };
 
@@ -144,8 +141,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{
+                    ...getElementStyle(data.subTitleStyle, viewport as any),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -155,8 +154,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.titleStyle?.isHidden && (
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
-                  className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.titleStyle, viewport as any)}
+                  className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{
+                    ...getElementStyle(data.titleStyle, viewport as any),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -166,11 +167,13 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!(data as any).descStyle?.isHidden && (
                 <SafeHtml
                   html={(data as any).desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(
-                    (data as any).descStyle,
-                    viewport as any,
-                  )}
+                  className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={{
+                    ...getElementStyle(
+                      (data as any).descStyle,
+                      viewport as any,
+                    ),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -219,11 +222,13 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       {!step.titleStyle?.isHidden && (
                         <SafeHtml
                           html={step.title || "프로그램 특징"}
-                          className={`justify-start ${idx === 0 ? "text-시안-mode-gray7" : "text-시안-mode-gray0"} text-3xl font-bold font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text`}
-                          style={getElementStyle(
-                            step.titleStyle,
-                            viewport as any,
-                          )}
+                          className={`justify-start ${idx === 0 ? "text-시안-mode-gray7" : "text-시안-mode-gray0"} font-bold font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text`}
+                          style={{
+                            ...getElementStyle(
+                              step.titleStyle,
+                              viewport as any,
+                            ),
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("stepTitle", step.id);
@@ -246,11 +251,13 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             >
                               <SafeHtml
                                 html={line}
-                                className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8"
-                                style={getElementStyle(
-                                  step.descStyle,
-                                  viewport as any,
-                                )}
+                                className="text-center justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-8"
+                                style={{
+                                  ...getElementStyle(
+                                    step.descStyle,
+                                    viewport as any,
+                                  ),
+                                }}
                               />
                             </div>
                           ))}
@@ -298,7 +305,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(data.subTitleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -309,7 +316,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.titleStyle?.isHidden && (
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
-                  className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(data.titleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -320,7 +327,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!(data as any).descStyle?.isHidden && (
                 <SafeHtml
                   html={(data as any).desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(
                     (data as any).descStyle,
                     viewport as any,
@@ -386,7 +393,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                           >
                             <SafeHtml
                               html={step.number || `${idx + 1}`}
-                              className="justify-start text-white text-lg md:text-xl font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text min-w-[1.5rem] text-center"
+                              className="justify-start text-white font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text min-w-[1.5rem] text-center"
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("number", step.id);
@@ -400,7 +407,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {!step.titleStyle?.isHidden && (
                           <SafeHtml
                             html={step.title || "과정명 01"}
-                            className="justify-center text-center text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
+                            className="justify-center text-center text-시안-mode-gray95 font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
                             style={getElementStyle(
                               step.titleStyle,
                               viewport as any,
@@ -414,7 +421,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {!step.descStyle?.isHidden && (
                           <SafeHtml
                             html={step.desc || "내용 입력 01"}
-                            className="text-center justify-center text-gray-500 text-base font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
+                            className="text-center justify-center text-gray-500 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
                             style={getElementStyle(
                               step.descStyle,
                               viewport as any,
@@ -466,7 +473,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(data.subTitleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -477,7 +484,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.titleStyle?.isHidden && (
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
-                  className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(data.titleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -488,7 +495,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!(data as any).descStyle?.isHidden && (
                 <SafeHtml
                   html={(data as any).desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(
                     (data as any).descStyle,
                     viewport as any,
@@ -537,25 +544,13 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                           {!step.numberStyle?.isHidden && (
                             <SafeHtml
                               html={step.number || `${idx + 1}.`}
-                              className="text-center justify-start text-[#285DE1] text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                              style={getElementStyle(
-                                step.numberStyle,
-                                viewport as any,
-                              )}
-                              onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                onElementSelect?.("number", step.id);
+                              className="text-center justify-start text-[#285DE1] font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={{
+                                ...getElementStyle(
+                                  step.numberStyle,
+                                  viewport as any,
+                                ),
                               }}
-                            />
-                          )}
-                          {!step.titleStyle?.isHidden && (
-                            <SafeHtml
-                              html={step.title || "프로그램 특징"}
-                              className="justify-start text-zinc-950 text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                              style={getElementStyle(
-                                step.titleStyle,
-                                viewport as any,
-                              )}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("stepTitle", step.id);
@@ -570,7 +565,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             step.desc ||
                             "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
                           }
-                          className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                          className="self-stretch justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                           style={getElementStyle(
                             step.descStyle,
                             viewport as any,
@@ -621,7 +616,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-시안-mode-Primary50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="text-center justify-start text-시안-mode-Primary50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(data.subTitleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -632,7 +627,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!data.titleStyle?.isHidden && (
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
-                  className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="justify-start text-시안-mode-gray95 text-2xl xl:text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(data.titleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -643,7 +638,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               {!(data as any).descStyle?.isHidden && (
                 <SafeHtml
                   html={(data as any).desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={getElementStyle(
                     (data as any).descStyle,
                     viewport as any,
@@ -707,7 +702,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             >
                               <SafeHtml
                                 html={step.number || `${idx + 1}`}
-                                className="justify-start text-white text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                                className="justify-start text-white font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.("number", step.id);
@@ -718,7 +713,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                           {!step.titleStyle?.isHidden && (
                             <SafeHtml
                               html={step.title || "과정명 01"}
-                              className="justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                               style={getElementStyle(
                                 step.titleStyle,
                                 viewport as any,
@@ -734,7 +729,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {!step.descStyle?.isHidden && (
                           <SafeHtml
                             html={step.desc || "내용 입력 01"}
-                            className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                            className="text-center justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                             style={getElementStyle(
                               step.descStyle,
                               viewport as any,
@@ -833,7 +828,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                           /* Emphasis Variant: STEP Capsule Badge */
                           !step.numberStyle?.isHidden && (
                             <div
-                              className="mb-6 px-4 py-1.5 text-white font-black tracking-widest text-[14px] md:text-[16px] transition-all cursor-pointer shadow-md ring-4 ring-blue-50"
+                              className="mb-6 px-4 py-1.5 text-white font-black tracking-widest text-[18px] transition-all cursor-pointer shadow-md ring-4 ring-blue-50"
                               style={{
                                 backgroundColor:
                                   step.numberStyle?.backgroundColor ||

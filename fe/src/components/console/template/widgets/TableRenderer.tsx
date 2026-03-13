@@ -11,24 +11,33 @@ import {
 
 // 💡 [기본 폰트 사이즈 설정 안내]
 // 이 영역의 값을 수정하면 테이블 위젯이 처음 추가될 때의 기본 크기가 변경됩니다.
-// - PC 버전: fontSize: "36px"
+// - PC 버전: fontSize: "40px"
 // - 모바일 버전: fontSizeMobile: "28px"
 export const TABLE_DEFAULTS = {
   variant: "standard",
   title: "타이틀명 입력",
   titleStyle: {
-    fontSize: "36px",
+    fontSize: "40px",
     fontSizeMobile: "28px",
     fontWeight: "700",
     color: "#111827",
   },
   subTitle: "( 서브타이틀 )",
-  subTitleStyle: { fontSize: "20px", color: "#285DE1" },
+  subTitleStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    color: "#285DE1",
+  },
   desc: "이민 프로그램명 입력",
-  descStyle: { fontSize: "20px", color: "#6B7280" },
+  descStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    color: "#6B7280",
+  },
   headers: ["내역", "내역", "내역"],
   headerStyle: {
     fontSize: "20px",
+    fontSizeMobile: "18px",
     fontWeight: "500",
     backgroundColor: "#E5F9FF",
     color: "#111827",
@@ -50,7 +59,12 @@ export const TABLE_DEFAULTS = {
   image: "/images/placeholder/wide-image.jpg",
   bottomText:
     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
-  bottomTextStyle: { fontSize: "20px", color: "#6B7280", fontWeight: "400" },
+  bottomTextStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    color: "#6B7280",
+    fontWeight: "400",
+  },
 };
 
 export const TableRenderer: React.FC<WidgetRendererProps> = ({
@@ -64,9 +78,34 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
   // 섹션 전체 배경색이 테이블 스타일과 충돌하지 않도록 투명하게 처리
   const sectionStyle = { ...style, backgroundColor: "transparent" };
 
+  const titleStyle = {
+    ...TABLE_DEFAULTS.titleStyle,
+    ...(w.data.titleStyle || {}),
+  };
+  const subTitleStyle = {
+    ...TABLE_DEFAULTS.subTitleStyle,
+    ...(w.data.subTitleStyle || {}),
+  };
+  const descStyle = {
+    ...TABLE_DEFAULTS.descStyle,
+    ...(w.data.descStyle || {}),
+  };
+  const headerTextStyle = {
+    ...TABLE_DEFAULTS.headerStyle,
+    ...(w.data.headerStyle || {}),
+  };
+  const bodyTextStyle = {
+    ...TABLE_DEFAULTS.bodyStyle,
+    ...(w.data.bodyStyle || {}),
+  };
+  const bottomTextStyle = {
+    ...TABLE_DEFAULTS.bottomTextStyle,
+    ...(w.data.bottomTextStyle || {}),
+  };
+
   // Global Header & Body Styles (사용자가 설정한 배경색은 여기에 들어있습니다)
-  const headerStyle = getElementStyle(w.data.headerStyle, viewport as any);
-  const bodyStyle = getElementStyle(w.data.bodyStyle, viewport as any);
+  const headerStyle = getElementStyle(headerTextStyle, viewport as any);
+  const bodyStyle = getElementStyle(bodyTextStyle, viewport as any);
 
   const isSideBySide = w.data.layout !== "vertical";
   const isComparison = w.data.variant === "comparison";
@@ -101,7 +140,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(w.data.subTitleStyle, viewport as any),
+                    ...getElementStyle(subTitleStyle, viewport as any),
                     backgroundColor: "transparent",
                   }}
                   onDoubleClick={(e) => {
@@ -115,7 +154,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(w.data.titleStyle, viewport as any),
+                    ...getElementStyle(titleStyle, viewport as any),
                     backgroundColor: "transparent",
                   }}
                   onDoubleClick={(e) => {
@@ -129,7 +168,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(w.data.descStyle, viewport as any),
+                    ...getElementStyle(descStyle, viewport as any),
                     backgroundColor: "transparent",
                   }}
                   onDoubleClick={(e) => {
@@ -175,7 +214,10 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     <SafeHtml
                       html={headerText}
                       className={`text-center justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-9`}
-                      style={{ ...headerStyle, backgroundColor: "transparent" }}
+                      style={{
+                        ...headerStyle,
+                        backgroundColor: "transparent",
+                      }}
                     />
                   </div>
                 ))}
@@ -209,7 +251,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       <SafeHtml
                         html={cell}
                         className={`text-center justify-start ${cIdx === 0 ? "text-[#285DE1]" : "text-시안-mode-gray50"} text-xl font-medium font-['Pretendard'] leading-8`}
-                        style={{ ...bodyStyle, backgroundColor: "transparent" }}
+                        style={bodyStyle}
                       />
                     </div>
                   ))}
@@ -224,7 +266,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 }
                 className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                 style={{
-                  ...getElementStyle(w.data.bottomTextStyle, viewport as any),
+                  ...getElementStyle(bottomTextStyle, viewport as any),
                   backgroundColor: "transparent",
                 }}
                 onDoubleClick={(e) => {
@@ -262,7 +304,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(w.data.subTitleStyle, viewport as any),
+                    ...getElementStyle(subTitleStyle, viewport as any),
                     backgroundColor: "transparent",
                   }}
                   onDoubleClick={(e) => {
@@ -276,7 +318,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(w.data.titleStyle, viewport as any),
+                    ...getElementStyle(titleStyle, viewport as any),
                     backgroundColor: "transparent",
                   }}
                   onDoubleClick={(e) => {
@@ -290,7 +332,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(w.data.descStyle, viewport as any),
+                    ...getElementStyle(descStyle, viewport as any),
                     backgroundColor: "transparent",
                   }}
                   onDoubleClick={(e) => {
@@ -368,7 +410,10 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       <SafeHtml
                         html={cell}
                         className={`text-center justify-start text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8`}
-                        style={{ ...bodyStyle, backgroundColor: "transparent" }}
+                        style={{
+                          ...bodyStyle,
+                          backgroundColor: "transparent",
+                        }}
                       />
                     </div>
                   ))}
@@ -382,7 +427,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
                 }
                 className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                style={getElementStyle(w.data.bottomTextStyle, viewport as any)}
+                style={getElementStyle(bottomTextStyle, viewport as any)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("bottomText");
@@ -407,7 +452,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={w.data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                  style={getElementStyle(w.data.subTitleStyle, viewport as any)}
+                  style={getElementStyle(subTitleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -418,7 +463,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={w.data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                  style={getElementStyle(w.data.titleStyle, viewport as any)}
+                  style={getElementStyle(titleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -429,7 +474,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={w.data.desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                  style={getElementStyle(w.data.descStyle, viewport as any)}
+                  style={getElementStyle(descStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -448,10 +493,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
                     }
                     className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                    style={getElementStyle(
-                      w.data.bottomTextStyle,
-                      viewport as any,
-                    )}
+                    style={getElementStyle(bottomTextStyle, viewport as any)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("bottomText");
@@ -557,7 +599,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title}
                 className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
-                style={getElementStyle(w.data.titleStyle, viewport as any)}
+                style={getElementStyle(titleStyle, viewport as any)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -567,7 +609,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.subTitle}
                 className="pt-[4px] text-[#666666] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
-                style={getElementStyle(w.data.subTitleStyle, viewport as any)}
+                style={getElementStyle(subTitleStyle, viewport as any)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -723,7 +765,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                style={getElementStyle(w.data.subTitleStyle, viewport as any)}
+                style={getElementStyle(subTitleStyle, viewport as any)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -734,7 +776,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                style={getElementStyle(w.data.titleStyle, viewport as any)}
+                style={getElementStyle(titleStyle, viewport as any)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -745,7 +787,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                style={getElementStyle(w.data.descStyle, viewport as any)}
+                style={getElementStyle(descStyle, viewport as any)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -790,7 +832,10 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   <SafeHtml
                     html={h}
                     className="text-center justify-start text-시안-mode-gray95 text-xl font-medium font-['Pretendard'] leading-8"
-                    style={{ ...headerStyle, backgroundColor: "transparent" }}
+                    style={{
+                      ...headerStyle,
+                      backgroundColor: "transparent",
+                    }}
                   />
                 </div>
               ))}
@@ -819,7 +864,10 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     <SafeHtml
                       html={cell}
                       className="text-center justify-start text-시안-mode-gray50 text-lg font-medium font-['Pretendard'] leading-7"
-                      style={{ ...bodyStyle, backgroundColor: "transparent" }}
+                      style={{
+                        ...bodyStyle,
+                        backgroundColor: "transparent",
+                      }}
                     />
                   </div>
                 ))}
@@ -834,7 +882,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
               }
               className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-              style={getElementStyle(w.data.bottomTextStyle, viewport as any)}
+              style={getElementStyle(bottomTextStyle, viewport as any)}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("bottomText");

@@ -42,7 +42,11 @@ export const getElementStyle = (
   let fontSize =
     viewport === "mobile" && style.fontSizeMobile
       ? formatUnit(style.fontSizeMobile)
-      : formatUnit(style.fontSize);
+      : style.fontSize
+        ? formatUnit(style.fontSize)
+        : undefined;
+
+  // No automatic font size adjustments. Respect the explicit fontSize/fontSizeMobile provided.
 
   const rawBackgroundImage = (style as any).backgroundImage;
   const normalizedBackgroundImage =
@@ -84,12 +88,11 @@ export const getElementStyle = (
     width: style.width ? formatUnit(style.width) : undefined,
     height: style.height ? formatUnit(style.height) : undefined,
     objectFit: style.objectFit,
-    borderRadius: style.borderRadius
-      ? formatUnit(style.borderRadius)
-      : undefined,
-    maxWidth: "100%",
+    borderRadius: getBorderRadiusStyle(viewport, style.borderRadius),
     cursor: "pointer",
-    display: (style as any).isHidden ? "none" : undefined,
+    display: (style as any).isHidden
+      ? "none"
+      : (style as any).display || "inline-block",
   } as React.CSSProperties;
 
   Object.keys(result).forEach(
@@ -128,11 +131,52 @@ export const getImageUrl = (
  */
 export const getPaddingClass = (
   viewport: string,
-  desktopPadding: string = "xl:px-72",
+  desktopPadding: string = "xl:px-[280px]",
 ) => {
   if (viewport === "tablet") return "px-10"; // 40px fixed
   if (viewport === "mobile") return "px-5"; // 20px fixed
   return `px-5 md:px-10 ${desktopPadding}`.trim(); // Desktop (Responsive)
+};
+
+/**
+ * getBorderRadiusClass helper to handle responsive border radius
+ */
+export const getBorderRadiusClass = (
+  viewport: string | undefined,
+  radiusClass: string,
+) => {
+  if (
+    !radiusClass ||
+    radiusClass === "" ||
+    radiusClass.includes("rounded-none") ||
+    radiusClass.includes("[0px]") ||
+    radiusClass.includes("[0]")
+  ) {
+    return radiusClass;
+  }
+  if (viewport === "mobile") return "rounded-lg"; // 8px 고정
+  return radiusClass;
+};
+
+/**
+ * getBorderRadiusStyle helper to handle responsive border radius in inline styles
+ */
+export const getBorderRadiusStyle = (
+  viewport: string | undefined,
+  desktopValue: string | number | undefined,
+) => {
+  const radius = String(desktopValue || "");
+  if (
+    !radius ||
+    radius === "" ||
+    radius === "0" ||
+    radius === "0px" ||
+    radius === "none"
+  ) {
+    return formatUnit(desktopValue);
+  }
+  if (viewport === "mobile") return "8px";
+  return formatUnit(desktopValue);
 };
 
 // Safe HTML Component with placeholder support for empty content
@@ -202,7 +246,7 @@ export const SafeHtml: React.FC<{
   return (
     <Tag
       className={className}
-      style={style}
+      style={{ display: "inline-block", ...style }}
       dangerouslySetInnerHTML={{ __html: cleanHtml }}
       onClick={onClick}
       onDoubleClick={onDoubleClick}

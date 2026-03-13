@@ -294,10 +294,88 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
   };
   const textStructureLayout = String((widget as any).data?.layout || "1");
 
+  const layout5AutoExpandSectionId =
+    widget?.type === "textStructure" &&
+    String((widget as any).data?.layout || "1") === "5"
+      ? (() => {
+          if (!selectedItemId) return null;
+          const sections = textStructureSections.sections5 || [];
+          const sectionDirect = sections.find(
+            (s: any) => s.id === selectedItemId,
+          );
+          if (sectionDirect) return sectionDirect.id;
+
+          for (const section of sections) {
+            if (
+              (section.items || []).some((it: any) => it.id === selectedItemId)
+            ) {
+              return section.id;
+            }
+          }
+
+          const colonIndex = selectedItemId.indexOf(":");
+          if (colonIndex > 0) {
+            const sectionId = selectedItemId.slice(0, colonIndex);
+            const matched = sections.find((s: any) => s.id === sectionId);
+            if (matched) return matched.id;
+          }
+          return null;
+        })()
+      : null;
+
+  const layout6AutoExpandSectionId =
+    widget?.type === "textStructure" &&
+    String((widget as any).data?.layout || "1") === "6"
+      ? (() => {
+          if (!selectedItemId) return null;
+          const sections = textStructureSections.sections6 || [];
+          const sectionDirect = sections.find(
+            (s: any) => s.id === selectedItemId,
+          );
+          if (sectionDirect) return sectionDirect.id;
+
+          for (const section of sections) {
+            if (
+              (section.items || []).some((it: any) => it.id === selectedItemId)
+            ) {
+              return section.id;
+            }
+          }
+
+          const colonIndex = selectedItemId.indexOf(":");
+          if (colonIndex > 0) {
+            const sectionId = selectedItemId.slice(0, colonIndex);
+            const matched = sections.find((s: any) => s.id === sectionId);
+            if (matched) return matched.id;
+          }
+          return null;
+        })()
+      : null;
+
+  const layout7AutoExpandSectionId =
+    widget?.type === "textStructure" &&
+    String((widget as any).data?.layout || "1") === "7"
+      ? (() => {
+          if (!selectedItemId) return null;
+          const sections = textStructureSections.sections7 || [];
+          const sectionDirect = sections.find(
+            (s: any) => s.id === selectedItemId,
+          );
+          if (sectionDirect) return sectionDirect.id;
+
+          const colonIndex = selectedItemId.indexOf(":");
+          if (colonIndex > 0) {
+            const sectionId = selectedItemId.slice(0, colonIndex);
+            const matched = sections.find((s: any) => s.id === sectionId);
+            if (matched) return matched.id;
+          }
+          return null;
+        })()
+      : null;
+
   const layout9AutoExpandSectionId =
     widget?.type === "textStructure" &&
-    String((widget as any).data?.layout || "1") === "9" &&
-    !selectedElementKey
+    String((widget as any).data?.layout || "1") === "9"
       ? (() => {
           if (!selectedItemId) return null;
           const sections = textStructureSections.sections9 || [];
@@ -325,8 +403,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
   const layout8AutoExpandSectionId =
     widget?.type === "textStructure" &&
-    String((widget as any).data?.layout || "1") === "8" &&
-    !selectedElementKey
+    String((widget as any).data?.layout || "1") === "8"
       ? (() => {
           if (!selectedItemId) return null;
           const sections = textStructureSections.sections8 || [];
@@ -354,13 +431,12 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
   const layout11AutoExpandSectionId =
     widget?.type === "textStructure" &&
-    String((widget as any).data?.layout || "1") === "11" &&
-    !selectedElementKey
+    String((widget as any).data?.layout || "1") === "11"
       ? (() => {
           if (!selectedItemId) return null;
           const sections = textStructureSections.sections11 || [];
           const sectionDirect = sections.find(
-            (s: any) => s.id === selectedItemId && s.type === "features",
+            (s: any) => s.id === selectedItemId,
           );
           if (sectionDirect) return sectionDirect.id;
 
@@ -3615,6 +3691,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections5}
                           updateWidgetData={updateWidgetData}
+                          autoExpandSectionId={layout5AutoExpandSectionId}
                         />
                       )}
 
@@ -3624,6 +3701,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections6}
                           updateWidgetData={updateWidgetData}
+                          autoExpandSectionId={layout6AutoExpandSectionId}
                         />
                       )}
 
@@ -3633,6 +3711,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections7}
                           updateWidgetData={updateWidgetData}
+                          autoExpandSectionId={layout7AutoExpandSectionId}
                         />
                       )}
 
@@ -3652,6 +3731,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections9}
                           updateWidgetData={updateWidgetData}
+                          autoExpandSectionId={layout9AutoExpandSectionId}
                         />
                       )}
 
@@ -3661,6 +3741,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           widgetId={widget.id}
                           sections={textStructureSections.sections11}
                           updateWidgetData={updateWidgetData}
+                          autoExpandSectionId={layout11AutoExpandSectionId}
                         />
                       )}
                     </div>
@@ -3974,115 +4055,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
             );
           })()}
 
-        {/* sections6 프로그램 특징 항목 텍스트 편집 패널 */}
-        {selectedElementKey &&
-          widget.type === "textStructure" &&
-          ((widget.data as any).layout || "1").toString() === "6" &&
-          (selectedElementKey === "itemTitle" ||
-            selectedElementKey === "itemDesc" ||
-            selectedElementKey === "itemIcon") &&
-          selectedItemId &&
-          (() => {
-            const resolved = resolveLayout6FeatureItem(selectedItemId);
-            const section = resolved?.section;
-            const featureItem = resolved?.item;
-            const featureItemIndex = resolved?.itemIndex ?? -1;
-
-            const handleChange = (prop: string, val: string) => {
-              if (!section || featureItemIndex < 0) return;
-              const updated = (textStructureSections.sections6 || []).map(
-                (s: any) => {
-                  if (s.id !== section.id) return s;
-                  const items = [...(s.items || [])];
-                  if (!items[featureItemIndex]) return s;
-                  items[featureItemIndex] = {
-                    ...items[featureItemIndex],
-                    [prop]: val,
-                  };
-                  return { ...s, items };
-                },
-              );
-              updateWidgetData(widget.id, { sections6: updated });
-            };
-
-            return (
-              <div className="absolute inset-0 bg-white z-10 flex flex-col overflow-y-auto">
-                <div className="flex items-center gap-2 p-3 border-b border-gray-100 bg-white sticky top-0">
-                  <button
-                    onClick={() => setSelectedElementKey(null)}
-                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 font-semibold"
-                  >
-                    <ChevronLeft size={14} />
-                    뒤로
-                  </button>
-                  <span className="text-xs font-bold text-gray-700 flex-1 text-center pr-6">
-                    프로그램 특징 항목 편집
-                  </span>
-                </div>
-                <div className="p-4 space-y-3">
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-gray-400 font-semibold">
-                      제목
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                      value={featureItem?.title || ""}
-                      onChange={(e) => handleChange("title", e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-gray-400 font-semibold">
-                      내용
-                    </label>
-                    <textarea
-                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
-                      rows={3}
-                      value={(featureItem?.desc || "").replace(
-                        /<br\s*\/?>/gi,
-                        "\n",
-                      )}
-                      onChange={(e) =>
-                        handleChange(
-                          "desc",
-                          e.target.value.replace(/\n/g, "<br/>"),
-                        )
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-gray-400 font-semibold uppercase flex items-center gap-1">
-                      <ImageIcon size={10} /> 아이콘/이미지
-                    </label>
-                    <ImgUploadPop
-                      onSelect={(url) => handleChange("iconUrl", url)}
-                      button={
-                        <div className="flex items-center justify-center p-3 bg-gray-50 border border-dashed border-gray-200 rounded-lg hover:bg-gray-100 cursor-pointer transition-all">
-                          <UniversalMedia
-                            url={featureItem?.iconUrl || ""}
-                            className="w-6 h-6 object-contain"
-                          />
-                        </div>
-                      }
-                    />
-                    <input
-                      type="text"
-                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-[10px] focus:ring-2 focus:ring-blue-100 outline-none text-blue-600 font-mono"
-                      value={featureItem?.iconUrl || ""}
-                      onChange={(e) => handleChange("iconUrl", e.target.value)}
-                      placeholder="이미지 URL을 입력하세요"
-                    />
-                  </div>
-                  {!featureItem && (
-                    <p className="text-xs text-gray-400 text-center py-4">
-                      항목을 찾을 수 없습니다.
-                    </p>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
-
         {/* 섹션 하위 요소 설정 패널 */}
         {selectedElementKey &&
           selectedElementKey !== "s5checkItem" &&
@@ -4094,12 +4066,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
           ) &&
           selectedElementKey !== "caseFeatureText" &&
           selectedElementKey !== "caseLogoUrl" &&
-          // 레이아웃 10번의 하위 요소 관리 필드들은 제외 (카드매니저에서 처리)
-          !(
-            widget.type === "textStructure" &&
-            ((widget.data as any).layout || "1").toString() === "10" &&
-            selectedElementKey.startsWith("sections10_")
-          ) && (
+          (
             <ElementEditor
               widget={widget}
               elementKey={selectedElementKey}

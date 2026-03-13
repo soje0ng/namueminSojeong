@@ -8,20 +8,21 @@ import {
   formatUnit,
   UniversalMedia,
   getPaddingClass,
+  getBorderRadiusClass,
 } from "./WidgetUtils";
 import { Check } from "lucide-react";
 import { WidgetHeader } from "./WidgetHeader";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
 // 이 영역의 값을 수정하면 텍스트 섹션 위젯이 처음 추가될 때의 기본 크기가 변경됩니다.
-// - PC 버전: fontSize: "36px"
+// - PC 버전: fontSize: "40px"
 // - 모바일 버전: fontSizeMobile: "28px"
 export const TEXT_SECTION_DEFAULTS = {
   variant: "sticky-left",
   title: "좌측타이틀영역",
-  titleStyle: { fontSize: "36px", fontSizeMobile: "28px", fontWeight: "700" },
+  titleStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "700" },
   subTitle: "서브타이틀영역입니다.",
-  subTitleStyle: { fontSize: "18px" },
+  subTitleStyle: { fontSize: "20px", fontSizeMobile: "18px" },
   blocks: [
     {
       id: "b1",
@@ -33,20 +34,20 @@ export const TEXT_SECTION_DEFAULTS = {
       id: "b2",
       type: "text",
       text: "텍스트를 더블클릭해서 마음껏 바꿔보세요! 기획부터 꼼꼼한 유지보수까지, 라이크웹이 늘 곁에서 함께할게요.",
-      style: { fontSize: "18px" },
+      style: { fontSize: "20px", fontSizeMobile: "18px" },
     },
     {
       id: "b3",
       type: "heading",
       text: "라이크웹의 프로젝트명",
       iconType: "check",
-      style: { fontSize: "24px", fontSizeMobile: "20px", fontWeight: "600" },
+      style: { fontSize: "24px", fontWeight: "600" },
     },
     {
       id: "b4",
       type: "text",
       text: "여기서부터 당신의 이야기가 시작돼요. ✨ 기획부터 완성 후 관리까지 모든 과정을 라이크웹이 친절하게 가이드해 드립니다. 더블클릭 한 번으로 문구를 직접 바꿔보세요! 기획에서 유지보수까지 고민할 필요 없도록, 라이크웹이 알아서 다 해드릴게요.",
-      style: { fontSize: "18px" },
+      style: { fontSize: "20px", fontSizeMobile: "18px" },
     },
   ],
 };
@@ -54,7 +55,7 @@ export const TEXT_SECTION_DEFAULTS = {
 export const TEXT_SECTION_BLOCK_DEFAULTS = {
   type: "text",
   text: "새로운 텍스트 블록입니다.",
-  style: { fontSize: "18px" },
+  style: { fontSize: "20px", fontSizeMobile: "18px" },
 };
 
 export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
@@ -91,7 +92,10 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                 })()}
                 placeholder="헤드 텍스트를 입력하세요"
                 className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                style={blockStyle}
+                style={{
+                  ...blockStyle,
+                  ...blockStyle,
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("blockText", item.id);
@@ -113,7 +117,9 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
               })()}
               placeholder="텍스트를 입력하세요"
               className={`hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded whitespace-pre-wrap`}
-              style={blockStyle}
+              style={{
+                ...blockStyle,
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("blockText", item.id);
@@ -179,20 +185,22 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
             />
           </div>
           <div
-            className={`-mt-[20px] flex flex-col gap-[16px] ${getPaddingClass(viewport, "xl:px-72")} md:-mt-[60px] xl:-mt-[140px]`}
+            className={`-mt-[20px] flex flex-col gap-[16px] ${getPaddingClass(viewport)} md:-mt-[60px] xl:-mt-[140px]`}
             style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : undefined }}
           >
             {(w.data.items || []).map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col gap-[16px] rounded-[30px] bg-[rgba(255,255,255,0.80)] p-[20px] shadow-[0px_4px_10px_0px_rgba(0,0,0,0.10)] backdrop-blur md:gap-[24px] md:p-[24px] xl:flex-row xl:items-center xl:p-[40px]"
+                className={`flex flex-col gap-[16px] ${getBorderRadiusClass(viewport, "rounded-[30px]")} bg-[rgba(255,255,255,0.80)] p-[20px] shadow-[0px_4px_10px_0px_rgba(0,0,0,0.10)] backdrop-blur md:gap-[24px] md:p-[24px] xl:flex-row xl:items-center xl:p-[40px]`}
               >
                 <div className="flex flex-col items-start gap-[4px] md:flex-row md:gap-[20px] xl:w-1/3">
                   <SafeHtml
                     html={item.number}
                     placeholder="01"
                     className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                    style={getElementStyle(item.numberStyle, viewport as any)}
+                    style={{
+                      ...getElementStyle(item.numberStyle, viewport as any),
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("itemNumber", item.id);
@@ -202,7 +210,9 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                     html={item.title}
                     placeholder="타이틀을 입력하세요"
                     className="font-bold text-[#104893] md:flex-1 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                    style={getElementStyle(item.titleStyle, viewport as any)}
+                    style={{
+                      ...getElementStyle(item.titleStyle, viewport as any),
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("itemTitle", item.id);
@@ -214,7 +224,9 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                     html={item.subTitle}
                     placeholder="서브타이틀을 입력하세요"
                     className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                    style={getElementStyle(item.subTitleStyle, viewport as any)}
+                    style={{
+                      ...getElementStyle(item.subTitleStyle, viewport as any),
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("itemSubTitle", item.id);
@@ -224,7 +236,9 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
                     html={item.desc}
                     placeholder="설명을 입력하세요"
                     className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                    style={getElementStyle(item.descStyle, viewport as any)}
+                    style={{
+                      ...getElementStyle(item.descStyle, viewport as any),
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("itemDesc", item.id);
@@ -243,7 +257,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full h-auto">
         <div
-          className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "xl:px-10")}`}
+          className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport)}`}
         >
           <div
             className={`flex flex-col gap-[16px] ${viewport === "desktop" ? "xl:flex-row xl:items-start xl:gap-0" : "md:gap-[24px]"}`}
@@ -334,7 +348,7 @@ export const TextSectionRenderer: React.FC<WidgetRendererProps> = ({
   return (
     <section style={style} className="w-full h-auto">
       <div
-        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport, "xl:px-10")} text-center`}
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport)} text-center`}
       >
         <div
           className={`flex flex-col gap-[16px] md:gap-[24px] ${w.data.variant === "sticky-left" && viewport === "desktop" ? "xl:flex-row xl:items-start xl:gap-0" : ""}`}

@@ -8,12 +8,14 @@ import {
   UniversalMedia,
   formatUnit,
   getPaddingClass,
+  getBorderRadiusStyle,
+  getBorderRadiusClass,
 } from "./WidgetUtils";
 import { WidgetHeader } from "./WidgetHeader";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
 // 이 영역의 값을 수정하면 카드 리스트 위젯이 처음 추가될 때의 기본 크기가 변경됩니다.
-// - 위젯 메인 타이틀: titleStyle (fontSize: "36px", fontSizeMobile: "28px")
+// - 위젯 메인 타이틀: titleStyle (fontSize: "40px", fontSizeMobile: "28px")
 // - 위젯 서브 타이틀: subTitleStyle (fontSize: "18px")
 // - 개별 카드 제목: items[].titleStyle (fontSize: "20px")
 // - 개별 카드 설명: items[].descStyle (fontSize: "18px")
@@ -24,7 +26,7 @@ export const CARD_LIST_DEFAULTS = {
   variant: "image-card",
   layout: "horizontal",
   title: "카드형 리스트 타이틀",
-  titleStyle: { fontSize: "36px", fontSizeMobile: "28px", fontWeight: "700" },
+  titleStyle: { fontSize: "40px", fontSizeMobile: "28px", fontWeight: "700" },
   subTitle: "카드형 리스트의 서브타이틀 영역입니다.",
   subTitleStyle: { fontSize: "18px" },
   itemsPerRow: 3,
@@ -44,7 +46,8 @@ export const CARD_LIST_DEFAULTS = {
       labelStyle: {
         backgroundColor: "#104893",
         color: "#ffffff",
-        fontSize: "16px",
+        fontSize: "20px",
+        fontSizeMobile: "18px",
         fontWeight: "700",
         borderRadius: "0px",
       },
@@ -66,7 +69,8 @@ export const CARD_LIST_DEFAULTS = {
       labelStyle: {
         backgroundColor: "#104893",
         color: "#ffffff",
-        fontSize: "16px",
+        fontSize: "20px",
+        fontSizeMobile: "18px",
         fontWeight: "700",
         borderRadius: "0px",
       },
@@ -88,7 +92,8 @@ export const CARD_LIST_DEFAULTS = {
       labelStyle: {
         backgroundColor: "#104893",
         color: "#ffffff",
-        fontSize: "16px",
+        fontSize: "20px",
+        fontSizeMobile: "18px",
         fontWeight: "700",
         borderRadius: "4px",
       },
@@ -122,7 +127,10 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
 
   const renderCard = (item: any) => {
     const itemImageStyle = getElementStyle(item.imageStyle, viewport as any);
-    const cardBorderRadius = item.imageStyle?.borderRadius || "inherit";
+    const cardBorderRadius = getBorderRadiusStyle(
+      viewport,
+      item.imageStyle?.borderRadius,
+    );
 
     const cardContent = () => {
       if (w.data.variant === "bg-image") {
@@ -371,7 +379,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
     <section style={style} className="w-full h-auto">
       <div className="mx-auto w-full max-w-[1920px]">
         <div
-          className={`flex flex-col gap-[32px] ${getPaddingClass(viewport, isHorizontal ? "xl:px-72" : "")} ${isHorizontal && viewport === "desktop" ? "xl:flex-row xl:items-start" : ""}`}
+          className={`flex flex-col gap-[32px] ${getPaddingClass(viewport)} ${isHorizontal && viewport === "desktop" ? "xl:flex-row xl:items-start" : ""}`}
         >
           <WidgetHeader
             title={w.data.title}

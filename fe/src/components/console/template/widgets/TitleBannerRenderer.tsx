@@ -8,6 +8,8 @@ import {
   WidgetRendererProps,
   getImageUrl,
   getPaddingClass,
+  getBorderRadiusClass,
+  getBorderRadiusStyle,
 } from "./WidgetUtils";
 
 export const TITLE_BANNER_DEFAULTS = {
@@ -15,7 +17,12 @@ export const TITLE_BANNER_DEFAULTS = {
   subTitleStyle: { color: "#285DE1", fontSize: "20px", fontWeight: "700" }, // blue-600
   title:
     "2026년 <span style='color: #285DE1'>미국 투자이민,</span><br/>꼭 알아야 할 3가지 핵심 트렌드",
-  titleStyle: { color: "#131416", fontSize: "48px", fontWeight: "700" },
+  titleStyle: {
+    color: "#131416",
+    fontSize: "48px",
+    fontSizeMobile: "28px",
+    fontWeight: "700",
+  },
   desc: "설명을 쓰는 곳입니다.",
   descStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
   textContentTitle: "서브 타이틀 입력",
@@ -27,10 +34,6 @@ export const TITLE_BANNER_DEFAULTS = {
   textContent:
     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
   textContentStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "400" },
-  feature1Image: "/images/placeholder/banner_feature.png",
-  feature1Title: "프로그램 특징",
-  feature1TitleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
-  feature1Desc: "프로그램 특징 내용 입력",
   feature1DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
   feature2Image: "/images/placeholder/banner_feature.png",
   feature2Title: "프로그램 특징",
@@ -56,7 +59,12 @@ export const TITLE_BANNER_DEFAULTS = {
     fontWeight: "500",
   },
   layout3Title: "학부모 영주권 프로그램",
-  layout3TitleStyle: { color: "#131416", fontSize: "48px", fontWeight: "700" },
+  layout3TitleStyle: {
+    color: "#131416",
+    fontSize: "48px",
+    fontSizeMobile: "28px",
+    fontWeight: "700",
+  },
   layout3Desc:
     "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램",
   layout3DescStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
@@ -86,6 +94,13 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         ...(data.layout3MobileImageStyle || {}),
       }
     : data.layout3ImageStyle;
+  const getTitleBannerTextStyle = (
+    textStyle: any,
+    overrides: React.CSSProperties = {},
+  ) => ({
+    ...getElementStyle(textStyle, viewport as any),
+    ...overrides,
+  });
 
   /* ─────────────────────────────────────────── 레이아웃 1 (구조 원복) ─── */
   if (layout === "1") {
@@ -110,20 +125,15 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         >
           <div className="mx-auto w-full max-w-[1920px] relative">
             <div
-              className={`${getPaddingClass(viewport, "xl:px-72")} py-[60px] flex flex-col gap-[60px] w-full`}
+              className={`${viewport === "tablet" ? "pl-10 pr-0" : viewport === "mobile" ? "pl-5 pr-0" : "pl-5 pr-0 md:pl-10 md:pr-0 xl:pl-[280px] xl:pr-0"} py-[60px] flex flex-col gap-[60px] w-full`}
             >
               {/* 텍스트 섹션 */}
               <div className="flex flex-col gap-[40px] w-full">
                 {/* 타이틀 그룹 */}
                 <div className="flex flex-col gap-3 items-start">
                   <SafeHtml
-                    className="font-bold font-['Pretendard'] leading-none hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
-                    style={{
-                      ...getElementStyle(data.subTitleStyle, viewport),
-                      color: "#285DE1",
-                      fontSize: "20px",
-                      letterSpacing: "-0.4px",
-                    }}
+                    className="font-bold font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                    style={getTitleBannerTextStyle(data.subTitleStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("subTitle");
@@ -139,14 +149,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <SafeHtml
                       className="font-['Pretendard']"
-                      style={{
-                        fontSize: "48px",
-                        fontWeight: "700",
-                        lineHeight: "1.5",
-                        letterSpacing: "-0.96px",
-                        color: "#131416",
-                        ...getElementStyle(data.titleStyle, viewport),
-                      }}
+                      style={getElementStyle(
+                        data.titleStyle || TITLE_BANNER_DEFAULTS.titleStyle,
+                        viewport,
+                      )}
                       html={
                         data.title ||
                         `<span class="text-gray-950 font-bold">2026년 </span><span class="text-[#285DE1] font-bold">미국 투자이민,<br/></span><span class="text-gray-950 font-bold">꼭 알아야 할 3가지 핵심 트렌드</span>`
@@ -154,13 +160,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                     />
                   </div>
                   <SafeHtml
-                    className="font-medium font-['Pretendard'] leading-[1.5] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
-                    style={{
-                      ...getElementStyle(data.descStyle, viewport),
-                      color: "#6d7882",
-                      fontSize: "20px",
-                      letterSpacing: "-0.4px",
-                    }}
+                    className="font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                    style={getTitleBannerTextStyle(data.descStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("desc");
@@ -172,13 +173,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 {/* 본문 + 특징 그룹 */}
                 <div className="flex flex-col gap-[20px] w-full">
                   <SafeHtml
-                    className="w-full font-medium font-['Pretendard'] leading-[1.5] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
-                    style={{
-                      ...getElementStyle(data.textContentStyle, viewport),
+                    className="w-full font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                    style={getTitleBannerTextStyle(data.textContentStyle, {
                       color: "#6d7882",
-                      fontSize: "20px",
+                      fontSize: "18px",
                       letterSpacing: "-0.4px",
-                    }}
+                    })}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("textContent");
@@ -230,9 +230,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                           />
                           <div className="flex flex-col justify-start items-center gap-2">
                             <SafeHtml
-                              className="text-center font-bold font-['Pretendard'] leading-[1.5] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                              className="text-center font-bold font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                               style={{
-                                ...getElementStyle(fTitleStyle, viewport),
+                                ...getElementStyle(
+                                  fTitleStyle,
+                                  viewport as any,
+                                ),
                                 color: "#295e92",
                                 fontSize: "24px",
                                 letterSpacing: "-0.48px",
@@ -244,9 +247,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                               html={fTitle || "프로그램 특징"}
                             />
                             <SafeHtml
-                              className="text-center font-normal font-['Pretendard'] leading-[1.5] hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                              className="text-center font-normal font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                               style={{
-                                ...getElementStyle(fDescStyle, viewport),
+                                ...getElementStyle(fDescStyle, viewport as any),
                                 color: "#6d7882",
                                 fontSize: "18px",
                                 letterSpacing: "-0.36px",
@@ -314,11 +317,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               <div className="flex flex-col justify-start items-start gap-3">
                 {/* 버지니아 해안 리조트 건설 프로젝트 */}
                 <SafeHtml
-                  className="justify-start text-blue-600 text-xl font-bold font-['Pretendard'] leading-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
-                  style={{
-                    ...getElementStyle(data.subTitleStyle, viewport),
-                    color: "#285DE1",
-                  }}
+                  className="justify-start text-blue-600 text-lg xl:text-xl font-bold font-['Pretendard'] leading-normal hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  style={getTitleBannerTextStyle(data.subTitleStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -334,12 +334,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }}
                 >
                   <SafeHtml
-                    className="font-['Pretendard'] leading-[72px]"
-                    style={{
-                      fontSize: "48px",
-                      fontWeight: "700",
-                      ...getElementStyle(data.titleStyle, viewport),
-                    }}
+                    className="font-['Pretendard'] leading-relaxed"
+                    style={getElementStyle(
+                      data.titleStyle || TITLE_BANNER_DEFAULTS.titleStyle,
+                      viewport as any,
+                    )}
                     html={
                       data.title ||
                       `<span class="text-gray-950 font-bold">2026년 </span><span class="text-[#285DE1] font-bold">미국 투자이민,<br/></span><span class="text-gray-950 font-bold">꼭 알아야 할 3가지 핵심 트렌드</span>`
@@ -348,8 +347,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
                 {/* 설명을 쓰는 곳입니다. */}
                 <SafeHtml
-                  className="justify-start text-gray-500 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
-                  style={getElementStyle(data.descStyle, viewport)}
+                  className="justify-start text-gray-500 text-lg xl:text-xl font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  style={getTitleBannerTextStyle(data.descStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -361,8 +360,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               {/* 하단 특징 및 본문 그룹 */}
               <div className="self-stretch flex flex-col justify-start items-start gap-5">
                 <SafeHtml
-                  className="self-stretch justify-start text-gray-500 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
-                  style={getElementStyle(data.textContentStyle, viewport)}
+                  className="self-stretch justify-start text-gray-500 text-lg xl:text-xl font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  style={getTitleBannerTextStyle(data.textContentStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("textContent");
@@ -413,8 +412,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                         />
                         <div className="flex flex-col justify-start items-center gap-2">
                           <SafeHtml
-                            className="text-center justify-start text-[#0369a1] text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
-                            style={getElementStyle(fTitleStyle, viewport)}
+                            className="text-center justify-start text-[#0369a1] text-2xl font-bold font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                            style={{
+                              ...getElementStyle(fTitleStyle, viewport),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.(`feature${idx}Title`);
@@ -422,8 +423,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                             html={fTitle || "프로그램 특징"}
                           />
                           <SafeHtml
-                            className="text-center justify-start text-gray-500 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
-                            style={getElementStyle(fDescStyle, viewport)}
+                            className="text-center justify-start text-gray-500 text-lg font-normal font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                            style={{
+                              ...getElementStyle(fDescStyle, viewport),
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.(`feature${idx}Desc`);
@@ -438,7 +441,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               </div>
             </div>
             <UniversalMedia
-              className="w-[820px] h-[575px] rounded-tl-2xl rounded-bl-2xl object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+              className={`w-[820px] h-[575px] ${getBorderRadiusClass(viewport, "rounded-tl-2xl rounded-bl-2xl")} object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer`}
               url={getImageUrl(
                 data.layout1ImageStyle,
                 viewport,
@@ -485,13 +488,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 {/* subTitle: 20px medium leading-none #295e92 tracking:-0.4px */}
                 <SafeHtml
                   html={data.subTitle || "Program Name."}
-                  className="font-medium font-['Pretendard'] leading-none hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                  style={{
-                    ...getElementStyle(data.subTitleStyle, viewport),
+                  className="font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                  style={getTitleBannerTextStyle(data.subTitleStyle, {
                     color: "#295e92",
-                    fontSize: "20px",
+                    fontSize: "18px",
                     letterSpacing: "-0.4px",
-                  }}
+                  })}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -502,10 +504,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.title || "타이틀명 입력"}
                   className="font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
                   style={{
-                    ...getElementStyle(data.titleStyle, viewport),
+                    ...getElementStyle(
+                      data.titleStyle || TITLE_BANNER_DEFAULTS.titleStyle,
+                      viewport,
+                    ),
                     color: "#131416",
                     fontSize: "48px",
-                    lineHeight: "1.5",
                     letterSpacing: "-0.96px",
                   }}
                   onDoubleClick={(e) => {
@@ -517,14 +521,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.desc || "서브타이틀 입력 영역"}
                   className="font-medium font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                  style={{
-                    ...getElementStyle(data.descStyle, viewport),
+                  style={getTitleBannerTextStyle(data.descStyle, {
                     color: "#6d7882",
-                    fontSize: "20px",
-                    lineHeight: "1.5",
+                    fontSize: "18px",
                     letterSpacing: "-0.4px",
                     width: "100%",
-                  }}
+                  })}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -563,7 +565,10 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                     )}
                     style={{
                       ...getElementStyle(data.layout2HeroImageStyle, viewport),
-                      borderRadius: "60px 0 0 0",
+                      borderRadius: getBorderRadiusStyle(
+                        viewport,
+                        "60px 0 0 0",
+                      ),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -591,7 +596,6 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                       ...getElementStyle(data.textContentTitleStyle, viewport),
                       color: "#131416",
                       fontSize: "24px",
-                      lineHeight: "1.5",
                       letterSpacing: "-0.48px",
                       width: "100%",
                     }}
@@ -616,14 +620,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
                     }
                     className="font-medium font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                    style={{
-                      ...getElementStyle(data.textContentStyle, viewport),
+                    style={getTitleBannerTextStyle(data.textContentStyle, {
                       color: "#6d7882",
-                      fontSize: "20px",
-                      lineHeight: "1.5",
+                      fontSize: "18px",
                       letterSpacing: "-0.4px",
                       width: "100%",
-                    }}
+                    })}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("textContent");
@@ -649,13 +651,13 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`w-full ${getPaddingClass(viewport, "xl:px-[280px]")} py-[60px] flex justify-between items-start self-stretch`}
+            className={`w-full ${getPaddingClass(viewport)} py-[60px] flex justify-between items-start self-stretch`}
           >
             <div className="inline-flex flex-col justify-start items-start gap-3">
               <SafeHtml
                 html={data.subTitle || "Program Name."}
-                className="justify-start text-시안-mode-Primary70 text-xl font-medium font-['Pretendard'] leading-5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                style={getElementStyle(data.subTitleStyle, viewport)}
+                className="justify-start text-시안-mode-Primary70 text-lg xl:text-xl font-medium font-['Pretendard'] leading-normal hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                style={getTitleBannerTextStyle(data.subTitleStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -663,8 +665,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               />
               <SafeHtml
                 html={data.title || "타이틀명 입력"}
-                className="justify-start text-gray-95 text-5xl font-bold font-['Pretendard'] leading-[72px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                style={getElementStyle(data.titleStyle, viewport)}
+                className="justify-start text-gray-95 text-5xl font-bold font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                style={getElementStyle(
+                  data.titleStyle || TITLE_BANNER_DEFAULTS.titleStyle,
+                  viewport,
+                )}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -672,11 +677,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               />
               <SafeHtml
                 html={data.desc || "서브타이틀 입력 영역"}
-                className="self-stretch justify-start text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                style={{
-                  color: "#6b7280",
-                  ...getElementStyle(data.descStyle, viewport),
-                }}
+                className="self-stretch justify-start text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                style={getTitleBannerTextStyle(data.descStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -693,7 +695,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               <UniversalMedia
-                className="w-[360px] h-auto max-h-[440px] rounded-tl-[60px] object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                className={`w-[360px] h-auto max-h-[440px] ${getBorderRadiusClass(viewport, "rounded-tl-[60px]")} object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer`}
                 url={getImageUrl(
                   data.layout2HeroImageStyle,
                   viewport,
@@ -722,11 +724,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                     data.textContent ||
                     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다."
                   }
-                  className="self-stretch justify-start text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                  style={{
-                    color: "#6b7280",
-                    ...getElementStyle(data.textContentStyle, viewport),
-                  }}
+                  className="self-stretch justify-start text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                  style={getTitleBannerTextStyle(data.textContentStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("textContent");
@@ -759,7 +758,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               <div
                 style={{
                   display: "flex",
-                  gap: "60px",
+                  gap: "20px",
                   alignItems: "flex-start",
                 }}
               >
@@ -833,7 +832,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                     html={data.layout3Title || "학부모 영주권 프로그램"}
                     className="font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
                     style={{
-                      ...getElementStyle(data.layout3TitleStyle, viewport),
+                      ...getElementStyle(
+                        data.layout3TitleStyle ||
+                          TITLE_BANNER_DEFAULTS.layout3TitleStyle,
+                        viewport,
+                      ),
                       color: "#131416",
                       fontSize: "48px",
                       lineHeight: "1.5",
@@ -851,13 +854,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                       "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램"
                     }
                     className="font-medium font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                    style={{
-                      ...getElementStyle(data.layout3DescStyle, viewport),
+                    style={getTitleBannerTextStyle(data.layout3DescStyle, {
                       color: "#6d7882",
                       fontSize: "20px",
                       lineHeight: "1.5",
                       letterSpacing: "-0.4px",
-                    }}
+                    })}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("layout3Desc");
@@ -902,12 +904,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
               </div>
 
-              {/* 하단 이미지 배너: h-[400px] rounded-[24px] overflow-hidden w-full */}
+              {/* 하단 이미지 배너 */}
               <div
                 style={{
                   position: "relative",
-                  height: "400px",
-                  borderRadius: "24px",
+                  borderRadius: getBorderRadiusStyle(viewport, "24px"),
                   overflow: "hidden",
                   width: "100%",
                   flexShrink: 0,
@@ -920,9 +921,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 <UniversalMedia
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="w-full"
                   url={layout3CurrentImage}
-                  style={getElementStyle(layout3CurrentImageStyle, viewport)}
+                  style={{
+                    ...getElementStyle(layout3CurrentImageStyle, viewport),
+                    height: "auto",
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.(
@@ -946,7 +950,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport, "xl:px-14")} pt-28 pb-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${getPaddingClass(viewport)} pt-28 pb-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
           >
             {/* 상단: 따옴표 + 텍스트 */}
             <div className="inline-flex justify-start items-start gap-14">
@@ -991,7 +995,11 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.layout3Title || "학부모 영주권 프로그램"}
                   className="text-center justify-start text-gray-95 text-5xl font-bold font-['Pretendard'] leading-[72px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                  style={getElementStyle(data.layout3TitleStyle, viewport)}
+                  style={getElementStyle(
+                    data.layout3TitleStyle ||
+                      TITLE_BANNER_DEFAULTS.layout3TitleStyle,
+                    viewport,
+                  )}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout3Title");
@@ -1002,8 +1010,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                     data.layout3Desc ||
                     "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램"
                   }
-                  className="text-center justify-start text-gray-50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
-                  style={getElementStyle(data.layout3DescStyle, viewport)}
+                  className="text-center justify-start text-gray-50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                  style={getTitleBannerTextStyle(data.layout3DescStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout3Desc");
@@ -1037,11 +1045,16 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 하단: 통이미지 배너 */}
-            <div className="self-stretch h-96 relative rounded-3xl overflow-hidden">
+            <div
+              className={`self-stretch relative ${getBorderRadiusClass(viewport, "rounded-3xl")} overflow-hidden`}
+            >
               <UniversalMedia
-                className="w-full h-full object-cover"
+                className="w-full"
                 url={layout3CurrentImage}
-                style={getElementStyle(layout3CurrentImageStyle, viewport)}
+                style={{
+                  ...getElementStyle(layout3CurrentImageStyle, viewport),
+                  height: "auto",
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.(
@@ -1066,7 +1079,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       }}
     >
       <div className="text-center font-bold text-gray-400">
-        <p className="text-xl">타이틀 배너 디자인 대기중</p>
+        <p className="text-lg xl:text-xl">타이틀 배너 디자인 대기중</p>
         <p className="text-sm mt-2 font-mono bg-white px-3 py-1 inline-block shadow-sm">
           레이아웃 {layout}
         </p>

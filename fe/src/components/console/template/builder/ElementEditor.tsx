@@ -475,9 +475,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
       if (
         (layoutVal === "5" ||
+          layoutVal === "6" ||
           layoutVal === "8" ||
           layoutVal === "9" ||
           layoutVal === "layout5" ||
+          layoutVal === "layout6" ||
           layoutVal === "layout8" ||
           layoutVal === "layout9") &&
         ["itemTitle", "itemDesc", "itemIcon"].includes(elementKey)
@@ -488,6 +490,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 key: "sections5",
                 defaults: TEXT_STRUCTURE_5_DEFAULT_SECTIONS,
               }
+            : layoutVal === "6" || layoutVal === "layout6"
+              ? {
+                  key: "sections6",
+                  defaults: TEXT_STRUCTURE_6_DEFAULT_SECTIONS,
+                }
             : layoutVal === "8" || layoutVal === "layout8"
               ? {
                   key: "sections8",
@@ -501,13 +508,17 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           data[layoutSectionConfig.key] || layoutSectionConfig.defaults;
         let matchedSectionId: string | null = null;
         let matchedItem: any = null;
+        let matchedItemIndex = -1;
 
         for (const section of sections) {
           if (!section?.items) continue;
-          const found = section.items.find((it: any) => it.id === itemId);
-          if (found) {
+          const foundIndex = (section.items || []).findIndex(
+            (it: any) => it.id === itemId,
+          );
+          if (foundIndex >= 0) {
             matchedSectionId = section.id;
-            matchedItem = found;
+            matchedItem = section.items[foundIndex];
+            matchedItemIndex = foundIndex;
             break;
           }
           if (typeof itemId === "string" && itemId.includes(":")) {
@@ -521,12 +532,13 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             ) {
               matchedSectionId = section.id;
               matchedItem = section.items[itemIdx];
+              matchedItemIndex = itemIdx;
               break;
             }
           }
         }
 
-        if (matchedSectionId && matchedItem) {
+        if (matchedSectionId && matchedItem && matchedItemIndex >= 0) {
           const targetProp =
             elementKey === "itemTitle"
               ? matchedItem.title !== undefined
@@ -560,8 +572,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 ? section
                 : {
                     ...section,
-                    items: (section.items || []).map((it: any) =>
-                      it.id === itemId ? { ...it, [targetProp]: val } : it,
+                    items: (section.items || []).map((it: any, idx: number) =>
+                      idx === matchedItemIndex ||
+                      (it.id !== undefined && it.id === itemId)
+                        ? { ...it, [targetProp]: val }
+                        : it,
                     ),
                   },
             );
@@ -575,8 +590,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 ? section
                 : {
                     ...section,
-                    items: (section.items || []).map((it: any) =>
-                      it.id === itemId
+                    items: (section.items || []).map((it: any, idx: number) =>
+                      idx === matchedItemIndex ||
+                      (it.id !== undefined && it.id === itemId)
                         ? {
                             ...it,
                             [targetStyleProp]: {
@@ -658,7 +674,26 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             // For nested items in sections
             for (const section of sections) {
               if (section.items) {
-                const item = section.items.find((it: any) => it.id === itemId);
+                let itemIndex = (section.items || []).findIndex(
+                  (it: any) => it.id === itemId,
+                );
+                if (
+                  itemIndex < 0 &&
+                  typeof itemId === "string" &&
+                  itemId.includes(":")
+                ) {
+                  const [sectionIdFromRef, itemIdxRaw] = itemId.split(":");
+                  const parsedIdx = Number.parseInt(itemIdxRaw, 10);
+                  if (
+                    sectionIdFromRef === section.id &&
+                    Number.isInteger(parsedIdx) &&
+                    parsedIdx >= 0 &&
+                    parsedIdx < section.items.length
+                  ) {
+                    itemIndex = parsedIdx;
+                  }
+                }
+                const item = itemIndex >= 0 ? section.items[itemIndex] : null;
                 if (item) {
                   const targetPropMap: Record<string, string> = {
                     itemNumber: "number",
@@ -682,8 +717,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   onTextChange = (val) => {
                     const updatedSections = sections.map((s: any) => {
                       if (s.id === section.id) {
-                        const updatedItems = s.items.map((it: any) =>
-                          it.id === itemId ? { ...it, [targetProp]: val } : it,
+                        const updatedItems = s.items.map(
+                          (it: any, idx: number) =>
+                            idx === itemIndex ||
+                            (it.id !== undefined && it.id === itemId)
+                              ? { ...it, [targetProp]: val }
+                              : it,
                         );
                         return { ...s, items: updatedItems };
                       }
@@ -696,8 +735,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   onStyleChange = (k, v) => {
                     const updatedSections = sections.map((s: any) => {
                       if (s.id === section.id) {
-                        const updatedItems = s.items.map((it: any) =>
-                          it.id === itemId
+                        const updatedItems = s.items.map(
+                          (it: any, idx: number) =>
+                            idx === itemIndex ||
+                            (it.id !== undefined && it.id === itemId)
                             ? {
                                 ...it,
                                 [styleProp]: {
@@ -705,7 +746,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                                   [k]: v,
                                 },
                               }
-                            : it,
+                              : it,
                         );
                         return { ...s, items: updatedItems };
                       }

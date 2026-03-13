@@ -380,13 +380,56 @@ const Builder: React.FC<BuilderProps> = ({
     };
   }, [setCanvasZoomLevel]);
 
-  // Auto-migration: Convert fontSize from 16px to 18px
-  // Auto-migration: Globally convert fontSize from 16px to 18px
+  // Auto-migration: Backfill missing mobile font sizes for legacy titleText defaults.
   useEffect(() => {
     let needsUpdate = false;
 
     // Deep clone the pageData to avoid mutation issues before setState
     const updatedData = JSON.parse(JSON.stringify(pageData));
+
+    const normalizeFontSize = (value: any) => {
+      if (value === undefined || value === null || value === "") return "";
+      if (typeof value === "number") return `${value}px`;
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (!trimmed) return "";
+        return /^\d+$/.test(trimmed) ? `${trimmed}px` : trimmed;
+      }
+      return "";
+    };
+
+    const backfillMobileFontSize = (
+      style: any,
+      desktopFontSize: string,
+      mobileFontSize: string,
+    ) => {
+      if (!style || typeof style !== "object") return;
+
+      const hasMobileFontSize =
+        style.fontSizeMobile !== undefined &&
+        style.fontSizeMobile !== null &&
+        String(style.fontSizeMobile).trim() !== "";
+
+      if (hasMobileFontSize) return;
+
+      if (normalizeFontSize(style.fontSize) === desktopFontSize) {
+        style.fontSizeMobile = mobileFontSize;
+        needsUpdate = true;
+      }
+    };
+
+    const migrateTitleTextWidget = (widget: any) => {
+      if (widget?.type !== "titleText" || !widget.data) return;
+
+      backfillMobileFontSize(widget.data.subTitleStyle, "20px", "18px");
+      backfillMobileFontSize(widget.data.descStyle, "20px", "18px");
+      backfillMobileFontSize(widget.data.layout1SubTitleStyle, "20px", "18px");
+      backfillMobileFontSize(widget.data.layout2SubTitleStyle, "20px", "18px");
+      backfillMobileFontSize(widget.data.layout3SubTitleStyle, "24px", "20px");
+      backfillMobileFontSize(widget.data.layout3DescStyle, "20px", "18px");
+      backfillMobileFontSize(widget.data.layout4SubTitleStyle, "20px", "18px");
+      backfillMobileFontSize(widget.data.layout4DescStyle, "20px", "18px");
+    };
 
     const recursiveUpdateFontSize = (obj: any) => {
       if (!obj || typeof obj !== "object") return;
@@ -415,13 +458,14 @@ const Builder: React.FC<BuilderProps> = ({
 
     updatedData.sections.forEach((section: any) => {
       section.widgets.forEach((widget: any) => {
+        migrateTitleTextWidget(widget);
         recursiveUpdateFontSize(widget.data);
         recursiveUpdateFontSize(widget.style);
       });
     });
 
     if (needsUpdate) {
-      console.log("✓ Global Auto-migration: fontSize 16px → 18px completed");
+      console.log("✓ TitleText mobile fontSize backfill completed");
       setPageData(updatedData);
     }
   }, [pageData]); // Run whenever pageData changes (to catch async data load)

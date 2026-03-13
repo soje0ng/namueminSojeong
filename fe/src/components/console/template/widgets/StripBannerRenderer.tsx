@@ -47,7 +47,8 @@ export const STRIP_BANNER_DEFAULTS = {
   layout2Title: "타이틀명 입력",
   layout2TitleStyle: {
     color: "#ffffff",
-    fontSize: "36px",
+    fontSize: "40px",
+    fontSizeMobile: "28px",
     fontWeight: "700",
     lineHeight: "60px",
   },
@@ -75,6 +76,13 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
 }) => {
   const data = (widget.data as any) || STRIP_BANNER_DEFAULTS;
   const layout = data.layout || "1";
+  const getStripBannerTextStyle = (
+    textStyle: any,
+    overrides: React.CSSProperties = {},
+  ) => ({
+    ...getElementStyle(textStyle, viewport),
+    ...overrides,
+  });
 
   const sectionStyle: React.CSSProperties = {
     backgroundColor:
@@ -95,10 +103,10 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
         }}
       >
         <div
-          className={`self-stretch ${getPaddingClass(viewport, "")} inline-flex flex-col justify-center items-center gap-2.5 w-full`}
+          className={`self-stretch ${getPaddingClass(viewport)} inline-flex flex-col justify-center items-center gap-2.5 w-full`}
         >
           <div
-            className={`self-stretch ${getPaddingClass(viewport, "xl:pl-20")} inline-flex flex-col xl:flex-row justify-start items-center gap-2 w-full min-h-[16rem] rounded-xl overflow-hidden relative`}
+            className="self-stretch inline-flex flex-col xl:flex-row justify-start items-center gap-2 w-full min-h-[16rem] rounded-xl overflow-hidden relative"
             style={{ backgroundColor: sectionStyle.backgroundColor }}
           >
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-2 py-10 xl:py-0 w-full z-10">
@@ -106,7 +114,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.title}
                   className="justify-start font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text transition-all"
-                  style={getElementStyle(data.titleStyle, viewport)}
+                  style={getStripBannerTextStyle(data.titleStyle)}
                   onDoubleClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -118,7 +126,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.desc}
                   className="justify-start font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text transition-all"
-                  style={getElementStyle(data.descStyle, viewport)}
+                  style={getStripBannerTextStyle(data.descStyle)}
                   onDoubleClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -183,7 +191,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
       }}
     >
       <div
-        className={`self-stretch ${getPaddingClass(viewport, "")} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+        className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
       >
         <div
           className="self-stretch h-auto xl:h-96 rounded-[20px] inline-flex flex-col xl:flex-row justify-start items-stretch overflow-hidden w-full relative"
@@ -223,10 +231,9 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.layout2SubTitle || "( 서브타이틀 )"}
                   className="text-center justify-start font-medium font-['Pretendard'] break-keep cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                  style={getElementStyle(
+                  style={getStripBannerTextStyle(
                     data.layout2SubTitleStyle ||
                       STRIP_BANNER_DEFAULTS.layout2SubTitleStyle,
-                    viewport,
                   )}
                   onDoubleClick={(e) => {
                     e.preventDefault();
@@ -239,10 +246,9 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.layout2Title || "타이틀명 입력"}
                   className="justify-start font-bold font-['Pretendard'] break-keep cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                  style={getElementStyle(
+                  style={getStripBannerTextStyle(
                     data.layout2TitleStyle ||
                       STRIP_BANNER_DEFAULTS.layout2TitleStyle,
-                    viewport,
                   )}
                   onDoubleClick={(e) => {
                     e.preventDefault();
@@ -255,10 +261,9 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.layout2Desc || "이민 프로그램명 입력"}
                   className="text-center justify-start font-medium font-['Pretendard'] break-keep cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                  style={getElementStyle(
+                  style={getStripBannerTextStyle(
                     data.layout2DescStyle ||
                       STRIP_BANNER_DEFAULTS.layout2DescStyle,
-                    viewport,
                   )}
                   onDoubleClick={(e) => {
                     e.preventDefault();
@@ -274,10 +279,9 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.layout2ButtonText || "자세히 보기"}
                   className="justify-start font-bold font-['Pretendard'] break-keep cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
-                  style={getElementStyle(
+                  style={getStripBannerTextStyle(
                     data.layout2ButtonTextStyle ||
                       STRIP_BANNER_DEFAULTS.layout2ButtonTextStyle,
-                    viewport,
                   )}
                   onDoubleClick={(e) => {
                     e.preventDefault();
