@@ -310,7 +310,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex justify-start items-center gap-20`}
+            className={`self-stretch pl-5 md:pl-10 xl:pl-[280px] pr-0 py-14 inline-flex justify-start items-center gap-20`}
           >
             <div className="flex-1 h-[575px] inline-flex flex-col justify-between items-start">
               {/* 상단 텍스트 그룹 */}
