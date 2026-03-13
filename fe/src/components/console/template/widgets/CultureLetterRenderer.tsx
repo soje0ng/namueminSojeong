@@ -43,7 +43,7 @@ export const CULTURE_LETTER_DEFAULTS = {
     color: "#FFFFFF",
     letterSpacing: "-0.48px",
     lineHeight: "1.5",
-    fontWeight: "700",
+    fontWeight: "500",
   },
   title: "텍스트 영역입니다.\n텍스트 타이틀 영역",
   titleStyle: {
@@ -150,7 +150,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
               url={logoImage}
               style={{
-                height: viewport === "mobile" ? "40px" : "60px",
+                height: "40px",
                 width: "auto",
                 objectFit: "contain",
               }}
