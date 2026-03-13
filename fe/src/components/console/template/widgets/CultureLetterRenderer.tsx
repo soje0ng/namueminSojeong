@@ -19,7 +19,7 @@ export const CULTURE_LETTER_DEFAULTS = {
   layout1LogoImageUrlStyle: { objectFit: "contain" },
   cultureLetter: "Culture Letter",
   cultureLetterStyle: {
-    fontFamily: "'Tenor Sans', sans-serif",
+    fontFamily: "Tenor Sans",
     fontSize: "40px",
     fontSizeMobile: "40px",
     color: "#FFFFFF",

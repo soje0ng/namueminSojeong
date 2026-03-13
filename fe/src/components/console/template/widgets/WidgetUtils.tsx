@@ -64,6 +64,7 @@ export const getElementStyle = (
 
   const result = {
     fontSize,
+    fontFamily: style.fontFamily,
     fontWeight: style.fontWeight,
     color: style.color,
     lineHeight: (style as any).lineHeight || "150%",
