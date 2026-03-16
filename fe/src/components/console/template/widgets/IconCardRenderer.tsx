@@ -282,7 +282,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardRootTextStyle("subTitle", w.data.subTitleStyle)}
+                style={getIconCardRootTextStyle(
+                  "subTitle",
+                  w.data.subTitleStyle,
+                )}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -304,7 +307,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
+                style={getIconCardRootTextStyle(
+                  "desc",
+                  (w.data as any).descStyle,
+                )}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -444,7 +450,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
+                style={getIconCardRootTextStyle(
+                  "desc",
+                  (w.data as any).descStyle,
+                )}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -571,7 +580,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
+                style={getIconCardRootTextStyle(
+                  "desc",
+                  (w.data as any).descStyle,
+                )}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -708,7 +720,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
+                style={getIconCardRootTextStyle(
+                  "desc",
+                  (w.data as any).descStyle,
+                )}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -861,7 +876,10 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
+                style={getIconCardRootTextStyle(
+                  "desc",
+                  (w.data as any).descStyle,
+                )}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -960,7 +978,9 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             onElementSelect?.("style");
           }}
         >
-          <div className="flex flex-col justify-start items-center">
+          <div
+            className={`flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-0" : ""}`}
+          >
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
@@ -990,9 +1010,13 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep mt-2"
-                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle, {
-                  marginTop: "8px",
-                })}
+                style={getIconCardRootTextStyle(
+                  "desc",
+                  (w.data as any).descStyle,
+                  {
+                    marginTop: "8px",
+                  },
+                )}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
