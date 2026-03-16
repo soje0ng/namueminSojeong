@@ -81,7 +81,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
   },
   title: "타이틀명 입력",
   titleStyle: {
-    fontSize: "36px",
+    fontSize: "40px",
     fontWeight: "700",
     color: "#111827",
     fontSizeMobile: "28px",
@@ -108,7 +108,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
   },
   layout3Title: "타이틀명 입력",
   layout3TitleStyle: {
-    fontSize: "48px",
+    fontSize: "40px",
     fontWeight: "700",
     color: "#131416",
     fontSizeMobile: "28px",
@@ -169,7 +169,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
   },
   l5Title: "타이틀명 입력",
   l5TitleStyle: {
-    fontSize: "36px",
+    fontSize: "40px",
     fontWeight: "700",
     color: "#131416",
     fontSizeMobile: "28px",
@@ -662,6 +662,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
   const sectionPaddingFallbackClass = getPaddingClass(viewport, "xl:px-32");
   const sectionPaddingPanelClass = getPaddingClass(viewport, "xl:px-14");
   const sectionPadding40Class = getPaddingClass(viewport, "");
+  const mobileImageRadiusStyle =
+    viewport === "mobile" ? { borderRadius: "8px" } : undefined;
 
   if (layout === "10") {
     const sections10 =
@@ -806,7 +808,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         }}
                       />
                     </div>
-                    <div className="w-[200px] h-[200px] shrink-0 relative flex justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer">
+                    <div
+                      className="w-[200px] h-[200px] shrink-0 relative flex justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                      style={mobileImageRadiusStyle}
+                    >
                       <UniversalMedia
                         url={
                           section.iconUrl ||
@@ -814,14 +819,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         }
                         className="w-full h-full object-cover"
                         alt="card image"
-                        style={getElementStyle(
-                          {
-                            ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
-                              ?.imageStyle || {}),
-                            ...(section.imageStyle || {}),
-                          },
-                          viewport,
-                        )}
+                        style={{
+                          ...getElementStyle(
+                            {
+                              ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
+                                ?.imageStyle || {}),
+                              ...(section.imageStyle || {}),
+                            },
+                            viewport,
+                          ),
+                          ...mobileImageRadiusStyle,
+                        }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("sections10_image", i.toString());
@@ -1243,7 +1251,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingWideClass} py-14`} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-[24px]" : viewport === "tablet" ? "gap-[40px]" : "gap-10"} w-full hover:ring-2 hover:ring-transparent transition-all`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingWideClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-[24px]" : viewport === "tablet" ? "gap-[40px]" : "gap-10"} w-full hover:ring-2 hover:ring-transparent transition-all`}
           >
             {/* Top Common Header Area */}
             <div
@@ -1370,7 +1378,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     ? {
                         paddingLeft: "0",
                         paddingRight: "0",
-                        paddingTop: "0",
+                        paddingTop: "24px",
                         paddingBottom: "0",
                         gap: "47px",
                       }
@@ -1543,6 +1551,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             {/* 케이스 카드 목록 */}
             {(data.cases || []).map((c: any, i: number) => {
               const imageOnRight = c.imageOnRight || false;
+              const isLastCase = i === (data.cases || []).length - 1;
               return (
                 <div
                   key={c.id || i}
@@ -1550,9 +1559,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     imageOnRight ? "xl:flex-row-reverse" : "xl:flex-row"
                   } justify-start items-stretch gap-0 w-full group/card relative mb-10 last:mb-0`}
                   style={
-                    viewport === "mobile" || viewport === "tablet"
-                      ? { flexDirection: "column", gap: "24px" }
-                      : undefined
+                    viewport === "mobile"
+                      ? {
+                          flexDirection: "column",
+                          gap: "24px",
+                          marginBottom: isLastCase ? "0" : "16px",
+                        }
+                      : viewport === "tablet"
+                        ? { flexDirection: "column", gap: "24px" }
+                        : undefined
                   }
                 >
                   {/* 이미지 영역 */}
@@ -1856,7 +1871,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} py-14`} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full`}
             style={
               viewport === "mobile"
                 ? { gap: "40px" }
@@ -1911,9 +1926,19 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               className="self-stretch pt-10 flex flex-col xl:flex-row justify-start items-start gap-14 w-full"
               style={
                 viewport === "mobile"
-                  ? { paddingTop: "0", gap: "24px", flexDirection: "column" as React.CSSProperties["flexDirection"] }
+                  ? {
+                      paddingTop: "0",
+                      gap: "24px",
+                      flexDirection:
+                        "column" as React.CSSProperties["flexDirection"],
+                    }
                   : viewport === "tablet"
-                    ? { paddingTop: "0", gap: "60px", flexDirection: "column" as React.CSSProperties["flexDirection"] }
+                    ? {
+                        paddingTop: "0",
+                        gap: "60px",
+                        flexDirection:
+                          "column" as React.CSSProperties["flexDirection"],
+                      }
                     : undefined
               }
             >
@@ -1924,8 +1949,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     html={data.l5SideTitle || "타이틀명 입력"}
                     className="text-[#131416] text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
                     style={{
-                      ...getElementStyle({ fontSizeMobile: "24px", ...data.l5SideTitleStyle }, viewport),
-                      ...(viewport === "tablet" ? { fontSize: "28px", letterSpacing: "-0.56px" } : viewport === "mobile" ? { letterSpacing: "-0.48px" } : {}),
+                      ...getElementStyle(
+                        { fontSizeMobile: "24px", ...data.l5SideTitleStyle },
+                        viewport,
+                      ),
+                      ...(viewport === "tablet"
+                        ? { fontSize: "28px", letterSpacing: "-0.56px" }
+                        : viewport === "mobile"
+                          ? { letterSpacing: "-0.48px" }
+                          : {}),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -1938,8 +1970,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     html={data.l5SideDesc || "이민 프로그램명 입력"}
                     className="text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
                     style={{
-                      ...getElementStyle({ fontSizeMobile: "18px", ...data.l5SideDescStyle }, viewport),
-                      letterSpacing: viewport === "mobile" ? "-0.36px" : viewport === "tablet" ? "-0.4px" : undefined,
+                      ...getElementStyle(
+                        { fontSizeMobile: "18px", ...data.l5SideDescStyle },
+                        viewport,
+                      ),
+                      letterSpacing:
+                        viewport === "mobile"
+                          ? "-0.36px"
+                          : viewport === "tablet"
+                            ? "-0.4px"
+                            : undefined,
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -2002,6 +2042,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               height: section.imageHeight
                                 ? formatUnit(section.imageHeight, "px")
                                 : "auto",
+                              ...mobileImageRadiusStyle,
                               ...getOpacityStyle(
                                 section.imageOpacities?.[imgIdx],
                               ),
@@ -2011,10 +2052,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               url={img || "/images/placeholder/card-sm.jpg"}
                               className="w-full h-auto object-contain"
                               alt=""
-                              style={getElementStyle(
-                                section.imageStyle,
-                                viewport,
-                              )}
+                              style={{
+                                ...getElementStyle(
+                                  section.imageStyle,
+                                  viewport,
+                                ),
+                                ...mobileImageRadiusStyle,
+                              }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.(
@@ -2044,7 +2088,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         className="self-stretch flex flex-col justify-start items-start gap-2 w-full"
                         style={{
                           ...getOpacityStyle(section.opacity),
-                          ...(viewport === "mobile" || viewport === "tablet" ? { gap: "8px" } : {}),
+                          ...(viewport === "mobile" || viewport === "tablet"
+                            ? { gap: "8px" }
+                            : {}),
                         }}
                       >
                         {!section.subTitleStyle?.isHidden && (
@@ -2052,8 +2098,18 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             html={section.subTitle || "서브 타이틀 입력"}
                             className="self-stretch text-[#131416] text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
-                              ...getElementStyle({ fontSizeMobile: "20px", ...section.subTitleStyle }, viewport),
-                              ...(viewport === "tablet" ? { fontSize: "24px", letterSpacing: "-0.48px" } : viewport === "mobile" ? { letterSpacing: "-0.4px" } : {}),
+                              ...getElementStyle(
+                                {
+                                  fontSizeMobile: "20px",
+                                  ...section.subTitleStyle,
+                                },
+                                viewport,
+                              ),
+                              ...(viewport === "tablet"
+                                ? { fontSize: "24px", letterSpacing: "-0.48px" }
+                                : viewport === "mobile"
+                                  ? { letterSpacing: "-0.4px" }
+                                  : {}),
                             }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
@@ -2066,8 +2122,19 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             html={section.content || "내용을 입력하세요."}
                             className="self-stretch text-[#6D7882] text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
-                              ...getElementStyle({ fontSizeMobile: "18px", ...section.contentStyle }, viewport),
-                              letterSpacing: viewport === "mobile" ? "-0.36px" : viewport === "tablet" ? "-0.4px" : undefined,
+                              ...getElementStyle(
+                                {
+                                  fontSizeMobile: "18px",
+                                  ...section.contentStyle,
+                                },
+                                viewport,
+                              ),
+                              letterSpacing:
+                                viewport === "mobile"
+                                  ? "-0.36px"
+                                  : viewport === "tablet"
+                                    ? "-0.4px"
+                                    : undefined,
                             }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
@@ -2089,7 +2156,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         className="self-stretch flex flex-col justify-start items-start gap-5 w-full"
                         style={{
                           ...getOpacityStyle(section.opacity),
-                          ...(viewport === "tablet" ? { gap: "20px" } : viewport === "mobile" ? { gap: "12px" } : {}),
+                          ...(viewport === "tablet"
+                            ? { gap: "20px" }
+                            : viewport === "mobile"
+                              ? { gap: "12px" }
+                              : {}),
                         }}
                       >
                         {!section.bojoTitleStyle?.isHidden && (
@@ -2097,7 +2168,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             html={section.bojoTitle || "보조 타이틀 문구 입력"}
                             className="text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
-                              letterSpacing: viewport === "mobile" || viewport === "tablet" ? "-0.4px" : undefined,
+                              letterSpacing:
+                                viewport === "mobile" || viewport === "tablet"
+                                  ? "-0.4px"
+                                  : undefined,
                             }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
@@ -2117,9 +2191,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           }`}
                           style={
                             viewport === "tablet"
-                              ? { display: "flex", flexDirection: "row", gap: "8px" }
+                              ? {
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  gap: "8px",
+                                }
                               : viewport === "mobile"
-                                ? { display: "flex", flexDirection: "column", gap: "8px" }
+                                ? {
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "8px",
+                                  }
                                 : undefined
                           }
                         >
@@ -2130,9 +2212,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               style={{
                                 ...getOpacityStyle(item.opacity),
                                 ...(viewport === "tablet"
-                                  ? { flex: "1 0 0", gap: "20px", alignItems: "center" }
+                                  ? {
+                                      flex: "1 0 0",
+                                      gap: "20px",
+                                      alignItems: "center",
+                                    }
                                   : viewport === "mobile"
-                                    ? { width: "100%", gap: "20px", alignItems: "center" }
+                                    ? {
+                                        width: "100%",
+                                        gap: "20px",
+                                        alignItems: "center",
+                                      }
                                     : {}),
                               }}
                               onDoubleClick={(e) => {
@@ -2180,14 +2270,28 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               </div>
                               <div
                                 className="flex flex-col justify-start items-start gap-1"
-                                style={viewport === "mobile" || viewport === "tablet" ? { gap: "8px" } : undefined}
+                                style={
+                                  viewport === "mobile" || viewport === "tablet"
+                                    ? { gap: "8px" }
+                                    : undefined
+                                }
                               >
                                 <TextStructureSafeHtml
                                   html={item.title || "프로그램 특징"}
                                   className="text-[#09090b] text-xl font-bold font-['Pretendard'] leading-8 break-keep"
                                   style={{
-                                    ...getElementStyle({ fontSizeMobile: "20px", ...item.titleStyle }, viewport),
-                                    letterSpacing: viewport === "mobile" || viewport === "tablet" ? "-0.4px" : undefined,
+                                    ...getElementStyle(
+                                      {
+                                        fontSizeMobile: "20px",
+                                        ...item.titleStyle,
+                                      },
+                                      viewport,
+                                    ),
+                                    letterSpacing:
+                                      viewport === "mobile" ||
+                                      viewport === "tablet"
+                                        ? "-0.4px"
+                                        : undefined,
                                   }}
                                   onDoubleClick={(e) => {
                                     e.stopPropagation();
@@ -2208,8 +2312,18 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                   html={item.desc || "프로그램 특징 내용 입력"}
                                   className="text-[#6D7882] text-lg font-normal font-['Pretendard'] leading-7 break-keep"
                                   style={{
-                                    ...getElementStyle({ fontSizeMobile: "18px", ...item.descStyle }, viewport),
-                                    letterSpacing: viewport === "mobile" || viewport === "tablet" ? "-0.36px" : undefined,
+                                    ...getElementStyle(
+                                      {
+                                        fontSizeMobile: "18px",
+                                        ...item.descStyle,
+                                      },
+                                      viewport,
+                                    ),
+                                    letterSpacing:
+                                      viewport === "mobile" ||
+                                      viewport === "tablet"
+                                        ? "-0.36px"
+                                        : undefined,
                                   }}
                                   onDoubleClick={(e) => {
                                     e.stopPropagation();
@@ -2241,9 +2355,29 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={section.id}
                         className="self-stretch flex flex-col xl:flex-row justify-start items-start gap-10 w-full"
-                        style={getOpacityStyle(section.opacity)}
+                        style={{
+                          ...getOpacityStyle(section.opacity),
+                          ...(viewport === "mobile" || viewport === "tablet"
+                            ? {
+                                flexDirection: "column-reverse",
+                                gap: "24px",
+                              }
+                            : {}),
+                        }}
                       >
-                        <div className="flex-1 inline-flex flex-col justify-start items-start min-w-0">
+                        <div
+                          className="flex-1 inline-flex flex-col justify-start items-start min-w-0 w-full"
+                          style={
+                            viewport === "mobile" || viewport === "tablet"
+                              ? {
+                                  paddingLeft:
+                                    viewport === "mobile" ? "20px" : "40px",
+                                  paddingRight:
+                                    viewport === "mobile" ? "20px" : "40px",
+                                }
+                              : undefined
+                          }
+                        >
                           {items.map((item: any, itemIdx: number) => {
                             const itemLabelId =
                               item.id || `${sectionRef}:${itemIdx}`;
@@ -2255,9 +2389,22 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                 style={{
                                   ...getOpacityStyle(item.opacity),
                                   ...(viewport === "mobile"
-                                    ? { flexDirection: "column" as React.CSSProperties["flexDirection"], alignItems: "flex-start", paddingTop: "8px", paddingBottom: "8px", gap: "8px" }
+                                    ? {
+                                        flexDirection:
+                                          "column" as React.CSSProperties["flexDirection"],
+                                        alignItems: "flex-start",
+                                        paddingTop: "8px",
+                                        paddingBottom: "8px",
+                                        gap: "8px",
+                                      }
                                     : viewport === "tablet"
-                                      ? { flexDirection: "row" as React.CSSProperties["flexDirection"], alignItems: "center", paddingTop: "12px", paddingBottom: "12px" }
+                                      ? {
+                                          flexDirection:
+                                            "row" as React.CSSProperties["flexDirection"],
+                                          alignItems: "center",
+                                          paddingTop: "12px",
+                                          paddingBottom: "12px",
+                                        }
                                       : {}),
                                 }}
                                 onDoubleClick={(e) => {
@@ -2303,9 +2450,21 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                     html={item.label || "라벨명"}
                                     className="flex-1 min-w-0 text-[#09090b] text-xl font-bold font-['Pretendard'] leading-8 break-keep cursor-text"
                                     style={{
-                                      ...getElementStyle({ fontSizeMobile: "20px", ...item.labelStyle }, viewport),
-                                      ...(isContentHidden ? { width: "100%" } : {}),
-                                      letterSpacing: viewport === "mobile" || viewport === "tablet" ? "-0.4px" : undefined,
+                                      ...getElementStyle(
+                                        {
+                                          fontSizeMobile: "20px",
+                                          ...item.labelStyle,
+                                        },
+                                        viewport,
+                                      ),
+                                      ...(isContentHidden
+                                        ? { width: "100%" }
+                                        : {}),
+                                      letterSpacing:
+                                        viewport === "mobile" ||
+                                        viewport === "tablet"
+                                          ? "-0.4px"
+                                          : undefined,
                                     }}
                                     onDoubleClick={(e) => {
                                       e.stopPropagation();
@@ -2330,8 +2489,18 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                     }
                                     className="flex-1 text-[#6D7882] text-lg font-normal font-['Pretendard'] leading-7 break-keep"
                                     style={{
-                                      ...getElementStyle({ fontSizeMobile: "18px", ...item.contentStyle }, viewport),
-                                      letterSpacing: viewport === "mobile" || viewport === "tablet" ? "-0.36px" : undefined,
+                                      ...getElementStyle(
+                                        {
+                                          fontSizeMobile: "18px",
+                                          ...item.contentStyle,
+                                        },
+                                        viewport,
+                                      ),
+                                      letterSpacing:
+                                        viewport === "mobile" ||
+                                        viewport === "tablet"
+                                          ? "-0.36px"
+                                          : undefined,
                                     }}
                                     onDoubleClick={(e) => {
                                       e.stopPropagation();
@@ -2354,8 +2523,18 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           })}
                         </div>
                         <div
-                          className="w-full xl:w-[480px] shrink-0 rounded-2xl overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
-                          style={{ alignSelf: "stretch", minHeight: "240px" }}
+                          className={`w-full xl:w-[480px] ${viewport === "mobile" || viewport === "tablet" ? "shrink" : "shrink-0"} rounded-2xl overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                          style={{
+                            alignSelf:
+                              viewport === "mobile" || viewport === "tablet"
+                                ? "auto"
+                                : "stretch",
+                            minHeight:
+                              viewport === "mobile" || viewport === "tablet"
+                                ? "auto"
+                                : "240px",
+                            ...mobileImageRadiusStyle,
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(
@@ -2378,10 +2557,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             }
                             className="w-full object-cover"
                             alt=""
-                            style={getElementStyle(
-                              section.imageStyle,
-                              viewport,
-                            )}
+                            style={{
+                              ...getElementStyle(section.imageStyle, viewport),
+                              ...mobileImageRadiusStyle,
+                            }}
                           />
                         </div>
                       </div>
@@ -2402,20 +2581,43 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         className="self-stretch bg-[#F6F7FB] rounded-[20px] flex flex-col xl:flex-row justify-start xl:items-stretch items-center overflow-hidden w-full"
                         style={{
                           ...(bannerHeight
-                            ? mergeWithOpacity({ minHeight: bannerHeight, height: bannerHeight }, section.opacity)
+                            ? mergeWithOpacity(
+                                {
+                                  minHeight: bannerHeight,
+                                  height: bannerHeight,
+                                },
+                                section.opacity,
+                              )
                             : getOpacityStyle(section.opacity)),
                           ...(viewport === "tablet"
-                            ? { flexDirection: "row" as React.CSSProperties["flexDirection"], alignItems: "stretch" }
+                            ? {
+                                flexDirection:
+                                  "row" as React.CSSProperties["flexDirection"],
+                                alignItems: "stretch",
+                              }
                             : viewport === "mobile"
-                              ? { flexDirection: "column" as React.CSSProperties["flexDirection"], borderRadius: "8px" }
+                              ? {
+                                  flexDirection:
+                                    "column" as React.CSSProperties["flexDirection"],
+                                  borderRadius: "8px",
+                                }
                               : {}),
                         }}
                       >
                         <div
                           className="w-full xl:w-96 h-auto shrink-0 self-stretch hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden"
                           style={{
-                            ...(bannerHeight ? { minHeight: bannerHeight, height: bannerHeight } : {}),
-                            ...(viewport === "tablet" ? { width: "240px" } : viewport === "mobile" ? { width: "100%" } : {}),
+                            ...(bannerHeight
+                              ? {
+                                  minHeight: bannerHeight,
+                                  height: bannerHeight,
+                                }
+                              : {}),
+                            ...(viewport === "tablet"
+                              ? { width: "240px" }
+                              : viewport === "mobile"
+                                ? { width: "100%" }
+                                : {}),
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -2465,8 +2667,21 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               }
                               className="self-stretch text-[#131416] text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                               style={{
-                                ...getElementStyle({ fontSizeMobile: "20px", ...section.bannerSubTitleStyle }, viewport),
-                                ...(viewport === "tablet" ? { fontSize: "24px", letterSpacing: "-0.48px" } : viewport === "mobile" ? { letterSpacing: "-0.4px" } : {}),
+                                ...getElementStyle(
+                                  {
+                                    fontSizeMobile: "20px",
+                                    ...section.bannerSubTitleStyle,
+                                  },
+                                  viewport,
+                                ),
+                                ...(viewport === "tablet"
+                                  ? {
+                                      fontSize: "24px",
+                                      letterSpacing: "-0.48px",
+                                    }
+                                  : viewport === "mobile"
+                                    ? { letterSpacing: "-0.4px" }
+                                    : {}),
                               }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
@@ -2483,8 +2698,19 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               }
                               className="self-stretch text-[#6D7882] text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                               style={{
-                                ...getElementStyle({ fontSizeMobile: "18px", ...section.bannerDescStyle }, viewport),
-                                letterSpacing: viewport === "mobile" ? "-0.36px" : viewport === "tablet" ? "-0.4px" : undefined,
+                                ...getElementStyle(
+                                  {
+                                    fontSizeMobile: "18px",
+                                    ...section.bannerDescStyle,
+                                  },
+                                  viewport,
+                                ),
+                                letterSpacing:
+                                  viewport === "mobile"
+                                    ? "-0.36px"
+                                    : viewport === "tablet"
+                                      ? "-0.4px"
+                                      : undefined,
                               }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
@@ -2785,7 +3011,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} py-14`} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full`}
             style={
               viewport === "mobile"
                 ? { gap: "24px" }
@@ -2801,8 +3027,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-left justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle({ fontSizeMobile: "18px", ...data.subTitleStyle }, viewport),
-                    letterSpacing: viewport === "mobile" ? "-0.36px" : viewport === "tablet" ? "-0.4px" : undefined,
+                    ...getElementStyle(
+                      { fontSizeMobile: "18px", ...data.subTitleStyle },
+                      viewport,
+                    ),
+                    letterSpacing:
+                      viewport === "mobile"
+                        ? "-0.36px"
+                        : viewport === "tablet"
+                          ? "-0.4px"
+                          : undefined,
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2830,8 +3064,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     html={data.title || "타이틀명 입력"}
                     className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
                     style={{
-                      ...getElementStyle({ fontSizeMobile: "28px", ...data.titleStyle }, viewport),
-                      ...(viewport === "tablet" ? { fontSize: "40px", letterSpacing: "-0.8px" } : viewport === "mobile" ? { letterSpacing: "-0.56px" } : {}),
+                      ...getElementStyle(
+                        { fontSizeMobile: "28px", ...data.titleStyle },
+                        viewport,
+                      ),
+                      ...(viewport === "tablet"
+                        ? { fontSize: "40px", letterSpacing: "-0.8px" }
+                        : viewport === "mobile"
+                          ? { letterSpacing: "-0.56px" }
+                          : {}),
                     }}
                   />
                 </div>
@@ -2841,8 +3082,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-left justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle({ fontSizeMobile: "18px", ...data.descStyle }, viewport),
-                    letterSpacing: viewport === "mobile" ? "-0.36px" : viewport === "tablet" ? "-0.4px" : undefined,
+                    ...getElementStyle(
+                      { fontSizeMobile: "18px", ...data.descStyle },
+                      viewport,
+                    ),
+                    letterSpacing:
+                      viewport === "mobile"
+                        ? "-0.36px"
+                        : viewport === "tablet"
+                          ? "-0.4px"
+                          : undefined,
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2900,6 +3149,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl w-full flex justify-center items-center h-auto"
                           style={{
                             height: "auto",
+                            ...mobileImageRadiusStyle,
                             ...getOpacityStyle(
                               section.imageOpacities?.[imgIdx],
                             ),
@@ -2909,10 +3159,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             url={img}
                             className="w-full h-auto object-contain"
                             alt=""
-                            style={getElementStyle(
-                              section.imageStyle,
-                              viewport,
-                            )}
+                            style={{
+                              ...getElementStyle(section.imageStyle, viewport),
+                              ...mobileImageRadiusStyle,
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.(
@@ -2953,7 +3203,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
                             ...getElementStyle(
-                              { fontSizeMobile: "20px", ...section.subTitleStyle },
+                              {
+                                fontSizeMobile: "20px",
+                                ...section.subTitleStyle,
+                              },
                               viewport,
                             ),
                             ...(viewport === "tablet"
@@ -2974,7 +3227,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
                             ...getElementStyle(
-                              { fontSizeMobile: "18px", ...section.contentStyle },
+                              {
+                                fontSizeMobile: "18px",
+                                ...section.contentStyle,
+                              },
                               viewport,
                             ),
                             letterSpacing:
@@ -3013,7 +3269,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           className="self-stretch text-center justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
                             ...getElementStyle(
-                              { fontSizeMobile: "20px", ...section.newsletterSubTitleStyle },
+                              {
+                                fontSizeMobile: "20px",
+                                ...section.newsletterSubTitleStyle,
+                              },
                               viewport,
                             ),
                             ...(viewport === "tablet"
@@ -3048,7 +3307,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               html={section.leftContent || "내용을 입력하세요."}
                               style={{
                                 ...getElementStyle(
-                                  { fontSizeMobile: "18px", ...section.leftContentStyle },
+                                  {
+                                    fontSizeMobile: "18px",
+                                    ...section.leftContentStyle,
+                                  },
                                   viewport,
                                 ),
                                 letterSpacing:
@@ -3076,7 +3338,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               }
                               style={{
                                 ...getElementStyle(
-                                  { fontSizeMobile: "18px", ...section.rightContentStyle },
+                                  {
+                                    fontSizeMobile: "18px",
+                                    ...section.rightContentStyle,
+                                  },
                                   viewport,
                                 ),
                                 letterSpacing:
@@ -3280,7 +3545,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
                               ...getElementStyle(
-                                { fontSizeMobile: "20px", ...section.bannerSubTitleStyle },
+                                {
+                                  fontSizeMobile: "20px",
+                                  ...section.bannerSubTitleStyle,
+                                },
                                 viewport,
                               ),
                               ...(viewport === "tablet"
@@ -3301,7 +3569,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
                               ...getElementStyle(
-                                { fontSizeMobile: "18px", ...section.bannerDescStyle },
+                                {
+                                  fontSizeMobile: "18px",
+                                  ...section.bannerDescStyle,
+                                },
                                 viewport,
                               ),
                               letterSpacing:
@@ -3475,6 +3746,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl w-full flex justify-center items-center h-auto"
                             style={{
                               height: "auto",
+                              ...mobileImageRadiusStyle,
                               ...getOpacityStyle(
                                 section.imageOpacities?.[imgIdx],
                               ),
@@ -3484,10 +3756,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               url={img}
                               className="w-full h-auto object-contain"
                               alt=""
-                              style={getElementStyle(
-                                section.imageStyle,
-                                viewport,
-                              )}
+                              style={{
+                                ...getElementStyle(
+                                  section.imageStyle,
+                                  viewport,
+                                ),
+                                ...mobileImageRadiusStyle,
+                              }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.(
@@ -3619,8 +3894,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={section.id}
                         className="self-stretch bg-시안-mode-gray5 rounded-[20px] inline-flex flex-col md:flex-row justify-center md:items-stretch items-center overflow-hidden w-full"
-                        style={
-                          bannerHeight
+                        style={{
+                          ...(bannerHeight
                             ? mergeWithOpacity(
                                 {
                                   minHeight: bannerHeight,
@@ -3628,8 +3903,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                 },
                                 section.opacity,
                               )
-                            : getOpacityStyle(section.opacity)
-                        }
+                            : getOpacityStyle(section.opacity)),
+                          ...mobileImageRadiusStyle,
+                        }}
                       >
                         <div
                           className="w-full md:w-96 h-auto shrink-0 self-stretch cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all overflow-hidden"
@@ -3664,6 +3940,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             className="w-full h-full object-cover"
                             style={{
                               ...getElementStyle(section.imageStyle, viewport),
+                              ...mobileImageRadiusStyle,
                               height: bannerHeight || "100%",
                               minHeight: bannerHeight || undefined,
                             }}
@@ -3723,7 +4000,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${sectionPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
           >
             {/* 헤더 영역 */}
             <div
@@ -3813,6 +4090,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-xl w-full flex justify-center items-center h-auto"
                           style={{
                             height: "auto",
+                            ...mobileImageRadiusStyle,
                             ...getOpacityStyle(
                               section.imageOpacities?.[imgIdx],
                             ),
@@ -3836,10 +4114,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             url={img}
                             className="w-full h-auto object-contain"
                             alt=""
-                            style={getElementStyle(
-                              section.imageStyle,
-                              viewport,
-                            )}
+                            style={{
+                              ...getElementStyle(section.imageStyle, viewport),
+                              ...mobileImageRadiusStyle,
+                            }}
                           />
                         </div>
                       ))}
@@ -4032,7 +4310,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${sectionPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
           >
             {/* 헤더 영역 */}
             <div className="flex flex-col justify-start items-center w-full">
@@ -4098,6 +4376,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               {/* 왼쪽: 고정 이미지 */}
               <div
                 className="w-full xl:flex-1 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl shrink-0 flex justify-center items-center h-auto"
+                style={mobileImageRadiusStyle}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("imageUrl");
@@ -4111,7 +4390,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   url={data.imageUrl || "/images/placeholder/card-sm.jpg"}
                   className="w-full h-auto object-contain"
                   alt="Text Structure 9 Image"
-                  style={getElementStyle(data.imageStyle, viewport)}
+                  style={{
+                    ...getElementStyle(data.imageStyle, viewport),
+                    ...mobileImageRadiusStyle,
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("imageUrl");
@@ -4330,7 +4612,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${sectionPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
           >
             {/* 헤더 영역 */}
             <div
@@ -4525,9 +4807,12 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               <div
                                 key={imgIdx}
                                 className="relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-md w-full flex justify-center items-center h-auto"
-                                style={getOpacityStyle(
-                                  section.imageOpacities?.[imgIdx],
-                                )}
+                                style={{
+                                  ...mobileImageRadiusStyle,
+                                  ...getOpacityStyle(
+                                    section.imageOpacities?.[imgIdx],
+                                  ),
+                                }}
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.(
@@ -4547,10 +4832,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                   url={img}
                                   className="w-full h-auto object-contain"
                                   alt=""
-                                  style={getElementStyle(
-                                    section.imageStyle,
-                                    viewport,
-                                  )}
+                                  style={{
+                                    ...getElementStyle(
+                                      section.imageStyle,
+                                      viewport,
+                                    ),
+                                    ...mobileImageRadiusStyle,
+                                  }}
                                 />
                               </div>
                             ))}

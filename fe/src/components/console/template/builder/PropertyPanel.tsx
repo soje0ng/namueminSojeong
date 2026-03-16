@@ -1271,7 +1271,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                           ? 2
                                           : widget.type === "imageArea"
                                             ? 4
-                                            : 1,
+                                            : widget.type === "stripBanner"
+                                              ? 2
+                                              : 1,
                   }).map((_, i) => (
                     <option key={i + 1} value={`${i + 1}`}>
                       {widget.type === "table"
@@ -1781,19 +1783,18 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     type="number"
                     min={0}
                     className="w-full bg-gray-50 border-none p-3 rounded-xl text-xs focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-blue-600 font-medium"
-                    value={
-                      (() => {
-                        const value = (widget.data as any).desktopHorizontalPadding;
-                        if (
-                          value === undefined ||
-                          value === null ||
-                          value === ""
-                        ) {
-                          return "";
-                        }
-                        return value.toString().replace("px", "");
-                      })()
-                    }
+                    value={(() => {
+                      const value = (widget.data as any)
+                        .desktopHorizontalPadding;
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        value === ""
+                      ) {
+                        return "";
+                      }
+                      return value.toString().replace("px", "");
+                    })()}
                     onChange={(e) =>
                       updateWidgetData(widget.id, {
                         desktopHorizontalPadding: e.target.value,
@@ -1802,8 +1803,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     placeholder="PC 여백(px)"
                   />
                   <p className="text-[14px] text-gray-400 leading-tight">
-                    * PC에만 입력값이 적용되며, 태블릿은 40px, 모바일은
-                    20px로 고정 적용됩니다. 비우면 전체 0px입니다.
+                    * PC에만 입력값이 적용되며, 태블릿은 40px, 모바일은 20px로
+                    고정 적용됩니다. 비우면 전체 0px입니다.
                   </p>
                 </div>
               </div>

@@ -17,7 +17,12 @@ import {
 // - fontSizeMobile: 모바일 화면에서의 크기
 export const FAQ_DEFAULTS = {
   subTitle: "( 서브타이틀 )",
-  subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
+  subTitleStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+    color: "#285DE1",
+  },
   title: "타이틀명 입력",
   titleStyle: {
     fontSize: "40px",
@@ -26,7 +31,12 @@ export const FAQ_DEFAULTS = {
     color: "#111827",
   },
   desc: "이민 프로그램명 입력",
-  descStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+  descStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+    color: "#6b7280",
+  },
   items: [
     {
       id: "1",
@@ -84,7 +94,7 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
     <section style={style} className="w-full h-auto bg-white">
       <div className="mx-auto w-full max-w-[1920px]">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
         >
           {/* Header Area */}
           <div

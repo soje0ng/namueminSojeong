@@ -845,7 +845,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${isTablet ? "px-10" : isMobile ? "px-5" : "pl-5 md:pl-10 xl:pl-[280px] pr-0"} py-14 inline-flex justify-start items-center gap-20`}
+            className={`self-stretch ${isTablet ? "px-10" : isMobile ? "px-5" : "pl-5 md:pl-10 xl:pl-[280px] pr-0"} ${getVerticalPaddingClass(viewport)} inline-flex justify-start items-center gap-20`}
           >
             <div className="flex-1 inline-flex flex-col justify-between items-start">
               {/* 상단 텍스트 그룹 */}
@@ -1242,7 +1242,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
           >
             {/* 피그마 스펙: flex-col gap-[40px] padding: 60px 40px */}
             <div
-              className={`${getPaddingClass(viewport)} py-14 flex flex-col gap-[40px] items-start w-full`}
+              className={`${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} flex flex-col gap-[40px] items-start w-full`}
             >
               {/* subtit 그룹: flex-col gap-[12px] */}
               <div
@@ -1419,7 +1419,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`w-full ${getPaddingClass(viewport)} py-[60px] flex justify-between items-start self-stretch`}
+            className={`w-full ${getPaddingClass(viewport)} ${viewport === "mobile" ? "py-[30px]" : "py-[60px]"} flex justify-between items-start self-stretch`}
           >
             <div className="inline-flex flex-col justify-start items-start gap-3">
               <SafeHtml
@@ -1529,8 +1529,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 flexDirection: "column",
                 alignItems: "center",
                 gap: "24px",
-                paddingTop: "60px",
-                paddingBottom: "60px",
+                paddingTop: isMobile ? "30px" : "60px",
+                paddingBottom: isMobile ? "30px" : "60px",
                 paddingLeft: "20px",
                 paddingRight: "20px",
                 width: "100%",
@@ -1756,7 +1756,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div className="mx-auto w-full max-w-[1920px] relative">
             {/* 피그마: flex-col gap-[40px] items-center padding:60px 40px */}
             <div
-              className={`${getPaddingClass(viewport)} py-14 flex flex-col gap-[40px] items-center w-full`}
+              className={`${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} flex flex-col gap-[40px] items-center w-full`}
             >
               {/* 상단: 따옴표 + 텍스트 | flex gap-[60px] items-start */}
               <div

@@ -24,7 +24,7 @@ export const INFO_BANNER_DEFAULTS = {
   },
   title: "타이틀명 입력",
   titleStyle: {
-    fontSize: "48px",
+    fontSize: "40px",
     fontSizeMobile: "28px",
     fontWeight: "700",
     color: "#FFFFFF",
@@ -166,7 +166,7 @@ export const INFO_BANNER_DEFAULTS = {
   },
   layout5SubTitle: "( 서브타이틀 )",
   layout5SubTitleStyle: {
-    fontSize: "18px",
+    fontSize: "20px",
     fontSizeMobile: "18px",
     fontWeight: "500",
     color: "#285DE1",
@@ -1768,7 +1768,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              paddingTop: "60px",
+              paddingTop: isMobile5 ? "30px" : "60px",
               paddingBottom: isMobile5 ? "100px" : "140px",
               width: "100%",
             }}

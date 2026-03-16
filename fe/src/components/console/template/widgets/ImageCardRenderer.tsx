@@ -198,6 +198,15 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   const w = widget as GenericNewWidget;
   const style = useWidgetStyle(w.style, viewport as any);
   const itemsPerRow = Number(w.data.itemsPerRow) || 3;
+  const normalizedItemsPerRow = Math.max(1, Math.min(itemsPerRow, 4));
+  const responsiveItemsPerRow =
+    viewport === "mobile"
+      ? Math.min(normalizedItemsPerRow, 2)
+      : viewport === "tablet"
+        ? Math.min(normalizedItemsPerRow, 3)
+        : normalizedItemsPerRow;
+  const rootHeaderClassName = `flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-0" : ""}`;
+  const rootHeaderSpacingClassName = viewport === "mobile" ? "" : "mt-2";
   const imageCardImageHeight = formatUnit((w.data as any).imageHeight);
   const getItemImageStyle = (imageStyle: any) => {
     const resolvedStyle = getElementStyle(imageStyle, viewport);
@@ -251,6 +260,12 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
       color: baseStyle.color || (badgeNum === 1 ? "#FFFFFF" : "#131416"),
     };
   };
+  const getResponsiveItemGridStyle = (
+    baseStyle: React.CSSProperties = {},
+  ): React.CSSProperties => ({
+    ...baseStyle,
+    gridTemplateColumns: `repeat(${responsiveItemsPerRow}, minmax(0, 1fr))`,
+  });
 
   const layout = normalizeImageCardLayout(w.data.layout || "1");
 
@@ -379,7 +394,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
-          <div className="flex flex-col justify-start items-center">
+          <div className={rootHeaderClassName}>
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
@@ -393,7 +408,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootTitle", w.data.titleStyle),
               }}
@@ -404,7 +419,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootDesc", w.data.descStyle),
               }}
@@ -418,22 +433,19 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           {/* Grid Area */}
           <div className="self-stretch flex flex-col justify-start items-start gap-6 w-full">
             <div
-              className={`grid ${
-                itemsPerRow === 1
-                  ? "grid-cols-1"
-                  : itemsPerRow === 3
-                    ? "grid-cols-1 xl:grid-cols-3"
-                    : itemsPerRow === 4
-                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-                      : "grid-cols-1 xl:grid-cols-2"
-              } w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-x-10 gap-y-6"}`}
-              style={{
-                gap: w.style?.gap
-                  ? formatUnit(w.style.gap)
-                  : w.data.rowGap
-                    ? formatUnit(w.data.rowGap)
-                    : undefined,
-              }}
+              className={`grid w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-x-10 gap-y-6"}`}
+              style={getResponsiveItemGridStyle({
+                gap:
+                  viewport === "mobile"
+                    ? "12px"
+                    : viewport === "tablet"
+                      ? "20px"
+                      : w.style?.gap
+                        ? formatUnit(w.style.gap)
+                        : w.data.rowGap
+                          ? formatUnit(w.data.rowGap)
+                          : undefined,
+              })}
             >
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
@@ -509,7 +521,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
-          <div className="flex flex-col justify-start items-center">
+          <div className={rootHeaderClassName}>
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
@@ -523,7 +535,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootTitle", w.data.titleStyle),
               }}
@@ -534,7 +546,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootDesc", w.data.descStyle),
               }}
@@ -548,22 +560,19 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           {/* Grid Area */}
           <div className="self-stretch flex flex-col justify-start items-start gap-6 w-full">
             <div
-              className={`grid ${
-                itemsPerRow === 1
-                  ? "grid-cols-1"
-                  : itemsPerRow === 3
-                    ? "grid-cols-1 xl:grid-cols-3"
-                    : itemsPerRow === 4
-                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-                      : "grid-cols-1 lg:grid-cols-2"
-              } w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-10"}`}
-              style={{
-                gap: w.style?.gap
-                  ? formatUnit(w.style.gap)
-                  : w.data.rowGap
-                    ? formatUnit(w.data.rowGap)
-                    : undefined,
-              }}
+              className={`grid w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-10"}`}
+              style={getResponsiveItemGridStyle({
+                gap:
+                  viewport === "mobile"
+                    ? "12px"
+                    : viewport === "tablet"
+                      ? "20px"
+                      : w.style?.gap
+                        ? formatUnit(w.style.gap)
+                        : w.data.rowGap
+                          ? formatUnit(w.data.rowGap)
+                          : undefined,
+              })}
             >
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
@@ -645,7 +654,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
-          <div className="flex flex-col justify-start items-center">
+          <div className={rootHeaderClassName}>
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
@@ -659,7 +668,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootTitle", w.data.titleStyle),
               }}
@@ -670,7 +679,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootDesc", w.data.descStyle),
               }}
@@ -684,22 +693,14 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           {/* Grid Area */}
           <div className="self-stretch flex flex-col justify-start items-start gap-5 w-full">
             <div
-              className={`grid ${
-                itemsPerRow === 1
-                  ? "grid-cols-1"
-                  : itemsPerRow === 3
-                    ? "grid-cols-1 xl:grid-cols-3"
-                    : itemsPerRow === 4
-                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-                      : "grid-cols-1 lg:grid-cols-2"
-              } w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-5"}`}
-              style={{
+              className={`grid w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-5"}`}
+              style={getResponsiveItemGridStyle({
                 gap: w.style?.gap
                   ? formatUnit(w.style.gap)
                   : w.data.rowGap
                     ? formatUnit(w.data.rowGap)
                     : undefined,
-              }}
+              })}
             >
               {(w.data.items || []).map((item: any, idx: number) => {
                 // desc 필드를 \n이나 <br/> 기준으로 나눠서 특징 리스트 생성 (기본 3개)
@@ -972,7 +973,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
-          <div className="flex flex-col justify-start items-center">
+          <div className={rootHeaderClassName}>
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className={`text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
@@ -986,7 +987,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className={`justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-2`}
+              className={`justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootTitle", w.data.titleStyle),
               }}
@@ -997,7 +998,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-2`}
+              className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text ${getBorderRadiusClass(viewport, "rounded")} transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootDesc", w.data.descStyle),
               }}
@@ -1283,7 +1284,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           className={`max-w-[1920px] mx-auto ${getPaddingClass(viewport, "xl:px-64")} py-20 relative min-h-[800px] flex flex-col items-center gap-10`}
         >
           {/* Header Area */}
-          <div className="flex flex-col justify-start items-center">
+          <div className={rootHeaderClassName}>
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
@@ -1297,7 +1298,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootTitle", w.data.titleStyle),
               }}
@@ -1308,7 +1309,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootDesc", w.data.descStyle),
               }}
@@ -1463,10 +1464,10 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
-          <div className="flex flex-col justify-start items-center">
+          <div className={rootHeaderClassName}>
             <SafeHtml
               html={w.data.subTitle || "( 서브타이틀 )"}
               className="text-center justify-start text-시안-mode-Primary50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all"
@@ -1480,7 +1481,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.title || "타이틀명 입력"}
-              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootTitle", w.data.titleStyle),
               }}
@@ -1491,7 +1492,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             />
             <SafeHtml
               html={w.data.desc || "이민 프로그램명 입력"}
-              className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all mt-2"
+              className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text rounded transition-all ${rootHeaderSpacingClassName}`}
               style={{
                 ...getImageCardTextStyle("rootDesc", w.data.descStyle),
               }}

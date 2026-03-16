@@ -33,9 +33,19 @@ export const COMPARISON_CARD_DEFAULTS = {
     color: "#131416",
   },
   subTitle: "( 서브타이틀 )",
-  subTitleStyle: { fontSize: "20px", color: "#285DE1", fontWeight: "500" },
+  subTitleStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    color: "#285DE1",
+    fontWeight: "500",
+  },
   desc: "이민 프로그램명 입력",
-  descStyle: { fontSize: "20px", color: "#6D7882", fontWeight: "500" },
+  descStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    color: "#6D7882",
+    fontWeight: "500",
+  },
   middleTitle: "비교 head명",
   middleTitleStyle: {
     fontSize: "30px",
@@ -101,6 +111,28 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
     ...getElementStyle(textStyle, viewport as any),
     ...overrides,
   });
+  const getComparisonRootTextStyle = (
+    role: "subTitle" | "title" | "desc",
+    textStyle: any,
+    overrides: React.CSSProperties = {},
+  ) => ({
+    ...getElementStyle(
+      {
+        ...(role === "title"
+          ? {
+              fontSize: "40px",
+              fontSizeMobile: "28px",
+            }
+          : {
+              fontSize: "20px",
+              fontSizeMobile: "18px",
+            }),
+        ...(textStyle || {}),
+      },
+      viewport as any,
+    ),
+    ...overrides,
+  });
 
   if (layout === "1" || layout === "layout1") {
     const items =
@@ -139,7 +171,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getComparisonTextStyle(data.subTitleStyle)}
+                  style={getComparisonRootTextStyle("subTitle", data.subTitleStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -150,7 +182,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
                   className="justify-start font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getComparisonTextStyle(data.titleStyle)}
+                  style={getComparisonRootTextStyle("title", data.titleStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -161,7 +193,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getComparisonTextStyle(data.descStyle)}
+                  style={getComparisonRootTextStyle("desc", data.descStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -309,7 +341,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -321,7 +353,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
-                  style={getComparisonTextStyle(data.subTitleStyle)}
+                  style={getComparisonRootTextStyle("subTitle", data.subTitleStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -332,7 +364,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
                   className="justify-start font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
-                  style={getComparisonTextStyle(data.titleStyle, {
+                  style={getComparisonRootTextStyle("title", data.titleStyle, {
                     color: "#131416",
                     fontSize: "40px",
                     fontWeight: "700",
@@ -347,7 +379,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-center justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-text break-keep"
-                  style={getComparisonTextStyle(data.descStyle, {
+                  style={getComparisonRootTextStyle("desc", data.descStyle, {
                     color: "#6D7882",
                     fontSize: "20px",
                     fontWeight: "500",

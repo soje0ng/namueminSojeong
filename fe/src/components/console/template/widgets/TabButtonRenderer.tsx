@@ -13,7 +13,12 @@ import {
 export const TAB_BUTTON_DEFAULTS = {
   layout: "1",
   subTitle: "( 서브타이틀 )",
-  subTitleStyle: { fontSize: "20px", fontWeight: "500", color: "#285DE1" },
+  subTitleStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+    color: "#285DE1",
+  },
   title: "타이틀명 입력",
   titleStyle: {
     fontSize: "40px",
@@ -22,7 +27,12 @@ export const TAB_BUTTON_DEFAULTS = {
     color: "#111827",
   },
   desc: "이민 프로그램명 입력",
-  descStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+  descStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+    color: "#6b7280",
+  },
   items: [
     {
       id: "tab-1",

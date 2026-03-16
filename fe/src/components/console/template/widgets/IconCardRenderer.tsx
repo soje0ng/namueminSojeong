@@ -13,18 +13,28 @@ import {
   getVerticalPaddingClass,
 } from "./WidgetUtils";
 
+const getResponsiveItemsPerRow = (
+  itemsPerRow?: number,
+  viewport?: string,
+  defaultCols: number = 3,
+) => {
+  const cols = Math.max(1, Math.min(Number(itemsPerRow) || defaultCols, 4));
+  if (viewport === "mobile") return Math.min(cols, 2);
+  if (viewport === "tablet") return Math.min(cols, 3);
+  return cols;
+};
+
 const getGridColsClass = (
   itemsPerRow?: number,
   viewport?: string,
   defaultCols: number = 3,
 ) => {
-  const cols = itemsPerRow || defaultCols;
+  const cols = getResponsiveItemsPerRow(itemsPerRow, viewport, defaultCols);
   // viewport prop 기반 컬럼 결정 (빌더 프리뷰는 항상 넓은 DOM으로 렌더링됨)
-  if (viewport === "mobile") return "grid-cols-1";
+  if (viewport === "mobile") return cols === 1 ? "grid-cols-1" : "grid-cols-2";
   if (viewport === "tablet") {
     if (cols === 1) return "grid-cols-1";
-    if (cols >= 4) return "grid-cols-2";
-    if (cols >= 3) return "grid-cols-2";
+    if (cols >= 3) return "grid-cols-3";
     return "grid-cols-2";
   }
   // desktop (Tailwind 반응형 사용)
@@ -65,7 +75,13 @@ export const ICON_CARD_DEFAULTS = {
   title: "좌측타이틀영역",
   titleStyle: { fontSize: "40px", fontSizeMobile: "28px", fontWeight: "700" },
   subTitle: "서브타이틀영역입니다.",
-  subTitleStyle: { fontSize: "18px" },
+  subTitleStyle: { fontSize: "20px", fontSizeMobile: "18px" },
+  desc: "이민 프로그램명 입력",
+  descStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    color: "#666666",
+  },
   items: [
     {
       id: "ts-1",
@@ -171,6 +187,32 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     ...getElementStyle(textStyle, viewport as any),
     ...overrides,
   });
+  const getIconCardRootTextStyle = (
+    role: "subTitle" | "title" | "desc",
+    textStyle: any,
+    overrides: React.CSSProperties = {},
+  ) => ({
+    ...getElementStyle(
+      {
+        ...(role === "title"
+          ? {
+              fontSize: "40px",
+              fontSizeMobile: "28px",
+              fontWeight: "700",
+            }
+          : {
+              fontSize: "20px",
+              fontSizeMobile: "18px",
+              fontWeight: "500",
+            }),
+        ...(role === "subTitle" ? { color: "#285DE1" } : {}),
+        ...(role === "desc" ? { color: "#666666" } : {}),
+        ...(textStyle || {}),
+      },
+      viewport,
+    ),
+    ...overrides,
+  });
   const getIconFrameStyle = (iconStyle: any) => ({
     ...(iconStyle?.width ? { width: formatUnit(iconStyle.width) } : {}),
     ...(iconStyle?.height || iconCardImageHeight
@@ -229,7 +271,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch w-full ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          className={`self-stretch w-full ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -240,7 +282,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getElementStyle(w.data.subTitleStyle, viewport)}
+                style={getIconCardRootTextStyle("subTitle", w.data.subTitleStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -251,7 +293,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                style={getIconCardTextStyle(w.data.titleStyle)}
+                style={getIconCardRootTextStyle("title", w.data.titleStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -262,7 +304,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardTextStyle((w.data as any).descStyle)}
+                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -364,7 +406,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -376,7 +418,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                 style={{
-                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  ...getIconCardRootTextStyle("subTitle", w.data.subTitleStyle),
                   color: "#285DE1",
                 }}
                 onDoubleClick={(e) => {
@@ -390,7 +432,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                 style={{
-                  ...getElementStyle(w.data.titleStyle, viewport),
+                  ...getIconCardRootTextStyle("title", w.data.titleStyle),
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
@@ -402,7 +444,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardTextStyle((w.data as any).descStyle)}
+                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -493,7 +535,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -505,7 +547,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                 style={{
-                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  ...getIconCardRootTextStyle("subTitle", w.data.subTitleStyle),
                   color: "#285DE1",
                 }}
                 onDoubleClick={(e) => {
@@ -518,7 +560,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                style={getElementStyle(w.data.titleStyle, viewport)}
+                style={getIconCardRootTextStyle("title", w.data.titleStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -529,7 +571,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardTextStyle((w.data as any).descStyle)}
+                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -616,7 +658,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
   if (currentLayout === "4") {
     const items = w.data.items || [];
-    const itemsPerRow = w.data.itemsPerRow || 3;
+    const itemsPerRow = getResponsiveItemsPerRow(w.data.itemsPerRow, viewport);
     const rowItemGap = w.style?.gap ? formatUnit(w.style.gap) : "20px";
     const rowItemWidthStyle = getFixedRowItemWidthStyle(
       itemsPerRow,
@@ -630,7 +672,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -642,7 +684,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                 style={{
-                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  ...getIconCardRootTextStyle("subTitle", w.data.subTitleStyle),
                   color: "#285DE1",
                 }}
                 onDoubleClick={(e) => {
@@ -655,7 +697,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                style={getIconCardTextStyle(w.data.titleStyle)}
+                style={getIconCardRootTextStyle("title", w.data.titleStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -666,7 +708,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardTextStyle((w.data as any).descStyle)}
+                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -783,7 +825,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -795,7 +837,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                 style={{
-                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  ...getIconCardRootTextStyle("subTitle", w.data.subTitleStyle),
                   color: "#285DE1",
                 }}
                 onDoubleClick={(e) => {
@@ -808,7 +850,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                style={getIconCardTextStyle(w.data.titleStyle)}
+                style={getIconCardRootTextStyle("title", w.data.titleStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -819,7 +861,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                style={getIconCardTextStyle((w.data as any).descStyle)}
+                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -912,7 +954,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -924,7 +966,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                 style={{
-                  ...getElementStyle(w.data.subTitleStyle, viewport),
+                  ...getIconCardRootTextStyle("subTitle", w.data.subTitleStyle),
                   color: "#285DE1",
                 }}
                 onDoubleClick={(e) => {
@@ -937,7 +979,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] text-center break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                style={getIconCardTextStyle(w.data.titleStyle)}
+                style={getIconCardRootTextStyle("title", w.data.titleStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -948,7 +990,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={(w.data as any).desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep mt-2"
-                style={getIconCardTextStyle((w.data as any).descStyle, {
+                style={getIconCardRootTextStyle("desc", (w.data as any).descStyle, {
                   marginTop: "8px",
                 })}
                 onDoubleClick={(e) => {

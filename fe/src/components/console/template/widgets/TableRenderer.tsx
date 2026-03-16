@@ -38,7 +38,7 @@ export const TABLE_DEFAULTS = {
   headers: ["내역", "내역", "내역"],
   headerStyle: {
     fontSize: "20px",
-    fontSizeMobile: "18px",
+    fontSizeMobile: "20px",
     fontWeight: "500",
     backgroundColor: "#E5F9FF",
     color: "#111827",
@@ -49,7 +49,12 @@ export const TABLE_DEFAULTS = {
     ["EB-5 투자금", "EB-5 투자금", "EB-5 투자금"],
     ["EB-5 투자금", "EB-5 투자금", "EB-5 투자금"],
   ],
-  bodyStyle: { fontSize: "18px", color: "#6B7280", fontWeight: "500" },
+  bodyStyle: {
+    fontSize: "18px",
+    fontSizeMobile: "18px",
+    color: "#6B7280",
+    fontWeight: "500",
+  },
   comparisonHeaders: ["구분", "구분", "구분"],
   comparisonRows: [
     ["구분", "구분", "구분"],
@@ -292,12 +297,25 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
         ["구분", "구분", "구분"],
         ["구분", "구분", "구분"],
       ];
+    // Layout03 body cells are 20px on tablet/mobile (Figma spec), separate from Layout01 bodyStyle
+    const isTabletOrMobile = viewport === "tablet" || viewport === "mobile";
 
     return (
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center w-full`}
+            style={{
+              gap: viewport === "mobile" ? "24px" : "40px",
+              ...(viewport === "tablet"
+                ? {
+                    paddingTop: "60px",
+                    paddingBottom: "60px",
+                    paddingLeft: "40px",
+                    paddingRight: "40px",
+                  }
+                : {}),
+            }}
           >
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (
@@ -307,6 +325,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     ...getElementStyle(subTitleStyle, viewport as any),
                     backgroundColor: "transparent",
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                        : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -321,6 +344,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     ...getElementStyle(titleStyle, viewport as any),
                     backgroundColor: "transparent",
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.8px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.48px", lineHeight: "150%" }
+                        : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -335,6 +363,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     ...getElementStyle(descStyle, viewport as any),
                     backgroundColor: "transparent",
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                        : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -363,11 +396,15 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 {tableHeaders.map((headerText, i) => (
                   <div
                     key={i}
-                    className={`${i === 0 ? "w-24 xl:w-60" : i === 1 ? "flex-1" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                    className={`${i === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                     style={{
                       backgroundColor:
                         i === 0 ? "#E6E8EA" : i === 1 ? "#131416" : "#285DE1",
                       borderRadius: 8,
+                      // tablet/mobile: all cols equal width (flex-1 override for col0)
+                      ...(isTabletOrMobile && i === 0
+                        ? { flex: "1 0 0", width: "auto" }
+                        : {}),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -381,6 +418,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                         ...headerStyle,
                         backgroundColor: "transparent",
                         color: i === 0 ? undefined : "#FFFFFF",
+                        ...(isTabletOrMobile
+                          ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                          : {}),
                       }}
                     />
                   </div>
@@ -395,13 +435,17 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   {row.map((cell, cIdx) => (
                     <div
                       key={cIdx}
-                      className={`${cIdx === 0 ? "w-24 xl:w-60" : cIdx === 1 ? "flex-1" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                      className={`${cIdx === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                       style={{
                         backgroundColor:
                           (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
                             ?.backgroundColor ||
                           (cIdx === 2 ? "#DDEFFE" : "#F6F7FB"),
                         borderRadius: 8,
+                        // tablet/mobile: all cols equal width (flex-1 override for col0)
+                        ...(isTabletOrMobile && cIdx === 0
+                          ? { flex: "1 0 0", width: "auto" }
+                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -410,10 +454,17 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <SafeHtml
                         html={cell}
-                        className={`text-center justify-start text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8`}
+                        className="text-center justify-start text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8"
                         style={{
-                          ...bodyStyle,
+                          // Layout03 body cells: 20px on tablet/mobile (Figma spec)
+                          ...getElementStyle(
+                            { fontSizeMobile: "20px", ...bodyTextStyle },
+                            viewport as any,
+                          ),
                           backgroundColor: "transparent",
+                          ...(isTabletOrMobile
+                            ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                            : {}),
                         }}
                       />
                     </div>
@@ -428,7 +479,14 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
                 }
                 className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                style={getElementStyle(bottomTextStyle, viewport as any)}
+                style={{
+                  ...getElementStyle(bottomTextStyle, viewport as any),
+                  ...(viewport === "tablet"
+                    ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                    : viewport === "mobile"
+                      ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                      : {}),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("bottomText");
@@ -446,14 +504,32 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center w-full`}
+            style={{
+              gap: viewport === "mobile" ? "24px" : "40px",
+              ...(viewport === "tablet"
+                ? {
+                    paddingTop: "60px",
+                    paddingBottom: "60px",
+                    paddingLeft: "40px",
+                    paddingRight: "40px",
+                  }
+                : {}),
+            }}
           >
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                  style={getElementStyle(subTitleStyle, viewport as any)}
+                  style={{
+                    ...getElementStyle(subTitleStyle, viewport as any),
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                        : {}),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -464,7 +540,14 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={w.data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                  style={getElementStyle(titleStyle, viewport as any)}
+                  style={{
+                    ...getElementStyle(titleStyle, viewport as any),
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.8px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.48px", lineHeight: "150%" }
+                        : {}),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -475,7 +558,14 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={w.data.desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                  style={getElementStyle(descStyle, viewport as any)}
+                  style={{
+                    ...getElementStyle(descStyle, viewport as any),
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                        : {}),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -484,7 +574,10 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               )}
             </div>
             <div
-              className={`self-stretch inline-flex flex-col xl:flex-row justify-center items-center gap-10 w-full ${(w.data as any).reverseLayout ? "xl:flex-row-reverse" : ""}`}
+              className={`self-stretch flex flex-col xl:flex-row justify-center items-center w-full ${(w.data as any).reverseLayout ? "xl:flex-row-reverse" : ""}`}
+              style={{
+                gap: viewport === "desktop" ? "40px" : "24px",
+              }}
             >
               <div className="w-full xl:w-[660px] inline-flex flex-col justify-start items-start gap-6">
                 {!w.data.bottomTextStyle?.isHidden && (
@@ -494,7 +587,14 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
                     }
                     className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                    style={getElementStyle(bottomTextStyle, viewport as any)}
+                    style={{
+                      ...getElementStyle(bottomTextStyle, viewport as any),
+                      ...(viewport === "tablet"
+                        ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                        : viewport === "mobile"
+                          ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                          : {}),
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("bottomText");
@@ -523,6 +623,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                           style={{
                             ...headerStyle,
                             backgroundColor: "transparent",
+                            ...(viewport === "tablet" || viewport === "mobile"
+                              ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                              : {}),
                           }}
                         />
                       </div>
@@ -553,6 +656,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                             style={{
                               ...bodyStyle,
                               backgroundColor: "transparent",
+                              ...(viewport === "tablet" || viewport === "mobile"
+                                ? {
+                                    letterSpacing: "-0.36px",
+                                    lineHeight: "150%",
+                                  }
+                                : {}),
                             }}
                           />
                         </div>
@@ -561,12 +670,17 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   ))}
                 </div>
               </div>
-              <div className="flex-1 self-stretch h-auto xl:h-auto relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
+              <div className="w-full xl:flex-1 h-auto min-h-[200px] xl:min-h-0 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
                 <UniversalMedia
                   className="w-full h-auto object-contain"
-                  url={w.data.image || ""}
+                  url={w.data.image || "/images/placeholder/wide-image.jpg"}
                   alt="Table Image"
-                  style={getElementStyle(w.data.imageStyle, viewport as any)}
+                  style={{
+                    ...getElementStyle(w.data.imageStyle, viewport as any),
+                    width: "100%",
+                    height: "auto",
+                    display: "block",
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("image");
@@ -759,14 +873,20 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
     <section style={sectionStyle} className="w-full h-auto">
       <div className="mx-auto w-full max-w-[1920px]">
         <div
-          className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+          className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center w-full`}
+          style={{ gap: viewport === "mobile" ? "24px" : "40px" }}
         >
           <div className="flex flex-col justify-start items-center">
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                style={getElementStyle(subTitleStyle, viewport as any)}
+                style={{
+                  ...getElementStyle(subTitleStyle, viewport as any),
+                  ...(viewport === "mobile"
+                    ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                    : {}),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -777,7 +897,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                style={getElementStyle(titleStyle, viewport as any)}
+                style={{
+                  ...getElementStyle(titleStyle, viewport as any),
+                  ...(viewport === "mobile"
+                    ? { letterSpacing: "-0.48px", lineHeight: "150%" }
+                    : {}),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -788,7 +913,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.desc || "이민 프로그램명 입력"}
                 className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-                style={getElementStyle(descStyle, viewport as any)}
+                style={{
+                  ...getElementStyle(descStyle, viewport as any),
+                  ...(viewport === "mobile"
+                    ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                    : {}),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -836,6 +966,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     style={{
                       ...headerStyle,
                       backgroundColor: "transparent",
+                      ...(viewport === "mobile"
+                        ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                        : {}),
                     }}
                   />
                 </div>
@@ -868,6 +1001,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       style={{
                         ...bodyStyle,
                         backgroundColor: "transparent",
+                        ...(viewport === "mobile"
+                          ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                          : {}),
                       }}
                     />
                   </div>
@@ -883,7 +1019,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다."
               }
               className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
-              style={getElementStyle(bottomTextStyle, viewport as any)}
+              style={{
+                ...getElementStyle(bottomTextStyle, viewport as any),
+                ...(viewport === "mobile"
+                  ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                  : {}),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("bottomText");

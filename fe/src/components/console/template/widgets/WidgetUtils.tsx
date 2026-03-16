@@ -94,6 +94,14 @@ export const getElementStyle = (
     height: style.height ? formatUnit(style.height) : undefined,
     objectFit: style.objectFit,
     borderRadius: getBorderRadiusStyle(viewport, style.borderRadius),
+    padding: (style as any).padding
+      ? formatUnit((style as any).padding)
+      : undefined,
+    margin: (style as any).margin
+      ? formatUnit((style as any).margin)
+      : undefined,
+    boxShadow: (style as any).boxShadow,
+    opacity: (style as any).opacity,
     cursor: "pointer",
     display: (style as any).isHidden
       ? "none"
