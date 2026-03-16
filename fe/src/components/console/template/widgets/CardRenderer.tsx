@@ -10,6 +10,7 @@ import {
   getPaddingClass,
   getBorderRadiusStyle,
   getBorderRadiusClass,
+  getVerticalPaddingClass,
 } from "./WidgetUtils";
 import { WidgetHeader } from "./WidgetHeader";
 
@@ -109,7 +110,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
   onElementSelect,
   viewport = "desktop",
 }) => {
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
 
   const isHorizontal = w.data.layout === "horizontal";
   const itemsPerRow = w.data.itemsPerRow || 3;
@@ -137,7 +138,7 @@ export const CardRenderer: React.FC<WidgetRendererProps<CardListWidget>> = ({
         const aspectRatio = itemsPerRow >= 4 ? "2/3" : "4/5";
         return (
           <div
-            className={`relative overflow-hidden group shadow-sm cursor-pointer w-full hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+            className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
             style={{ borderRadius: cardBorderRadius, aspectRatio }}
           >
             <div

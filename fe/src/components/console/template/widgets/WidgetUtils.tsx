@@ -14,10 +14,14 @@ export const formatUnit = (val: any, unit: string = "px") => {
   return val;
 };
 
-export const useWidgetStyle = (style?: WidgetStyle) => {
+export const useWidgetStyle = (
+  style?: WidgetStyle,
+  viewport: "mobile" | "tablet" | "desktop" = "desktop",
+) => {
+  const isMobile = viewport === "mobile";
   return {
-    paddingTop: formatUnit(style?.paddingTop),
-    paddingBottom: formatUnit(style?.paddingBottom),
+    paddingTop: isMobile ? "30px" : formatUnit(style?.paddingTop),
+    paddingBottom: isMobile ? "30px" : formatUnit(style?.paddingBottom),
     marginTop: formatUnit(style?.marginTop),
     marginBottom: formatUnit(style?.marginBottom),
     backgroundColor: style?.backgroundColor,
@@ -134,9 +138,21 @@ export const getPaddingClass = (
   viewport: string,
   desktopPadding: string = "xl:px-[280px]",
 ) => {
-  if (viewport === "tablet") return "px-10"; // 40px fixed
+  if (viewport === "tablet") return "px-6"; // 24px fixed
   if (viewport === "mobile") return "px-5"; // 20px fixed
   return `px-5 md:px-10 ${desktopPadding}`.trim(); // Desktop (Responsive)
+};
+
+/**
+ * getVerticalPaddingClass helper to handle responsive vertical padding
+ * Mobile: 30px, Tablet/Desktop: 56px (py-14) or similar
+ */
+export const getVerticalPaddingClass = (
+  viewport: string,
+  desktopPadding: string = "py-14",
+) => {
+  if (viewport === "mobile") return "py-[30px]";
+  return desktopPadding;
 };
 
 /**

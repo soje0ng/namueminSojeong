@@ -15,6 +15,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout1CultureLetterStyle: {
     fontFamily: "'Tenor Sans', sans-serif",
     fontSize: "40px",
+    fontSizeMobile: "20px",
     fontWeight: "400",
     color: "#FFFFFF",
     letterSpacing: "-0.8px",
@@ -23,6 +24,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout1IssueNoStyle: {
     fontFamily: "'Tenor Sans', sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "20px",
     fontWeight: "400",
     color: "#FFFFFF",
     letterSpacing: "-0.48px",
@@ -31,6 +33,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout1IssueDateStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "20px",
     fontWeight: "500",
     color: "#FFFFFF",
     letterSpacing: "-0.48px",
@@ -48,6 +51,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout1DescStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "18px",
     fontWeight: "400",
     color: "#FFFFFF",
     letterSpacing: "-0.48px",
@@ -56,6 +60,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout4SubLabelStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "20px",
+    fontSizeMobile: "20px",
     fontWeight: "500",
     color: "#285de1",
     textAlign: "center",
@@ -65,6 +70,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout4MainTitleStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "40px",
+    fontSizeMobile: "28px",
     fontWeight: "700",
     color: "#131416",
     letterSpacing: "-0.8px",
@@ -73,6 +79,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout4Card1TitleStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "20px",
+    fontSizeMobile: "16px",
     fontWeight: "500",
     color: "#060606",
     textAlign: "center",
@@ -82,6 +89,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout4Card2TitleStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "20px",
+    fontSizeMobile: "16px",
     fontWeight: "500",
     color: "#060606",
     textAlign: "center",
@@ -91,6 +99,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout4Card3TitleStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "20px",
+    fontSizeMobile: "16px",
     fontWeight: "500",
     color: "#060606",
     textAlign: "center",
@@ -100,6 +109,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout3CultureLetterStyle: {
     fontFamily: "'Tenor Sans', sans-serif",
     fontSize: "40px",
+    fontSizeMobile: "20px",
     fontWeight: "400",
     color: "#ffffff",
     letterSpacing: "-0.8px",
@@ -108,6 +118,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout3IssueNoStyle: {
     fontFamily: "'Tenor Sans', sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "20px",
     fontWeight: "400",
     color: "#ffffff",
     letterSpacing: "-0.48px",
@@ -116,6 +127,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout3IssueDateStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "20px",
     fontWeight: "700",
     color: "#ffffff",
     letterSpacing: "-0.48px",
@@ -133,6 +145,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout3DescStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "18px",
     fontWeight: "500",
     color: "#ffffff",
     letterSpacing: "-0.48px",
@@ -141,6 +154,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout2CultureLetterStyle: {
     fontFamily: "'Tenor Sans', sans-serif",
     fontSize: "40px",
+    fontSizeMobile: "20px",
     fontWeight: "400",
     color: "#131416",
     letterSpacing: "-0.8px",
@@ -149,6 +163,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout2IssueNoStyle: {
     fontFamily: "'Tenor Sans', sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "20px",
     fontWeight: "400",
     color: "#295e92",
     letterSpacing: "-0.48px",
@@ -157,6 +172,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout2IssueDateStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "20px",
     fontWeight: "700",
     color: "#58616a",
     letterSpacing: "-0.48px",
@@ -175,6 +191,7 @@ const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
   layout2DescStyle: {
     fontFamily: "Pretendard, sans-serif",
     fontSize: "24px",
+    fontSizeMobile: "18px",
     fontWeight: "500",
     color: "#6d7882",
     letterSpacing: "-0.48px",
@@ -385,14 +402,29 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
   const isMobileViewport = viewport === "mobile" || viewport === "tablet";
   const toHtmlWithBreaks = (value?: string) =>
     String(value || "").replace(/\n/g, "<br/>");
+  const getCultureLetterStyleSource = (styleKey: string) => {
+    const defaultStyle = (CULTURE_LETTER_DEFAULTS as any)[styleKey];
+    const currentStyle = data[styleKey];
+
+    if (
+      defaultStyle &&
+      typeof defaultStyle === "object" &&
+      currentStyle &&
+      typeof currentStyle === "object"
+    ) {
+      return {
+        ...defaultStyle,
+        ...currentStyle,
+      };
+    }
+
+    return currentStyle || defaultStyle;
+  };
   const getCultureLetterTextStyle = (
     styleKey: string,
     overrides: React.CSSProperties = {},
   ) => ({
-    ...getElementStyle(
-      data[styleKey] || (CULTURE_LETTER_DEFAULTS as any)[styleKey],
-      viewport,
-    ),
+    ...getElementStyle(getCultureLetterStyleSource(styleKey), viewport),
     ...overrides,
   });
   const isCultureLetterTextHidden = (styleKey: string) =>
@@ -454,6 +486,465 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
         ? undefined
         : CULTURE_LETTER_LAYOUT1_DEFAULT_BACKGROUND;
 
+    /* ── 태블릿 레이아웃 (피그마 node-id: 3298:29808, 768px) ── */
+    if (viewport === "tablet") {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            backgroundImage: undefined,
+            display: "flex",
+            flexDirection: "column",
+            gap: "40px",
+            paddingTop: "40px",
+            paddingBottom: "60px",
+            paddingLeft: "40px",
+            paddingRight: "40px",
+            alignItems: "flex-start",
+            justifyContent: "center",
+          }}
+          onDoubleClick={() => {
+            onElementSelect?.("layout1BgImageUrl");
+          }}
+          onClick={(e) => {
+            if (!onElementSelect) {
+              console.log("Layout 1 Clicked");
+            }
+          }}
+        >
+          {/* 배경 레이어 */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute inset-0">
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundColor: style.backgroundColor || "transparent",
+                  backgroundImage: layout1BackgroundImage,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }}
+              />
+              {bgImage && (
+                <img
+                  alt=""
+                  className="absolute inset-0 max-w-none pointer-events-none w-full h-full"
+                  style={{
+                    ...bgImageStyle,
+                    objectPosition: bgImageStyle.objectPosition || "center",
+                  }}
+                  src={bgImage}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* tit 태블릿 — flex-col 2행 구조 */}
+          <div
+            style={{
+              borderBottom: "1px solid #b1b8be",
+              paddingBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            {/* Row 1 : No. + 날짜 — 가로 중앙 정렬 */}
+            <div
+              style={{
+                display: "flex",
+                gap: "16px",
+                alignItems: "center",
+              }}
+            >
+              {!isCultureLetterTextHidden("layout1IssueNoStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout1IssueNo ||
+                    CULTURE_LETTER_DEFAULTS.layout1IssueNo
+                  }
+                  className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout1IssueNoStyle"),
+                    fontSize: "24px",
+                    fontWeight: "400",
+                    letterSpacing: "-0.48px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1IssueNo");
+                  }}
+                />
+              )}
+              {!isCultureLetterTextHidden("layout1IssueDateStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout1IssueDate ||
+                    CULTURE_LETTER_DEFAULTS.layout1IssueDate
+                  }
+                  className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout1IssueDateStyle"),
+                    fontSize: "24px",
+                    fontWeight: "700",
+                    letterSpacing: "-0.48px",
+                    lineHeight: "1.5",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1IssueDate");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Row 2 : 로고(좌) | Culture Letter(우) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div
+                className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                style={{ display: "flex", alignItems: "center" }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout1LogoImageUrl");
+                }}
+              >
+                <UniversalMedia
+                  alt="logo"
+                  className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                  url={logoImage}
+                  style={{
+                    ...getElementStyle(
+                      data.layout1LogoImageUrlStyle ||
+                        CULTURE_LETTER_DEFAULTS.layout1LogoImageUrlStyle,
+                      viewport,
+                    ),
+                    height: "40px",
+                    width: "auto",
+                    display: "block",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1LogoImageUrl");
+                  }}
+                />
+              </div>
+              {!isCultureLetterTextHidden("layout1CultureLetterStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout1CultureLetter ||
+                    CULTURE_LETTER_DEFAULTS.layout1CultureLetter
+                  }
+                  className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout1CultureLetterStyle"),
+                    fontSize: "28px",
+                    fontWeight: "400",
+                    letterSpacing: "-0.56px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1CultureLetter");
+                  }}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* 본문 — 타이틀 + 설명 (좌측 정렬) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              alignItems: "flex-start",
+              position: "relative",
+              flexShrink: 0,
+              width: "100%",
+            }}
+          >
+            {!isCultureLetterTextHidden("layout1TitleStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout1Title || CULTURE_LETTER_DEFAULTS.layout1Title,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout1TitleStyle"),
+                  fontSize: "48px",
+                  fontWeight: "700",
+                  letterSpacing: "-0.96px",
+                  lineHeight: "1.5",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout1Title");
+                }}
+              />
+            )}
+            {!isCultureLetterTextHidden("layout1DescStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout1Desc || CULTURE_LETTER_DEFAULTS.layout1Desc,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout1DescStyle"),
+                  fontSize: "24px",
+                  fontWeight: "400",
+                  letterSpacing: "-0.48px",
+                  lineHeight: "1.5",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout1Desc");
+                }}
+              />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── 모바일 레이아웃 (피그마 node-id: 3298:58872, 375px) ── */
+    if (isMobileViewport) {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            backgroundImage: undefined,
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px",
+            paddingTop: "24px",
+            paddingBottom: "60px",
+            paddingLeft: "20px",
+            paddingRight: "20px",
+          }}
+          onDoubleClick={() => {
+            onElementSelect?.("layout1MobileBgImageUrl");
+          }}
+          onClick={(e) => {
+            if (!onElementSelect) {
+              console.log("Layout 1 Clicked");
+            }
+          }}
+        >
+          {/* 배경 레이어 */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute inset-0">
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundColor: style.backgroundColor || "transparent",
+                  backgroundImage: layout1BackgroundImage,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }}
+              />
+              {bgImage && (
+                <img
+                  alt=""
+                  className="absolute inset-0 max-w-none pointer-events-none w-full h-full"
+                  style={{
+                    ...bgImageStyle,
+                    objectPosition: bgImageStyle.objectPosition || "center",
+                  }}
+                  src={bgImage}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* tit 모바일 — flex-col 2행 구조 */}
+          <div
+            style={{
+              borderBottom: "1px solid #b1b8be",
+              paddingBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            {/* Row 1 : No. + 날짜 (모바일에서는 이미지처럼 나란히 배치) */}
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {!isCultureLetterTextHidden("layout1IssueNoStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout1IssueNo ||
+                    CULTURE_LETTER_DEFAULTS.layout1IssueNo
+                  }
+                  className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all font-['Tenor_Sans',sans-serif]"
+                  style={{
+                    ...getCultureLetterTextStyle("layout1IssueNoStyle"),
+                    fontWeight: "400",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1IssueNo");
+                  }}
+                />
+              )}
+              {!isCultureLetterTextHidden("layout1IssueDateStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout1IssueDate ||
+                    CULTURE_LETTER_DEFAULTS.layout1IssueDate
+                  }
+                  className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout1IssueDateStyle"),
+                    fontWeight: "700",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1IssueDate");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Row 2 : 로고(좌) | Culture Letter(우) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div
+                className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                style={{ display: "flex", alignItems: "center" }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout1LogoImageUrl");
+                }}
+              >
+                <UniversalMedia
+                  alt="logo"
+                  className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                  url={logoImage}
+                  style={{
+                    ...getElementStyle(
+                      data.layout1LogoImageUrlStyle ||
+                        CULTURE_LETTER_DEFAULTS.layout1LogoImageUrlStyle,
+                      viewport,
+                    ),
+                    height: "24px",
+                    width: "auto",
+                    display: "block",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1LogoImageUrl");
+                  }}
+                />
+              </div>
+              {!isCultureLetterTextHidden("layout1CultureLetterStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout1CultureLetter ||
+                    CULTURE_LETTER_DEFAULTS.layout1CultureLetter
+                  }
+                  className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all font-['Tenor_Sans',sans-serif]"
+                  style={{
+                    ...getCultureLetterTextStyle("layout1CultureLetterStyle"),
+                    fontWeight: "400",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1CultureLetter");
+                  }}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* 본문 — 타이틀 + 설명 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "flex-start",
+              position: "relative",
+              flexShrink: 0,
+              width: "100%",
+            }}
+          >
+            {!isCultureLetterTextHidden("layout1TitleStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout1Title || CULTURE_LETTER_DEFAULTS.layout1Title,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout1TitleStyle"),
+                  fontWeight: "700",
+                  letterSpacing: "-0.56px",
+                  lineHeight: "1.5",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout1Title");
+                }}
+              />
+            )}
+            {!isCultureLetterTextHidden("layout1DescStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout1Desc || CULTURE_LETTER_DEFAULTS.layout1Desc,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout1DescStyle"),
+                  fontWeight: "400",
+                  letterSpacing: "-0.36px",
+                  lineHeight: "1.5",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout1Desc");
+                }}
+              />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── PC 레이아웃 (기존 유지) ── */
     return (
       <div
         className={`content-stretch flex flex-col gap-[80px] items-start justify-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
@@ -561,7 +1052,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           )}
 
           {/* No. + 날짜 (우측, 세로 스택, 스타일 고정) */}
-          <div className="content-stretch flex flex-col items-end justify-center relative shrink-0">
+          <div className="content-stretch flex flex-col lg:flex-row items-end lg:items-center justify-center relative shrink-0 lg:gap-[16px]">
             {!isCultureLetterTextHidden("layout1IssueNoStyle") && (
               <SafeHtml
                 html={
@@ -651,6 +1142,479 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       },
     ];
 
+    /* ── 태블릿 레이아웃 (피그마 node-id: 3298:29833 구조 적용) ── */
+    if (viewport === "tablet") {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            backgroundColor: style.backgroundColor || "#ffffff",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "40px",
+            paddingTop: "40px",
+            paddingBottom: "60px",
+            paddingLeft: "40px",
+            paddingRight: "40px",
+          }}
+        >
+          {/* 상단 타이틀 섹션 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "4px",
+              width: "100%",
+            }}
+          >
+            {!isCultureLetterTextHidden("layout4SubLabelStyle") && (
+              <SafeHtml
+                html={data.layout4SubLabel || CULTURE_LETTER_DEFAULTS.layout4SubLabel}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout4SubLabelStyle"),
+                  fontSize: "24px",
+                  fontWeight: "400",
+                  letterSpacing: "-0.48px",
+                  lineHeight: "1.5",
+                  textAlign: "center",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout4SubLabel");
+                }}
+              />
+            )}
+            {!isCultureLetterTextHidden("layout4MainTitleStyle") && (
+              <SafeHtml
+                html={data.layout4MainTitle || CULTURE_LETTER_DEFAULTS.layout4MainTitle}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout4MainTitleStyle"),
+                  fontSize: "48px",
+                  fontWeight: "700",
+                  letterSpacing: "-0.96px",
+                  lineHeight: "1.4",
+                  textAlign: "center",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout4MainTitle");
+                }}
+              />
+            )}
+          </div>
+
+          {/* 카드 3개 — 태블릿에서 세로 스택 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              width: "100%",
+            }}
+          >
+            {cards.map((card, idx) => {
+              const logoImg = data[card.logoKey] || CULTURE_LETTER_DEFAULTS[card.logoKey] || "";
+              const thumbRaw = data[card.thumbKey] || CULTURE_LETTER_DEFAULTS[card.thumbKey] || "";
+              const thumbDisplaySrc = resolveThumbDisplay(thumbRaw);
+              const thumbLink = thumbRaw;
+              const thumbStyle = getElementStyle(
+                data[card.thumbStyleKey] || CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
+                viewport,
+              );
+              const titleText = data[card.titleKey] || CULTURE_LETTER_DEFAULTS[card.titleKey];
+              const titleStyleKey = `${card.titleKey}Style`;
+
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    alignItems: "flex-start",
+                    width: "100%",
+                    position: "relative",
+                  }}
+                >
+                  {/* 카테고리 로고 */}
+                  <div
+                    style={{
+                      height: "24px",
+                      overflow: "hidden",
+                      position: "relative",
+                      flexShrink: 0,
+                      cursor: "pointer",
+                      width: logoImg ? "auto" : "100px",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.(card.logoKey);
+                    }}
+                  >
+                    {logoImg ? (
+                      <UniversalMedia
+                        alt="category-logo"
+                        className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                        url={logoImg}
+                        style={{
+                          ...getElementStyle(
+                            data[card.logoStyleKey] || CULTURE_LETTER_DEFAULTS[card.logoStyleKey],
+                            viewport,
+                          ),
+                          height: "24px",
+                          width: "auto",
+                          display: "block",
+                        }}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.(card.logoKey);
+                        }}
+                      />
+                    ) : (
+                      <div
+                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                        style={{
+                          height: "24px",
+                          width: "100px",
+                          backgroundColor: "#f3f4f6",
+                          borderRadius: "4px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "11px",
+                          color: "#9ca3af",
+                          cursor: "pointer",
+                        }}
+                      >
+                        카테고리 로고
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 썸네일 */}
+                  <div
+                    style={{
+                      aspectRatio: "240 / 140",
+                      position: "relative",
+                      flexShrink: 0,
+                      width: "100%",
+                      overflow: "hidden",
+                      cursor: "pointer",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.(card.thumbKey);
+                    }}
+                    onClick={() => {
+                      if (!onElementSelect && thumbLink) {
+                        window.open(thumbLink, "_blank", "noopener,noreferrer");
+                      }
+                    }}
+                  >
+                    {thumbDisplaySrc || thumbRaw ? (
+                      <img
+                        alt=""
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                          ...thumbStyle,
+                          objectPosition: thumbStyle.objectPosition || "center",
+                          pointerEvents: "none",
+                        }}
+                        src={thumbDisplaySrc || thumbRaw}
+                      />
+                    ) : (
+                      <div
+                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          backgroundColor: "#f3f4f6",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "13px",
+                          color: "#9ca3af",
+                        }}
+                      >
+                        썸네일 이미지
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 영상 제목 */}
+                  {!isCultureLetterTextHidden(titleStyleKey) && (
+                    <SafeHtml
+                      html={toHtmlWithBreaks(titleText)}
+                      className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                      style={getCultureLetterTextStyle(titleStyleKey, {
+                        width: "100%",
+                        whiteSpace: "pre-wrap",
+                      })}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.(card.titleKey);
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── 모바일 레이아웃 (피그마 node-id: 3298:58894 구조 적용) ── */
+    if (isMobileViewport) {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            backgroundColor: style.backgroundColor || "#ffffff",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "24px",
+            paddingTop: "40px",
+            paddingBottom: "60px",
+            paddingLeft: "20px",
+            paddingRight: "20px",
+          }}
+        >
+          {/* 상단 타이틀 섹션 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "4px",
+              width: "100%",
+            }}
+          >
+            {!isCultureLetterTextHidden("layout4SubLabelStyle") && (
+              <SafeHtml
+                html={data.layout4SubLabel || CULTURE_LETTER_DEFAULTS.layout4SubLabel}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout4SubLabelStyle"),
+                  fontWeight: "400",
+                  letterSpacing: "-0.4px",
+                  lineHeight: "1.5",
+                  textAlign: "center",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout4SubLabel");
+                }}
+              />
+            )}
+            {!isCultureLetterTextHidden("layout4MainTitleStyle") && (
+              <SafeHtml
+                html={data.layout4MainTitle || CULTURE_LETTER_DEFAULTS.layout4MainTitle}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout4MainTitleStyle"),
+                  fontWeight: "700",
+                  letterSpacing: "-0.56px",
+                  lineHeight: "1.4",
+                  textAlign: "center",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout4MainTitle");
+                }}
+              />
+            )}
+          </div>
+
+          {/* 카드 3개 — 모바일에서 세로 스택 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              width: "100%",
+            }}
+          >
+            {cards.map((card, idx) => {
+              const logoImg = data[card.logoKey] || CULTURE_LETTER_DEFAULTS[card.logoKey] || "";
+              const thumbRaw = data[card.thumbKey] || CULTURE_LETTER_DEFAULTS[card.thumbKey] || "";
+              const thumbDisplaySrc = resolveThumbDisplay(thumbRaw);
+              const thumbLink = thumbRaw;
+              const thumbStyle = getElementStyle(
+                data[card.thumbStyleKey] || CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
+                viewport,
+              );
+              const titleText = data[card.titleKey] || CULTURE_LETTER_DEFAULTS[card.titleKey];
+              const titleStyleKey = `${card.titleKey}Style`;
+
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    alignItems: "flex-start",
+                    width: "100%",
+                    position: "relative",
+                  }}
+                >
+                  {/* 카테고리 로고 */}
+                  <div
+                    style={{
+                      height: "24px",
+                      overflow: "hidden",
+                      position: "relative",
+                      flexShrink: 0,
+                      cursor: "pointer",
+                      width: logoImg ? "auto" : "100px",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.(card.logoKey);
+                    }}
+                  >
+                    {logoImg ? (
+                      <UniversalMedia
+                        alt="category-logo"
+                        className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                        url={logoImg}
+                        style={{
+                          ...getElementStyle(
+                            data[card.logoStyleKey] || CULTURE_LETTER_DEFAULTS[card.logoStyleKey],
+                            viewport,
+                          ),
+                          height: "24px",
+                          width: "auto",
+                          display: "block",
+                        }}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          onElementSelect?.(card.logoKey);
+                        }}
+                      />
+                    ) : (
+                      <div
+                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                        style={{
+                          height: "24px",
+                          width: "100px",
+                          backgroundColor: "#f3f4f6",
+                          borderRadius: "4px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "11px",
+                          color: "#9ca3af",
+                          cursor: "pointer",
+                        }}
+                      >
+                        카테고리 로고
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 썸네일 */}
+                  <div
+                    style={{
+                      aspectRatio: "240 / 140",
+                      position: "relative",
+                      flexShrink: 0,
+                      width: "100%",
+                      overflow: "hidden",
+                      cursor: "pointer",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.(card.thumbKey);
+                    }}
+                    onClick={() => {
+                      if (!onElementSelect && thumbLink) {
+                        window.open(thumbLink, "_blank", "noopener,noreferrer");
+                      }
+                    }}
+                  >
+                    {thumbDisplaySrc || thumbRaw ? (
+                      <img
+                        alt=""
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                          ...thumbStyle,
+                          objectPosition: thumbStyle.objectPosition || "center",
+                          pointerEvents: "none",
+                        }}
+                        src={thumbDisplaySrc || thumbRaw}
+                      />
+                    ) : (
+                      <div
+                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          backgroundColor: "#f3f4f6",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "13px",
+                          color: "#9ca3af",
+                        }}
+                      >
+                        썸네일 이미지
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 영상 제목 */}
+                  {!isCultureLetterTextHidden(titleStyleKey) && (
+                    <SafeHtml
+                      html={toHtmlWithBreaks(titleText)}
+                      className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                      style={{
+                        ...getCultureLetterTextStyle(titleStyleKey, {
+                          width: "100%",
+                          whiteSpace: "pre-wrap",
+                        }),
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.(card.titleKey);
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── PC 레이아웃 (기존 유지) ── */
     return (
       <div
         className={`content-stretch flex flex-col items-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
@@ -897,6 +1861,553 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       viewport,
     );
 
+    const layout3DefaultBg =
+      style.backgroundColor || bgImage
+        ? undefined
+        : CULTURE_LETTER_LAYOUT3_DEFAULT_BACKGROUND;
+
+    /* ── 태블릿 레이아웃 (피그마 node-id: 3298:29833) ── */
+    if (viewport === "tablet") {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            backgroundImage: undefined,
+            background: layout3DefaultBg,
+            backgroundColor: layout3DefaultBg
+              ? undefined
+              : style.backgroundColor,
+            display: "flex",
+            flexDirection: "column",
+            gap: "40px",
+            paddingTop: "40px",
+            paddingBottom: "60px",
+            paddingLeft: "40px",
+            paddingRight: "40px",
+            alignItems: "flex-start",
+          }}
+          onDoubleClick={() => {
+            onElementSelect?.("cl3BgUrl");
+          }}
+        >
+          {/* 배경 이미지 */}
+          {bgImage && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <img
+                alt=""
+                className="absolute inset-0 max-w-none pointer-events-none w-full h-full"
+                style={{
+                  ...bgImageStyle,
+                  objectPosition: bgImageStyle.objectPosition || "center",
+                }}
+                src={bgImage}
+              />
+            </div>
+          )}
+
+          {/* tit 태블릿 — flex-col 2행 구조 */}
+          <div
+            style={{
+              borderBottom: "1px solid #b1b8be",
+              paddingBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            {/* Row 1 : No. + 날짜 */}
+            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+              {!isCultureLetterTextHidden("layout3IssueNoStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout3IssueNo ||
+                    CULTURE_LETTER_DEFAULTS.layout3IssueNo
+                  }
+                  className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout3IssueNoStyle"),
+                    fontSize: "24px",
+                    fontWeight: "400",
+                    letterSpacing: "-0.48px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3IssueNo");
+                  }}
+                />
+              )}
+              {!isCultureLetterTextHidden("layout3IssueDateStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout3IssueDate ||
+                    CULTURE_LETTER_DEFAULTS.layout3IssueDate
+                  }
+                  className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout3IssueDateStyle"),
+                    fontSize: "24px",
+                    fontWeight: "700",
+                    letterSpacing: "-0.48px",
+                    lineHeight: "1.5",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3IssueDate");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Row 2 : 로고(좌) | Culture Letter(우) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("cl3LogoUrl");
+                }}
+              >
+                <UniversalMedia
+                  alt="logo"
+                  className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                  url={logoImage}
+                  style={{
+                    height: "40px",
+                    width: "auto",
+                    objectFit: "contain",
+                    display: "block",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("cl3LogoUrl");
+                  }}
+                />
+              </div>
+              {!isCultureLetterTextHidden("layout3CultureLetterStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout3CultureLetter ||
+                    CULTURE_LETTER_DEFAULTS.layout3CultureLetter
+                  }
+                  className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout3CultureLetterStyle"),
+                    fontSize: "28px",
+                    fontWeight: "400",
+                    letterSpacing: "-0.56px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3CultureLetter");
+                  }}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* 텍스트 블록 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              alignItems: "flex-start",
+              lineHeight: "1.5",
+              position: "relative",
+              flexShrink: 0,
+            }}
+          >
+            {!isCultureLetterTextHidden("layout3TitleStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout3Title || CULTURE_LETTER_DEFAULTS.layout3Title,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout3TitleStyle"),
+                  fontSize: "48px",
+                  fontWeight: "700",
+                  letterSpacing: "-0.96px",
+                  lineHeight: "1.5",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout3Title");
+                }}
+              />
+            )}
+            {!isCultureLetterTextHidden("layout3DescStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout3Desc || CULTURE_LETTER_DEFAULTS.layout3Desc,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout3DescStyle"),
+                  fontSize: "24px",
+                  fontWeight: "500",
+                  letterSpacing: "-0.48px",
+                  lineHeight: "1.5",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout3Desc");
+                }}
+              />
+            )}
+          </div>
+
+          {/* 카드 이미지 — 가로 full, aspect 620:360, radius 20px */}
+          <div
+            style={{
+              aspectRatio: "620 / 360",
+              width: "100%",
+              position: "relative",
+              borderRadius: "20px",
+              boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
+              flexShrink: 0,
+              overflow: "hidden",
+              cursor: "pointer",
+            }}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              onElementSelect?.("cl3CardImgUrl");
+            }}
+          >
+            {cardImg ? (
+              <img
+                alt=""
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  ...cardImgStyle,
+                  objectPosition: cardImgStyle.objectPosition || "center",
+                  borderRadius: "20px",
+                  pointerEvents: "none",
+                }}
+                src={cardImg}
+              />
+            ) : (
+              <div
+                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                  borderRadius: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "rgba(255,255,255,0.5)",
+                  fontSize: "14px",
+                }}
+              >
+                이미지를 등록해 주세요
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── 모바일 레이아웃 (피그마 node-id: 3298:58894, 375px) ── */
+    if (isMobileViewport) {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            backgroundImage: undefined,
+            background: layout3DefaultBg,
+            backgroundColor: layout3DefaultBg
+              ? undefined
+              : style.backgroundColor,
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px",
+            paddingTop: "40px",
+            paddingBottom: "60px",
+            paddingLeft: "20px",
+            paddingRight: "20px",
+            alignItems: "flex-start",
+            justifyContent: "center",
+          }}
+          onDoubleClick={() => {
+            onElementSelect?.("cl3MobileBgUrl");
+          }}
+        >
+          {/* 배경 이미지 */}
+          {bgImage && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <img
+                alt=""
+                className="absolute inset-0 max-w-none pointer-events-none w-full h-full"
+                style={{
+                  ...bgImageStyle,
+                  objectPosition: bgImageStyle.objectPosition || "center",
+                }}
+                src={bgImage}
+              />
+            </div>
+          )}
+
+          {/* tit 모바일 — flex-col 2행 구조 */}
+          <div
+            style={{
+              borderBottom: "1px solid #b1b8be",
+              paddingBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            {/* Row 1 : No. + 날짜 */}
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                alignItems: "center",
+              }}
+            >
+              {!isCultureLetterTextHidden("layout3IssueNoStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout3IssueNo ||
+                    CULTURE_LETTER_DEFAULTS.layout3IssueNo
+                  }
+                  className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout3IssueNoStyle"),
+                    fontWeight: "400",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3IssueNo");
+                  }}
+                />
+              )}
+              {!isCultureLetterTextHidden("layout3IssueDateStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout3IssueDate ||
+                    CULTURE_LETTER_DEFAULTS.layout3IssueDate
+                  }
+                  className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout3IssueDateStyle"),
+                    fontWeight: "700",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1.5",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3IssueDate");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Row 2 : 로고(좌) | Culture Letter(우) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("cl3LogoUrl");
+                }}
+              >
+                <UniversalMedia
+                  alt="logo"
+                  className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                  url={logoImage}
+                  style={{
+                    height: "24px",
+                    width: "auto",
+                    objectFit: "contain",
+                    display: "block",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("cl3LogoUrl");
+                  }}
+                />
+              </div>
+              {!isCultureLetterTextHidden("layout3CultureLetterStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout3CultureLetter ||
+                    CULTURE_LETTER_DEFAULTS.layout3CultureLetter
+                  }
+                  className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout3CultureLetterStyle"),
+                    fontWeight: "400",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3CultureLetter");
+                  }}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* 본문 — 텍스트 + 카드 이미지 (세로 배열) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "24px",
+              alignItems: "flex-start",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            {/* 텍스트 블록 */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+                alignItems: "flex-start",
+                lineHeight: "1.5",
+                width: "100%",
+              }}
+            >
+              {!isCultureLetterTextHidden("layout3TitleStyle") && (
+                <SafeHtml
+                  html={toHtmlWithBreaks(
+                    data.layout3Title || CULTURE_LETTER_DEFAULTS.layout3Title,
+                  )}
+                  className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                  style={{
+                    ...getCultureLetterTextStyle("layout3TitleStyle"),
+                    fontWeight: "700",
+                    letterSpacing: "-0.56px",
+                    lineHeight: "1.5",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3Title");
+                  }}
+                />
+              )}
+              {!isCultureLetterTextHidden("layout3DescStyle") && (
+                <SafeHtml
+                  html={toHtmlWithBreaks(
+                    data.layout3Desc || CULTURE_LETTER_DEFAULTS.layout3Desc,
+                  )}
+                  className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                  style={{
+                    ...getCultureLetterTextStyle("layout3DescStyle"),
+                    fontWeight: "500",
+                    letterSpacing: "-0.36px",
+                    lineHeight: "1.5",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3Desc");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* 카드 이미지 — 가로 full, aspect 620:360, radius 8px */}
+            <div
+              style={{
+                aspectRatio: "620 / 360",
+                width: "100%",
+                position: "relative",
+                borderRadius: "8px",
+                boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
+                flexShrink: 0,
+                overflow: "hidden",
+                cursor: "pointer",
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("cl3CardImgUrl");
+              }}
+            >
+              {cardImg ? (
+                <img
+                  alt=""
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    ...cardImgStyle,
+                    objectPosition: cardImgStyle.objectPosition || "center",
+                    borderRadius: "8px",
+                    pointerEvents: "none",
+                  }}
+                  src={cardImg}
+                />
+              ) : (
+                <div
+                  className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "rgba(255,255,255,0.5)",
+                    fontSize: "14px",
+                  }}
+                >
+                  이미지를 등록해 주세요
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── PC 레이아웃 (기존 유지) ── */
     return (
       <div
         className={`content-stretch flex flex-col items-start justify-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
@@ -1147,6 +2658,454 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     );
     const logoImage = data.cl2LogoUrl || CULTURE_LETTER_DEFAULTS.cl2LogoUrl;
 
+    /* ── 태블릿 레이아웃 (피그마 node-id: 3298:29824, 768px) ── */
+    if (viewport === "tablet") {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            backgroundImage: undefined,
+            backgroundColor: style.backgroundColor || "#ffffff",
+            display: "flex",
+            flexDirection: "column",
+            gap: "40px",
+            paddingTop: "40px",
+            paddingBottom: "60px",
+            paddingLeft: "40px",
+            paddingRight: "40px",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onDoubleClick={() => {
+            onElementSelect?.("cl2BgUrl");
+          }}
+        >
+          {/* 배경 통이미지 레이어 */}
+          {bgImage && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                overflow: "hidden",
+                pointerEvents: "none",
+              }}
+            >
+              <img
+                alt=""
+                className="absolute inset-0 max-w-none pointer-events-none w-full h-full"
+                style={{
+                  ...bgImageStyle,
+                  objectPosition: bgImageStyle.objectPosition || "center",
+                }}
+                src={bgImage}
+              />
+            </div>
+          )}
+
+          {/* tit 태블릿 — flex-col 2행 구조 */}
+          <div
+            style={{
+              borderBottom: "1px solid #b1b8be",
+              paddingBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            {/* Row 1 : No. + 날짜 — 가로 중앙 정렬 */}
+            <div
+              style={{
+                display: "flex",
+                gap: "16px",
+                alignItems: "center",
+              }}
+            >
+              {!isCultureLetterTextHidden("layout2IssueNoStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout2IssueNo ||
+                    CULTURE_LETTER_DEFAULTS.layout2IssueNo
+                  }
+                  className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout2IssueNoStyle"),
+                    fontSize: "24px",
+                    fontWeight: "400",
+                    letterSpacing: "-0.48px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2IssueNo");
+                  }}
+                />
+              )}
+              {!isCultureLetterTextHidden("layout2IssueDateStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout2IssueDate ||
+                    CULTURE_LETTER_DEFAULTS.layout2IssueDate
+                  }
+                  className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout2IssueDateStyle"),
+                    fontSize: "24px",
+                    fontWeight: "700",
+                    letterSpacing: "-0.48px",
+                    lineHeight: "1.5",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2IssueDate");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Row 2 : 로고(좌) | Culture Letter(우) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("cl2LogoUrl");
+                }}
+              >
+                <UniversalMedia
+                  alt="logo"
+                  className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                  url={logoImage}
+                  style={{
+                    height: "40px",
+                    width: "auto",
+                    objectFit: "contain",
+                    display: "block",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("cl2LogoUrl");
+                  }}
+                />
+              </div>
+              {!isCultureLetterTextHidden("layout2CultureLetterStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout2CultureLetter ||
+                    CULTURE_LETTER_DEFAULTS.layout2CultureLetter
+                  }
+                  className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout2CultureLetterStyle"),
+                    fontSize: "40px",
+                    fontWeight: "400",
+                    letterSpacing: "-0.8px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2CultureLetter");
+                  }}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* 본문 — 타이틀 + 설명 (중앙 정렬) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              width: "100%",
+              textAlign: "center",
+            }}
+          >
+            {!isCultureLetterTextHidden("layout2TitleStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout2Title || CULTURE_LETTER_DEFAULTS.layout2Title,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout2TitleStyle"),
+                  fontSize: "48px",
+                  fontWeight: "700",
+                  letterSpacing: "-0.96px",
+                  lineHeight: "1.5",
+                  textAlign: "center",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout2Title");
+                }}
+              />
+            )}
+            {!isCultureLetterTextHidden("layout2DescStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout2Desc || CULTURE_LETTER_DEFAULTS.layout2Desc,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout2DescStyle"),
+                  fontSize: "24px",
+                  fontWeight: "500",
+                  letterSpacing: "-0.48px",
+                  lineHeight: "1.5",
+                  textAlign: "center",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout2Desc");
+                }}
+              />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── 모바일 레이아웃 (피그마 node-id: 3298:58888, 375px) ── */
+    if (isMobileViewport) {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            backgroundImage: undefined,
+            backgroundColor: style.backgroundColor || "#ffffff",
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px",
+            paddingTop: "24px",
+            paddingBottom: "60px",
+            paddingLeft: "20px",
+            paddingRight: "20px",
+          }}
+          onDoubleClick={() => {
+            onElementSelect?.("cl2MobileBgUrl");
+          }}
+        >
+          {/* 배경 통이미지 레이어 */}
+          {bgImage && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                overflow: "hidden",
+                pointerEvents: "none",
+              }}
+            >
+              <img
+                alt=""
+                className="absolute inset-0 max-w-none pointer-events-none w-full h-full"
+                style={{
+                  ...bgImageStyle,
+                  objectPosition: bgImageStyle.objectPosition || "center",
+                }}
+                src={bgImage}
+              />
+            </div>
+          )}
+
+          {/* tit 모바일 — flex-col 2행 구조 */}
+          <div
+            style={{
+              borderBottom: "1px solid #b1b8be",
+              paddingBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            {/* Row 1 : No. + 날짜 — 가로 중앙 정렬 */}
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              {!isCultureLetterTextHidden("layout2IssueNoStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout2IssueNo ||
+                    CULTURE_LETTER_DEFAULTS.layout2IssueNo
+                  }
+                  className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout2IssueNoStyle"),
+                    fontWeight: "400",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2IssueNo");
+                  }}
+                />
+              )}
+              {!isCultureLetterTextHidden("layout2IssueDateStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout2IssueDate ||
+                    CULTURE_LETTER_DEFAULTS.layout2IssueDate
+                  }
+                  className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout2IssueDateStyle"),
+                    fontWeight: "700",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1.5",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2IssueDate");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Row 2 : 로고(좌) | Culture Letter(우) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("cl2LogoUrl");
+                }}
+              >
+                <UniversalMedia
+                  alt="logo"
+                  className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
+                  url={logoImage}
+                  style={{
+                    height: "24px",
+                    width: "auto",
+                    objectFit: "contain",
+                    display: "block",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("cl2LogoUrl");
+                  }}
+                />
+              </div>
+              {!isCultureLetterTextHidden("layout2CultureLetterStyle") && (
+                <SafeHtml
+                  html={
+                    data.layout2CultureLetter ||
+                    CULTURE_LETTER_DEFAULTS.layout2CultureLetter
+                  }
+                  className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+                  style={{
+                    ...getCultureLetterTextStyle("layout2CultureLetterStyle"),
+                    fontWeight: "400",
+                    letterSpacing: "-0.4px",
+                    lineHeight: "1",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2CultureLetter");
+                  }}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* 본문 — 타이틀 + 설명 (중앙 정렬) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              width: "100%",
+              textAlign: "center",
+            }}
+          >
+            {!isCultureLetterTextHidden("layout2TitleStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout2Title || CULTURE_LETTER_DEFAULTS.layout2Title,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout2TitleStyle"),
+                  fontWeight: "700",
+                  letterSpacing: "-0.56px",
+                  lineHeight: "1.5",
+                  textAlign: "center",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout2Title");
+                }}
+              />
+            )}
+            {!isCultureLetterTextHidden("layout2DescStyle") && (
+              <SafeHtml
+                html={toHtmlWithBreaks(
+                  data.layout2Desc || CULTURE_LETTER_DEFAULTS.layout2Desc,
+                )}
+                className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                style={{
+                  ...getCultureLetterTextStyle("layout2DescStyle"),
+                  fontWeight: "500",
+                  letterSpacing: "-0.36px",
+                  lineHeight: "1.5",
+                  textAlign: "center",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout2Desc");
+                }}
+              />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── PC 레이아웃 (기존 유지) ── */
     return (
       <div
         className={`content-stretch flex flex-col items-center justify-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
@@ -1363,6 +3322,331 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       },
     ];
 
+    /* ── 공통 카드 렌더 헬퍼 (태블릿/모바일 재사용) ── */
+    const renderCard5 = (
+      card: (typeof cards)[number],
+      idx: number,
+      cardStyle: React.CSSProperties,
+      wrapperStyle: React.CSSProperties,
+    ) => {
+      const svgImg =
+        (data as any)[card.svgKey] ||
+        CULTURE_LETTER_DEFAULTS[card.svgKey] ||
+        "";
+      const cardBgImgR =
+        (data as any)[card.cardBgImgKey] ||
+        CULTURE_LETTER_DEFAULTS[card.cardBgImgKey] ||
+        "";
+      const cardBgImgStyleRaw =
+        (data as any)[card.cardBgImgStyleKey] ||
+        CULTURE_LETTER_DEFAULTS[card.cardBgImgStyleKey];
+      const cardBgImgStyleR = getElementStyle(cardBgImgStyleRaw, viewport);
+      const linkHref = (data as any)[card.linkKey] || "";
+      const cardBgColor =
+        cardBgImgStyleR.backgroundColor || "rgba(255,255,255,0.8)";
+      const cardBorderRadius =
+        (cardStyle.borderRadius as string) || "24px";
+
+      return (
+        <a
+          key={idx}
+          href={linkHref || undefined}
+          target={linkHref ? "_blank" : undefined}
+          rel={linkHref ? "noopener noreferrer" : undefined}
+          style={wrapperStyle}
+          onClick={(e) => {
+            if (onElementSelect) e.preventDefault();
+          }}
+        >
+          <div
+            style={{
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
+              backgroundColor: cardBgColor,
+              border: "1px solid #ddeffe",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              overflow: "hidden",
+              width: "100%",
+              ...cardStyle,
+            }}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              onElementSelect?.(card.cardBgImgKey);
+            }}
+          >
+            {/* 카드 배경 이미지 */}
+            {cardBgImgR && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  overflow: "hidden",
+                  borderRadius: cardBorderRadius,
+                  pointerEvents: "none",
+                }}
+              >
+                <img
+                  alt=""
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    ...cardBgImgStyleR,
+                    objectPosition: cardBgImgStyleR.objectPosition || "center",
+                  }}
+                  src={cardBgImgR}
+                />
+              </div>
+            )}
+
+            {/* 아이콘 영역 80×80 */}
+            <div
+              style={{
+                width: "80px",
+                height: "80px",
+                flexShrink: 0,
+                position: "relative",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.(card.svgKey);
+              }}
+            >
+              {svgImg || (CULTURE_LETTER_DEFAULTS as any)[card.svgKey] ? (
+                <img
+                  alt="icon"
+                  style={{
+                    ...getElementStyle(
+                      (data as any)[card.svgStyleKey] ||
+                        CULTURE_LETTER_DEFAULTS[card.svgStyleKey],
+                      viewport,
+                    ),
+                    width: "80px",
+                    height: "80px",
+                    display: "block",
+                    objectFit: "contain",
+                  }}
+                  src={svgImg || (CULTURE_LETTER_DEFAULTS as any)[card.svgKey]}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.(card.svgKey);
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "12px",
+                    color: "#6d7882",
+                  }}
+                >
+                  아이콘
+                </div>
+              )}
+            </div>
+
+            {/* 텍스트 영역 */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                position: "relative",
+                flexShrink: 0,
+                textAlign: "center",
+                fontStyle: "normal",
+                width: "100%",
+              }}
+            >
+              {!isCultureLetterTextHidden(card.titleStyleKey) && (
+                <SafeHtml
+                  html={
+                    (data as any)[card.titleKey] ||
+                    CULTURE_LETTER_DEFAULTS[card.titleKey]
+                  }
+                  className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                  style={{
+                    ...getCultureLetterTextStyle(card.titleStyleKey),
+                    fontSize: "24px",
+                    fontWeight: "700",
+                    letterSpacing: "0px",
+                    lineHeight: "1.5",
+                    textAlign: "center",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "keep-all",
+                    width: "100%",
+                    color: "#131416",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.(card.titleKey);
+                  }}
+                />
+              )}
+              {!isCultureLetterTextHidden(card.descStyleKey) && (
+                <SafeHtml
+                  html={
+                    (data as any)[card.descKey] ||
+                    CULTURE_LETTER_DEFAULTS[card.descKey]
+                  }
+                  className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
+                  style={{
+                    ...getCultureLetterTextStyle(card.descStyleKey),
+                    fontSize: "18px",
+                    fontWeight: "400",
+                    letterSpacing: "-0.36px",
+                    lineHeight: "1.5",
+                    textAlign: "center",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "keep-all",
+                    width: "100%",
+                    color: "#6d7882",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.(card.descKey);
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </a>
+      );
+    };
+
+    /* ── 태블릿 레이아웃 (피그마 node-id: 3298:29846) ── */
+    if (viewport === "tablet") {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            background:
+              style.backgroundImage || style.backgroundColor
+                ? undefined
+                : "linear-gradient(151.97deg, rgb(40, 93, 225) 2.89%, rgb(89, 161, 185) 48.56%, rgb(68, 160, 117) 100%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            paddingTop: "60px",
+            paddingBottom: "60px",
+            paddingLeft: "40px",
+            paddingRight: "40px",
+          }}
+        >
+          {/* 카드 3개 가로 배치 — 태블릿 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              gap: "20px",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            {cards.map((card, idx) =>
+              renderCard5(
+                card,
+                idx,
+                {
+                  borderRadius: "24px",
+                  paddingTop: "40px",
+                  paddingBottom: "40px",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                  flex: "1 0 0",
+                  minWidth: "1px",
+                  minHeight: "1px",
+                },
+                {
+                  flex: "1 0 0",
+                  minWidth: "1px",
+                  display: "flex",
+                  textDecoration: "none",
+                  overflow: "hidden",
+                  borderRadius: "24px",
+                },
+              ),
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── 모바일 레이아웃 (피그마 node-id: 3298:58909) ── */
+    if (isMobileViewport) {
+      return (
+        <div
+          className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+          style={{
+            ...style,
+            background:
+              style.backgroundImage || style.backgroundColor
+                ? undefined
+                : "linear-gradient(113.90deg, rgb(40, 93, 225) 2.89%, rgb(89, 161, 185) 48.56%, rgb(68, 160, 117) 100%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            paddingTop: "60px",
+            paddingBottom: "60px",
+            paddingLeft: "20px",
+            paddingRight: "20px",
+          }}
+        >
+          {/* 카드 3개 세로 스택 — 모바일 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              width: "100%",
+            }}
+          >
+            {cards.map((card, idx) =>
+              renderCard5(
+                card,
+                idx,
+                {
+                  borderRadius: "8px",
+                  paddingTop: "24px",
+                  paddingBottom: "24px",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                  width: "100%",
+                },
+                {
+                  width: "100%",
+                  display: "flex",
+                  textDecoration: "none",
+                  overflow: "hidden",
+                  borderRadius: "8px",
+                },
+              ),
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── PC 레이아웃 (기존 유지) ── */
     return (
       <div
         className={`content-stretch flex flex-col items-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}

@@ -10,6 +10,7 @@ import {
   getPaddingClass,
   getBorderRadiusClass,
   getBorderRadiusStyle,
+  getVerticalPaddingClass,
 } from "./WidgetUtils";
 
 export const INFO_BANNER_DEFAULTS = {
@@ -55,6 +56,7 @@ export const INFO_BANNER_DEFAULTS = {
   layout2SubTitle: "버지니아 해안 리조트 건설 프로젝트",
   layout2SubTitleStyle: {
     fontSize: "20px",
+    fontSizeMobile: "18px",
     fontWeight: "700",
     color: "#295E92",
   },
@@ -77,14 +79,14 @@ export const INFO_BANNER_DEFAULTS = {
   layout3SubTitle: "( 서브타이틀 )",
   layout3SubTitleStyle: {
     fontSize: "20px",
-    fontSizeMobile: "20px",
+    fontSizeMobile: "18px",
     fontWeight: "700",
     color: "#285DE1",
   },
   layout3Title: "프로그램 특징",
   layout3TitleStyle: {
     fontSize: "28px",
-    fontSizeMobile: "22px",
+    fontSizeMobile: "20px",
     fontWeight: "700",
     color: "#060606",
   },
@@ -98,7 +100,7 @@ export const INFO_BANNER_DEFAULTS = {
   layout3ContentTitle: "서브 타이틀 입력",
   layout3ContentTitleStyle: {
     fontSize: "40px",
-    fontSizeMobile: "28px",
+    fontSizeMobile: "20px",
     fontWeight: "500",
     color: "#131416",
   },
@@ -116,12 +118,18 @@ export const INFO_BANNER_DEFAULTS = {
     "이미 수많은 자산가들은<br/><span class='font-bold'>미국 영주권 취득</span>으로<br/><span class='font-bold'>수억 원을 절감</span>하며 미국에서<br/>자녀를 <span class='font-bold'>글로벌 리더</span>로 키우고 있습니다.",
   layout4TitleStyle: {
     fontSize: "30px",
+    fontSizeMobile: "20px",
     fontWeight: "500",
     color: "#1e2124",
   },
   layout4Desc:
     "매년 최고액 갱신하는 국내 사교육비,<br/>서울대 졸업 후에도 막연한 취업 ...",
-  layout4DescStyle: { fontSize: "20px", fontWeight: "500", color: "#1e2124" },
+  layout4DescStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+    color: "#1e2124",
+  },
   layout5BgImageUrl: "/images/placeholder/infobanner_layout5_bg_image.jpg",
   layout5ImageUrl: "/images/placeholder/infobanner_layout5_main_image.jpg",
   layout5Card1ImageUrl:
@@ -131,30 +139,35 @@ export const INFO_BANNER_DEFAULTS = {
   layout5Card1Title: "영상명 입력",
   layout5Card1TitleStyle: {
     fontSize: "24px",
+    fontSizeMobile: "20px",
     fontWeight: "500",
     color: "#060606",
   },
   layout5Card1Desc: "영상 소개 문구 적는 곳",
   layout5Card1DescStyle: {
     fontSize: "20px",
+    fontSizeMobile: "18px",
     fontWeight: "500",
     color: "#6D7882",
   },
   layout5Card2Title: "영상명 입력",
   layout5Card2TitleStyle: {
     fontSize: "24px",
+    fontSizeMobile: "20px",
     fontWeight: "500",
     color: "#060606",
   },
   layout5Card2Desc: "영상 소개 문구 적는 곳",
   layout5Card2DescStyle: {
     fontSize: "20px",
+    fontSizeMobile: "18px",
     fontWeight: "500",
     color: "#6D7882",
   },
   layout5SubTitle: "( 서브타이틀 )",
   layout5SubTitleStyle: {
     fontSize: "18px",
+    fontSizeMobile: "18px",
     fontWeight: "500",
     color: "#285DE1",
   },
@@ -166,18 +179,28 @@ export const INFO_BANNER_DEFAULTS = {
     color: "#FFFFFF",
   },
   layout5Desc: "이민 프로그램명 입력",
-  layout5DescStyle: { fontSize: "20px", fontWeight: "500", color: "#FFFFFF" },
+  layout5DescStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+    color: "#FFFFFF",
+  },
   imageStyle: { objectFit: "cover" },
   items: [
     {
       id: "ib-item-1",
       iconUrl: "/images/placeholder/info_banner_layout1_feature_media.png",
       title: "프로그램 특징",
-      titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "20px",
+        fontWeight: "700",
+        color: "#FFFFFF",
+      },
       desc: "프로그램 특징 내용 입력",
       descStyle: {
         fontSize: "18px",
-        fontSizeMobile: "18px",
+        fontSizeMobile: "16px",
         fontWeight: "400",
         color: "#FFFFFF",
       },
@@ -186,11 +209,16 @@ export const INFO_BANNER_DEFAULTS = {
       id: "ib-item-2",
       iconUrl: "/images/placeholder/info_banner_layout1_feature_media.png",
       title: "프로그램 특징",
-      titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "20px",
+        fontWeight: "700",
+        color: "#FFFFFF",
+      },
       desc: "프로그램 특징 내용 입력",
       descStyle: {
         fontSize: "18px",
-        fontSizeMobile: "18px",
+        fontSizeMobile: "16px",
         fontWeight: "400",
         color: "#FFFFFF",
       },
@@ -199,11 +227,16 @@ export const INFO_BANNER_DEFAULTS = {
       id: "ib-item-3",
       iconUrl: "/images/placeholder/info_banner_layout1_feature_media.png",
       title: "프로그램 특징",
-      titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "20px",
+        fontWeight: "700",
+        color: "#FFFFFF",
+      },
       desc: "프로그램 특징 내용 입력",
       descStyle: {
         fontSize: "18px",
-        fontSizeMobile: "18px",
+        fontSizeMobile: "16px",
         fontWeight: "400",
         color: "#FFFFFF",
       },
@@ -212,11 +245,16 @@ export const INFO_BANNER_DEFAULTS = {
       id: "ib-item-4",
       iconUrl: "/images/placeholder/info_banner_layout1_feature_media.png",
       title: "프로그램 특징",
-      titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "20px",
+        fontWeight: "700",
+        color: "#FFFFFF",
+      },
       desc: "프로그램 특징 내용 입력",
       descStyle: {
         fontSize: "18px",
-        fontSizeMobile: "18px",
+        fontSizeMobile: "16px",
         fontWeight: "400",
         color: "#FFFFFF",
       },
@@ -230,7 +268,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as GenericNewWidget;
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
   const data = w.data;
   const layout = data.layout || "1";
   const infoBannerImageHeight = formatUnit((data as any).imageHeight);
@@ -306,10 +344,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   gap: "20px",
                 }}
               >
-                {/* Header Text Group — gap-12px */}
+                {/* Header Text Group — gap-12px desktop/tablet, gap-0 mobile (피그마 스펙) */}
                 <div
-                  className="self-stretch flex flex-col justify-center items-start"
-                  style={{ gap: "12px" }}
+                  className={`self-stretch flex flex-col justify-center ${isMobile ? "items-center text-center gap-0" : "items-start gap-[12px]"}`}
                 >
                   {!data.subTitleStyle?.isHidden && (
                     <SafeHtml
@@ -323,6 +360,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         lineHeight: "1",
                         color: "#FFFFFF",
                         backgroundColor: "transparent",
+                        ...(viewport === "mobile" &&
+                        (data.subTitleStyle?.fontSize === "20px" ||
+                          data.subTitleStyle?.fontSize === 20) &&
+                        !data.subTitleStyle?.fontSizeMobile
+                          ? { fontSize: "18px" }
+                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -364,6 +407,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         lineHeight: "1.5",
                         color: "#FFFFFF",
                         backgroundColor: "transparent",
+                        ...(viewport === "mobile" &&
+                        (data.descStyle?.fontSize === "20px" ||
+                          data.descStyle?.fontSize === 20) &&
+                        !data.descStyle?.fontSizeMobile
+                          ? { fontSize: "18px" }
+                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -373,19 +422,32 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   )}
                 </div>
 
-                {/* Feature Cards Row — flex-row, px-24px, gap-12px, rounded-16px */}
+                {/* Feature Cards Row — mobile: 2-col grid / desktop: flex-row */}
                 <div
                   className="self-stretch w-full"
-                  style={{
-                    display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    flexWrap: isDesktop ? "wrap" : "nowrap",
-                    gap: "12px",
-                    paddingLeft: "24px",
-                    paddingRight: "24px",
-                    backgroundColor: "rgba(19,20,22,0.2)",
-                    borderRadius: "16px",
-                  }}
+                  style={
+                    isMobile
+                      ? {
+                          display: "grid",
+                          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                          columnGap: "12px",
+                          rowGap: "12px",
+                          paddingLeft: "12px",
+                          paddingRight: "12px",
+                          backgroundColor: "rgba(19,20,22,0.2)",
+                          borderRadius: "8px",
+                        }
+                      : {
+                          display: "flex",
+                          flexDirection: "row",
+                          flexWrap: isDesktop ? "wrap" : "nowrap",
+                          gap: "12px",
+                          paddingLeft: "24px",
+                          paddingRight: "24px",
+                          backgroundColor: "rgba(19,20,22,0.2)",
+                          borderRadius: "16px",
+                        }
+                  }
                 >
                   {(data.items || []).map((item: any, idx: number) => {
                     const itemSelectId = item.id || `__idx_${idx}`;
@@ -393,7 +455,13 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={item.id || itemSelectId}
                         style={{
-                          flex: isDesktop ? "0 0 calc(25% - 9px)" : "1 0 0",
+                          ...(isMobile
+                            ? {}
+                            : {
+                                flex: isDesktop
+                                  ? "0 0 calc(25% - 9px)"
+                                  : "1 0 0",
+                              }),
                           display: "flex",
                           flexDirection: "column",
                           gap: "12px",
@@ -454,7 +522,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             flexDirection: "column",
                             gap: "4px",
                             width: "100%",
-                            alignItems: "flex-start",
+                            alignItems: isMobile ? "center" : "flex-start",
+                            textAlign: isMobile ? "center" : "left",
                           }}
                         >
                           {!item.titleStyle?.isHidden && (
@@ -500,7 +569,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
               </div>
 
-              {/* Image Area — h-400px, rounded-16px, shadow */}
+              {/* Image Area — rounded-16px desktop, rounded-8px mobile/tablet, shadow */}
               <div
                 className="cursor-pointer hover:ring-4 hover:ring-white transition-all z-10 flex justify-center items-center"
                 style={{
@@ -509,8 +578,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   height:
                     infoBannerImageHeight ||
                     data.imageStyle?.height ||
-                    (isDesktop ? "auto" : "400px"),
-                  borderRadius: "16px",
+                    (isDesktop ? "auto" : undefined),
+                  borderRadius: isMobile ? "8px" : "16px",
                   boxShadow: "24px 12px 16px 0px rgba(0,0,0,0.20)",
                   overflow: "hidden",
                   position: "relative",
@@ -559,20 +628,20 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
             style={{
               paddingTop: isTablet2 ? "60px" : isMobile2 ? "40px" : "100px",
               paddingBottom: isTablet2 ? "60px" : isMobile2 ? "40px" : "100px",
-              paddingLeft: isTablet2 ? "40px" : isMobile2 ? "20px" : "280px",
-              paddingRight: isTablet2 ? "40px" : isMobile2 ? "20px" : "280px",
+              paddingLeft: isTablet2 ? "40px" : isMobile2 ? "0px" : "280px",
+              paddingRight: isTablet2 ? "40px" : isMobile2 ? "0px" : "280px",
             }}
           >
-            {/* Banner Card — bg-#f6f7fb, p-20px, rounded-20px, gap-40px */}
+            {/* Banner Card — bg-#f6f7fb, p-20px, rounded-20px(desktop/tablet) / no-radius(mobile) */}
             <div
               className="self-stretch w-full flex hover:outline-none"
               style={{
                 flexDirection: isDesktop2 ? "row" : "column",
                 alignItems: "flex-start",
-                gap: isDesktop2 ? "56px" : "40px",
+                gap: isDesktop2 ? "56px" : isMobile2 ? "24px" : "40px",
                 padding: "20px",
                 backgroundColor: "#f6f7fb",
-                borderRadius: "20px",
+                borderRadius: isMobile2 ? "0px" : "20px",
               }}
             >
               {/* Image Area — h-260px, rounded-16px */}
@@ -584,7 +653,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   height:
                     infoBannerImageHeight ||
                     l2ImageStyle?.height ||
-                    (isDesktop2 ? "480px" : "260px"),
+                    (isDesktop2 ? "480px" : undefined),
                   borderRadius: "16px",
                   overflow: "hidden",
                   position: "relative",
@@ -624,8 +693,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               >
                 {/* Text Group (subtit) — flex-col, no gap */}
                 <div
-                  className="self-stretch flex flex-col justify-center items-start w-full"
-                  style={{ gap: "0px" }}
+                  className={`self-stretch flex flex-col justify-center ${isMobile2 ? "items-center text-center gap-0" : "items-start gap-0"}`}
                 >
                   {!l2SubTitleStyle?.isHidden && (
                     <SafeHtml
@@ -639,9 +707,15 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         ...getElementStyle(l2SubTitleStyle, viewport),
                         fontFamily: "'Pretendard', sans-serif",
                         fontWeight: "700",
-                        letterSpacing: "-0.4px",
+                        letterSpacing: isMobile2 ? "-0.36px" : "-0.4px",
                         lineHeight: "1",
                         color: "#295E92",
+                        ...(viewport === "mobile" &&
+                        (l2SubTitleStyle?.fontSize === "20px" ||
+                          l2SubTitleStyle?.fontSize === 20) &&
+                        !l2SubTitleStyle?.fontSizeMobile
+                          ? { fontSize: "18px" }
+                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -657,7 +731,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         ...getElementStyle(l2TitleStyle, viewport),
                         fontFamily: "'Pretendard', sans-serif",
                         fontWeight: "700",
-                        letterSpacing: "-0.8px",
+                        letterSpacing: isMobile2 ? "-0.56px" : "-0.8px",
                         lineHeight: "1.5",
                         color: "#131416",
                       }}
@@ -677,9 +751,15 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         ...getElementStyle(l2DescStyle, viewport),
                         fontFamily: "'Pretendard', sans-serif",
                         fontWeight: "500",
-                        letterSpacing: "-0.4px",
+                        letterSpacing: isMobile2 ? "-0.36px" : "-0.4px",
                         lineHeight: "1.5",
                         color: "#131416",
+                        ...(viewport === "mobile" &&
+                        (l2DescStyle?.fontSize === "20px" ||
+                          l2DescStyle?.fontSize === 20) &&
+                        !l2DescStyle?.fontSizeMobile
+                          ? { fontSize: "18px" }
+                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -689,17 +769,25 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   )}
                 </div>
 
-                {/* Feature Row — flex-row, gap-12px */}
+                {/* Feature Row — mobile: 2-col grid gap-8px / desktop: flex-row gap-12px */}
                 <div
                   className="self-stretch w-full"
-                  style={{
-                    display: "flex",
-                    flexDirection: isMobile2 ? "column" : "row",
-                    flexWrap: isDesktop2 ? "wrap" : "nowrap",
-                    gap: "12px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  style={
+                    isMobile2
+                      ? {
+                          display: "grid",
+                          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                          gap: "8px",
+                        }
+                      : {
+                          display: "flex",
+                          flexDirection: "row",
+                          flexWrap: isDesktop2 ? "wrap" : "nowrap",
+                          gap: "12px",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }
+                  }
                 >
                   {(data.items || []).map((item: any, idx: number) => {
                     const itemSelectId = item.id || `__idx_${idx}`;
@@ -707,15 +795,24 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={item.id || itemSelectId}
                         style={{
-                          flex: isDesktop2 ? "0 0 calc(25% - 9px)" : "1 0 0",
+                          ...(isMobile2
+                            ? {}
+                            : {
+                                flex: isDesktop2
+                                  ? "0 0 calc(25% - 9px)"
+                                  : "1 0 0",
+                              }),
                           display: "flex",
                           flexDirection: "column",
-                          gap: "20px",
+                          gap: isMobile2 ? "8px" : "20px",
                           alignItems: "center",
                           justifyContent: "center",
-                          padding: "24px",
+                          paddingLeft: isMobile2 ? "8px" : "24px",
+                          paddingRight: isMobile2 ? "8px" : "24px",
+                          paddingTop: isMobile2 ? "20px" : "24px",
+                          paddingBottom: isMobile2 ? "20px" : "24px",
                           backgroundColor: "#FFFFFF",
-                          borderRadius: "16px",
+                          borderRadius: isMobile2 ? "8px" : "16px",
                           minWidth: 0,
                         }}
                       >
@@ -847,11 +944,11 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               flexDirection: "column",
               alignItems: "center",
               width: "100%",
-              paddingLeft: isTablet3 ? "40px" : isMobile3 ? "20px" : "280px",
-              paddingRight: isTablet3 ? "40px" : isMobile3 ? "20px" : "280px",
-              paddingTop: isTablet3 ? "60px" : isMobile3 ? "40px" : "100px",
-              paddingBottom: isTablet3 ? "60px" : isMobile3 ? "40px" : "100px",
-              gap: isTablet3 ? "40px" : isMobile3 ? "32px" : "40px",
+              paddingLeft: isTablet3 ? "40px" : isMobile3 ? "0px" : "280px",
+              paddingRight: isTablet3 ? "40px" : isMobile3 ? "0px" : "280px",
+              paddingTop: isTablet3 ? "60px" : isMobile3 ? "0px" : "100px",
+              paddingBottom: isTablet3 ? "60px" : isMobile3 ? "60px" : "100px",
+              gap: isTablet3 ? "40px" : isMobile3 ? "24px" : "40px",
             }}
           >
             {/* Top section: image + offset card */}
@@ -862,18 +959,18 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 alignItems: "flex-end",
                 width: "100%",
                 position: "relative",
-                paddingBottom: isTablet3 || isMobile3 ? "80px" : "80px",
+                paddingBottom: isMobile3 ? "20px" : "80px",
               }}
             >
               {/* Full-bleed image area */}
               <div
                 style={{
                   width: "100%",
-                  height: isTablet3 ? "400px" : isMobile3 ? "260px" : "480px",
+                  height: isTablet3 ? "400px" : isMobile3 ? undefined : "480px",
                   overflow: "hidden",
                   cursor: "pointer",
-                  marginBottom: isTablet3 || isMobile3 ? "-80px" : "-80px",
-                  borderRadius: "16px",
+                  marginBottom: isMobile3 ? "-20px" : "-80px",
+                  borderRadius: isMobile3 ? "0px" : "16px",
                 }}
                 onClick={() => onElementSelect?.("layout3ImageUrl")}
               >
@@ -903,6 +1000,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   display: "flex",
                   alignItems: "flex-end",
                   justifyContent: "flex-end",
+                  paddingLeft: isMobile3 ? "8px" : "40px",
+                  paddingRight: isMobile3 ? "8px" : "40px",
                 }}
               >
                 {/* Card */}
@@ -911,9 +1010,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     width: "100%",
                     maxWidth: isDesktop3 ? "680px" : "100%",
                     backgroundColor: "#ffffff",
-                    borderRadius: "16px",
+                    borderRadius: isMobile3 ? "8px" : "16px",
                     boxShadow: "2px 2px 16px 0px rgba(0,0,0,0.08)",
-                    padding: "24px",
+                    padding: isMobile3 ? "16px" : "24px",
                     display: "flex",
                     flexDirection: "column",
                     gap: "16px",
@@ -937,6 +1036,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         gap: "0px",
                         flex: 1,
                         minWidth: 0,
+                        alignItems: isMobile3 ? "center" : "flex-start",
+                        textAlign: isMobile3 ? "center" : "left",
                       }}
                     >
                       {!l3SubTitleStyle?.isHidden && (
@@ -951,9 +1052,15 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             ...getElementStyle(l3SubTitleStyle, viewport),
                             fontFamily: "Pretendard, sans-serif",
                             fontWeight: 700,
-                            letterSpacing: "-0.4px",
+                            letterSpacing: isMobile3 ? "-0.36px" : "-0.4px",
                             lineHeight: 1.5,
                             color: "#285DE1",
+                            ...(viewport === "mobile" &&
+                            (l3SubTitleStyle?.fontSize === "20px" ||
+                              l3SubTitleStyle?.fontSize === 20) &&
+                            !l3SubTitleStyle?.fontSizeMobile
+                              ? { fontSize: "18px" }
+                              : {}),
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -971,7 +1078,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             ...getElementStyle(l3TitleStyle, viewport),
                             fontFamily: "Pretendard, sans-serif",
                             fontWeight: 700,
-                            letterSpacing: "-0.56px",
+                            letterSpacing: isMobile3 ? "-0.4px" : "-0.56px",
                             lineHeight: 1.5,
                             color: "#060606",
                           }}
@@ -1036,6 +1143,13 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         lineHeight: 1.5,
                         color: "#6d7882",
                         width: "100%",
+                        textAlign: isMobile3 ? "center" : "left",
+                        ...(viewport === "mobile" &&
+                        (l3DescStyle?.fontSize === "20px" ||
+                          l3DescStyle?.fontSize === 20) &&
+                        !l3DescStyle?.fontSizeMobile
+                          ? { fontSize: "18px" }
+                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -1052,9 +1166,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "flex-start",
-                gap: "24px",
+                alignItems: isMobile3 ? "center" : "flex-start",
+                gap: isMobile3 ? "16px" : "24px",
                 width: "100%",
+                paddingLeft: isMobile3 ? "20px" : "0px",
+                paddingRight: isMobile3 ? "20px" : "0px",
+                textAlign: isMobile3 ? "center" : "left",
               }}
             >
               {!l3ContentTitleStyle?.isHidden && (
@@ -1069,7 +1186,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     ...getElementStyle(l3ContentTitleStyle, viewport),
                     fontFamily: "Pretendard, sans-serif",
                     fontWeight: 500,
-                    letterSpacing: "-0.8px",
+                    letterSpacing: isMobile3 ? "-0.4px" : "-0.8px",
                     lineHeight: 1.5,
                     color: "#131416",
                     width: "100%",
@@ -1084,8 +1201,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               <div
                 style={{
                   backgroundColor: "#e6e8ea",
-                  height: "4px",
-                  width: "60px",
+                  height: isMobile3 ? "2px" : "4px",
+                  width: isMobile3 ? "30px" : "60px",
                   borderRadius: "2px",
                 }}
               />
@@ -1101,7 +1218,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     ...getElementStyle(l3ContentDescStyle, viewport),
                     fontFamily: "Pretendard, sans-serif",
                     fontWeight: 500,
-                    letterSpacing: "-0.4px",
+                    letterSpacing: isMobile3 ? "-0.36px" : "-0.4px",
                     lineHeight: 1.5,
                     color: "#6d7882",
                     width: "100%",
@@ -1136,14 +1253,14 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
             style={{
               display: "flex",
               flexDirection: isDesktop4 ? "row" : "column",
-              gap: isDesktop4 ? "56px" : "40px",
+              gap: isDesktop4 ? "56px" : isMobile4 ? "24px" : "40px",
               alignItems: "center",
               justifyContent: isDesktop4 ? "center" : undefined,
               width: "100%",
               paddingLeft: isTablet4 ? "40px" : isMobile4 ? "20px" : "280px",
               paddingRight: isTablet4 ? "40px" : isMobile4 ? "20px" : "280px",
-              paddingTop: isTablet4 ? "60px" : isMobile4 ? "40px" : "56px",
-              paddingBottom: isTablet4 ? "60px" : isMobile4 ? "40px" : "112px",
+              paddingTop: isTablet4 ? "60px" : isMobile4 ? "60px" : "56px",
+              paddingBottom: isTablet4 ? "60px" : isMobile4 ? "60px" : "112px",
             }}
           >
             {/* Top icon + Title */}
@@ -1161,8 +1278,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               {/* Quote icon */}
               <div
                 style={{
-                  width: "50px",
-                  height: "40px",
+                  width: isMobile4 ? "25px" : "50px",
+                  height: isMobile4 ? "20px" : "40px",
                   overflow: "hidden",
                   cursor: "pointer",
                   flexShrink: 0,
@@ -1199,9 +1316,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     ...getElementStyle(l4TitleStyle, viewport),
                     fontFamily: "Pretendard, sans-serif",
-                    fontSize: isDesktop4 ? "30px" : isMobile4 ? "24px" : "32px",
                     fontWeight: 500,
-                    letterSpacing: "-0.64px",
+                    letterSpacing: isMobile4 ? "-0.4px" : "-0.64px",
                     lineHeight: 1.5,
                     color: "#131416",
                     textAlign: isDesktop4 ? "left" : "center",
@@ -1217,20 +1333,67 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* Card + Image section */}
             {isMobile4 ? (
-              /* Mobile: fully stacked */
+              /* Mobile: card above, image below — Figma 3298:58988 */
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "16px",
+                  gap: "8px",
+                  isolation: "isolate",
                   width: "100%",
                 }}
               >
-                {/* Image */}
+                {/* Card — z:2, above image */}
+                {!l4DescStyle?.isHidden && (
+                  <div
+                    style={{
+                      backgroundColor: "#ffffff",
+                      borderRadius: "24px",
+                      boxShadow: "2px 2px 16px 0px rgba(0,0,0,0.08)",
+                      paddingLeft: "16px",
+                      paddingRight: "16px",
+                      paddingTop: "20px",
+                      paddingBottom: "20px",
+                      width: "100%",
+                      position: "relative",
+                      zIndex: 2,
+                    }}
+                  >
+                    <SafeHtml
+                      html={
+                        data.layout4Desc ||
+                        data.desc ||
+                        "매년 최고액 갱신하는 국내 사교육비,<br/>서울대 졸업 후에도 막연한 취업 ..."
+                      }
+                      className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
+                      style={{
+                        ...getElementStyle(l4DescStyle, viewport),
+                        fontFamily: "Pretendard, sans-serif",
+                        fontWeight: 500,
+                        letterSpacing: "-0.36px",
+                        lineHeight: 1.5,
+                        color: "#060606",
+                        textAlign: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                        ...(viewport === "mobile" &&
+                        (l4DescStyle?.fontSize === "20px" ||
+                          l4DescStyle?.fontSize === 20) &&
+                        !l4DescStyle?.fontSizeMobile
+                          ? { fontSize: "18px" }
+                          : {}),
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("layout4Desc");
+                      }}
+                    />
+                  </div>
+                )}
+                {/* Image — z:1, below card */}
                 <div
                   style={{
                     width: "100%",
-                    height: "260px",
                     borderTopRightRadius: "40px",
                     borderBottomLeftRadius: "40px",
                     borderTopLeftRadius: "0px",
@@ -1238,6 +1401,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
                     overflow: "hidden",
                     cursor: "pointer",
+                    position: "relative",
+                    zIndex: 1,
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -1248,51 +1413,17 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     url={
                       data.layout4ImageUrl ||
                       data.imageUrl ||
-                      "https://placehold.co/620x400"
+                      "/images/placeholder/infobanner_layout4_main_image.jpg"
                     }
                     alt="layout4-main-image"
-                    className="w-full h-full"
-                    style={getMainImageStyle(l4ImageStyle)}
+                    className="w-full h-auto block"
+                    style={getElementStyle(l4ImageStyle, viewport)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("layout4ImageUrl");
                     }}
                   />
                 </div>
-                {/* Card */}
-                {!l4DescStyle?.isHidden && (
-                  <div
-                    style={{
-                      backgroundColor: "#ffffff",
-                      borderRadius: "24px",
-                      boxShadow: "2px 2px 16px 0px rgba(0,0,0,0.08)",
-                      padding: "24px",
-                      width: "100%",
-                    }}
-                  >
-                    <SafeHtml
-                      html={
-                        data.layout4Desc ||
-                        data.desc ||
-                        "매년 최고액 갱신하는 국내 사교육비,<br/>서울대 졸업 후에도 막연한 취업 ..."
-                      }
-                      className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                      style={{
-                        ...getElementStyle(l4DescStyle, viewport),
-                        fontFamily: "Pretendard, sans-serif",
-                        fontSize: "18px",
-                        fontWeight: 500,
-                        letterSpacing: "-0.4px",
-                        lineHeight: 1.5,
-                        color: "#060606",
-                      }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("layout4Desc");
-                      }}
-                    />
-                  </div>
-                )}
               </div>
             ) : (
               /* Tablet / Desktop: card overlaps image (card left z-2, image right z-1) */
@@ -1313,7 +1444,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   <div
                     style={{
                       backgroundColor: "#ffffff",
-                      borderRadius: isTablet4 ? "24px" : "0px",
+                      borderRadius: "24px",
                       boxShadow: "2px 2px 16px 0px rgba(0,0,0,0.08)",
                       paddingTop: "40px",
                       paddingBottom: "40px",
@@ -1340,7 +1471,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       style={{
                         ...getElementStyle(l4DescStyle, viewport),
                         fontFamily: "Pretendard, sans-serif",
-                        fontSize: "20px",
                         fontWeight: 500,
                         letterSpacing: "-0.4px",
                         lineHeight: 1.5,
@@ -1415,7 +1545,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
           className="w-full relative overflow-hidden bg-white"
         >
           <div className="mx-auto w-full max-w-[1920px] relative">
-            <div className="self-stretch w-full py-14 flex flex-col justify-start items-center">
+            <div
+              className={`self-stretch w-full ${getVerticalPaddingClass(viewport as any)} flex flex-col justify-start items-center`}
+            >
               <div
                 className={`self-stretch ${getPaddingClass(viewport, "xl:px-[280px]")} py-28 bg-gradient-to-br from-시안-mode-Primary50 via-시안-mode-subColor30 to-시안-mode-subColor50 flex flex-col justify-start items-start gap-10`}
                 style={{
@@ -1636,8 +1768,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              paddingTop: isTablet5 ? "60px" : "40px",
-              paddingBottom: isTablet5 ? "140px" : "80px",
+              paddingTop: "60px",
+              paddingBottom: isMobile5 ? "100px" : "140px",
               width: "100%",
             }}
           >
@@ -1648,14 +1780,14 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                paddingLeft: isTablet5 ? "40px" : "20px",
-                paddingRight: isTablet5 ? "40px" : "20px",
+                paddingLeft: "40px",
+                paddingRight: "40px",
                 paddingTop: isTablet5 ? "120px" : "60px",
                 paddingBottom: isTablet5 ? "120px" : "60px",
-                marginBottom: "-80px",
+                marginBottom: isMobile5 ? "-40px" : "-80px",
                 backgroundImage: data.layout5BgImageUrl
                   ? `url(${data.layout5BgImageUrl})`
-                  : "linear-gradient(153.84deg, #285DE1 2.89%, #59A1B9 48.56%, #44A075 100%)",
+                  : "linear-gradient(147.64deg, #285DE1 2.89%, #59A1B9 48.56%, #44A075 100%)",
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
@@ -1670,9 +1802,11 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "flex-start",
+                  alignItems: isMobile5 ? "center" : "flex-start",
                   justifyContent: "center",
                   width: "100%",
+                  textAlign: isMobile5 ? "center" : "left",
+                  gap: isMobile5 ? "0px" : undefined,
                 }}
               >
                 {!(l5SubTitleStyle as any)?.isHidden && (
@@ -1684,11 +1818,16 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     style={{
                       ...getElementStyle(l5SubTitleStyle, viewport),
                       fontFamily: "Pretendard, sans-serif",
-                      fontSize: "18px",
                       fontWeight: 500,
                       letterSpacing: "-0.36px",
                       lineHeight: 1.5,
                       color: "#FFFFFF",
+                      ...(viewport === "mobile" &&
+                      (l5SubTitleStyle?.fontSize === "20px" ||
+                        l5SubTitleStyle?.fontSize === 20) &&
+                      !l5SubTitleStyle?.fontSizeMobile
+                        ? { fontSize: "18px" }
+                        : {}),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -1703,9 +1842,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     style={{
                       ...getElementStyle(l5TitleStyle, viewport),
                       fontFamily: "Pretendard, sans-serif",
-                      fontSize: isMobile5 ? "28px" : "40px",
                       fontWeight: 700,
-                      letterSpacing: "-0.8px",
+                      letterSpacing: isMobile5 ? "-0.56px" : "-0.8px",
                       lineHeight: 1.5,
                       color: "#FFFFFF",
                     }}
@@ -1724,11 +1862,16 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     style={{
                       ...getElementStyle(l5DescStyle, viewport),
                       fontFamily: "Pretendard, sans-serif",
-                      fontSize: "20px",
                       fontWeight: 500,
-                      letterSpacing: "-0.4px",
+                      letterSpacing: "-0.36px",
                       lineHeight: 1.5,
                       color: "#FFFFFF",
+                      ...(viewport === "mobile" &&
+                      (l5DescStyle?.fontSize === "20px" ||
+                        l5DescStyle?.fontSize === 20) &&
+                      !l5DescStyle?.fontSizeMobile
+                        ? { fontSize: "18px" }
+                        : {}),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -1744,18 +1887,17 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "24px",
+                gap: isMobile5 ? "16px" : "24px",
                 alignItems: "flex-start",
                 paddingLeft: isTablet5 ? "40px" : "20px",
                 paddingRight: isTablet5 ? "40px" : "20px",
-                marginBottom: "-80px",
                 width: "100%",
               }}
             >
               {/* 메인 이미지 */}
               <div
                 style={{
-                  height: isTablet5 ? "240px" : "180px",
+                  height: isTablet5 ? "240px" : isMobile5 ? "160px" : undefined,
                   width: "100%",
                   borderRadius: "16px",
                   overflow: "hidden",
@@ -1786,8 +1928,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               <div
                 style={{
                   display: "flex",
-                  flexDirection: isMobile5 ? "column" : "row",
-                  gap: "20px",
+                  flexDirection: "row",
+                  gap: isMobile5 ? "8px" : "20px",
                   alignItems: "flex-start",
                   width: "100%",
                 }}
@@ -1798,7 +1940,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     flex: "1 0 0",
                     display: "flex",
                     flexDirection: "column",
-                    gap: "16px",
+                    gap: isMobile5 ? "8px" : "16px",
                     alignItems: "center",
                     justifyContent: "center",
                     minWidth: 0,
@@ -1807,9 +1949,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <div
                     style={{
-                      height: "180px",
+                      height: isMobile5 ? "100px" : "180px",
                       width: "100%",
-                      borderRadius: "16px",
+                      borderRadius: isMobile5 ? "8px" : "16px",
                       overflow: "hidden",
                       flexShrink: 0,
                       cursor: "pointer",
@@ -1841,9 +1983,10 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: "8px",
+                      gap: "0px",
                       alignItems: "flex-start",
                       width: "100%",
+                      textAlign: "left",
                     }}
                   >
                     {!data.layout5Card1TitleStyle?.isHidden && (
@@ -1856,12 +1999,10 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             viewport,
                           ),
                           fontFamily: "Pretendard, sans-serif",
-                          fontSize: "24px",
                           fontWeight: 500,
-                          letterSpacing: "-0.48px",
+                          letterSpacing: isMobile5 ? "-0.4px" : "-0.48px",
                           lineHeight: 1.5,
                           color: "#060606",
-                          whiteSpace: "nowrap",
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -1879,9 +2020,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             viewport,
                           ),
                           fontFamily: "Pretendard, sans-serif",
-                          fontSize: "20px",
                           fontWeight: 500,
-                          letterSpacing: "-0.4px",
+                          letterSpacing: isMobile5 ? "-0.36px" : "-0.4px",
                           lineHeight: 1.5,
                           color: "#6d7882",
                           width: "100%",
@@ -1901,7 +2041,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     flex: "1 0 0",
                     display: "flex",
                     flexDirection: "column",
-                    gap: "16px",
+                    gap: isMobile5 ? "8px" : "16px",
                     alignItems: "center",
                     justifyContent: "center",
                     minWidth: 0,
@@ -1910,9 +2050,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 >
                   <div
                     style={{
-                      height: "180px",
+                      height: isMobile5 ? "100px" : "180px",
                       width: "100%",
-                      borderRadius: "16px",
+                      borderRadius: isMobile5 ? "8px" : "16px",
                       overflow: "hidden",
                       flexShrink: 0,
                       cursor: "pointer",
@@ -1944,9 +2084,10 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: "8px",
+                      gap: "0px",
                       alignItems: "flex-start",
                       width: "100%",
+                      textAlign: "left",
                     }}
                   >
                     {!data.layout5Card2TitleStyle?.isHidden && (
@@ -1959,12 +2100,10 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             viewport,
                           ),
                           fontFamily: "Pretendard, sans-serif",
-                          fontSize: "24px",
                           fontWeight: 500,
-                          letterSpacing: "-0.48px",
+                          letterSpacing: isMobile5 ? "-0.4px" : "-0.48px",
                           lineHeight: 1.5,
                           color: "#060606",
-                          whiteSpace: "nowrap",
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
@@ -1982,9 +2121,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             viewport,
                           ),
                           fontFamily: "Pretendard, sans-serif",
-                          fontSize: "20px",
                           fontWeight: 500,
-                          letterSpacing: "-0.4px",
+                          letterSpacing: isMobile5 ? "-0.36px" : "-0.4px",
                           lineHeight: 1.5,
                           color: "#6d7882",
                           width: "100%",

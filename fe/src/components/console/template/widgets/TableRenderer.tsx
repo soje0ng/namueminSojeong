@@ -7,6 +7,7 @@ import {
   WidgetRendererProps,
   UniversalMedia,
   getPaddingClass,
+  getVerticalPaddingClass,
 } from "./WidgetUtils";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
@@ -73,7 +74,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as TableWidget;
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
 
   // 섹션 전체 배경색이 테이블 스타일과 충돌하지 않도록 투명하게 처리
   const sectionStyle = { ...style, backgroundColor: "transparent" };
@@ -132,7 +133,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
           >
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (
@@ -296,7 +297,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
           >
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (
@@ -445,7 +446,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
           >
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (

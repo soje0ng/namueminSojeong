@@ -8,6 +8,7 @@ import {
   formatUnit,
   UniversalMedia,
   getPaddingClass,
+  getVerticalPaddingClass,
   getBorderRadiusClass,
 } from "./WidgetUtils";
 
@@ -195,7 +196,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as GenericNewWidget;
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
   const itemsPerRow = Number(w.data.itemsPerRow) || 3;
   const imageCardImageHeight = formatUnit((w.data as any).imageHeight);
   const getItemImageStyle = (imageStyle: any) => {
@@ -375,7 +376,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
@@ -505,7 +506,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
@@ -641,7 +642,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">
@@ -968,7 +969,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <section style={style} className="w-full">
         <div
-          className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
+          className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full max-w-[1920px] mx-auto`}
         >
           {/* Header Area */}
           <div className="flex flex-col justify-start items-center">

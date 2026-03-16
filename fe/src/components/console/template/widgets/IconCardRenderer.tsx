@@ -10,6 +10,7 @@ import {
   getPaddingClass,
   getBorderRadiusClass,
   getBorderRadiusStyle,
+  getVerticalPaddingClass,
 } from "./WidgetUtils";
 
 const getGridColsClass = (
@@ -127,7 +128,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as IconCardWidget;
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
   const iconCardImageHeight = formatUnit((w.data as any).imageHeight);
   const iconPlaceholderLayout = getIconLayoutPlaceholderKey(
     w.data.layout,

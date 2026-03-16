@@ -6,6 +6,8 @@ import {
   SafeHtml,
   WidgetRendererProps,
   getPaddingClass,
+  formatUnit,
+  getVerticalPaddingClass,
   getBorderRadiusClass,
 } from "./WidgetUtils";
 
@@ -85,12 +87,22 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
           className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
         >
           {/* Header Area */}
-          <div className="flex flex-col justify-start items-center text-center w-full">
+          <div
+            className={`flex flex-col justify-start items-center text-center w-full ${viewport === "mobile" ? "gap-0" : ""}`}
+          >
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className={`text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all cursor-text break-keep`}
-                style={getFaqTextStyle(w.data.subTitleStyle)}
+                style={{
+                  ...getFaqTextStyle(w.data.subTitleStyle),
+                  ...(viewport === "mobile" &&
+                  (w.data.subTitleStyle?.fontSize === "20px" ||
+                    w.data.subTitleStyle?.fontSize === 20) &&
+                  !w.data.subTitleStyle?.fontSizeMobile
+                    ? { fontSize: "18px" }
+                    : {}),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -112,7 +124,15 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.desc || "이민 프로그램명 입력"}
                 className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all cursor-text break-keep`}
-                style={getFaqTextStyle(w.data.descStyle)}
+                style={{
+                  ...getFaqTextStyle(w.data.descStyle),
+                  ...(viewport === "mobile" &&
+                  (w.data.descStyle?.fontSize === "20px" ||
+                    w.data.descStyle?.fontSize === 20) &&
+                  !w.data.descStyle?.fontSizeMobile
+                    ? { fontSize: "18px" }
+                    : {}),
+                }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
@@ -168,7 +188,7 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
                       </div>
                       {isOpen && item.answer && (
                         <div
-                          className={`w-full ${viewport === "mobile" ? "pl-0" : "pl-[68px]"} cursor-default`}
+                          className={`w-full ${viewport === "mobile" ? "pl-0" : viewport === "tablet" ? "pl-6" : "pl-[68px]"} cursor-default`}
                           onClick={(e) => e.stopPropagation()}
                           onDoubleClick={(e) => e.stopPropagation()}
                         >

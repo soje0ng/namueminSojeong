@@ -7,6 +7,7 @@ import {
   WidgetRendererProps,
   formatUnit,
   getPaddingClass,
+  getVerticalPaddingClass,
 } from "./WidgetUtils";
 
 export const TAB_BUTTON_DEFAULTS = {
@@ -88,7 +89,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as GenericNewWidget;
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
   const data = w.data;
   const layout = data.layout || "1";
 
@@ -103,16 +104,24 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+            className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
           >
-            <div className="flex flex-col justify-start items-center text-center w-full max-w-[800px]">
+            <div
+              className={`flex flex-col justify-start items-center text-center w-full max-w-[800px] ${viewport === "mobile" ? "gap-0" : ""}`}
+            >
               {!data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(data.subTitleStyle, viewport as any),
                     color: "#285DE1",
+                    ...getElementStyle(data.subTitleStyle, viewport as any),
+                    ...(viewport === "mobile" &&
+                    (data.subTitleStyle?.fontSize === "20px" ||
+                      data.subTitleStyle?.fontSize === 20) &&
+                    !data.subTitleStyle?.fontSizeMobile
+                      ? { fontSize: "18px" }
+                      : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -120,28 +129,30 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   }}
                 />
               )}
-
               {!data.titleStyle?.isHidden && (
-                <div
-                  className="justify-start hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full mt-2 mb-2"
+                <SafeHtml
+                  html={data.title || "타이틀명 입력"}
+                  className="text-center justify-start text-시안-mode-gray90 text-2xl xl:text-4xl font-bold leading-tight xl:leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
+                  style={getElementStyle(data.titleStyle, viewport as any)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
                   }}
-                >
-                  <SafeHtml
-                    html={data.title || "타이틀명 입력"}
-                    className="justify-start text-시안-mode-gray90 text-2xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep"
-                    style={getElementStyle(data.titleStyle, viewport as any)}
-                  />
-                </div>
+                />
               )}
-
               {!data.descStyle?.isHidden && (
                 <SafeHtml
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.descStyle, viewport as any)}
+                  style={{
+                    ...getElementStyle(data.descStyle, viewport as any),
+                    ...(viewport === "mobile" &&
+                    (data.descStyle?.fontSize === "20px" ||
+                      data.descStyle?.fontSize === 20) &&
+                    !data.descStyle?.fontSizeMobile
+                      ? { fontSize: "18px" }
+                      : {}),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("desc");
@@ -151,14 +162,17 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             <div
-              className="self-stretch w-full border-t border-시안-mode-gray20 grid"
+              className={`self-stretch w-full border-t border-시안-mode-gray20 grid ${viewport === "mobile" ? "grid-cols-2" : ""}`}
               style={{
                 gap: w.style?.gap
                   ? formatUnit(w.style.gap)
                   : data.itemGap
                     ? formatUnit(data.itemGap)
                     : undefined,
-                gridTemplateColumns: `repeat(${visibleColumns}, minmax(0, 1fr))`,
+                gridTemplateColumns:
+                  viewport === "mobile"
+                    ? undefined
+                    : `repeat(${visibleColumns}, minmax(0, 1fr))`,
               }}
             >
               {(data.items || []).map((item: any, i: number) => {
@@ -205,7 +219,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <SafeHtml
                         html={item.title || "TAB 명 링크 연결"}
-                        className={`flex-1 text-center justify-start text-lg xl:text-xl font-medium leading-8 break-keep ${
+                        className={`flex-1 text-center justify-start ${viewport === "mobile" ? "text-[18px]" : "text-lg xl:text-xl"} font-medium leading-8 break-keep ${
                           !item.titleStyle?.color ? "text-white" : ""
                         } hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded`}
                         style={textOnlyStyle}
@@ -232,7 +246,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <SafeHtml
                       html={item.title || "TAB 명 링크 연결"}
-                      className={`flex-1 text-center justify-start text-lg xl:text-xl font-medium leading-8 break-keep ${
+                      className={`flex-1 text-center justify-start ${viewport === "mobile" ? "text-[18px]" : "text-lg xl:text-xl"} font-medium leading-8 break-keep ${
                         !item.titleStyle?.color ? "text-시안-mode-gray50" : ""
                       } hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded`}
                       style={textOnlyStyle}

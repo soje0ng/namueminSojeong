@@ -9,6 +9,7 @@ import {
   formatUnit,
   getPaddingClass,
   getBorderRadiusClass,
+  getVerticalPaddingClass,
 } from "./WidgetUtils";
 
 const DEFAULT_LEFT_DESC_ITEMS = [
@@ -79,7 +80,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as GenericNewWidget;
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
   const data = w.data;
   const layout = data.layout || "1";
   const comparisonImageHeight = formatUnit((data as any).imageHeight);
@@ -126,7 +127,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className={`self-stretch ${getPaddingClass(viewport)} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -443,7 +444,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
               <div className="hidden xl:inline-flex bg-시안-mode-gray5 flex-col justify-center items-start self-stretch">
                 {!data.middleTitleStyle?.isHidden && (
                   <div
-                    className="w-60 flex-1 py-3 bg-시안-mode-subColor50 outline outline-1 outline-offset-[-1px] outline-시안-mode-gray1 inline-flex justify-center items-center gap-2.5"
+                    className="w-60 flex-1 py-3 bg-시안-mode-subColor50 inline-flex justify-center items-center gap-2.5"
                     style={{
                       backgroundColor:
                         getElementStyle(

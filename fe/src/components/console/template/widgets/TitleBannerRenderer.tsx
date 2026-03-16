@@ -10,6 +10,7 @@ import {
   getPaddingClass,
   getBorderRadiusClass,
   getBorderRadiusStyle,
+  getVerticalPaddingClass,
 } from "./WidgetUtils";
 
 export const TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS = [
@@ -17,25 +18,55 @@ export const TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS = [
     id: "title-banner-feature-1",
     image: "/images/placeholder/banner_feature.png",
     title: "프로그램 특징",
-    titleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
+    titleStyle: {
+      color: "#0369a1",
+      fontSize: "24px",
+      fontSizeMobile: "20px",
+      fontWeight: "700",
+    },
     desc: "프로그램 특징 내용 입력",
-    descStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+    descStyle: {
+      color: "#6b7280",
+      fontSize: "18px",
+      fontSizeMobile: "18px",
+      fontWeight: "400",
+    },
   },
   {
     id: "title-banner-feature-2",
     image: "/images/placeholder/banner_feature.png",
     title: "프로그램 특징",
-    titleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
+    titleStyle: {
+      color: "#0369a1",
+      fontSize: "24px",
+      fontSizeMobile: "20px",
+      fontWeight: "700",
+    },
     desc: "프로그램 특징 내용 입력",
-    descStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+    descStyle: {
+      color: "#6b7280",
+      fontSize: "18px",
+      fontSizeMobile: "18px",
+      fontWeight: "400",
+    },
   },
   {
     id: "title-banner-feature-3",
     image: "/images/placeholder/banner_feature.png",
     title: "프로그램 특징",
-    titleStyle: { color: "#0369a1", fontSize: "24px", fontWeight: "700" },
+    titleStyle: {
+      color: "#0369a1",
+      fontSize: "24px",
+      fontSizeMobile: "20px",
+      fontWeight: "700",
+    },
     desc: "프로그램 특징 내용 입력",
-    descStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
+    descStyle: {
+      color: "#6b7280",
+      fontSize: "18px",
+      fontSizeMobile: "18px",
+      fontWeight: "400",
+    },
   },
 ] as const;
 
@@ -46,6 +77,24 @@ export const getTitleBannerLayout1Items = (data: any) => {
         idx % TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS.length
       ],
       ...item,
+      imageStyle: {
+        ...(TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS[
+          idx % TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS.length
+        ]?.imageStyle || {}),
+        ...(item?.imageStyle || {}),
+      },
+      titleStyle: {
+        ...(TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS[
+          idx % TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS.length
+        ]?.titleStyle || {}),
+        ...(item?.titleStyle || {}),
+      },
+      descStyle: {
+        ...(TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS[
+          idx % TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS.length
+        ]?.descStyle || {}),
+        ...(item?.descStyle || {}),
+      },
       id: item?.id || `title-banner-feature-${idx + 1}`,
     }));
   }
@@ -57,18 +106,27 @@ export const getTitleBannerLayout1Items = (data: any) => {
       image: data?.[`feature${featureIndex}Image`] || defaultItem.image,
       imageStyle: data?.[`feature${featureIndex}ImageStyle`],
       title: data?.[`feature${featureIndex}Title`] || defaultItem.title,
-      titleStyle:
-        data?.[`feature${featureIndex}TitleStyle`] || defaultItem.titleStyle,
+      titleStyle: {
+        ...(defaultItem.titleStyle || {}),
+        ...(data?.[`feature${featureIndex}TitleStyle`] || {}),
+      },
       desc: data?.[`feature${featureIndex}Desc`] || defaultItem.desc,
-      descStyle:
-        data?.[`feature${featureIndex}DescStyle`] || defaultItem.descStyle,
+      descStyle: {
+        ...(defaultItem.descStyle || {}),
+        ...(data?.[`feature${featureIndex}DescStyle`] || {}),
+      },
     };
   });
 };
 
 export const TITLE_BANNER_DEFAULTS = {
   subTitle: "버지니아 해안 리조트 건설 프로젝트",
-  subTitleStyle: { color: "#285DE1", fontSize: "20px", fontWeight: "700" }, // blue-600
+  subTitleStyle: {
+    color: "#285DE1",
+    fontSize: "20px",
+    fontSizeMobile: "20px",
+    fontWeight: "700",
+  }, // blue-600
   title:
     "2026년 <span style='color: #285DE1'>미국 투자이민,</span><br/>꼭 알아야 할 3가지 핵심 트렌드",
   titleStyle: {
@@ -78,16 +136,27 @@ export const TITLE_BANNER_DEFAULTS = {
     fontWeight: "700",
   },
   desc: "설명을 쓰는 곳입니다.",
-  descStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
+  descStyle: {
+    color: "#6b7280",
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+  },
   textContentTitle: "서브 타이틀 입력",
   textContentTitleStyle: {
     color: "#131416",
     fontSize: "24px",
+    fontSizeMobile: "24px",
     fontWeight: "500",
   },
   textContent:
     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
-  textContentStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "400" },
+  textContentStyle: {
+    color: "#6b7280",
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "400",
+  },
   feature1DescStyle: { color: "#6b7280", fontSize: "18px", fontWeight: "400" },
   feature2Image: "/images/placeholder/banner_feature.png",
   feature2Title: "프로그램 특징",
@@ -111,6 +180,7 @@ export const TITLE_BANNER_DEFAULTS = {
   layout3SmallTitleStyle: {
     color: "#131416",
     fontSize: "24px",
+    fontSizeMobile: "18px",
     fontWeight: "500",
   },
   layout3Title: "학부모 영주권 프로그램",
@@ -122,7 +192,12 @@ export const TITLE_BANNER_DEFAULTS = {
   },
   layout3Desc:
     "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램",
-  layout3DescStyle: { color: "#6b7280", fontSize: "20px", fontWeight: "500" },
+  layout3DescStyle: {
+    color: "#6b7280",
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+  },
   layout: "1",
 };
 
@@ -132,7 +207,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as GenericNewWidget;
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
   const data = w.data;
   const layout = String(data.layout || "1")
     .trim()
@@ -160,6 +235,39 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         ? { flex: "0 0 100%", maxWidth: "100%" }
         : { flex: "0 0 33.333333%", maxWidth: "33.333333%" }
       : {};
+  const mergeTitleBannerStyle = (defaultStyle?: any, currentStyle?: any) => {
+    if (
+      defaultStyle &&
+      typeof defaultStyle === "object" &&
+      currentStyle &&
+      typeof currentStyle === "object"
+    ) {
+      return {
+        ...defaultStyle,
+        ...currentStyle,
+      };
+    }
+
+    return currentStyle || defaultStyle;
+  };
+  const getTitleBannerStyleSource = (styleKey: string) =>
+    mergeTitleBannerStyle(
+      (TITLE_BANNER_DEFAULTS as any)[styleKey],
+      data[styleKey],
+    );
+  const getLayout1FeatureStyleSource = (
+    feature: any,
+    idx: number,
+    styleKey: "imageStyle" | "titleStyle" | "descStyle",
+  ) =>
+    mergeTitleBannerStyle(
+      (
+        TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS[
+          idx % TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS.length
+        ] as any
+      )?.[styleKey],
+      feature?.[styleKey],
+    );
   const getTitleBannerTextStyle = (
     textStyle: any,
     overrides: React.CSSProperties = {},
@@ -167,9 +275,361 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
     ...getElementStyle(textStyle, viewport as any),
     ...overrides,
   });
+  const stripResponsiveTypographyStyles = (html?: string) => {
+    if (!html || typeof html !== "string") return html;
+
+    return html
+      .replace(/style=(['"])(.*?)\1/gi, (_match, quote, styleText) => {
+        const cleanedStyle = String(styleText)
+          .split(";")
+          .map((rule) => rule.trim())
+          .filter(Boolean)
+          .filter(
+            (rule) =>
+              !/^(font-size|line-height|letter-spacing|font-family)\s*:/i.test(
+                rule,
+              ),
+          )
+          .join("; ");
+
+        return cleanedStyle ? `style=${quote}${cleanedStyle}${quote}` : "";
+      })
+      .replace(/\sstyle=(['"])\1/gi, "");
+  };
+  const getResponsiveTextHtml = (html?: string) =>
+    isMobile ? stripResponsiveTypographyStyles(html) : html;
 
   /* ─────────────────────────────────────────── 레이아웃 1 (구조 원복) ─── */
   if (layout === "1") {
+    /* ── 모바일 레이아웃 (피그마 node-id: 3298:58915) ── */
+    if (isMobile) {
+      return (
+        <section
+          style={{
+            ...style,
+            backgroundImage: data.backgroundImage
+              ? `url(${getImageUrl(data.backgroundImageStyle, viewport, data.backgroundImage)})`
+              : undefined,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+          className="w-full relative overflow-hidden transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("backgroundImage");
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "24px",
+              alignItems: "flex-start",
+              paddingLeft: "20px",
+              paddingRight: "20px",
+              paddingTop: viewport === "mobile" ? "30px" : "60px",
+              paddingBottom: viewport === "mobile" ? "30px" : "60px",
+              width: "100%",
+            }}
+          >
+            {/* tit 섹션 */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+                alignItems: "flex-start",
+                fontStyle: "normal",
+                width: "100%",
+              }}
+            >
+              {/* 서브타이틀 */}
+              <SafeHtml
+                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                style={{
+                  ...getTitleBannerTextStyle(
+                    getTitleBannerStyleSource("subTitleStyle"),
+                  ),
+                  fontWeight: "700",
+                  color: "#285de1",
+                  letterSpacing: "-0.4px",
+                  lineHeight: "1",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subTitle");
+                }}
+                html={getResponsiveTextHtml(
+                  data.subTitle || TITLE_BANNER_DEFAULTS.subTitle,
+                )}
+              />
+              {/* 메인 타이틀 */}
+              <div
+                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                style={{ width: "100%" }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              >
+                <SafeHtml
+                  style={{
+                    ...getElementStyle(
+                      getTitleBannerStyleSource("titleStyle"),
+                      viewport as any,
+                    ),
+                    fontWeight: "700",
+                    color: "#131416",
+                    letterSpacing: "-0.56px",
+                    lineHeight: "1.5",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "keep-all",
+                    width: "100%",
+                  }}
+                  html={getResponsiveTextHtml(
+                    data.title ||
+                      `<span style="color:#131416;font-weight:700;">2026년 </span><span style="color:#285DE1;font-weight:700;">미국 투자이민,</span><br/><span style="color:#131416;font-weight:700;">꼭 알아야 할 3가지 핵심 트렌드</span>`,
+                  )}
+                />
+              </div>
+              {/* desc */}
+              <SafeHtml
+                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                style={{
+                  ...getTitleBannerTextStyle(
+                    getTitleBannerStyleSource("descStyle"),
+                  ),
+                  fontWeight: "500",
+                  color: "#6d7882",
+                  letterSpacing: "-0.36px",
+                  lineHeight: "1.5",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("desc");
+                }}
+                html={getResponsiveTextHtml(
+                  data.desc || TITLE_BANNER_DEFAULTS.desc,
+                )}
+              />
+            </div>
+
+            {/* body 섹션 */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px",
+                alignItems: "flex-start",
+                width: "100%",
+              }}
+            >
+              {/* 본문 텍스트 */}
+              <SafeHtml
+                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                style={{
+                  ...getTitleBannerTextStyle(
+                    getTitleBannerStyleSource("textContentStyle"),
+                  ),
+                  fontWeight: "500",
+                  color: "#6d7882",
+                  letterSpacing: "-0.36px",
+                  lineHeight: "1.5",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("textContent");
+                }}
+                html={getResponsiveTextHtml(
+                  data.textContent ||
+                    "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
+                )}
+              />
+
+              {/* 아이콘박스 2열 그리드 */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                  width: "100%",
+                  rowGap: "0px",
+                }}
+              >
+                {layout1Features.map((feature: any, idx: number) => {
+                  const isLastInRow = (idx + 1) % 2 === 0;
+                  return (
+                    <div
+                      key={feature.id || idx}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        borderRight: !isLastInRow
+                          ? "1px solid #e6e8ea"
+                          : "none",
+                        maxWidth: "440px",
+                        justifySelf: "stretch",
+                      }}
+                    >
+                      {/* 아이콘 이미지 100×100 */}
+                      <UniversalMedia
+                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          objectFit: "contain",
+                          ...getElementStyle(feature.imageStyle, viewport),
+                        }}
+                        url={getImageUrl(
+                          feature.imageStyle,
+                          viewport,
+                          feature.image,
+                        )}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          if (hasLayout1Items) {
+                            onElementSelect?.("itemImage", feature.id);
+                            return;
+                          }
+                          onElementSelect?.(`feature${idx + 1}Image`);
+                        }}
+                      />
+                      {/* 텍스트 */}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          paddingTop: "8px",
+                          paddingBottom: "8px",
+                          textAlign: "center",
+                          lineHeight: "1.5",
+                          fontStyle: "normal",
+                          width: "100%",
+                        }}
+                      >
+                        <SafeHtml
+                          className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                          style={{
+                            ...getElementStyle(
+                              getLayout1FeatureStyleSource(
+                                feature,
+                                idx,
+                                "titleStyle",
+                              ),
+                              viewport as any,
+                            ),
+                            fontWeight: "700",
+                            color: "#295e92",
+                            letterSpacing: "-0.4px",
+                            lineHeight: "1.5",
+                            textAlign: "center",
+                            whiteSpace: "pre-wrap",
+                            wordBreak: "keep-all",
+                            width: "100%",
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            if (hasLayout1Items) {
+                              onElementSelect?.("itemTitle", feature.id);
+                              return;
+                            }
+                            onElementSelect?.(`feature${idx + 1}Title`);
+                          }}
+                          html={getResponsiveTextHtml(
+                            feature.title || "프로그램 특징",
+                          )}
+                        />
+                        <SafeHtml
+                          className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                          style={{
+                            ...getElementStyle(
+                              getLayout1FeatureStyleSource(
+                                feature,
+                                idx,
+                                "descStyle",
+                              ),
+                              viewport as any,
+                            ),
+                            fontWeight: "400",
+                            color: "#6d7882",
+                            letterSpacing: "-0.36px",
+                            lineHeight: "1.5",
+                            textAlign: "center",
+                            whiteSpace: "pre-wrap",
+                            wordBreak: "keep-all",
+                            width: "100%",
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            if (hasLayout1Items) {
+                              onElementSelect?.("itemDesc", feature.id);
+                              return;
+                            }
+                            onElementSelect?.(`feature${idx + 1}Desc`);
+                          }}
+                          html={getResponsiveTextHtml(
+                            feature.desc || "프로그램 특징 내용 입력",
+                          )}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 하단 이미지 — 200px height (피그마 스펙), 이미지 자체에 height 고정 없음 */}
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                height: "200px",
+                overflow: "hidden",
+                flexShrink: 0,
+              }}
+            >
+              <UniversalMedia
+                className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                url={getImageUrl(
+                  data.layout1MobileImageStyle || data.layout1ImageStyle,
+                  viewport,
+                  data.layout1MobileImage || data.layout1Image,
+                )}
+                style={{
+                  ...getElementStyle(
+                    data.layout1MobileImageStyle || data.layout1ImageStyle,
+                    viewport,
+                  ),
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout1Image");
+                }}
+              />
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     /* ── 태블릿: 세로 스택 레이아웃 ── */
     if (isTablet) {
       return (
@@ -191,7 +651,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         >
           <div className="mx-auto w-full max-w-[1920px] relative">
             <div
-              className={`${viewport === "tablet" ? "px-10" : viewport === "mobile" ? "px-5" : "pl-5 pr-0 md:pl-10 md:pr-0 xl:pl-[280px] xl:pr-0"} py-[60px] flex flex-col gap-[60px] w-full`}
+              className={`${viewport === "tablet" ? "px-10" : viewport === "mobile" ? "px-5" : "pl-5 pr-0 md:pl-10 md:pr-0 xl:pl-[280px] xl:pr-0"} ${getVerticalPaddingClass(viewport, "py-[60px]")} flex flex-col gap-[60px] w-full`}
             >
               {/* 텍스트 섹션 */}
               <div className="flex flex-col gap-[40px] w-full">
@@ -543,6 +1003,229 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "2") {
+    /* ── 모바일 레이아웃 (피그마 node-id: 3298:58929) ── */
+    if (isMobile) {
+      return (
+        <section
+          style={style}
+          className="w-full relative overflow-hidden transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("backgroundImage");
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "24px",
+              alignItems: "flex-start",
+              paddingLeft: "20px",
+              paddingRight: "20px",
+              paddingTop: "30px",
+              paddingBottom: "30px",
+              width: "100%",
+            }}
+          >
+            {/* subtit 섹션 — gap:4px */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+                alignItems: "flex-start",
+                fontStyle: "normal",
+                width: "100%",
+              }}
+            >
+              {/* subTitle: 18px Medium #295e92 tracking:-0.36px leading:none */}
+              <SafeHtml
+                html={getResponsiveTextHtml(data.subTitle || "Program Name.")}
+                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                style={{
+                  ...getTitleBannerTextStyle(
+                    getTitleBannerStyleSource("subTitleStyle"),
+                  ),
+                  fontWeight: "500",
+                  color: "#295e92",
+                  letterSpacing: "-0.36px",
+                  lineHeight: "1",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("subTitle");
+                }}
+              />
+              {/* title: 28px Bold #131416 tracking:-0.56px leading:1.5 */}
+              <SafeHtml
+                html={getResponsiveTextHtml(data.title || "타이틀명 입력")}
+                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                style={{
+                  ...getElementStyle(
+                    getTitleBannerStyleSource("titleStyle"),
+                    viewport as any,
+                  ),
+                  fontWeight: "700",
+                  color: "#131416",
+                  letterSpacing: "-0.56px",
+                  lineHeight: "1.5",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("title");
+                }}
+              />
+              {/* desc: 18px Medium #6d7882 tracking:-0.36px leading:1.5 */}
+              <SafeHtml
+                html={getResponsiveTextHtml(
+                  data.desc || "서브타이틀 입력 영역",
+                )}
+                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                style={{
+                  ...getTitleBannerTextStyle(
+                    getTitleBannerStyleSource("descStyle"),
+                  ),
+                  fontWeight: "500",
+                  color: "#6d7882",
+                  letterSpacing: "-0.36px",
+                  lineHeight: "1.5",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("desc");
+                }}
+              />
+            </div>
+
+            {/* 메인 섹션 — gap:40px flex-col items-center justify-end */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "40px",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                width: "100%",
+              }}
+            >
+              {/* 히어로 이미지 — aspect:360/440, rounded-tl:60px, width:100% */}
+              <div
+                style={{
+                  aspectRatio: "360 / 440",
+                  width: "100%",
+                  position: "relative",
+                  borderRadius: "60px 0 0 0",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}
+              >
+                <UniversalMedia
+                  className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                  url={getImageUrl(
+                    data.layout2HeroImageStyle,
+                    viewport,
+                    data.layout2HeroImage ||
+                      "/images/placeholder/title_banner_img2.png",
+                  )}
+                  style={{
+                    ...getElementStyle(data.layout2HeroImageStyle, viewport),
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "60px 0 0 0",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2HeroImage");
+                  }}
+                />
+              </div>
+
+              {/* txt01 — gap:8px items-start justify-center w-full */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                {/* textContentTitle: 24px Medium #131416 tracking:-0.48px leading:1.5 */}
+                <SafeHtml
+                  html={getResponsiveTextHtml(
+                    data.textContentTitle || "서브 타이틀 입력",
+                  )}
+                  className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  style={{
+                    ...getTitleBannerTextStyle(
+                      getTitleBannerStyleSource("textContentTitleStyle"),
+                    ),
+                    fontWeight: "500",
+                    color: "#131416",
+                    letterSpacing: "-0.48px",
+                    lineHeight: "1.5",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "keep-all",
+                    width: "100%",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("textContentTitle");
+                  }}
+                />
+                {/* 구분선: bg:#e6e8ea h:1px w:60px */}
+                <div
+                  style={{
+                    backgroundColor: "#e6e8ea",
+                    height: "1px",
+                    width: "60px",
+                    flexShrink: 0,
+                  }}
+                />
+                {/* textContent: 18px Medium #6d7882 tracking:-0.36px leading:1.5 */}
+                <SafeHtml
+                  html={getResponsiveTextHtml(
+                    data.textContent ||
+                      "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
+                  )}
+                  className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  style={{
+                    ...getTitleBannerTextStyle(
+                      getTitleBannerStyleSource("textContentStyle"),
+                    ),
+                    fontWeight: "500",
+                    color: "#6d7882",
+                    letterSpacing: "-0.36px",
+                    lineHeight: "1.5",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "keep-all",
+                    width: "100%",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("textContent");
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     /* ── 태블릿: 세로 스택 레이아웃 (피그마 이미지타이틀02) ── */
     if (isTablet) {
       return (
@@ -554,7 +1237,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
             onElementSelect?.("backgroundImage");
           }}
         >
-          <div className="mx-auto w-full max-w-[1920px] relative">
+          <div
+            className={`mx-auto w-full max-w-[1920px] ${getVerticalPaddingClass(viewport)}`}
+          >
             {/* 피그마 스펙: flex-col gap-[40px] padding: 60px 40px */}
             <div
               className={`${getPaddingClass(viewport)} py-14 flex flex-col gap-[40px] items-start w-full`}
@@ -823,6 +1508,242 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "3") {
+    /* ── 모바일: 피그마 node-id 3298:58941 ── */
+    if (isMobile) {
+      return (
+        <section
+          style={{
+            ...style,
+            height: "auto",
+            minHeight: "unset",
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+          className="w-full relative overflow-hidden bg-white cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-100 transition-all"
+          onDoubleClick={() => onElementSelect?.("style")}
+        >
+          <div className="mx-auto w-full max-w-[1920px] relative">
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "24px",
+                paddingTop: "60px",
+                paddingBottom: "60px",
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                width: "100%",
+              }}
+            >
+              {/* 상단 row: 따옴표 + subtit + 따옴표 */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                {/* 좌측 따옴표: 25×20px */}
+                <div
+                  style={{
+                    position: "relative",
+                    width: "25px",
+                    height: "20px",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("quoteLeftUrl");
+                  }}
+                >
+                  <UniversalMedia
+                    url={getImageUrl(
+                      data.quoteLeftUrlStyle,
+                      viewport,
+                      data.quoteLeftUrl,
+                    )}
+                    style={{
+                      ...getElementStyle(data.quoteLeftUrlStyle, viewport),
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    }}
+                    className="absolute inset-0 w-full h-full"
+                    alt="Left Quote"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("quoteLeftUrl");
+                    }}
+                  />
+                </div>
+
+                {/* subtit 그룹: flex-1 gap-[8px] items-center text-center */}
+                <div
+                  style={{
+                    display: "flex",
+                    flex: "1 0 0",
+                    flexDirection: "column",
+                    gap: "8px",
+                    alignItems: "center",
+                    textAlign: "center",
+                    lineHeight: "1.5",
+                    minWidth: 0,
+                    paddingLeft: "8px",
+                    paddingRight: "8px",
+                  }}
+                >
+                  {/* layout3SmallTitle: 18px Medium #131416 tracking:-0.36px */}
+                  <SafeHtml
+                    html={getResponsiveTextHtml(
+                      data.layout3SmallTitle ||
+                        "1명당 유학 비용 30억원의 시대, 가장 합리적인 선택!",
+                    )}
+                    className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                    style={{
+                      ...getTitleBannerTextStyle(
+                        getTitleBannerStyleSource("layout3SmallTitleStyle"),
+                      ),
+                      color: "#131416",
+                      fontWeight: "500",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.36px",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "keep-all",
+                      width: "100%",
+                      textAlign: "center",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout3SmallTitle");
+                    }}
+                  />
+                  {/* layout3Title: 28px Bold #131416 tracking:-0.56px */}
+                  <SafeHtml
+                    html={getResponsiveTextHtml(
+                      data.layout3Title || "학부모 영주권 프로그램",
+                    )}
+                    className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                    style={{
+                      ...getTitleBannerTextStyle(
+                        getTitleBannerStyleSource("layout3TitleStyle"),
+                      ),
+                      color: "#131416",
+                      fontWeight: "700",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.56px",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "keep-all",
+                      width: "100%",
+                      textAlign: "center",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout3Title");
+                    }}
+                  />
+                  {/* layout3Desc: 18px Medium #6d7882 tracking:-0.36px */}
+                  <SafeHtml
+                    html={getResponsiveTextHtml(
+                      data.layout3Desc ||
+                        "까다로운 자금 출처 없이 국내에서<br/>온가족이 미국 영주권을 취득할 수 있는 프로그램",
+                    )}
+                    className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
+                    style={{
+                      ...getTitleBannerTextStyle(
+                        getTitleBannerStyleSource("layout3DescStyle"),
+                      ),
+                      color: "#6d7882",
+                      fontWeight: "500",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.36px",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "keep-all",
+                      width: "100%",
+                      textAlign: "center",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout3Desc");
+                    }}
+                  />
+                </div>
+
+                {/* 우측 따옴표: 25×20px */}
+                <div
+                  style={{
+                    position: "relative",
+                    width: "25px",
+                    height: "20px",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("quoteRightUrl");
+                  }}
+                >
+                  <UniversalMedia
+                    url={getImageUrl(
+                      data.quoteRightUrlStyle,
+                      viewport,
+                      data.quoteRightUrl,
+                    )}
+                    style={{
+                      ...getElementStyle(data.quoteRightUrlStyle, viewport),
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    }}
+                    className="absolute inset-0 w-full h-full"
+                    alt="Right Quote"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("quoteRightUrl");
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* 하단 이미지 배너: 이미지 높이 그대로 표시 */}
+              <div
+                style={{
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  width: "100%",
+                  flexShrink: 0,
+                  cursor: "pointer",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout3MobileImage");
+                }}
+              >
+                <UniversalMedia
+                  className="w-full block"
+                  url={layout3CurrentImage}
+                  style={{
+                    ...getElementStyle(layout3CurrentImageStyle, viewport),
+                    width: "100%",
+                    height: "auto",
+                    display: "block",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout3MobileImage");
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     /* ── 공통 이미지 배너 렌더 (tablet/desktop 공유) ── */
     /* ── 태블릿: 피그마 이미지박스04 스펙 ── */
     if (isTablet) {

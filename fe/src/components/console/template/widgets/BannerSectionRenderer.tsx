@@ -133,7 +133,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as BannerSectionWidget;
-  const _style = useWidgetStyle(w.style);
+  const _style = useWidgetStyle(w.style, viewport as any);
   // Prevent background styles on the wrapper section, as we apply them to inner containers for Banners
   const {
     backgroundColor,
@@ -194,7 +194,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
                 onElementSelect?.("title");
               }}
             />
-            <div className="mt-[8px]">
+            <div className={`${viewport === "mobile" ? "mt-0" : "mt-[8px]"}`}>
               <SafeHtml
                 html={w.data.desc}
                 placeholder="설명을 입력하세요"
@@ -302,7 +302,9 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
                   onElementSelect?.("title");
                 }}
               />
-              <div className="pt-[8px] xl:pt-[40px]">
+              <div
+                className={`${viewport === "mobile" ? "pt-0" : "pt-[8px] xl:pt-[40px]"}`}
+              >
                 <SafeHtml
                   html={w.data.desc}
                   placeholder="설명을 입력하세요"
@@ -386,7 +388,7 @@ export const BannerSectionRenderer: React.FC<WidgetRendererProps> = ({
                   onElementSelect?.("title");
                 }}
               />
-              <div className="pt-[8px]">
+              <div className={`${viewport === "mobile" ? "pt-0" : "pt-[8px]"}`}>
                 <SafeHtml
                   html={w.data.desc}
                   placeholder="설명을 입력하세요"

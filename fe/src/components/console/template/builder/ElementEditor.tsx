@@ -26,6 +26,7 @@ import {
   TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
 import { CULTURE_LETTER_DEFAULTS } from "../widgets/CultureLetterRenderer";
+import { TITLE_BANNER_DEFAULTS } from "../widgets/TitleBannerRenderer";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 import { usePopupStore } from "@/store/console/usePopupStore";
 
@@ -156,8 +157,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     });
 
     if (layoutVal === "4") {
-      if (key === "caseSubTitle") return textStyle("20px", "700", "#295E92");
-      if (key === "caseTitle") return textStyle("36px", "700", "#131416");
+      if (key === "caseSubTitle") return { ...textStyle("20px", "700", "#295E92"), fontSizeMobile: "18px" };
+      if (key === "caseTitle") return { ...textStyle("36px", "700", "#131416"), fontSizeMobile: "28px" };
+      if (key === "caseFeatureText") return { ...textStyle("20px", "400", "#060606"), fontSizeMobile: "18px" };
     }
 
     if (layoutVal === "5") {
@@ -511,6 +513,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     const fallback = (CULTURE_LETTER_DEFAULTS as any)[styleKey];
     return fallback && typeof fallback === "object" ? { ...fallback } : {};
   };
+  const getTitleBannerFallbackStyle = () => {
+    if (widget.type !== "titleBanner" || !styleKey || itemId) return {};
+
+    const fallback = (TITLE_BANNER_DEFAULTS as any)[styleKey];
+    return fallback && typeof fallback === "object" ? { ...fallback } : {};
+  };
 
   if (elementKey === "tableHeaderGubun") {
     textValue = data.comparisonGubun || "구분";
@@ -824,6 +832,45 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 ...candidate,
                 [caseStyleKey]: {
                   ...(candidate[caseStyleKey] || {}),
+                  [k]: v,
+                },
+              },
+        );
+        updateWidgetData(widget.id, { cases: updatedCases });
+      };
+    }
+  } else if (
+    widget.type === "textStructure" &&
+    String(data.layout || "1").replace(/^layout/, "") === "4" &&
+    elementKey === "caseFeatureText" &&
+    itemId
+  ) {
+    const [caseId, featureIdxStr] = String(itemId).split(":");
+    const featureIdx = parseInt(featureIdxStr, 10);
+    const cases = data.cases || (TEXT_STRUCTURE_DEFAULTS as any).cases || [];
+    const caseItem = cases.find((candidate: any) => candidate.id === caseId);
+    if (caseItem && !isNaN(featureIdx)) {
+      textValue = (caseItem.features || [])[featureIdx] || "";
+      styleKey = "featureStyle";
+      styleValue = caseItem.featureStyle || {};
+
+      onTextChange = (val) => {
+        const updatedCases = cases.map((candidate: any) => {
+          if (candidate.id !== caseId) return candidate;
+          const features = [...(candidate.features || [])];
+          features[featureIdx] = val;
+          return { ...candidate, features };
+        });
+        updateWidgetData(widget.id, { cases: updatedCases });
+      };
+      onStyleChange = (k, v) => {
+        const updatedCases = cases.map((candidate: any) =>
+          candidate.id !== caseId
+            ? candidate
+            : {
+                ...candidate,
+                featureStyle: {
+                  ...(candidate.featureStyle || {}),
                   [k]: v,
                 },
               },
@@ -1847,10 +1894,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         : getRootDefaultText();
     // Convention: property 'mainTitle' -> style 'mainTitleStyle'
     styleKey =
-      elementKey === "contentTitle" || elementKey === "layout3ContentTitle"
+      elementKey === "contentTitle"
         ? "contentTitleStyle"
-        : elementKey === "contentDesc" || elementKey === "layout3ContentDesc"
-          ? "contentDescStyle"
+        : elementKey === "layout3ContentTitle"
+          ? "layout3ContentTitleStyle"
+          : elementKey === "contentDesc"
+            ? "contentDescStyle"
+            : elementKey === "layout3ContentDesc"
+              ? "layout3ContentDescStyle"
           : elementKey === "image" ||
               elementKey === "imageUrl" ||
               elementKey === "imageMobile"
@@ -1928,6 +1979,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   const cultureLetterFallbackStyle = getCultureLetterFallbackStyle();
   if (widget.type === "cultureLetter" && cultureLetterFallbackStyle) {
     styleValue = { ...cultureLetterFallbackStyle, ...styleValue };
+  }
+  const titleBannerFallbackStyle = getTitleBannerFallbackStyle();
+  if (widget.type === "titleBanner" && titleBannerFallbackStyle) {
+    styleValue = { ...titleBannerFallbackStyle, ...styleValue };
   }
 
   const isImageAreaMediaEditor =

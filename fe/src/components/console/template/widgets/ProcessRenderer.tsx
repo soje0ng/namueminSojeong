@@ -8,8 +8,9 @@ import {
   formatUnit,
   UniversalMedia,
   getPaddingClass,
+  getVerticalPaddingClass,
 } from "./WidgetUtils";
-import { Check, ChevronRight, ChevronDown } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 import { WidgetHeader } from "./WidgetHeader";
 
 // 💡 [기본 폰트 사이즈 설정 안내]
@@ -81,24 +82,41 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
   viewport = "desktop",
 }) => {
   const w = widget as ProcessWidget;
-  const style = useWidgetStyle(w.style);
+  const style = useWidgetStyle(w.style, viewport as any);
   const data = w.data;
   const layout = data.layout || (data as any).variant;
   const isVertical = (w.data as any).variant === "vertical";
   const isNumber = (w.data as any).variant === "number";
   const typeStr = w.type as string;
   const processImageHeight = formatUnit((data as any).imageHeight);
+  const isDesktopViewport = viewport === "desktop";
+  const getStepMediaStyle = (iconStyle: any) => {
+    const mediaStyle = {
+      ...getElementStyle(iconStyle as any, viewport as any),
+    } as React.CSSProperties;
+
+    if (!isDesktopViewport) {
+      delete mediaStyle.height;
+    }
+
+    return mediaStyle;
+  };
   const getStepImageFrameStyle = (
     iconStyle: any,
     extra: React.CSSProperties = {},
-  ) => ({
-    ...extra,
-    display: iconStyle?.isHidden ? "none" : undefined,
-    ...(iconStyle?.width ? { width: formatUnit(iconStyle.width) } : {}),
-    ...(iconStyle?.height || processImageHeight
-      ? { height: iconStyle?.height || processImageHeight }
-      : {}),
-  });
+  ) => {
+    const { height: extraHeight, ...restExtra } = extra;
+    const imageHeight = isDesktopViewport
+      ? iconStyle?.height || extraHeight || processImageHeight
+      : "auto";
+
+    return {
+      ...restExtra,
+      display: iconStyle?.isHidden ? "none" : undefined,
+      ...(iconStyle?.width ? { width: formatUnit(iconStyle.width) } : {}),
+      ...(imageHeight ? { height: imageHeight } : {}),
+    };
+  };
   const isLayout1 =
     (layout === "1" || layout === "layout1" || typeStr === "processCard") &&
     typeStr !== "comparisonCard";
@@ -130,7 +148,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -200,10 +218,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         url={step.icon}
                         className="w-full h-full object-cover"
                         alt="step icon"
-                        style={getElementStyle(
-                          step.iconStyle as any,
-                          viewport as any,
-                        )}
+                        style={getStepMediaStyle(step.iconStyle)}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("icon", step.id);
@@ -294,7 +309,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -342,7 +357,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* 2. Body Area: Steps Grid Layout 2 */}
             <div
-              className={`self-stretch w-full grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-y-12 mt-6`}
+              className={`self-stretch w-full grid grid-cols-2 ${gridColsClass} gap-y-12 mt-6`}
             >
               {(() => {
                 const stepsArr = data.steps || (data as any).items || [];
@@ -359,10 +374,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         url={step.icon}
                         className="w-full h-full object-cover"
                         alt="step icon"
-                        style={getElementStyle(
-                          step.iconStyle as any,
-                          viewport as any,
-                        )}
+                        style={getStepMediaStyle(step.iconStyle)}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("icon", step.id);
@@ -462,7 +474,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -510,7 +522,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* 2. Body Area: Steps Grid Layout 3 */}
             <div
-              className={`self-stretch w-full grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-10`}
+              className={`self-stretch w-full grid grid-cols-2 ${gridColsClass} gap-10`}
             >
               {(data.steps || (data as any).items || []).map(
                 (step: any, idx: number) => (
@@ -528,10 +540,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         url={step.icon}
                         className="w-full h-full object-cover"
                         alt="step icon"
-                        style={getElementStyle(
-                          step.iconStyle as any,
-                          viewport as any,
-                        )}
+                        style={getStepMediaStyle(step.iconStyle)}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("icon", step.id);
@@ -605,7 +614,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className={`self-stretch ${containerPaddingClass} py-14 inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -653,7 +662,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* 2. Body Area: Steps Grid Layout 1 */}
             <div
-              className={`self-stretch w-full grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-10`}
+              className={`self-stretch w-full grid grid-cols-2 ${gridColsClass} gap-10`}
             >
               {(data.steps || (data as any).items || []).map(
                 (step: any, idx: number) => {
@@ -675,10 +684,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             url={step.icon}
                             className="w-full h-full object-cover"
                             alt="step icon"
-                            style={getElementStyle(
-                              step.iconStyle as any,
-                              viewport as any,
-                            )}
+                            style={getStepMediaStyle(step.iconStyle)}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("icon", step.id);
@@ -796,12 +802,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 {w.data.steps.map((step, idx) => {
-                  // Responsive columns: PC (4 or 3), Tablet (2), Mobile (1)
+                  // Responsive columns: PC (4 or 3), Tablet/Mobile (2)
                   const cols = isPc
                     ? w.data.itemsPerRow || (isVertical ? 4 : 3)
-                    : isTablet
-                      ? 2
-                      : 1;
+                    : 2;
                   const currentGap = isNumber
                     ? isPc
                       ? 64
@@ -809,13 +813,16 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         ? 48
                         : 0
                     : 16;
+                  const responsiveGap =
+                    w.style?.gap !== undefined && w.style?.gap !== null
+                      ? formatUnit(w.style.gap)
+                      : `${currentGap}px`;
 
                   // inline style로 width 계산
                   let itemWidthStyle: string | undefined;
                   if (isPc)
                     itemWidthStyle = `calc(${100 / cols}% - ${((cols - 1) * currentGap) / cols}px)`;
-                  else if (isTablet) itemWidthStyle = `calc(50% - 24px)`;
-                  else itemWidthStyle = "100%";
+                  else itemWidthStyle = `calc((100% - ${responsiveGap}) / 2)`;
 
                   return (
                     <React.Fragment key={step.id}>
@@ -890,10 +897,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                               }
                               className="w-full h-full object-cover block mx-auto hover:scale-110 transition-transform duration-500"
                               alt="step icon"
-                              style={getElementStyle(
-                                step.iconStyle as any,
-                                viewport as any,
-                              )}
+                              style={getStepMediaStyle(step.iconStyle)}
                             />
                           </div>
                         )}
@@ -985,27 +989,18 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         )}
 
                         {/* 5. Responsive Arrows: ONLY for Number Variant */}
-                        {isNumber && idx < w.data.steps.length - 1 && (
-                          <>
-                            {/* PC/Tablet Arrow - Right side flow */}
-                            {(isPc || isTablet) && (idx + 1) % cols !== 0 && (
-                              <div
-                                className={`flex absolute transition-all ${isPc ? "-right-[54px]" : "-right-[40px]"} top-1/2 -translate-y-1/2 z-10 text-시안-mode-gray30 pointer-events-none group-hover:text-blue-400`}
-                              >
-                                <ChevronRight
-                                  size={isPc ? 32 : 24}
-                                  strokeWidth={2.5}
-                                />
-                              </div>
-                            )}
-                            {/* Mobile Arrow - Down side flow */}
-                            {isMobile && (
-                              <div className="flex absolute -bottom-11 left-1/2 -translate-x-1/2 z-10 text-시안-mode-gray30 pointer-events-none">
-                                <ChevronDown size={28} strokeWidth={2.5} />
-                              </div>
-                            )}
-                          </>
-                        )}
+                        {isNumber &&
+                          idx < w.data.steps.length - 1 &&
+                          (idx + 1) % cols !== 0 && (
+                            <div
+                              className={`flex absolute transition-all ${isPc ? "-right-[54px]" : "-right-[40px]"} top-1/2 -translate-y-1/2 z-10 text-시안-mode-gray30 pointer-events-none group-hover:text-blue-400`}
+                            >
+                              <ChevronRight
+                                size={isPc ? 32 : 24}
+                                strokeWidth={2.5}
+                              />
+                            </div>
+                          )}
                       </div>
                     </React.Fragment>
                   );
