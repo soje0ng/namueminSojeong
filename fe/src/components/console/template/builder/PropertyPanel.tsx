@@ -4267,7 +4267,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
         {selectedElementKey &&
           widget.type === "comparisonCard" &&
           (selectedElementKey === "leftDescItems" ||
-            selectedElementKey === "rightDescItems") && (
+            selectedElementKey === "rightDescItems") &&
+          !selectedItemId && (
             <ComparisonDescManager
               widgetId={widget.id}
               side={selectedElementKey === "leftDescItems" ? "left" : "right"}
@@ -4571,10 +4572,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
           selectedElementKey !== "s5checkItem" &&
           selectedElementKey !== "s5labelItem" &&
           selectedElementKey !== "s6featureItem" &&
-          !["comparisonCard", "stripBanner"].includes(widget.type) &&
           !(
-            selectedElementKey === "leftDescItems" ||
-            selectedElementKey === "rightDescItems"
+            widget.type === "comparisonCard" &&
+            (selectedElementKey === "leftDescItems" ||
+              selectedElementKey === "rightDescItems") &&
+            !selectedItemId
           ) &&
           selectedElementKey !== "caseFeatureText" &&
           selectedElementKey !== "caseLogoUrl" && (

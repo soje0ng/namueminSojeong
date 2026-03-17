@@ -197,13 +197,14 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
 }) => {
   const w = widget as GenericNewWidget;
   const style = useWidgetStyle(w.style, viewport as any);
+  const layout = normalizeImageCardLayout(w.data.layout || "1");
   const itemsPerRow = Number(w.data.itemsPerRow) || 3;
   const normalizedItemsPerRow = Math.max(1, Math.min(itemsPerRow, 4));
   const responsiveItemsPerRow =
     viewport === "mobile"
-      ? Math.min(normalizedItemsPerRow, 2)
+      ? Math.min(normalizedItemsPerRow, layout === "3" ? 1 : 2)
       : viewport === "tablet"
-        ? Math.min(normalizedItemsPerRow, 3)
+        ? Math.min(normalizedItemsPerRow, layout === "3" ? 2 : 3)
         : normalizedItemsPerRow;
   const rootHeaderClassName = `flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-0" : ""}`;
   const rootHeaderSpacingClassName = viewport === "mobile" ? "" : "mt-2";
@@ -218,6 +219,25 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
     const fallback =
       role === "itemTitle" && layout === "2"
         ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleOverlay
+        : role === "itemTitle" && ["3", "4", "5", "6"].includes(layout)
+          ? {
+              ...IMAGE_CARD_STYLE_DEFAULTS.itemTitleLarge,
+              fontSizeMobile: "20px",
+            }
+        : role === "itemDesc" && layout === "6" && viewport !== "desktop"
+          ? {
+              ...IMAGE_CARD_STYLE_DEFAULTS.itemDesc,
+              fontSize: "18px",
+              fontSizeMobile: "18px",
+            }
+        : role === "featureValue" &&
+            layout === "6" &&
+            viewport !== "desktop"
+          ? {
+              ...IMAGE_CARD_STYLE_DEFAULTS.featureValue,
+              fontSize: "18px",
+              fontSizeMobile: "18px",
+            }
         : role === "itemTitle" && ["3", "4", "5", "6"].includes(layout)
           ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleLarge
           : role === "itemTitle"
@@ -266,8 +286,6 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
     ...baseStyle,
     gridTemplateColumns: `repeat(${responsiveItemsPerRow}, minmax(0, 1fr))`,
   });
-
-  const layout = normalizeImageCardLayout(w.data.layout || "1");
 
   const selectCardItem = (itemId?: string, elementKey = "item") => {
     if (!itemId) return;
@@ -709,7 +727,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 return (
                   <div
                     key={item.id || idx}
-                    className={`flex-1 outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-start items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded")} transition-all bg-white h-full`}
+                    className="flex-1 outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-start items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded-none transition-all bg-white h-full"
                     style={getItemCardBackgroundStyle(item.itemStyle)}
                     onClick={(e) => {
                       const cardItemId = item.id ?? `__idx_${idx}`;
@@ -787,7 +805,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       </div>
                     </div>
                     <div
-                      className={`self-stretch ${getPaddingClass(viewport, "")} py-6 flex flex-col justify-start items-start gap-3 bg-white flex-grow`}
+                      className={`self-stretch ${getPaddingClass(viewport, "")} py-6 flex flex-col justify-start items-start ${viewport === "mobile" ? "gap-2" : "gap-3"} bg-white flex-grow`}
                       style={getItemCardBackgroundStyle(item.itemStyle)}
                     >
                       <div className="flex flex-col justify-start items-start">
@@ -967,6 +985,12 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "4") {
+    const layout4Columns =
+      viewport === "desktop"
+        ? Math.min(Math.max(normalizedItemsPerRow, 1), 2)
+        : 1;
+    const isLayout4Stacked = viewport !== "desktop";
+
     return (
       <section style={style} className="w-full">
         <div
@@ -1011,10 +1035,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
 
           {/* Grid Area */}
           <div
-            className={`self-stretch grid ${
-              itemsPerRow === 1 ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"
-            } justify-start items-start content-start w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-5"}`}
+            className={`self-stretch grid justify-start items-start content-start w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-5"}`}
             style={{
+              gridTemplateColumns: `repeat(${layout4Columns}, minmax(0, 1fr))`,
               gap: w.style?.gap
                 ? formatUnit(w.style.gap)
                 : w.data.rowGap
@@ -1028,7 +1051,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               return (
                 <div
                   key={item.id || idx}
-                  className="flex-1 min-w-[300px] xl:min-w-[660px] outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] flex flex-col xl:flex-row justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all bg-white"
+                  className={`flex-1 ${isLayout4Stacked ? "min-w-0 flex-col" : "min-w-[300px] xl:min-w-[660px] flex-col xl:flex-row"} outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all bg-white`}
                   style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1040,9 +1063,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       item.id ?? `__idx_${idx}`,
                     )
                   }
-                >
+                  >
                   <div
-                    className="flex-1 relative overflow-hidden w-full xl:w-auto shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
+                    className={`flex-1 relative overflow-hidden w-full ${isLayout4Stacked ? "" : "xl:w-auto"} shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center`}
                     style={getItemImageFrameStyle(item.imageStyle)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -1098,7 +1121,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     </div>
                   </div>
                   <div
-                    className="flex-1 p-6 bg-white inline-flex flex-col justify-start items-start gap-3 w-full xl:w-auto"
+                    className={`flex-1 ${viewport === "mobile" ? "px-4 py-3" : "p-6"} bg-white inline-flex flex-col justify-start items-start ${viewport === "mobile" ? "gap-2" : "gap-3"} w-full ${isLayout4Stacked ? "" : "xl:w-auto"}`}
                     style={getItemCardBackgroundStyle(item.itemStyle)}
                   >
                     <div className="flex flex-col justify-start items-start">
@@ -1275,13 +1298,15 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "5") {
+    const isLayout5Stacked = viewport !== "desktop";
+
     return (
       <section
         style={style}
         className="w-full relative overflow-hidden bg-white border-t border-b border-시안-mode-gray1"
       >
         <div
-          className={`max-w-[1920px] mx-auto ${getPaddingClass(viewport, "xl:px-64")} py-20 relative min-h-[800px] flex flex-col items-center gap-10`}
+          className={`max-w-[1920px] mx-auto ${getPaddingClass(viewport, "xl:px-64")} ${getVerticalPaddingClass(viewport, "py-20")} relative ${isLayout5Stacked ? "" : "min-h-[800px]"} flex flex-col items-center gap-10`}
         >
           {/* Header Area */}
           <div className={rootHeaderClassName}>
@@ -1321,13 +1346,13 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           <div
-            className="w-full grid grid-cols-1 xl:grid-cols-2 gap-x-10 gap-y-20 relative"
+            className={`w-full grid ${isLayout5Stacked ? "grid-cols-1 gap-5" : "grid-cols-1 xl:grid-cols-2 gap-x-10 gap-y-20"} relative`}
             style={{ zIndex: 1 }}
           >
             {(w.data.items || []).slice(0, 4).map((item: any, idx: number) => (
               <div
                 key={item.id || idx}
-                className={`flex flex-col md:flex-row justify-start items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded")} transition-all bg-white overflow-hidden shadow-sm`}
+                className={`flex ${isLayout5Stacked ? "flex-col justify-center items-start rounded-none shadow-sm" : "flex-col md:flex-row justify-start items-center rounded-none shadow-sm"} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all bg-white overflow-hidden`}
                 style={getItemCardBackgroundStyle(item.itemStyle)}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1338,8 +1363,13 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                 }
               >
                 <div
-                  className="w-full md:w-[480px] relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
-                  style={getItemImageFrameStyle(item.imageStyle)}
+                  className={`${isLayout5Stacked ? "self-stretch w-full h-40" : "w-full md:w-[480px]"} relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center`}
+                  style={{
+                    ...getItemImageFrameStyle(item.imageStyle),
+                    ...(isLayout5Stacked
+                      ? { width: "100%", height: "160px" }
+                      : {}),
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("image", item.id);
@@ -1350,14 +1380,14 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       e.stopPropagation();
                       onElementSelect?.("image", item.id || idx.toString());
                     }}
-                    className="w-full object-cover"
+                    className={`${isLayout5Stacked ? "w-full h-full" : "w-full"} object-cover`}
                     url={item.image || item.imageUrl}
                     alt="card_image"
                     style={getItemImageStyle(item.imageStyle)}
                   />
                 </div>
                 <div
-                  className="flex-1 h-80 px-6 py-10 border-t-2 border-시안-mode-gray95 flex flex-col justify-between items-start overflow-hidden xl:-ml-[180px] relative z-10 shadow-lg"
+                  className={`${isLayout5Stacked ? "self-stretch h-48 px-4 py-3 relative z-10 shadow-lg" : "flex-1 h-80 px-6 py-10 xl:-ml-[180px] relative z-10 shadow-lg"} border-t-2 border-시안-mode-gray95 flex flex-col justify-between items-start overflow-hidden`}
                   style={getItemCardBackgroundStyle(item.itemStyle)}
                 >
                   {/* Background Pattern Image */}
@@ -1461,6 +1491,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "6") {
+    const isLayout6Mobile = viewport === "mobile";
+    const isLayout6Tablet = viewport === "tablet";
+
     return (
       <section style={style} className="w-full">
         <div
@@ -1507,11 +1540,43 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           <div className="w-full border-t border-시안-mode-gray95 flex flex-col justify-start items-start">
             {(w.data.items || []).map((item: any, idx: number) => {
               const featureRows = getItemFeatureRows(item);
+              const imageBlock = (
+                <div
+                  className={`${isLayout6Mobile ? "self-stretch h-80" : "w-48 h-48"} relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center`}
+                  style={{
+                    ...getItemImageFrameStyle(item.imageStyle),
+                    ...(isLayout6Mobile
+                      ? { width: "100%", height: "320px" }
+                      : isLayout6Tablet
+                        ? { width: "192px", height: "192px" }
+                        : {}),
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("image", item.id);
+                  }}
+                >
+                  <UniversalMedia
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("image", item.id || idx.toString());
+                    }}
+                    className="w-full h-full object-cover"
+                    url={item.image || item.imageUrl}
+                    alt="card_image"
+                    style={{
+                      ...getItemImageStyle(item.imageStyle),
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
+                </div>
+              );
 
               return (
                 <div
                   key={item.id || idx}
-                  className={`self-stretch ${getPaddingClass(viewport, "")} py-10 border-b border-시안-mode-gray1 inline-flex flex-col md:flex-row justify-start items-start gap-10 xl:gap-14 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all bg-white`}
+                  className={`self-stretch ${isLayout6Mobile ? "py-5" : isLayout6Tablet ? "px-6 py-10" : `${getPaddingClass(viewport, "")} py-10`} border-b border-시안-mode-gray1 inline-flex ${isLayout6Mobile ? "flex-col gap-2" : isLayout6Tablet ? "justify-start items-start gap-6" : "flex-col md:flex-row justify-start items-start gap-10 xl:gap-14"} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all bg-white`}
                   style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     const cardItemId = item.id ?? `__idx_${idx}`;
@@ -1525,10 +1590,18 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     )
                   }
                 >
-                  <div className="flex-1 flex justify-start items-start gap-6 xl:gap-10">
+                  {isLayout6Mobile && imageBlock}
+
+                  <div
+                    className={`${isLayout6Mobile ? "self-stretch inline-flex justify-start items-start gap-5" : isLayout6Tablet ? "flex-1 flex justify-start items-start gap-5" : "flex-1 flex justify-start items-start gap-6 xl:gap-10"}`}
+                  >
                     {/* Number Icon */}
-                    <div className="w-14 h-14 bg-시안-mode-Primary5 rounded-full outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0">
-                      <div className="text-center justify-start text-시안-mode-Primary50 font-bold font-['Pretendard'] leading-8">
+                    <div
+                      className={`${isLayout6Mobile ? "w-10 h-10 rounded-[30px]" : "w-14 h-14 rounded-[30px]"} bg-시안-mode-Primary5 outline outline-1 outline-offset-[-1px] outline-시안-mode-Primary50 flex justify-center items-center gap-2.5 shrink-0`}
+                    >
+                      <div
+                        className={`text-center justify-start text-시안-mode-Primary50 ${isLayout6Mobile ? "text-base leading-6" : "text-xl leading-8"} font-bold font-['Pretendard']`}
+                      >
                         {(idx + 1).toString().padStart(2, "0")}
                       </div>
                     </div>
@@ -1539,7 +1612,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         <div className="self-stretch pb-5 border-b border-시안-mode-gray1 inline-flex justify-start items-start gap-2.5">
                           <SafeHtml
                             html={item.title || "프로그램의 특징을 적는 곳"}
-                            className="justify-start text-zinc-950 font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
+                            className={`${isLayout6Mobile ? "flex-1" : ""} justify-start text-zinc-950 font-bold font-['Pretendard'] leading-10 cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all`}
                             style={{
                               ...getImageCardTextStyle(
                                 "itemTitle",
@@ -1559,7 +1632,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
 
                       {/* Item Description & Features */}
                       {!item.descStyle?.isHidden && (
-                        <div className="self-stretch pt-5 flex flex-col justify-start items-start">
+                        <div
+                          className={`self-stretch ${isLayout6Mobile ? "pt-3" : "pt-5"} flex flex-col justify-start items-start`}
+                        >
                           <SafeHtml
                             html={
                               (item.desc || "").split(/<br\s*\/?>|\n/gi)[0] ||
@@ -1581,7 +1656,9 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                             }}
                           />
 
-                          <div className="self-stretch pt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4">
+                          <div
+                            className={`self-stretch ${isLayout6Mobile ? "pt-3 inline-flex justify-center items-center gap-2 flex-wrap content-center" : isLayout6Tablet ? "pt-5 inline-flex justify-center items-center gap-2 flex-wrap content-center" : "pt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4"}`}
+                          >
                             {featureRows
                               .slice(0, 6)
                               .map((feature: any, fIdx: number) =>
@@ -1589,7 +1666,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                                 item.descStyle?.isHidden) ? null : (
                                   <div
                                     key={fIdx}
-                                    className="flex justify-start items-center gap-2"
+                                    className={`${isLayout6Mobile || isLayout6Tablet ? "flex-1 min-w-60" : ""} flex justify-start items-center gap-2`}
                                   >
                                     <div className="w-2 h-2 bg-시안-mode-Primary50 rounded-full shrink-0"></div>
                                     <div className="justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 flex-1">
@@ -1621,25 +1698,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     </div>
                   </div>
 
-                  <div
-                    className="w-48 h-48 relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center"
-                    style={getItemImageFrameStyle(item.imageStyle)}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("image", item.id);
-                    }}
-                  >
-                    <UniversalMedia
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("image", item.id || idx.toString());
-                      }}
-                      className="w-full h-full object-cover"
-                      url={item.image || item.imageUrl}
-                      alt="card_image"
-                      style={getItemImageStyle(item.imageStyle)}
-                    />
-                  </div>
+                  {!isLayout6Mobile && imageBlock}
                 </div>
               );
             })}

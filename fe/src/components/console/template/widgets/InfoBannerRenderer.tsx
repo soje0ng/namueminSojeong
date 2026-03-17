@@ -346,7 +346,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               >
                 {/* Header Text Group — gap-12px desktop/tablet, gap-0 mobile (피그마 스펙) */}
                 <div
-                  className={`self-stretch flex flex-col justify-center ${isMobile ? "items-center text-center gap-0" : "items-start gap-[12px]"}`}
+                  className={`self-stretch flex flex-col justify-center ${isMobile ? "items-start text-left gap-0" : "items-start gap-[12px]"}`}
                 >
                   {!data.subTitleStyle?.isHidden && (
                     <SafeHtml
@@ -360,12 +360,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         lineHeight: "1",
                         color: "#FFFFFF",
                         backgroundColor: "transparent",
-                        ...(viewport === "mobile" &&
-                        (data.subTitleStyle?.fontSize === "20px" ||
-                          data.subTitleStyle?.fontSize === 20) &&
-                        !data.subTitleStyle?.fontSizeMobile
-                          ? { fontSize: "18px" }
-                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -407,12 +401,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         lineHeight: "1.5",
                         color: "#FFFFFF",
                         backgroundColor: "transparent",
-                        ...(viewport === "mobile" &&
-                        (data.descStyle?.fontSize === "20px" ||
-                          data.descStyle?.fontSize === 20) &&
-                        !data.descStyle?.fontSizeMobile
-                          ? { fontSize: "18px" }
-                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -522,8 +510,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             flexDirection: "column",
                             gap: "4px",
                             width: "100%",
-                            alignItems: isMobile ? "center" : "flex-start",
-                            textAlign: isMobile ? "center" : "left",
+                            alignItems: "flex-start",
+                            textAlign: "left",
                           }}
                         >
                           {!item.titleStyle?.isHidden && (
@@ -710,12 +698,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         letterSpacing: isMobile2 ? "-0.36px" : "-0.4px",
                         lineHeight: "1",
                         color: "#295E92",
-                        ...(viewport === "mobile" &&
-                        (l2SubTitleStyle?.fontSize === "20px" ||
-                          l2SubTitleStyle?.fontSize === 20) &&
-                        !l2SubTitleStyle?.fontSizeMobile
-                          ? { fontSize: "18px" }
-                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -754,12 +736,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         letterSpacing: isMobile2 ? "-0.36px" : "-0.4px",
                         lineHeight: "1.5",
                         color: "#131416",
-                        ...(viewport === "mobile" &&
-                        (l2DescStyle?.fontSize === "20px" ||
-                          l2DescStyle?.fontSize === 20) &&
-                        !l2DescStyle?.fontSizeMobile
-                          ? { fontSize: "18px" }
-                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -1055,12 +1031,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             letterSpacing: isMobile3 ? "-0.36px" : "-0.4px",
                             lineHeight: 1.5,
                             color: "#285DE1",
-                            ...(viewport === "mobile" &&
-                            (l3SubTitleStyle?.fontSize === "20px" ||
-                              l3SubTitleStyle?.fontSize === 20) &&
-                            !l3SubTitleStyle?.fontSizeMobile
-                              ? { fontSize: "18px" }
-                              : {}),
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -1144,12 +1114,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         color: "#6d7882",
                         width: "100%",
                         textAlign: isMobile3 ? "center" : "left",
-                        ...(viewport === "mobile" &&
-                        (l3DescStyle?.fontSize === "20px" ||
-                          l3DescStyle?.fontSize === 20) &&
-                        !l3DescStyle?.fontSizeMobile
-                          ? { fontSize: "18px" }
-                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -1376,12 +1340,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         textAlign: "center",
                         display: "flex",
                         justifyContent: "center",
-                        ...(viewport === "mobile" &&
-                        (l4DescStyle?.fontSize === "20px" ||
-                          l4DescStyle?.fontSize === 20) &&
-                        !l4DescStyle?.fontSizeMobile
-                          ? { fontSize: "18px" }
-                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -1822,12 +1780,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       letterSpacing: "-0.36px",
                       lineHeight: 1.5,
                       color: "#FFFFFF",
-                      ...(viewport === "mobile" &&
-                      (l5SubTitleStyle?.fontSize === "20px" ||
-                        l5SubTitleStyle?.fontSize === 20) &&
-                      !l5SubTitleStyle?.fontSizeMobile
-                        ? { fontSize: "18px" }
-                        : {}),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -1866,12 +1818,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       letterSpacing: "-0.36px",
                       lineHeight: 1.5,
                       color: "#FFFFFF",
-                      ...(viewport === "mobile" &&
-                      (l5DescStyle?.fontSize === "20px" ||
-                        l5DescStyle?.fontSize === 20) &&
-                      !l5DescStyle?.fontSizeMobile
-                        ? { fontSize: "18px" }
-                        : {}),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();

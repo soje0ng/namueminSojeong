@@ -1715,9 +1715,9 @@ const Builder: React.FC<BuilderProps> = ({
               </div>
 
             {pageData.sections.length === 0 && (
-              <div className="h-80 flex flex-col items-center justify-center text-gray-400 border-4 border-dashed border-gray-300 m-12 rounded-3xl">
+              <div className="h-80 flex flex-col items-center justify-center text-gray-400 border-4 border-dashed border-gray-300 m-4 md:m-12 rounded-3xl">
                 <Plus size={48} className="mb-4 opacity-20" />
-                <p className="text-xl font-medium">
+                <p className="text-xl font-medium text-center break-keep px-4">
                   상단 메뉴에서 섹션을 추가하여 페이지를 만들어보세요
                 </p>
               </div>

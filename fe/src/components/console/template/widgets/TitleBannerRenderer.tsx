@@ -1764,6 +1764,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   display: "flex",
                   gap: "20px",
                   alignItems: "flex-start",
+                  width: "100%",
                 }}
               >
                 {/* 좌측 따옴표: w-[50px] h-[40px] */}
@@ -1806,6 +1807,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 <div
                   style={{
                     display: "flex",
+                    flex: 1,
+                    minWidth: 0,
                     flexDirection: "column",
                     gap: "8px",
                     alignItems: "center",
@@ -1825,6 +1828,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                       fontSize: "24px",
                       lineHeight: "1.5",
                       letterSpacing: "-0.48px",
+                      width: "100%",
+                      wordBreak: "break-all",
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -1845,6 +1850,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                       fontSize: "48px",
                       lineHeight: "1.5",
                       letterSpacing: "-0.96px",
+                      width: "100%",
+                      wordBreak: "break-all",
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -1863,6 +1870,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                       fontSize: "20px",
                       lineHeight: "1.5",
                       letterSpacing: "-0.4px",
+                      width: "100%",
+                      wordBreak: "break-all",
                     })}
                     onDoubleClick={(e) => {
                       e.stopPropagation();

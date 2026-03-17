@@ -3371,6 +3371,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               justifyContent: "center",
               position: "relative",
               overflow: "hidden",
+              height: "100%",
               width: "100%",
               ...cardStyle,
             }}
@@ -3556,7 +3557,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               display: "flex",
               flexDirection: "row",
               gap: "20px",
-              alignItems: "center",
+              alignItems: "stretch",
               width: "100%",
             }}
           >
@@ -3578,6 +3579,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   flex: "1 0 0",
                   minWidth: "1px",
                   display: "flex",
+                  alignSelf: "stretch",
                   textDecoration: "none",
                   overflow: "hidden",
                   borderRadius: "24px",
@@ -3665,7 +3667,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           style={{
             display: "flex",
             gap: "20px",
-            alignItems: "center",
+            alignItems: "stretch",
             position: "relative",
             flexShrink: 0,
             width: "100%",
@@ -3708,6 +3710,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   minHeight: "1px",
                   minWidth: "1px",
                   overflow: "hidden",
+                  height: "100%",
                   width: "100%",
                 }}
                 onDoubleClick={(e) => {
@@ -3866,6 +3869,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   flex: "1 0 0",
                   minWidth: "1px",
                   display: "flex",
+                  alignSelf: "stretch",
                   textDecoration: "none",
                   cursor: linkHref ? "pointer" : "default",
                   overflow: "hidden",

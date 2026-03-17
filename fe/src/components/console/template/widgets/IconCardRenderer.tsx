@@ -254,6 +254,26 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
         : {}),
     } as React.CSSProperties;
   };
+  const getLayout45ItemsPerRow = (itemsPerRow?: number) => {
+    const cols = Math.max(1, Math.min(Number(itemsPerRow) || 3, 4));
+    if (viewport === "mobile") return 1;
+    if (viewport === "tablet") return Math.min(cols, 2);
+    return cols;
+  };
+  const getResponsiveCardGap = (
+    desktopFallback: string,
+    configuredGap?: string | number,
+  ) => {
+    if (viewport === "mobile") return "12px";
+    if (viewport === "tablet") return "20px";
+    return configuredGap !== undefined &&
+      configuredGap !== null &&
+      configuredGap !== ""
+      ? formatUnit(configuredGap)
+      : desktopFallback;
+  };
+  const rootSectionGapStyle =
+    viewport === "mobile" ? { gap: "24px" } : {};
   const handleItemBackgroundDoubleClick = (
     e: React.MouseEvent,
     itemId?: string,
@@ -268,10 +288,35 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     currentLayout === "layout1" ||
     currentLayout === "box"
   ) {
+    const layout1OuterHorizontalPaddingStyle =
+      viewport === "tablet" || viewport === "mobile"
+        ? { paddingLeft: 0, paddingRight: 0 }
+        : {};
+    const layout1CardListHorizontalPaddingStyle =
+      viewport === "mobile"
+        ? { paddingLeft: "20px", paddingRight: "20px" }
+        : viewport === "tablet"
+          ? { paddingLeft: "40px", paddingRight: "40px" }
+          : {};
+    const layout1CardOffsetStyle = isLayout1BannerHidden
+      ? {}
+      : {
+          marginTop:
+            viewport === "mobile"
+              ? "-20px"
+              : viewport === "tablet"
+                ? "-40px"
+                : "-80px",
+        };
+
     return (
       <section style={style} className="w-full">
         <div
           className={`self-stretch w-full ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          style={{
+            ...layout1OuterHorizontalPaddingStyle,
+            ...rootSectionGapStyle,
+          }}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -342,8 +387,12 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               className={`self-stretch ${getPaddingClass(viewport, "")} grid ${getGridColsClass(
                 w.data.itemsPerRow,
                 viewport,
-              )} ${isLayout1BannerHidden ? "" : "-mt-20"} relative z-10`}
-              style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
+              )} relative z-10`}
+              style={{
+                ...layout1CardListHorizontalPaddingStyle,
+                ...layout1CardOffsetStyle,
+                gap: getResponsiveCardGap("20px", w.style?.gap),
+              }}
             >
               {(w.data.items || []).map((item: any, i: number) => (
                 <div
@@ -413,6 +462,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full">
         <div
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          style={rootSectionGapStyle}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -464,7 +514,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
           <div
             className={`self-stretch ${getPaddingClass(viewport, "")} bg-시안-mode-gray5 ${getBorderRadiusStyle(viewport, "20px") === "8px" ? "rounded-lg" : "rounded-[20px]"} grid ${getGridColsClass(w.data.itemsPerRow, viewport, 4)} overflow-hidden`}
-            style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "0px" }}
+            style={{ gap: getResponsiveCardGap("0px", w.style?.gap) }}
           >
             {(w.data.items || []).map((item: any, i: number) => (
               <div
@@ -531,7 +581,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
   if (currentLayout === "3") {
     const items = w.data.items || [];
     const itemsPerRow = w.data.itemsPerRow || 3;
-    const rowItemGap = w.style?.gap ? formatUnit(w.style.gap) : "36px";
+    const rowItemGap = getResponsiveCardGap("36px", w.style?.gap);
     const rowItemWidthStyle = getFixedRowItemWidthStyle(
       itemsPerRow,
       rowItemGap,
@@ -545,6 +595,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full">
         <div
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          style={rootSectionGapStyle}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -594,7 +645,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
           <div
             className={`self-stretch grid ${getGridColsClass(w.data.itemsPerRow, viewport)}`}
-            style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "24px" }}
+            style={{ gap: getResponsiveCardGap("24px", w.style?.gap) }}
           >
             {(w.data.items || []).map((item: any, i: number) => (
               <div
@@ -670,8 +721,8 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
   if (currentLayout === "4") {
     const items = w.data.items || [];
-    const itemsPerRow = getResponsiveItemsPerRow(w.data.itemsPerRow, viewport);
-    const rowItemGap = w.style?.gap ? formatUnit(w.style.gap) : "20px";
+    const itemsPerRow = getLayout45ItemsPerRow(w.data.itemsPerRow);
+    const rowItemGap = getResponsiveCardGap("20px", w.style?.gap);
     const rowItemWidthStyle = getFixedRowItemWidthStyle(
       itemsPerRow,
       rowItemGap,
@@ -685,6 +736,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full">
         <div
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          style={rootSectionGapStyle}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -734,7 +786,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
           <div
             className="self-stretch flex flex-col justify-start items-start"
-            style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "24px" }}
+            style={{ gap: getResponsiveCardGap("24px", w.data.rowGap) }}
           >
             {rows.map((row, rowIndex) => (
               <div
@@ -747,7 +799,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                   return (
                     <div
                       key={item.id || itemIndex}
-                      className={`w-full px-5 py-6 bg-시안-mode-gray5 ${getBorderRadiusClass(viewport, "rounded-2xl")} flex justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all`}
+                      className={`w-full ${viewport === "mobile" ? "px-4 py-3" : "px-5 py-6"} bg-시안-mode-gray5 ${getBorderRadiusClass(viewport, "rounded-2xl")} flex ${viewport === "mobile" ? "flex-row" : "flex-row-reverse"} justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all`}
                       style={{
                         ...rowItemWidthStyle,
                         ...getItemCardBackgroundStyle(item.itemStyle),
@@ -759,6 +811,37 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         )
                       }
                     >
+                      <div
+                        className="shrink-0 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center"
+                        style={{
+                          ...getIconFrameStyle(item.iconStyle),
+                          ...(viewport === "mobile" ? { width: "60px", height: "60px" } : {}),
+                        }}
+                      >
+                        <UniversalMedia
+                          url={(() => {
+                            const currentImg = item.iconUrl || item.icon;
+                            if (
+                              currentImg &&
+                              !currentImg.includes("/images/placeholder/")
+                            )
+                              return currentImg;
+                            return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                          })()}
+                          alt="icon"
+                          className="max-w-full"
+                          naturalSize
+                          style={getIconMediaStyle(item.iconStyle)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.(
+                              "itemIcon",
+                              item.id || itemIndex.toString(),
+                            );
+                          }}
+                        />
+                      </div>
+
                       <div className="inline-flex flex-col justify-start items-start gap-2 flex-1 min-w-0">
                         <SafeHtml
                           html={item.title || "프로그램 특징"}
@@ -785,34 +868,6 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                           }}
                         />
                       </div>
-
-                      <div
-                        className="shrink-0 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center"
-                        style={getIconFrameStyle(item.iconStyle)}
-                      >
-                        <UniversalMedia
-                          url={(() => {
-                            const currentImg = item.iconUrl || item.icon;
-                            if (
-                              currentImg &&
-                              !currentImg.includes("/images/placeholder/")
-                            )
-                              return currentImg;
-                            return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
-                          })()}
-                          alt="icon"
-                          className="max-w-full"
-                          naturalSize
-                          style={getIconMediaStyle(item.iconStyle)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemIcon",
-                              item.id || itemIndex.toString(),
-                            );
-                          }}
-                        />
-                      </div>
                     </div>
                   );
                 })}
@@ -826,21 +881,13 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
   if (currentLayout === "5") {
     const items = w.data.items || [];
-    const itemsPerRow = w.data.itemsPerRow || 3;
-    const rowItemGap = w.style?.gap ? formatUnit(w.style.gap) : "36px";
-    const rowItemWidthStyle = getFixedRowItemWidthStyle(
-      itemsPerRow,
-      rowItemGap,
-    );
-    const rows: any[][] = [];
-    for (let i = 0; i < items.length; i += itemsPerRow) {
-      rows.push(items.slice(i, i + itemsPerRow));
-    }
+    const itemsPerRow = getLayout45ItemsPerRow(w.data.itemsPerRow);
 
     return (
       <section style={style} className="w-full">
         <div
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          style={rootSectionGapStyle}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -889,8 +936,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           <div
-            className={`self-stretch grid ${getGridColsClass(w.data.itemsPerRow, viewport)}`}
-            style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "40px" }}
+            className="self-stretch grid"
+            style={{
+              gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+              gap: getResponsiveCardGap("40px", w.data.rowGap),
+            }}
           >
             {(w.data.items || []).map((item: any, i: number) => (
               <div
@@ -973,6 +1023,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
       <section style={style} className="w-full">
         <div
           className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+          style={rootSectionGapStyle}
           onDoubleClick={(e) => {
             e.stopPropagation();
             onElementSelect?.("style");
@@ -1027,11 +1078,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
           <div
             className="self-stretch flex flex-col justify-start items-start"
-            style={{ gap: w.data.rowGap ? formatUnit(w.data.rowGap) : "24px" }}
+            style={{ gap: getResponsiveCardGap("24px", w.data.rowGap) }}
           >
             <div
               className={`self-stretch grid ${getGridColsClass(w.data.itemsPerRow, viewport)}`}
-              style={{ gap: w.style?.gap ? formatUnit(w.style.gap) : "20px" }}
+              style={{ gap: getResponsiveCardGap("20px", w.style?.gap) }}
             >
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div

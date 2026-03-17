@@ -13,16 +13,26 @@ import {
 import { Check, ChevronRight } from "lucide-react";
 import { WidgetHeader } from "./WidgetHeader";
 
-// 💡 [기본 폰트 사이즈 설정 안내]
-// 이 영역의 값을 수정하면 프로세스 위젯이 처음 추가될 때의 기본 크기가 변경됩니다.
-// - PC 버전: fontSize: "20px"
-// - 모바일 버전: 렌더 분기에서 18px로 처리
+// 💡 [기본 텍스트 사이즈 설정 안내]
+// 이 영역의 값을 수정하면 프로세스 위젯의 루트 헤더 기본 크기가 변경됩니다.
 export const PROCESS_DEFAULTS = {
   variant: "horizontal",
   title: "좌측타이틀영역",
   titleStyle: { fontSize: "40px", fontSizeMobile: "28px", fontWeight: "700" },
   subTitle: "서브타이틀영역입니다.",
-  subTitleStyle: { fontSize: "18px" },
+  subTitleStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+    color: "#285DE1",
+  },
+  desc: "이민 프로그램명 입력",
+  descStyle: {
+    fontSize: "20px",
+    fontSizeMobile: "18px",
+    fontWeight: "500",
+    color: "#666666",
+  },
   steps: [
     {
       id: "1",
@@ -101,20 +111,73 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
     return mediaStyle;
   };
+  const getLayout2StepMediaStyle = (iconStyle: any) => {
+    const mediaStyle = {
+      ...getStepMediaStyle(iconStyle),
+    } as React.CSSProperties;
+
+    delete mediaStyle.width;
+    delete mediaStyle.height;
+
+    return mediaStyle;
+  };
+  const getLayout3StepImageFrameStyle = (iconStyle: any) => ({
+    display: iconStyle?.isHidden ? "none" : undefined,
+    width: "100%",
+    height: "auto",
+    minHeight: 0,
+  });
+  const getLayout3StepMediaStyle = (iconStyle: any) => {
+    const mediaStyle = {
+      ...getStepMediaStyle(iconStyle),
+      width: "100%",
+      height: "auto",
+      maxHeight: "none",
+      objectFit: iconStyle?.objectFit || "cover",
+    } as React.CSSProperties;
+
+    return mediaStyle;
+  };
   const getStepImageFrameStyle = (
     iconStyle: any,
     extra: React.CSSProperties = {},
   ) => {
     const { height: extraHeight, ...restExtra } = extra;
-    const imageHeight = isDesktopViewport
-      ? iconStyle?.height || extraHeight || processImageHeight
-      : "auto";
+    const imageHeight = iconStyle?.height || extraHeight || processImageHeight;
 
     return {
       ...restExtra,
       display: iconStyle?.isHidden ? "none" : undefined,
       ...(iconStyle?.width ? { width: formatUnit(iconStyle.width) } : {}),
       ...(imageHeight ? { height: imageHeight } : {}),
+    };
+  };
+  const getProcessRootTextStyle = (
+    role: "subTitle" | "title" | "desc",
+    textStyle: any,
+    overrides: React.CSSProperties = {},
+  ) => {
+    return {
+      ...getElementStyle(
+        {
+          ...(role === "title"
+            ? {
+                fontSize: "40px",
+                fontSizeMobile: "28px",
+                fontWeight: "700",
+              }
+            : {
+                fontSize: "20px",
+                fontSizeMobile: "18px",
+                fontWeight: "500",
+              }),
+          ...(role === "subTitle" ? { color: "#285DE1" } : {}),
+          ...(role === "desc" ? { color: "#666666" } : {}),
+          ...(textStyle || {}),
+        },
+        viewport as any,
+      ),
+      ...overrides,
     };
   };
   const isLayout1 =
@@ -135,6 +198,9 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
         : pcCols === 2
           ? "xl:grid-cols-2"
           : "xl:grid-cols-1";
+  const processGridColsClass = isDesktopViewport
+    ? `grid-cols-2 ${gridColsClass}`
+    : "grid-cols-2";
 
   if (isComparisonCard) {
     return (
@@ -148,7 +214,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-6" : "gap-10"} w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -309,7 +375,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-6" : "gap-10"} w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -321,7 +387,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  style={getProcessRootTextStyle(
+                    "subTitle",
+                    data.subTitleStyle,
+                  )}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -332,7 +401,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.titleStyle, viewport as any)}
+                  style={getProcessRootTextStyle("title", data.titleStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -343,9 +412,9 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={(data as any).desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(
+                  style={getProcessRootTextStyle(
+                    "desc",
                     (data as any).descStyle,
-                    viewport as any,
                   )}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -357,24 +426,28 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* 2. Body Area: Steps Grid Layout 2 */}
             <div
-              className={`self-stretch w-full grid grid-cols-2 ${gridColsClass} gap-y-12 mt-6`}
+              className={`self-stretch w-full grid ${processGridColsClass} gap-y-12 mt-6`}
             >
               {(() => {
                 const stepsArr = data.steps || (data as any).items || [];
                 return stepsArr.map((step: any, idx: number) => (
                   <div
                     key={step.id || idx}
-                    className="w-full flex flex-col justify-start items-center gap-6"
+                    className={`${viewport === "mobile" ? "self-start justify-start" : "self-stretch justify-center"} min-w-36 w-full inline-flex flex-col items-center gap-3`}
                   >
                     <div
-                      className="w-40 h-40 rounded-full bg-slate-50 flex justify-center items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
-                      style={getStepImageFrameStyle(step.iconStyle)}
+                      className="w-24 h-24 relative bg-시안-mode-gray5 rounded-[80px] flex justify-center items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden"
+                      style={{
+                        display: step.iconStyle?.isHidden ? "none" : undefined,
+                        width: "96px",
+                        height: "96px",
+                      }}
                     >
                       <UniversalMedia
                         url={step.icon}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         alt="step icon"
-                        style={getStepMediaStyle(step.iconStyle)}
+                        style={getLayout2StepMediaStyle(step.iconStyle)}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("icon", step.id);
@@ -382,18 +455,14 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       />
                     </div>
 
-                    <div className="w-full flex flex-col justify-start items-center">
-                      <div className="w-full relative py-2 flex justify-center items-center">
-                        <div
-                          className="absolute top-1/2 -translate-y-1/2 h-px bg-zinc-300 z-0"
-                          style={{
-                            left: idx === 0 ? "50%" : 0,
-                            right: idx === stepsArr.length - 1 ? "50%" : 0,
-                          }}
-                        ></div>
+                    <div
+                      className="self-stretch border-t border-white flex flex-col justify-start items-center"
+                    >
+                      <div className="self-stretch inline-flex justify-start items-center gap-2">
+                        <div className="flex-1 h-px bg-zinc-300"></div>
                         {!step.numberStyle?.isHidden && (
                           <div
-                            className="px-5 py-1 rounded-full inline-flex justify-center items-center gap-2.5 relative z-10 ring-8 ring-white"
+                            className="px-4 py-1 rounded-[30px] flex justify-center items-center gap-2.5"
                             style={{
                               backgroundColor:
                                 step.numberStyle?.backgroundColor || "#285DE1",
@@ -405,7 +474,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                           >
                             <SafeHtml
                               html={step.number || `${idx + 1}`}
-                              className="justify-start text-white font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text min-w-[1.5rem] text-center"
+                              className="justify-start text-white text-base font-bold font-['Pretendard'] leading-6 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text min-w-6 text-center"
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("number", step.id);
@@ -413,13 +482,14 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             />
                           </div>
                         )}
+                        <div className="flex-1 h-px bg-zinc-300"></div>
                       </div>
 
-                      <div className="flex flex-col justify-start items-center gap-2 mt-4 px-6 w-full">
+                      <div className="self-stretch py-4 flex flex-col justify-start items-center">
                         {!step.titleStyle?.isHidden && (
                           <SafeHtml
                             html={step.title || "과정명 01"}
-                            className="justify-center text-center text-시안-mode-gray95 font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
+                            className="justify-start text-center text-시안-mode-gray95 text-lg font-bold font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
                             style={getElementStyle(
                               step.titleStyle,
                               viewport as any,
@@ -433,7 +503,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         {!step.descStyle?.isHidden && (
                           <SafeHtml
                             html={step.desc || "내용 입력 01"}
-                            className="text-center justify-center text-gray-500 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
+                            className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
                             style={getElementStyle(
                               step.descStyle,
                               viewport as any,
@@ -474,7 +544,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-6" : "gap-10"} w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -486,7 +556,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  style={getProcessRootTextStyle(
+                    "subTitle",
+                    data.subTitleStyle,
+                  )}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -497,7 +570,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.titleStyle, viewport as any)}
+                  style={getProcessRootTextStyle("title", data.titleStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -508,9 +581,9 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={(data as any).desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(
+                  style={getProcessRootTextStyle(
+                    "desc",
                     (data as any).descStyle,
-                    viewport as any,
                   )}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -522,44 +595,54 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* 2. Body Area: Steps Grid Layout 3 */}
             <div
-              className={`self-stretch w-full grid grid-cols-2 ${gridColsClass} gap-10`}
+              className={`self-stretch w-full grid ${processGridColsClass} ${viewport === "mobile" ? "gap-3" : "gap-10"}`}
             >
               {(data.steps || (data as any).items || []).map(
                 (step: any, idx: number) => (
                   <div
                     key={step.id || idx}
-                    className="w-full bg-시안-mode-gray0 inline-flex flex-col justify-start items-start"
+                    className="self-stretch bg-시안-mode-gray0 inline-flex flex-col justify-start items-start"
                   >
                     <div
-                      className="self-stretch bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
-                      style={getStepImageFrameStyle(step.iconStyle, {
-                        height: "240px",
-                      })}
+                      className="self-stretch hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden relative"
+                      style={getLayout3StepImageFrameStyle(step.iconStyle)}
                     >
                       <UniversalMedia
                         url={step.icon}
-                        className="w-full h-full object-cover"
+                        className="w-full"
                         alt="step icon"
-                        style={getStepMediaStyle(step.iconStyle)}
+                        style={getLayout3StepMediaStyle(step.iconStyle)}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("icon", step.id);
                         }}
                       />
                     </div>
-                    <div className="self-stretch pt-4 border-t border-시안-mode-gray95 flex flex-col justify-start items-start gap-3">
+                    <div className={`self-stretch pt-4 border-t border-시안-mode-gray95 flex flex-col justify-start items-start ${viewport === "mobile" ? "gap-1" : "gap-3"}`}>
                       <div className="flex flex-col justify-start items-start">
                         <div className="inline-flex justify-start items-center gap-2">
                           {!step.numberStyle?.isHidden && (
                             <SafeHtml
-                              html={step.number || `${idx + 1}.`}
-                              className="text-center justify-start text-[#285DE1] font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                              style={{
-                                ...getElementStyle(
-                                  step.numberStyle,
-                                  viewport as any,
-                                ),
+                              html={step.number || `${(idx + 1).toString().padStart(2, '0')}.`}
+                              className="text-center justify-start text-시안-mode-Primary50 text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={getElementStyle(
+                                step.numberStyle,
+                                viewport as any,
+                              )}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.("stepTitle", step.id);
                               }}
+                            />
+                          )}
+                          {!step.titleStyle?.isHidden && (
+                            <SafeHtml
+                              html={step.title || "프로그램 특징"}
+                              className="justify-start text-zinc-950 text-2xl font-bold font-['Pretendard'] leading-9 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                              style={getElementStyle(
+                                step.titleStyle,
+                                viewport as any,
+                              )}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("stepTitle", step.id);
@@ -574,7 +657,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             step.desc ||
                             "프로그램을 설명하는 설명 문구를 2줄까지 적을 수 있습니다."
                           }
-                          className="self-stretch justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                          className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                           style={getElementStyle(
                             step.descStyle,
                             viewport as any,
@@ -614,7 +697,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-6" : "gap-10"} w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
             onDoubleClick={(e) => {
               e.stopPropagation();
               onElementSelect?.("style");
@@ -626,7 +709,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-시안-mode-Primary50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.subTitleStyle, viewport as any)}
+                  style={getProcessRootTextStyle(
+                    "subTitle",
+                    data.subTitleStyle,
+                  )}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("subTitle");
@@ -637,7 +723,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-2xl xl:text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.titleStyle, viewport as any)}
+                  style={getProcessRootTextStyle("title", data.titleStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -648,9 +734,9 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={(data as any).desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(
+                  style={getProcessRootTextStyle(
+                    "desc",
                     (data as any).descStyle,
-                    viewport as any,
                   )}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -661,112 +747,178 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 2. Body Area: Steps Grid Layout 1 */}
-            <div
-              className={`self-stretch w-full grid grid-cols-2 ${gridColsClass} gap-10`}
-            >
-              {(data.steps || (data as any).items || []).map(
-                (step: any, idx: number) => {
-                  const arr = data.steps || (data as any).items || [];
-                  const isLast = idx === arr.length - 1;
-                  const isRowLast = (idx + 1) % pcCols === 0;
+            {(() => {
+              const stepsArr = data.steps || (data as any).items || [];
+              const visibleCols = isDesktopViewport ? pcCols : 2;
+              const arrowSlotWidth =
+                viewport === "tablet"
+                  ? 56
+                  : viewport === "mobile"
+                    ? 44
+                    : 40;
+              const arrowSizeClass =
+                viewport === "tablet"
+                  ? "h-9 w-9"
+                  : viewport === "mobile"
+                    ? "h-8 w-8"
+                    : "h-8 w-8";
+              const rows = Array.from(
+                { length: Math.ceil(stepsArr.length / visibleCols) },
+                (_, rowIdx) =>
+                  stepsArr.slice(
+                    rowIdx * visibleCols,
+                    rowIdx * visibleCols + visibleCols,
+                  ),
+              );
 
-                  return (
+              return (
+                <div
+                  className={`self-stretch w-full flex flex-col ${viewport === "mobile" ? "gap-3" : "gap-10"}`}
+                >
+                  {rows.map((rowSteps, rowIdx) => (
                     <div
-                      key={step.id || idx}
-                      className="w-full flex items-center gap-5"
+                      key={`layout1-row-${rowIdx}`}
+                      className="w-full grid items-start"
+                      style={{
+                        gridTemplateColumns: Array.from({
+                          length: isDesktopViewport ? rowSteps.length : visibleCols,
+                        })
+                          .flatMap((_, columnIdx) =>
+                            columnIdx ===
+                            (isDesktopViewport ? rowSteps.length : visibleCols) - 1
+                              ? ["minmax(0,1fr)"]
+                              : ["minmax(0,1fr)", `${arrowSlotWidth}px`],
+                          )
+                          .join(" "),
+                      }}
                     >
-                      <div className="flex-1 inline-flex flex-col justify-center items-center gap-3">
-                        <div
-                          className="self-stretch h-44 bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer relative overflow-hidden"
-                          style={getStepImageFrameStyle(step.iconStyle)}
-                        >
-                          <UniversalMedia
-                            url={step.icon}
-                            className="w-full h-full object-cover"
-                            alt="step icon"
-                            style={getStepMediaStyle(step.iconStyle)}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.("icon", step.id);
-                            }}
-                          />
-                        </div>
+                      {rowSteps.map((step: any, stepIdx: number) => {
+                        const globalIdx = rowIdx * visibleCols + stepIdx;
+                        const isRowLast = stepIdx === rowSteps.length - 1;
 
-                        <div className="inline-flex justify-start items-center gap-3">
-                          {!step.numberStyle?.isHidden && (
+                        return (
+                          <React.Fragment key={step.id || globalIdx}>
                             <div
-                              className="px-4 py-1 rounded-[30px] flex justify-center items-center gap-2.5"
-                              style={{
-                                backgroundColor:
-                                  step.numberStyle?.backgroundColor ||
-                                  "#285DE1",
-                                ...getElementStyle(
-                                  step.numberStyle,
-                                  viewport as any,
-                                ),
-                              }}
+                              className={`w-full relative inline-flex flex-col ${isDesktopViewport ? "justify-start items-center" : "justify-start items-start"} gap-3`}
                             >
-                              <SafeHtml
-                                html={step.number || `${idx + 1}`}
-                                className="justify-start text-white font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
-                                onDoubleClick={(e) => {
-                                  e.stopPropagation();
-                                  onElementSelect?.("number", step.id);
-                                }}
-                              />
-                            </div>
-                          )}
-                          {!step.titleStyle?.isHidden && (
-                            <SafeHtml
-                              html={step.title || "과정명 01"}
-                              className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                              style={getElementStyle(
-                                step.titleStyle,
-                                viewport as any,
+                              <div
+                                className="self-stretch h-auto bg-zinc-300 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer relative overflow-hidden"
+                                style={getStepImageFrameStyle(step.iconStyle)}
+                              >
+                                <UniversalMedia
+                                  url={step.icon}
+                                  className="w-full h-full object-cover"
+                                  alt="step icon"
+                                  style={getStepMediaStyle(step.iconStyle)}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.("icon", step.id);
+                                  }}
+                                />
+                              </div>
+
+                              <div
+                                className={`inline-flex max-w-full ${
+                                  isDesktopViewport
+                                    ? "w-fit items-center justify-center self-center gap-3"
+                                    : `w-full self-stretch justify-start ${
+                                        viewport === "mobile"
+                                          ? "items-start gap-1"
+                                          : "items-start gap-3"
+                                      }`
+                                }`}
+                              >
+                                {!step.numberStyle?.isHidden && (
+                                  <div
+                                    className={`px-4 ${viewport === "mobile" ? "py-0" : "py-1"} rounded-[30px] flex justify-center items-center gap-2.5`}
+                                    style={{
+                                      backgroundColor:
+                                        step.numberStyle?.backgroundColor ||
+                                        "#285DE1",
+                                    }}
+                                  >
+                                    <SafeHtml
+                                      html={step.number || `${globalIdx + 1}`}
+                                      className="justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                                      style={{
+                                        color:
+                                          step.numberStyle?.color || "#ffffff",
+                                        fontWeight:
+                                          step.numberStyle?.fontWeight || "700",
+                                        ...getElementStyle(
+                                          {
+                                            fontSizeMobile: "16px",
+                                            ...step.numberStyle,
+                                          },
+                                          viewport,
+                                        ),
+                                      }}
+                                      onDoubleClick={(e) => {
+                                        e.stopPropagation();
+                                        onElementSelect?.("number", step.id);
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                                {!step.titleStyle?.isHidden && (
+                                  <SafeHtml
+                                    html={step.title || "과정명 01"}
+                                    className={`${
+                                      isDesktopViewport
+                                        ? "text-center max-w-full"
+                                        : "text-left flex-1 min-w-0 max-w-full"
+                                    } break-words whitespace-normal justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text`}
+                                    style={{
+                                      ...getElementStyle(
+                                        step.titleStyle,
+                                        viewport as any,
+                                      ),
+                                      width: "auto",
+                                      maxWidth: "100%",
+                                    }}
+                                    onDoubleClick={(e) => {
+                                      e.stopPropagation();
+                                      onElementSelect?.("stepTitle", step.id);
+                                    }}
+                                  />
+                                )}
+                              </div>
+
+                              {!step.descStyle?.isHidden && (
+                                <SafeHtml
+                                  html={step.desc || "내용 입력 01"}
+                                  className={`${isDesktopViewport ? "text-center" : "text-left"} self-stretch break-words justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text`}
+                                  style={getElementStyle(
+                                    step.descStyle,
+                                    viewport as any,
+                                  )}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.("stepDesc", step.id);
+                                  }}
+                                />
                               )}
-                              onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                onElementSelect?.("stepTitle", step.id);
-                              }}
-                            />
-                          )}
-                        </div>
-
-                        {!step.descStyle?.isHidden && (
-                          <SafeHtml
-                            html={step.desc || "내용 입력 01"}
-                            className="text-center justify-start text-시안-mode-gray50 font-normal font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                            style={getElementStyle(
-                              step.descStyle,
-                              viewport as any,
+                            </div>
+                            {!isRowLast && (
+                              <div
+                                className="flex h-full items-center justify-center pointer-events-none"
+                                aria-hidden="true"
+                              >
+                                <img
+                                  src="/images/placeholder/arrow.png"
+                                  alt="next arrow"
+                                  className={`${arrowSizeClass} object-contain opacity-70`}
+                                />
+                              </div>
                             )}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              onElementSelect?.("stepDesc", step.id);
-                            }}
-                          />
-                        )}
-                      </div>
-
-                      {/* Arrow Element: Hide on last item or row end (PC only) */}
-                      <div
-                        className={`w-10 h-10 relative flex flex-shrink-0 items-center justify-center ${
-                          isLast || (viewport === "desktop" && isRowLast)
-                            ? "opacity-0 invisible"
-                            : ""
-                        }`}
-                      >
-                        <img
-                          src="/images/placeholder/arrow.png"
-                          alt="next arrow"
-                          className="w-full h-full object-contain opacity-40 md:block hidden"
-                        />
-                      </div>
+                          </React.Fragment>
+                        );
+                      })}
                     </div>
-                  );
-                },
-              )}
-            </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
       </section>
@@ -796,7 +948,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
             return (
               <div
-                className={`flex-1 flex flex-wrap items-stretch ${isNumber && isMobile ? "gap-y-16" : "gap-y-10"} ${isNumber ? (isPc ? "gap-x-16" : isTablet ? "gap-x-12" : "gap-x-0") : "gap-x-4"} ${!isVertical ? "" : "justify-center"}`}
+                className={`flex-1 flex flex-wrap ${isMobile ? "items-start gap-3" : "items-stretch gap-y-10"} ${!isMobile ? (isNumber ? (isPc ? "gap-x-16" : isTablet ? "gap-x-12" : "gap-x-0") : "gap-x-4") : ""} ${!isVertical ? "" : isMobile ? "justify-start" : "justify-center"}`}
                 style={{
                   gap: w.style?.gap ? formatUnit(w.style.gap) : undefined,
                 }}
@@ -805,14 +957,16 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   // Responsive columns: PC (4 or 3), Tablet/Mobile (2)
                   const cols = isPc
                     ? w.data.itemsPerRow || (isVertical ? 4 : 3)
-                    : 2;
-                  const currentGap = isNumber
-                    ? isPc
-                      ? 64
-                      : isTablet
-                        ? 48
-                        : 0
-                    : 16;
+                    : Math.min(w.data.steps.length || 1, 2);
+                  const currentGap = isMobile
+                    ? 12
+                    : isNumber
+                      ? isPc
+                        ? 64
+                        : isTablet
+                          ? 48
+                          : 0
+                      : 16;
                   const responsiveGap =
                     w.style?.gap !== undefined && w.style?.gap !== null
                       ? formatUnit(w.style.gap)
@@ -822,12 +976,16 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                   let itemWidthStyle: string | undefined;
                   if (isPc)
                     itemWidthStyle = `calc(${100 / cols}% - ${((cols - 1) * currentGap) / cols}px)`;
-                  else itemWidthStyle = `calc((100% - ${responsiveGap}) / 2)`;
+                  else
+                    itemWidthStyle =
+                      cols === 1
+                        ? "100%"
+                        : `calc((100% - ${responsiveGap}) / ${cols})`;
 
                   return (
                     <React.Fragment key={step.id}>
                       <div
-                        className={`relative group bg-white border border-시안-mode-gray10 p-8 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col ${isNumber ? "items-center text-center" : "items-start text-left"}`}
+                        className={`relative group bg-white border border-시안-mode-gray10 p-8 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-start ${isNumber && !isMobile ? "items-center text-center" : "items-start text-left"}`}
                         style={{ width: itemWidthStyle }}
                       >
                         {/* 1. Header Area: Differentiated by variant */}

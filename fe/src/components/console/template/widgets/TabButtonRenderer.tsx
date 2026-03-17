@@ -126,12 +126,6 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     color: "#285DE1",
                     ...getElementStyle(data.subTitleStyle, viewport as any),
-                    ...(viewport === "mobile" &&
-                    (data.subTitleStyle?.fontSize === "20px" ||
-                      data.subTitleStyle?.fontSize === 20) &&
-                    !data.subTitleStyle?.fontSizeMobile
-                      ? { fontSize: "18px" }
-                      : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -156,12 +150,6 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   className="text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
                     ...getElementStyle(data.descStyle, viewport as any),
-                    ...(viewport === "mobile" &&
-                    (data.descStyle?.fontSize === "20px" ||
-                      data.descStyle?.fontSize === 20) &&
-                    !data.descStyle?.fontSizeMobile
-                      ? { fontSize: "18px" }
-                      : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();

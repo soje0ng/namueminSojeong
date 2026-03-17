@@ -4,6 +4,7 @@ import createMiddleware from "next-intl/middleware";
 
 const locales = ["ko", "en", "ja", "zh"] as const;
 const defaultLocale = "ko";
+const localeHeaderName = "X-NEXT-INTL-LOCALE";
 
 const intlMiddleware = createMiddleware({
     locales,
@@ -17,6 +18,23 @@ export default function proxy(request: NextRequest) {
     // 루트 경로는 locale 처리를 하지 않도록 통과
     if (pathname === "/") {
         return NextResponse.next();
+    }
+
+    // 기본 locale 경로가 내부 rewrite로 다시 proxy를 타면
+    // /login -> /ko/login -> /login 루프가 생길 수 있어 그대로 통과시킨다.
+    if (pathname === `/${defaultLocale}`) {
+        return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    if (pathname.startsWith(`/${defaultLocale}/`)) {
+        const headers = new Headers(request.headers);
+        headers.set(localeHeaderName, defaultLocale);
+
+        return NextResponse.next({
+            request: {
+                headers,
+            },
+        });
     }
 
     // /console 경로는 /console/login으로 리다이렉트
@@ -33,4 +51,3 @@ export const config = {
         "/((?!api|_next|_vercel|console/|popup|health|.*\\..*).*)",
     ],
 };
-

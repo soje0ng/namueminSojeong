@@ -99,19 +99,19 @@ function createDefaultSection(type: Section5Type): Section5Item {
           id: `cl-${Date.now()}-1`,
           title: "프로그램 특징",
           desc: "프로그램 특징 내용 입력",
-          iconUrl: "/images/placeholder/ts_checklist_icon.png",
+          iconUrl: "/images/placeholder/check_bullet.png",
         },
         {
           id: `cl-${Date.now()}-2`,
           title: "프로그램 특징",
           desc: "프로그램 특징 내용 입력",
-          iconUrl: "/images/placeholder/ts_checklist_icon.png",
+          iconUrl: "/images/placeholder/check_bullet.png",
         },
         {
           id: `cl-${Date.now()}-3`,
           title: "프로그램 특징",
           desc: "프로그램 특징 내용 입력",
-          iconUrl: "/images/placeholder/ts_checklist_icon.png",
+          iconUrl: "/images/placeholder/check_bullet.png",
         },
       ] as ChecklistItem[],
     };
@@ -212,7 +212,7 @@ const TextStructure5Manager: React.FC<Props> = ({
       id: `cl-${Date.now()}`,
       title: "프로그램 특징",
       desc: "프로그램 특징 내용 입력",
-      iconUrl: "/images/placeholder/ts_checklist_icon.png",
+      iconUrl: "/images/placeholder/check_bullet.png",
     });
     updateSection(section.id, { items });
   };

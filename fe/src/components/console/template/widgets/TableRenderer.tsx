@@ -133,12 +133,24 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
         ["구분", "구분", "구분"],
         ["구분", "구분", "구분"],
       ];
+    const isTabletOrMobile = viewport === "tablet" || viewport === "mobile";
 
     return (
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
           <div
-            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center w-full`}
+            style={{
+              gap: viewport === "mobile" ? "24px" : "40px",
+              ...(viewport === "tablet"
+                ? {
+                    paddingTop: "60px",
+                    paddingBottom: "60px",
+                    paddingLeft: "40px",
+                    paddingRight: "40px",
+                  }
+                : {}),
+            }}
           >
             <div className="flex flex-col justify-start items-center">
               {!w.data.subTitleStyle?.isHidden && (
@@ -148,6 +160,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     ...getElementStyle(subTitleStyle, viewport as any),
                     backgroundColor: "transparent",
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                        : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -162,6 +179,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     ...getElementStyle(titleStyle, viewport as any),
                     backgroundColor: "transparent",
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.8px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.48px", lineHeight: "150%" }
+                        : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -176,6 +198,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     ...getElementStyle(descStyle, viewport as any),
                     backgroundColor: "transparent",
+                    ...(viewport === "tablet"
+                      ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                      : viewport === "mobile"
+                        ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                        : {}),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -211,6 +238,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       backgroundColor:
                         (w.data as any).headerCellStyles?.[i]
                           ?.backgroundColor || "#FFFFFF",
+                      ...(isTabletOrMobile && i === 0
+                        ? { flex: "1 0 0", width: "auto" }
+                        : {}),
                     }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
@@ -223,6 +253,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       style={{
                         ...headerStyle,
                         backgroundColor: "transparent",
+                        ...(isTabletOrMobile
+                          ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                          : {}),
                       }}
                     />
                   </div>
@@ -248,6 +281,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                         backgroundColor:
                           (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
                             ?.backgroundColor || "transparent",
+                        ...(isTabletOrMobile && cIdx === 0
+                          ? { flex: "1 0 0", width: "auto" }
+                          : {}),
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -257,7 +293,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       <SafeHtml
                         html={cell}
                         className={`text-center justify-start ${cIdx === 0 ? "text-[#285DE1]" : "text-시안-mode-gray50"} text-xl font-medium font-['Pretendard'] leading-8`}
-                        style={bodyStyle}
+                        style={{
+                          ...bodyStyle,
+                          ...(isTabletOrMobile
+                            ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                            : {}),
+                        }}
                       />
                     </div>
                   ))}
@@ -274,6 +315,11 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 style={{
                   ...getElementStyle(bottomTextStyle, viewport as any),
                   backgroundColor: "transparent",
+                  ...(viewport === "tablet"
+                    ? { letterSpacing: "-0.4px", lineHeight: "150%" }
+                    : viewport === "mobile"
+                      ? { letterSpacing: "-0.36px", lineHeight: "150%" }
+                      : {}),
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();

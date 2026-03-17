@@ -26,6 +26,11 @@ import {
   TEXT_STRUCTURE_11_DEFAULT_SECTIONS,
 } from "../widgets/TextStructureRenderer";
 import { CULTURE_LETTER_DEFAULTS } from "../widgets/CultureLetterRenderer";
+import {
+  COMPARISON_CARD_DEFAULTS,
+  DEFAULT_LEFT_DESC_ITEMS,
+  DEFAULT_RIGHT_DESC_ITEMS,
+} from "../widgets/ComparisonCardRenderer";
 import { TITLE_BANNER_DEFAULTS } from "../widgets/TitleBannerRenderer";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 import { usePopupStore } from "@/store/console/usePopupStore";
@@ -95,6 +100,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   let onMutedChange = (val: boolean) => {};
   let onLoopChange = (val: boolean) => {};
   const { setConfirmPop } = usePopupStore();
+  const getEditorItemArray = (arrayName: string) => {
+    if (widget.type === "comparisonCard" && arrayName === "items") {
+      const currentItems = data[arrayName];
+      return currentItems?.length >= 2
+        ? currentItems
+        : COMPARISON_CARD_DEFAULTS.items;
+    }
+    return data[arrayName] || [];
+  };
 
   // Helper to update style for item or root property
   const updateStyle = (
@@ -123,7 +137,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         arrayName = "items";
       }
 
-      const currentItems = data[arrayName] || [];
+      const currentItems = getEditorItemArray(arrayName);
       const updatedItems = currentItems.map((item: any) => {
         if (item.id === itemId) {
           const oldStyle = item[stylePropName] || {};
@@ -150,10 +164,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       fontSize: string,
       fontWeight: string,
       color: string,
+      fontSizeMobile?: string,
     ) => ({
       fontSize,
       fontWeight,
       color,
+      ...(fontSizeMobile ? { fontSizeMobile } : {}),
     });
 
     if (layoutVal === "4") {
@@ -163,54 +179,83 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
 
     if (layoutVal === "5") {
-      if (key === "bojoTitle") return textStyle("20px", "700", "#285DE1");
-      if (key === "l5SubTitle") return textStyle("20px", "500", "#285DE1");
-      if (key === "l5Title") return textStyle("36px", "700", "#131416");
-      if (key === "l5Desc") return textStyle("20px", "500", "#6D7882");
-      if (key === "l5SideTitle") return textStyle("30px", "700", "#131416");
-      if (key === "l5SideDesc") return textStyle("20px", "500", "#6D7882");
+      if (key === "bojoTitle") return textStyle("20px", "700", "#285DE1", "20px");
+      if (key === "l5SubTitle") return textStyle("20px", "500", "#285DE1", "18px");
+      if (key === "l5Title") return textStyle("36px", "700", "#131416", "28px");
+      if (key === "l5Desc") return textStyle("20px", "500", "#6D7882", "18px");
+      if (key === "l5SideTitle") return textStyle("30px", "700", "#131416", "24px");
+      if (key === "l5SideDesc") return textStyle("20px", "500", "#6D7882", "18px");
       if (sectionType === "text") {
         if (key === "sectionSubTitle")
-          return textStyle("24px", "700", "#131416");
+          return textStyle("24px", "700", "#131416", "20px");
         if (key === "sectionContent")
-          return textStyle("20px", "400", "#6D7882");
+          return textStyle("20px", "400", "#6D7882", "18px");
       }
       if (sectionType === "checklist") {
-        if (key === "itemTitle") return textStyle("20px", "700", "#09090b");
-        if (key === "itemDesc") return textStyle("18px", "400", "#6D7882");
+        if (key === "itemTitle") return textStyle("20px", "700", "#09090b", "20px");
+        if (key === "itemDesc") return textStyle("18px", "400", "#6D7882", "18px");
       }
       if (sectionType === "labelList") {
-        if (key === "itemTitle") return textStyle("20px", "700", "#09090b");
-        if (key === "itemDesc") return textStyle("18px", "400", "#6D7882");
+        if (key === "itemTitle") return textStyle("20px", "700", "#09090b", "20px");
+        if (key === "itemDesc") return textStyle("18px", "400", "#6D7882", "18px");
       }
       if (sectionType === "imageBanner") {
         if (key === "bannerSubTitle")
-          return textStyle("24px", "700", "#131416");
-        if (key === "bannerDesc") return textStyle("20px", "400", "#6D7882");
+          return textStyle("24px", "700", "#131416", "20px");
+        if (key === "bannerDesc") return textStyle("20px", "400", "#6D7882", "18px");
       }
     }
 
-    if (["6", "7", "8", "9"].includes(layoutVal)) {
+    if (layoutVal === "6") {
+      if (sectionType === "text") {
+        if (key === "sectionSubTitle")
+          return textStyle("24px", "700", "#131416", "20px");
+        if (key === "sectionContent")
+          return textStyle("20px", "400", "#6D7882", "18px");
+      }
+      if (sectionType === "newsletter") {
+        if (key === "sectionNewsletterSubTitle")
+          return textStyle("24px", "700", "#131416", "20px");
+        if (key === "sectionNewsletterLeft" || key === "sectionNewsletterRight")
+          return textStyle("20px", "400", "#6D7882", "18px");
+      }
+      if (sectionType === "features") {
+        if (key === "itemTitle") return textStyle("20px", "700", "#285DE1", "20px");
+        if (key === "itemDesc") return textStyle("20px", "400", "#6D7882", "20px");
+      }
+      if (sectionType === "stripBanner") {
+        if (key === "bannerSubTitle")
+          return textStyle("24px", "700", "#131416", "20px");
+        if (key === "bannerDesc") return textStyle("20px", "400", "#6D7882", "18px");
+      }
+    }
+
+    if (layoutVal === "7") {
+      if (sectionType === "text") {
+        if (key === "sectionSubTitle")
+          return textStyle("24px", "700", "#131416", "24px");
+        if (key === "sectionContent")
+          return textStyle("20px", "400", "#6D7882", "20px");
+      }
+      if (sectionType === "newsletter") {
+        if (key === "sectionNewsletterSubTitle")
+          return textStyle("24px", "700", "#131416", "24px");
+        if (key === "sectionNewsletterLeft" || key === "sectionNewsletterRight")
+          return textStyle("20px", "400", "#6D7882", "20px");
+      }
+      if (sectionType === "stripBanner") {
+        if (key === "bannerSubTitle")
+          return textStyle("24px", "700", "#131416", "24px");
+        if (key === "bannerDesc") return textStyle("20px", "400", "#6D7882", "20px");
+      }
+    }
+
+    if (["8", "9"].includes(layoutVal)) {
       if (sectionType === "text") {
         if (key === "sectionSubTitle")
           return textStyle("24px", "700", "#131416");
         if (key === "sectionContent")
           return textStyle("20px", "400", "#6D7882");
-      }
-      if (sectionType === "newsletter") {
-        if (key === "sectionNewsletterSubTitle")
-          return textStyle("24px", "700", "#131416");
-        if (key === "sectionNewsletterLeft" || key === "sectionNewsletterRight")
-          return textStyle("20px", "400", "#6D7882");
-      }
-      if (sectionType === "features") {
-        if (key === "itemTitle") return textStyle("20px", "700", "#285DE1");
-        if (key === "itemDesc") return textStyle("20px", "400", "#6D7882");
-      }
-      if (sectionType === "stripBanner") {
-        if (key === "bannerSubTitle")
-          return textStyle("24px", "700", "#131416");
-        if (key === "bannerDesc") return textStyle("20px", "400", "#6D7882");
       }
       if (sectionType === "basicText") {
         if (layoutVal === "8" && key === "sectionBasicText")
@@ -261,7 +306,19 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
     const layoutVal = String(data.layout || "1").replace(/^layout/, "");
     const rootStyle = (TEXT_STRUCTURE_DEFAULTS as any)[`${elementKey}Style`];
-    if (!itemId) return rootStyle ? { ...rootStyle } : {};
+    if (!itemId) {
+      if (layoutVal === "7" && elementKey === "contentTitle")
+        return {
+          ...(rootStyle ? { ...rootStyle } : {}),
+          fontSizeMobile: rootStyle?.fontSizeMobile || rootStyle?.fontSize || "48px",
+        };
+      if (layoutVal === "7" && elementKey === "contentSubTitle")
+        return {
+          ...(rootStyle ? { ...rootStyle } : {}),
+          fontSizeMobile: rootStyle?.fontSizeMobile || rootStyle?.fontSize || "20px",
+        };
+      return rootStyle ? { ...rootStyle } : {};
+    }
 
     if (
       layoutVal === "4" &&
@@ -329,13 +386,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         config.defaults.find((candidate: any) => candidate.id === itemId) ||
         config.defaults[sectionIndex];
       const fallback = defaultSection?.[sectionStyleMap[elementKey]];
-      return fallback
-        ? { ...fallback }
-        : getTextStructureMappedFallbackStyle(
-            layoutVal,
-            section?.type,
-            elementKey,
-          );
+      return {
+        ...getTextStructureMappedFallbackStyle(
+          layoutVal,
+          section?.type,
+          elementKey,
+        ),
+        ...(fallback ? { ...fallback } : {}),
+      };
     }
 
     if (
@@ -405,13 +463,14 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             : "iconStyle";
     const fallback = defaultItem?.[styleProp];
 
-    return fallback
-      ? { ...fallback }
-      : getTextStructureMappedFallbackStyle(
-          layoutVal,
-          section?.type,
-          elementKey,
-        );
+    return {
+      ...getTextStructureMappedFallbackStyle(
+        layoutVal,
+        section?.type,
+        elementKey,
+      ),
+      ...(fallback ? { ...fallback } : {}),
+    };
   };
 
   const getImageCardFallbackStyle = () => {
@@ -505,6 +564,108 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
 
     return imageCardFallbackMap[elementKey] || {};
+  };
+  const getIconCardFallbackStyle = () => {
+    if (widget.type !== "iconCard") return {};
+
+    const iconCardFallbackMap: Record<string, any> = {
+      subTitle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#285DE1",
+      },
+      title: {
+        fontSize: "40px",
+        fontSizeMobile: "28px",
+        fontWeight: "700",
+        color: "#131416",
+      },
+      desc: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6D7882",
+      },
+      itemSubTitle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "700",
+        color: "#285DE1",
+      },
+    };
+
+    return iconCardFallbackMap[elementKey] || {};
+  };
+  const getProcessFallbackStyle = () => {
+    if (widget.type !== "process" && widget.type !== "processCard") return {};
+
+    const processFallbackMap: Record<string, any> = {
+      subTitle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#285DE1",
+      },
+      title: {
+        fontSize: "40px",
+        fontSizeMobile: "28px",
+        fontWeight: "700",
+        color: "#131416",
+      },
+      desc: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6D7882",
+      },
+    };
+
+    return processFallbackMap[elementKey] || {};
+  };
+  const getComparisonCardFallbackStyle = () => {
+    if (widget.type !== "comparisonCard") return {};
+
+    if (elementKey === "subTitle") return { ...COMPARISON_CARD_DEFAULTS.subTitleStyle };
+    if (elementKey === "title") return { ...COMPARISON_CARD_DEFAULTS.titleStyle };
+    if (elementKey === "desc") return { ...COMPARISON_CARD_DEFAULTS.descStyle };
+    if (elementKey === "middleTitle")
+      return { ...COMPARISON_CARD_DEFAULTS.middleTitleStyle };
+    if (elementKey === "rowLabel")
+      return {
+        ...COMPARISON_CARD_DEFAULTS.rowLabelStyle,
+        fontSizeMobile:
+          COMPARISON_CARD_DEFAULTS.rowLabelStyle.fontSizeMobile || "18px",
+      };
+    if (elementKey === "itemTitle") {
+      const currentItems = getEditorItemArray("items");
+      const currentItem = itemId ? findItem(currentItems, itemId) : null;
+      const defaultItem =
+        COMPARISON_CARD_DEFAULTS.items.find((it: any) => it.id === itemId) ||
+        COMPARISON_CARD_DEFAULTS.items[0];
+      const fallbackItem =
+        currentItem || defaultItem;
+      return {
+        ...(defaultItem?.titleStyle || {}),
+        ...(fallbackItem?.titleStyle || {}),
+      };
+    }
+    if (elementKey === "leftDescItems" || elementKey === "rightDescItems") {
+      const sideIndex = elementKey === "leftDescItems" ? 0 : 1;
+      const items =
+        data.items?.length >= 2 ? data.items : COMPARISON_CARD_DEFAULTS.items;
+      const sideItem = items[sideIndex] || {};
+      const fallbackDescStyle = {
+        ...(COMPARISON_CARD_DEFAULTS.items[sideIndex]?.descStyle || {}),
+        ...(sideItem.descStyle || {}),
+      };
+      return {
+        ...fallbackDescStyle,
+        fontSizeMobile: fallbackDescStyle.fontSizeMobile || "18px",
+      };
+    }
+
+    return {};
   };
 
   const getCultureLetterFallbackStyle = () => {
@@ -628,6 +789,75 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         [styleKey]: { ...(data[styleKey] || {}), [k]: v },
       });
   } else if (
+    widget.type === "comparisonCard" &&
+    (elementKey === "leftDescItems" || elementKey === "rightDescItems")
+  ) {
+    const listKey = elementKey;
+    const currentList =
+      data[listKey] ||
+      (elementKey === "leftDescItems"
+        ? DEFAULT_LEFT_DESC_ITEMS
+        : DEFAULT_RIGHT_DESC_ITEMS);
+    const items =
+      data.items?.length >= 2 ? data.items : COMPARISON_CARD_DEFAULTS.items;
+    const sideIndex = elementKey === "leftDescItems" ? 0 : 1;
+    const sideItem = items[sideIndex] || {};
+    const match =
+      typeof itemId === "string"
+        ? itemId.match(/^(left|right):(\d+)$/)
+        : null;
+    const targetIndex =
+      match &&
+      ((elementKey === "leftDescItems" && match[1] === "left") ||
+        (elementKey === "rightDescItems" && match[1] === "right"))
+        ? Number.parseInt(match[2], 10)
+        : -1;
+
+    styleKey = "descStyle";
+    styleValue = sideItem.descStyle || {};
+
+    if (targetIndex >= 0) {
+      textValue =
+        currentList[targetIndex]?.text || "프로그램 특징 내용 입력";
+      onTextChange = (val) => {
+        const nextList = [...currentList];
+        while (nextList.length <= targetIndex) {
+          nextList.push({ id: `${sideIndex}-${nextList.length}`, text: "" });
+        }
+        nextList[targetIndex] = {
+          ...(nextList[targetIndex] || {
+            id: `${sideIndex}-${targetIndex}`,
+          }),
+          text: val,
+        };
+        updateWidgetData(widget.id, { [listKey]: nextList });
+      };
+    } else {
+      textValue = currentList.map((it: any) => it?.text || "").join("\n");
+      onTextChange = (val) => {
+        const lines = String(val)
+          .replace(/\r\n?/g, "\n")
+          .split("\n");
+        const nextList = currentList.map((it: any, idx: number) => ({
+          ...(it || { id: `${sideIndex}-${idx}` }),
+          text: lines[idx] ?? "",
+        }));
+        updateWidgetData(widget.id, { [listKey]: nextList });
+      };
+    }
+
+    onStyleChange = (k, v) => {
+      const nextItems = [...items];
+      nextItems[sideIndex] = {
+        ...sideItem,
+        descStyle: {
+          ...(sideItem.descStyle || {}),
+          [k]: v,
+        },
+      };
+      updateWidgetData(widget.id, { items: nextItems });
+    };
+  } else if (
     widget.type === "textStructure" &&
     [
       "bojoTitle",
@@ -748,7 +978,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     itemId
   ) {
     // [레이아웃 10 전용] sections10 내부 요소 편집 (number, title, subTitle, desc, checkTitle, checkIcon)
-    const sections10: any[] = data.sections10 || [];
+    const sections10: any[] = data.sections10 || TEXT_STRUCTURE_10_DEFAULT_SECTIONS;
     const idx = parseInt(itemId);
     const section = sections10[idx];
 
@@ -1253,7 +1483,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       }
     }
 
-    let item = findItem(data[arrayName] || [], itemId);
+    const currentItems = getEditorItemArray(arrayName);
+    let item = findItem(currentItems, itemId);
     if (
       !item &&
       typeof itemId === "string" &&
@@ -1261,13 +1492,13 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       Number.isInteger(Number.parseInt(itemId.replace("__idx_", ""), 10))
     ) {
       const fallbackIndex = Number.parseInt(itemId.replace("__idx_", ""), 10);
-      item = (data[arrayName] || [])[fallbackIndex];
+      item = currentItems[fallbackIndex];
     }
     if (item) {
       linkValue = item.link || "";
       onLinkChange = (val) =>
         updateWidgetData(widget.id, {
-          [arrayName]: updateItemInArray(data[arrayName], itemId, "link", val),
+          [arrayName]: updateItemInArray(currentItems, itemId, "link", val),
         });
 
       // Detect the correct property to edit for 'item' or generic element keys
@@ -1553,16 +1784,22 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           if (widget.type === "process") {
             if (targetProp === "title") return "프로그램 특징";
           }
+          if (widget.type === "comparisonCard" && targetProp === "title") {
+            return "프로그램 특징";
+          }
           if (elementKey === "itemTitle" || targetProp === "title")
             return "타이틀명 입력";
           if (elementKey === "itemText" || targetProp === "text")
             return "항목 텍스트";
           return "";
         };
+        const rawItemText = item[targetProp];
         textValue =
-          item[targetProp] !== undefined
-            ? item[targetProp]
-            : getDefaultItemText();
+          widget.type === "comparisonCard"
+            ? rawItemText || getDefaultItemText()
+            : rawItemText !== undefined
+              ? rawItemText
+              : getDefaultItemText();
 
         // Banner 2 Exception: buttonText is in main data, not item
         if (
@@ -1602,16 +1839,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         styleValue = item[styleKey] || {};
         onTextChange = (val) =>
           updateWidgetData(widget.id, {
-            [arrayName]: updateItemInArray(
-              data[arrayName],
-              itemId,
-              targetProp,
-              val,
-            ),
+            [arrayName]: updateItemInArray(currentItems, itemId, targetProp, val),
           });
         onStyleChange = (k, v) =>
           updateWidgetData(widget.id, {
-            [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
+            [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
               ...(item[styleKey] || {}),
               [k]: v,
             }),
@@ -1658,18 +1890,13 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
         onTextChange = (val) =>
           updateWidgetData(widget.id, {
-            [arrayName]: updateItemInArray(
-              data[arrayName],
-              itemId,
-              badgeProp,
-              val,
-            ),
+            [arrayName]: updateItemInArray(currentItems, itemId, badgeProp, val),
           });
         onStyleChange = (k, v) => {
-          const currentItem = findItem(data[arrayName] || [], itemId!);
+          const currentItem = findItem(currentItems, itemId!);
           const currentStyle = currentItem?.[styleKey] || {};
           updateWidgetData(widget.id, {
-            [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
+            [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
               ...currentStyle,
               [k]: v,
             }),
@@ -1696,10 +1923,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 ? "desc1"
                 : elementKey === "itemDesc2"
                   ? "desc2"
-                  : elementKey === "itemDesc3"
-                    ? "desc3"
-                    : "desc";
-        textValue = item[targetProp] || "";
+                : elementKey === "itemDesc3"
+                  ? "desc3"
+                  : "desc";
+        textValue =
+          item[targetProp] ||
+          (targetProp === "subTitle" ? "( 서브타이틀 )" : "");
         styleKey =
           widget.type === "video" && targetProp === "desc"
             ? "itemDescStyle"
@@ -1711,16 +1940,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         styleValue = item[styleKey] || {}; // Ensure existing style is read
         onTextChange = (val) =>
           updateWidgetData(widget.id, {
-            [arrayName]: updateItemInArray(
-              data[arrayName],
-              itemId,
-              targetProp,
-              val,
-            ),
+            [arrayName]: updateItemInArray(currentItems, itemId, targetProp, val),
           });
         onStyleChange = (k, v) =>
           updateWidgetData(widget.id, {
-            [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
+            [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
               ...(item[styleKey] || {}),
               [k]: v,
             }),
@@ -1783,7 +2007,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         onTextChange = (val) =>
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(
-              data[arrayName],
+              currentItems,
               itemId,
               mediaPropName,
               val,
@@ -1791,7 +2015,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           });
         onStyleChange = (k, v) =>
           updateWidgetData(widget.id, {
-            [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
+            [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
               ...(item[styleKey] || {}),
               [k]: v,
             }),
@@ -1976,6 +2200,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   if (widget.type === "imageCard" && imageCardFallbackStyle) {
     styleValue = { ...imageCardFallbackStyle, ...styleValue };
   }
+  const iconCardFallbackStyle = getIconCardFallbackStyle();
+  if (widget.type === "iconCard" && iconCardFallbackStyle) {
+    styleValue = { ...iconCardFallbackStyle, ...styleValue };
+  }
   const cultureLetterFallbackStyle = getCultureLetterFallbackStyle();
   if (widget.type === "cultureLetter" && cultureLetterFallbackStyle) {
     styleValue = { ...cultureLetterFallbackStyle, ...styleValue };
@@ -1983,6 +2211,29 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   const titleBannerFallbackStyle = getTitleBannerFallbackStyle();
   if (widget.type === "titleBanner" && titleBannerFallbackStyle) {
     styleValue = { ...titleBannerFallbackStyle, ...styleValue };
+  }
+  if (
+    (widget.type === "process" || widget.type === "processCard") &&
+    elementKey === "subTitle" &&
+    styleValue?.fontSize === "18px" &&
+    !styleValue?.fontSizeMobile &&
+    styleValue?.fontWeight == null &&
+    styleValue?.color == null
+  ) {
+    const restStyleValue = { ...styleValue };
+    delete restStyleValue.fontSize;
+    styleValue = restStyleValue;
+  }
+  const processFallbackStyle = getProcessFallbackStyle();
+  if (
+    (widget.type === "process" || widget.type === "processCard") &&
+    processFallbackStyle
+  ) {
+    styleValue = { ...processFallbackStyle, ...styleValue };
+  }
+  const comparisonCardFallbackStyle = getComparisonCardFallbackStyle();
+  if (widget.type === "comparisonCard" && comparisonCardFallbackStyle) {
+    styleValue = { ...comparisonCardFallbackStyle, ...styleValue };
   }
 
   const isImageAreaMediaEditor =

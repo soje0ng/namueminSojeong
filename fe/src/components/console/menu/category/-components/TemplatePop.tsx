@@ -71,11 +71,7 @@ const convertPageDataToHtml = (data: PageData): string => {
       const Renderer = RENDERER_MAP[widget.type];
       if (Renderer) {
         const html = ReactDOMServer.renderToStaticMarkup(
-          <Renderer
-            widget={widget}
-            viewport="desktop"
-            onElementSelect={() => {}}
-          />,
+          <Renderer widget={widget} viewport="desktop" />,
         );
         htmlParts.push(html);
       }
@@ -190,7 +186,7 @@ export default function TemplatePop({
               </div>
 
               {/* Preview 콘텐츠 */}
-              <main className="flex-1 pointer-events-none select-none">
+              <main className="flex-1">
                 {currentData.sections.map((section) => (
                   <section key={section.id} className="relative w-full">
                     {section.widgets.map((widget) => (

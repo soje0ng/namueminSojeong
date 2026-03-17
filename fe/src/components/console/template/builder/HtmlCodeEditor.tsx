@@ -120,11 +120,7 @@ export const HtmlCodeEditor: React.FC<HtmlCodeEditorProps> = ({
     if (!Renderer) return "이 위젯은 HTML 변환을 지원하지 않습니다.";
     try {
       let rawHtml = ReactDOMServer.renderToStaticMarkup(
-        <Renderer
-          widget={widget}
-          viewport="desktop"
-          onElementSelect={() => {}}
-        />,
+        <Renderer widget={widget} viewport="desktop" />,
       );
       // React 18+에서 자동 생성되는 preload link 태그 제거
       rawHtml = rawHtml.replace(/<link\s+rel="preload"[^>]*>/gi, "");

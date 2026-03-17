@@ -104,15 +104,7 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
                 className={`text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all cursor-text break-keep`}
-                style={{
-                  ...getFaqTextStyle(w.data.subTitleStyle),
-                  ...(viewport === "mobile" &&
-                  (w.data.subTitleStyle?.fontSize === "20px" ||
-                    w.data.subTitleStyle?.fontSize === 20) &&
-                  !w.data.subTitleStyle?.fontSizeMobile
-                    ? { fontSize: "18px" }
-                    : {}),
-                }}
+                style={getFaqTextStyle(w.data.subTitleStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("subTitle");
@@ -134,15 +126,7 @@ export const FaqRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.desc || "이민 프로그램명 입력"}
                 className={`text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all cursor-text break-keep`}
-                style={{
-                  ...getFaqTextStyle(w.data.descStyle),
-                  ...(viewport === "mobile" &&
-                  (w.data.descStyle?.fontSize === "20px" ||
-                    w.data.descStyle?.fontSize === 20) &&
-                  !w.data.descStyle?.fontSizeMobile
-                    ? { fontSize: "18px" }
-                    : {}),
-                }}
+                style={getFaqTextStyle(w.data.descStyle)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("desc");
