@@ -115,6 +115,31 @@ export const getElementStyle = (
   return result;
 };
 
+export const mergeTextStyleWithFallback = (
+  style?: ElementStyle,
+  fallbackStyle: Partial<ElementStyle> = {},
+) => {
+  const mergedStyle = {
+    ...fallbackStyle,
+    ...(style || {}),
+  } as ElementStyle;
+
+  const hasDesktopFontSize =
+    style?.fontSize !== undefined && style.fontSize !== "";
+  const hasMobileFontSize =
+    style?.fontSizeMobile !== undefined && style.fontSizeMobile !== "";
+
+  if ((mergedStyle as any).fontSizeMobile === "") {
+    delete (mergedStyle as any).fontSizeMobile;
+  }
+
+  if (hasDesktopFontSize && !hasMobileFontSize) {
+    delete (mergedStyle as any).fontSizeMobile;
+  }
+
+  return mergedStyle;
+};
+
 /**
  * getImageUrl helper to handle responsive image sources
  */
@@ -224,6 +249,27 @@ export const SafeHtml: React.FC<{
 }) => {
   const Tag = as as any;
   const isEditMode = !!onDoubleClick;
+  const stripInlineTypographyStyles = (sourceHtml?: string) => {
+    if (!sourceHtml || typeof sourceHtml !== "string") return "";
+
+    return sourceHtml
+      .replace(/style=(['"])(.*?)\1/gi, (_match, quote, styleText) => {
+        const cleanedStyle = String(styleText)
+          .split(";")
+          .map((rule) => rule.trim())
+          .filter(Boolean)
+          .filter(
+            (rule) =>
+              !/^(font-size|font-weight|line-height|letter-spacing|font-family)\s*:/i.test(
+                rule,
+              ),
+          )
+          .join("; ");
+
+        return cleanedStyle ? `style=${quote}${cleanedStyle}${quote}` : "";
+      })
+      .replace(/\sstyle=(['"])\1/gi, "");
+  };
 
   // All hooks must be called before any conditional returns (React hooks rules)
   // Check if content is empty (empty string, only whitespace, or empty HTML tags)
@@ -241,7 +287,7 @@ export const SafeHtml: React.FC<{
   // Remove inline styles from the HTML content so that the outer style prop takes precedence
   const cleanHtml = React.useMemo(() => {
     if (!html || typeof html !== "string") return "";
-    return html;
+    return stripInlineTypographyStyles(html);
   }, [html]);
 
   // Edit mode + empty content = show placeholder

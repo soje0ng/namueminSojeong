@@ -190,6 +190,13 @@ const normalizeImageCardLayout = (layout: any): string => {
   return raw.startsWith("layout") ? raw.replace(/^layout/, "") : raw;
 };
 
+const getImageCardFeatureStorageKey = (layout: string): string => {
+  if (layout === "3") return "layout3Features";
+  if (layout === "4") return "layout4Features";
+  if (layout === "6") return "layout6Features";
+  return "features";
+};
+
 export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   widget,
   onElementSelect,
@@ -341,10 +348,16 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
   const getItemFeatureRows = (item: any) => {
     const defaultLabel = (idx: number) =>
       `${item?.featureLabel || "특징"} ${String(idx + 1).padStart(2, "0")}`;
+    const featureStorageKey = getImageCardFeatureStorageKey(layout);
+    const storedFeatures = Array.isArray(item?.[featureStorageKey])
+      ? item[featureStorageKey]
+      : Array.isArray(item?.features)
+        ? item.features
+        : [];
 
-    if (Array.isArray(item.features) && item.features.length > 0) {
+    if (storedFeatures.length > 0) {
       let idx = 0;
-      return item.features.flatMap((it: any, featureIdx: number) => {
+      return storedFeatures.flatMap((it: any) => {
         if (!it) {
           const empty = {
             label: defaultLabel(idx),
@@ -355,38 +368,27 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
         }
 
         if (typeof it === "string") {
-          const lines = parseFeatureLines(it);
-          const sourceLines = lines.length ? lines : [""];
-
-          return sourceLines.map((line: string) => {
-            const row = {
-              label: defaultLabel(idx),
-              value: line,
-              labelStyle: undefined,
-              valueStyle: undefined,
-            };
-            idx += 1;
-            return row;
-          });
+          const row = {
+            label: defaultLabel(idx),
+            value: it,
+            labelStyle: undefined,
+            valueStyle: undefined,
+          };
+          idx += 1;
+          return [row];
         }
 
         if (typeof it !== "object") return [];
 
-        const lines = parseFeatureLines(it.value);
-        const normalizedLines = lines.length ? lines : [""];
         const baseLabel = (it.label || "").trim();
-
-        return normalizedLines.map((line: string, lineIdx: number) => {
-          const row = {
-            label:
-              lineIdx > 0 ? defaultLabel(idx) : baseLabel || defaultLabel(idx),
-            value: line,
-            labelStyle: it.labelStyle,
-            valueStyle: it.valueStyle,
-          };
-          idx += 1;
-          return row;
-        });
+        const row = {
+          label: baseLabel || defaultLabel(idx),
+          value: typeof it.value === "string" ? it.value : "",
+          labelStyle: it.labelStyle,
+          valueStyle: it.valueStyle,
+        };
+        idx += 1;
+        return [row];
       });
     }
 
@@ -468,8 +470,11 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
                   key={item.id || idx}
-                  className={`flex-1 inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
-                  style={getItemCardBackgroundStyle(item.itemStyle)}
+                  className={`flex-1 inline-flex flex-col justify-start items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer ${getBorderRadiusClass(viewport, "rounded")} transition-all`}
+                  style={{
+                    ...getItemCardBackgroundStyle(item.itemStyle),
+                    flex: "1 0 0",
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     selectCardItem(item.id ?? `__idx_${idx}`);
@@ -578,7 +583,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
           {/* Grid Area */}
           <div className="self-stretch flex flex-col justify-start items-start gap-6 w-full">
             <div
-              className={`grid w-full ${w.data.rowGap || w.style?.gap ? "" : "gap-10"}`}
+              className={`grid w-full items-start ${w.data.rowGap || w.style?.gap ? "" : "gap-10"}`}
               style={getResponsiveItemGridStyle({
                 gap:
                   viewport === "mobile"
@@ -721,7 +726,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               })}
             >
               {(w.data.items || []).map((item: any, idx: number) => {
-                // desc 필드를 \n이나 <br/> 기준으로 나눠서 특징 리스트 생성 (기본 3개)
+                // features가 있으면 각 항목을 그대로 쓰고, 없을 때만 desc를 fallback으로 분리
                 const featureRows = getItemFeatureRows(item);
 
                 return (
@@ -845,7 +850,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       <div className="self-stretch flex flex-col justify-start items-start gap-2">
                         <div className="self-stretch flex flex-col gap-2">
                           {featureRows.length > 0 ? (
-                            featureRows.slice(0, 3).map(
+                            featureRows.map(
                               (
                                 feature: {
                                   label: string;
@@ -989,7 +994,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
       viewport === "desktop"
         ? Math.min(Math.max(normalizedItemsPerRow, 1), 2)
         : 1;
-    const isLayout4Stacked = viewport !== "desktop";
+    const isLayout4Stacked = viewport === "mobile";
 
     return (
       <section style={style} className="w-full">
@@ -1051,7 +1056,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               return (
                 <div
                   key={item.id || idx}
-                  className={`flex-1 ${isLayout4Stacked ? "min-w-0 flex-col" : "min-w-[300px] xl:min-w-[660px] flex-col xl:flex-row"} outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer rounded transition-all bg-white`}
+                  className={`self-stretch outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex justify-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all bg-white ${isLayout4Stacked ? "min-w-0 flex-col items-center" : "min-w-[660px] items-stretch"}`}
                   style={getItemCardBackgroundStyle(item.itemStyle)}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1063,10 +1068,13 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       item.id ?? `__idx_${idx}`,
                     )
                   }
-                  >
+                >
                   <div
-                    className={`flex-1 relative overflow-hidden w-full ${isLayout4Stacked ? "" : "xl:w-auto"} shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center`}
-                    style={getItemImageFrameStyle(item.imageStyle)}
+                    className={`relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all ${isLayout4Stacked ? "self-stretch flex justify-center items-center" : "flex-1 self-stretch min-h-72"}`}
+                    style={{
+                      ...getItemImageFrameStyle(item.imageStyle),
+                      ...(isLayout4Stacked ? { width: "100%" } : {}),
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("image", item.id);
@@ -1077,10 +1085,14 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                         e.stopPropagation();
                         onElementSelect?.("image", item.id || idx.toString());
                       }}
-                      className="w-full object-cover"
+                      className="w-full h-full object-cover"
                       url={item.image || item.imageUrl}
                       alt="card_image"
-                      style={getItemImageStyle(item.imageStyle)}
+                      style={{
+                        ...getItemImageStyle(item.imageStyle),
+                        width: "100%",
+                        height: "100%",
+                      }}
                     />
                     <div className="p-2 left-0 top-0 absolute inline-flex justify-start items-center gap-1">
                       {!item.badgeStyle1?.isHidden && (
@@ -1121,7 +1133,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     </div>
                   </div>
                   <div
-                    className={`flex-1 ${viewport === "mobile" ? "px-4 py-3" : "p-6"} bg-white inline-flex flex-col justify-start items-start ${viewport === "mobile" ? "gap-2" : "gap-3"} w-full ${isLayout4Stacked ? "" : "xl:w-auto"}`}
+                    className={`bg-white inline-flex flex-col items-start ${isLayout4Stacked ? "w-full px-4 py-3 justify-start gap-2" : "flex-1 self-stretch p-6 justify-center gap-3"}`}
                     style={getItemCardBackgroundStyle(item.itemStyle)}
                   >
                     <div className="flex flex-col justify-start items-start">
@@ -1161,7 +1173,7 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                     <div className="self-stretch flex flex-col justify-start items-start gap-2">
                       <div className="self-stretch flex flex-col gap-2">
                         {featureRows.length > 0 ? (
-                          featureRows.slice(0, 3).map(
+                          featureRows.map(
                             (
                               feature: {
                                 label: string;
@@ -1660,7 +1672,6 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                             className={`self-stretch ${isLayout6Mobile ? "pt-3 inline-flex justify-center items-center gap-2 flex-wrap content-center" : isLayout6Tablet ? "pt-5 inline-flex justify-center items-center gap-2 flex-wrap content-center" : "pt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4"}`}
                           >
                             {featureRows
-                              .slice(0, 6)
                               .map((feature: any, fIdx: number) =>
                                 (feature.valueStyle?.isHidden ??
                                 item.descStyle?.isHidden) ? null : (

@@ -73,8 +73,8 @@ export interface PropertyPanelProps {
     arrayName?: string,
   ) => void;
   addTableCol: (widget: Widget) => void;
-  removeTableRow: (widget: Widget) => void;
-  removeTableCol: (widget: Widget) => void;
+  removeTableRow: (widget: Widget, rowIndex?: number) => void;
+  removeTableCol: (widget: Widget, columnIndex?: number) => void;
   pushHistory: () => void;
   handleItemReorder: (
     widgetId: string,
@@ -178,6 +178,8 @@ const INFO_BANNER_LAYOUT_FIELDS = [
 
 const CULTURE_LETTER_LAYOUT_STATE_KEY = "__layoutStateMap";
 const CULTURE_LETTER_LAYOUT_FIELDS = [
+  "sectionPaddingTop",
+  "sectionPaddingBottom",
   "backgroundImage",
   "backgroundImageStyle",
   // Layout 1 - 컬처레터 헤더 좌측정렬
@@ -327,6 +329,8 @@ const getCultureLetterDefaultState = (layout: string) => {
   return {
     ...pickCultureLetterLayoutState(CULTURE_LETTER_DEFAULTS),
     layout,
+    sectionPaddingTop: undefined,
+    sectionPaddingBottom: undefined,
   };
 };
 
@@ -756,6 +760,85 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     listArrayName = null;
   }
 
+  const selectedTableCoordinates =
+    widget.type === "table" &&
+    selectedElementKey === "tableCell" &&
+    selectedItemId &&
+    selectedItemId.includes("-")
+      ? (() => {
+          const [rowText, colText] = selectedItemId.split("-");
+          const rowIndex = Number.parseInt(rowText, 10);
+          const colIndex = Number.parseInt(colText, 10);
+          if (!Number.isInteger(rowIndex) || !Number.isInteger(colIndex)) {
+            return null;
+          }
+          return { rowIndex, colIndex };
+        })()
+      : null;
+  const selectedTableRowIndex =
+    selectedTableCoordinates?.rowIndex ?? null;
+  const selectedTableColIndex =
+    widget.type === "table"
+      ? selectedElementKey === "tableHeader"
+        ? (() => {
+            const index = Number.parseInt(selectedItemId || "", 10);
+            return Number.isInteger(index) && index >= 0 ? index : null;
+          })()
+        : selectedTableCoordinates
+          ? (widget.data as any).variant === "comparison"
+            ? selectedTableCoordinates.colIndex > 0
+              ? selectedTableCoordinates.colIndex - 1
+              : null
+            : selectedTableCoordinates.colIndex
+          : null
+      : null;
+  const tableRowDeleteLabel =
+    selectedTableRowIndex !== null ? "- 선택 행 삭제" : "- 행 삭제";
+  const tableColDeleteLabel =
+    selectedTableColIndex !== null ? "- 선택 열 삭제" : "- 열 삭제";
+  const isTableElementSelected =
+    widget.type === "table" &&
+    ["tableHeader", "tableCell", "tableHeaderGubun"].includes(
+      selectedElementKey || "",
+    );
+  const renderTableStructureControls = () => (
+    <div className="space-y-4">
+      <h4 className="text-sm font-bold text-gray-700 uppercase flex items-center gap-2">
+        구조 관리
+      </h4>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => addNewItem(widget)}
+          className="bg-blue-50 text-blue-600 border border-blue-200 p-2 rounded text-xs font-bold hover:bg-blue-100"
+        >
+          + 행 추가
+        </button>
+        <button
+          onClick={() => addTableCol(widget)}
+          className="bg-blue-50 text-blue-600 border border-blue-200 p-2 rounded text-xs font-bold hover:bg-blue-100"
+        >
+          + 열 추가
+        </button>
+        <button
+          onClick={() =>
+            removeTableRow(widget, selectedTableRowIndex ?? undefined)
+          }
+          className="bg-red-50 text-red-600 border border-red-200 p-2 rounded text-xs font-bold hover:bg-red-100"
+        >
+          {tableRowDeleteLabel}
+        </button>
+        <button
+          onClick={() =>
+            removeTableCol(widget, selectedTableColIndex ?? undefined)
+          }
+          className="bg-red-50 text-red-600 border border-red-200 p-2 rounded text-xs font-bold hover:bg-red-100"
+        >
+          {tableColDeleteLabel}
+        </button>
+      </div>
+    </div>
+  );
+
   // 텍스트 구조 레이아웃 4 케이스 내부 항목 관리용 특별 키
   if (
     widget.type === "textStructure" &&
@@ -792,6 +875,22 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
     widget.type === "cultureLetter"
       ? String((widget.data as any).layout || "1")
       : null;
+  const cultureLetterLayoutStateMap =
+    widget.type === "cultureLetter"
+      ? (widget.data as any)[CULTURE_LETTER_LAYOUT_STATE_KEY] || null
+      : null;
+  const cultureLetterPaddingTopValue =
+    widget.type === "cultureLetter"
+      ? (widget.data as any).sectionPaddingTop ??
+        (!cultureLetterLayoutStateMap ? widget.style?.paddingTop : undefined)
+      : widget.style?.paddingTop;
+  const cultureLetterPaddingBottomValue =
+    widget.type === "cultureLetter"
+      ? (widget.data as any).sectionPaddingBottom ??
+        (!cultureLetterLayoutStateMap
+          ? widget.style?.paddingBottom
+          : undefined)
+      : widget.style?.paddingBottom;
   const cultureLetterBackgroundFields =
     cultureLetterLayout && ["1", "2", "3"].includes(cultureLetterLayout)
       ? getCultureLetterBackgroundFields(cultureLetterLayout)
@@ -1190,8 +1289,15 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                             currentData[CULTURE_LETTER_LAYOUT_STATE_KEY] || {},
                           );
 
-                          stateMap[currentLayout] =
-                            pickCultureLetterLayoutState(currentData);
+                          stateMap[currentLayout] = {
+                            ...pickCultureLetterLayoutState(currentData),
+                            sectionPaddingTop:
+                              currentData.sectionPaddingTop ??
+                              widget.style?.paddingTop,
+                            sectionPaddingBottom:
+                              currentData.sectionPaddingBottom ??
+                              widget.style?.paddingBottom,
+                          };
 
                           const nextState =
                             stateMap[newLayout] ||
@@ -1243,6 +1349,16 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                           }
                         }
                         updateWidgetData(widget.id, updates);
+                        if (
+                          widget.type === "stripBanner" &&
+                          newLayout === "3"
+                        ) {
+                          updateWidgetStyle(widget.id, {
+                            paddingTop: "0px",
+                            paddingBottom: "0px",
+                            backgroundColor: "#0B1D48",
+                          });
+                        }
                       },
                     );
                   }}
@@ -1272,7 +1388,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                           : widget.type === "imageArea"
                                             ? 4
                                             : widget.type === "stripBanner"
-                                              ? 2
+                                              ? 3
                                               : 1,
                   }).map((_, i) => (
                     <option key={i + 1} value={`${i + 1}`}>
@@ -1810,6 +1926,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               </div>
             )}
 
+            {/* codeSection is now handled by the shared HtmlCodeEditor at the end */}
+
             {widget.type !== "codeSection" && (
               <div className="space-y-6">
                 {cultureLetterBackgroundFields ? (
@@ -2007,11 +2125,14 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     (widget.data as any).variant === "banner3"
                                   ? "#21568E"
                                   : widget.type === "stripBanner" &&
-                                      (widget.data as any).layout === "2"
-                                    ? "#01355F"
-                                    : widget.type === "stripBanner"
-                                      ? "#295E92"
-                                      : "#ffffff")
+                                      (widget.data as any).layout === "3"
+                                    ? "#0B1D48"
+                                    : widget.type === "stripBanner" &&
+                                        (widget.data as any).layout === "2"
+                                      ? "#01355F"
+                                      : widget.type === "stripBanner"
+                                        ? "#295E92"
+                                        : "#ffffff")
                           }
                           onChange={(e) =>
                             updateWidgetStyle(widget.id, {
@@ -2031,11 +2152,14 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     (widget.data as any).variant === "banner3"
                                   ? "#21568E"
                                   : widget.type === "stripBanner" &&
-                                      (widget.data as any).layout === "2"
-                                    ? "#01355F"
-                                    : widget.type === "stripBanner"
-                                      ? "#295E92"
-                                      : "#ffffff")}
+                                      (widget.data as any).layout === "3"
+                                    ? "#0B1D48"
+                                    : widget.type === "stripBanner" &&
+                                        (widget.data as any).layout === "2"
+                                      ? "#01355F"
+                                      : widget.type === "stripBanner"
+                                        ? "#295E92"
+                                        : "#ffffff")}
                         </span>
                       </div>
                     ) : (
@@ -2124,9 +2248,25 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                       type="text"
                       placeholder="Top"
                       className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-center"
-                      value={getSpacingInputValue(widget.style?.paddingTop)}
+                      value={getSpacingInputValue(cultureLetterPaddingTopValue)}
                       onChange={(e) => {
                         const val = e.target.value;
+                        if (widget.type === "cultureLetter") {
+                          if (val === "") {
+                            updateWidgetData(widget.id, {
+                              sectionPaddingTop: undefined,
+                            });
+                          } else if (!isNaN(Number(val)) && val.trim() !== "") {
+                            updateWidgetData(widget.id, {
+                              sectionPaddingTop: val + "px",
+                            });
+                          } else {
+                            updateWidgetData(widget.id, {
+                              sectionPaddingTop: val,
+                            });
+                          }
+                          return;
+                        }
                         if (val === "")
                           updateWidgetStyle(widget.id, { paddingTop: 0 });
                         else if (!isNaN(Number(val)) && val.trim() !== "")
@@ -2140,9 +2280,25 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                       type="text"
                       placeholder="Bottom"
                       className="w-full bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-center"
-                      value={getSpacingInputValue(widget.style?.paddingBottom)}
+                      value={getSpacingInputValue(cultureLetterPaddingBottomValue)}
                       onChange={(e) => {
                         const val = e.target.value;
+                        if (widget.type === "cultureLetter") {
+                          if (val === "") {
+                            updateWidgetData(widget.id, {
+                              sectionPaddingBottom: undefined,
+                            });
+                          } else if (!isNaN(Number(val)) && val.trim() !== "") {
+                            updateWidgetData(widget.id, {
+                              sectionPaddingBottom: val + "px",
+                            });
+                          } else {
+                            updateWidgetData(widget.id, {
+                              sectionPaddingBottom: val,
+                            });
+                          }
+                          return;
+                        }
                         if (val === "")
                           updateWidgetStyle(widget.id, { paddingBottom: 0 });
                         else if (!isNaN(Number(val)) && val.trim() !== "")
@@ -2349,32 +2505,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     )}
 
                   {widget.type === "table" ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => addNewItem(widget)}
-                        className="bg-blue-50 text-blue-600 border border-blue-200 p-2 rounded text-xs font-bold hover:bg-blue-100"
-                      >
-                        + 행 추가
-                      </button>
-                      <button
-                        onClick={() => addTableCol(widget)}
-                        className="bg-blue-50 text-blue-600 border border-blue-200 p-2 rounded text-xs font-bold hover:bg-blue-100"
-                      >
-                        + 열 추가
-                      </button>
-                      <button
-                        onClick={() => removeTableRow(widget)}
-                        className="bg-red-50 text-red-600 border border-red-200 p-2 rounded text-xs font-bold hover:bg-red-100"
-                      >
-                        - 행 삭제
-                      </button>
-                      <button
-                        onClick={() => removeTableCol(widget)}
-                        className="bg-red-50 text-red-600 border border-red-200 p-2 rounded text-xs font-bold hover:bg-red-100"
-                      >
-                        - 열 삭제
-                      </button>
-                    </div>
+                    renderTableStructureControls()
                   ) : listArrayName ? (
                     <>
                       {/* 카드 전체 배열 설정 (구조관리 섹션 상단) */}
@@ -4249,17 +4380,39 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     </div>
                   )}
 
-                  <HtmlCodeEditor
-                    widget={widget}
-                    pageData={pageData}
-                    selectedSectionId={selectedSectionId}
-                    selectedWidgetId={selectedWidgetId}
-                    setPageData={setPageData}
-                    pushHistory={pushHistory}
-                  />
                 </div>
               </>
             )}
+
+            <HtmlCodeEditor
+              widget={widget}
+              pageData={pageData}
+              selectedSectionId={selectedSectionId}
+              selectedWidgetId={selectedWidgetId}
+              setPageData={setPageData}
+              pushHistory={pushHistory}
+            />
+          </div>
+        )}
+
+        {isTableElementSelected && (
+          <div className={`space-y-4${!isSidebarOpen ? " hidden" : ""}`}>
+            <div className="flex items-center gap-2 border-b border-gray-200 pb-2 mb-1">
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="hover:bg-gray-100 p-1 rounded transition-colors shrink-0"
+              >
+                {isSidebarOpen ? (
+                  <ChevronRight size={16} className="text-blue-500" />
+                ) : (
+                  <ChevronLeft size={16} className="text-blue-500" />
+                )}
+              </button>
+              <h3 className="font-bold text-sm text-gray-900 truncate">
+                {getWidgetName(widget.type)}
+              </h3>
+            </div>
+            {renderTableStructureControls()}
           </div>
         )}
 

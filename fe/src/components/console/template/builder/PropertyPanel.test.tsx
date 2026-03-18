@@ -64,8 +64,8 @@ export interface PropertyPanelProps {
     arrayName?: string,
   ) => void;
   addTableCol: (widget: Widget) => void;
-  removeTableRow: (widget: Widget) => void;
-  removeTableCol: (widget: Widget) => void;
+  removeTableRow: (widget: Widget, rowIndex?: number) => void;
+  removeTableCol: (widget: Widget, columnIndex?: number) => void;
   pushHistory: () => void;
   handleItemReorder: (
     widgetId: string,

@@ -64,7 +64,7 @@ const convertPageDataToHtml = (data: PageData): string => {
   data.sections.forEach((section) => {
     section.widgets.forEach((widget: Widget) => {
       if (widget.type === "codeSection") {
-        htmlParts.push((widget as any).data.code);
+        htmlParts.push((widget.data as any).code || "");
         return;
       }
 
@@ -253,6 +253,14 @@ export default function TemplatePop({
                         )}
                         {widget.type === "cultureLetter" && (
                           <CultureLetterRenderer widget={widget as any} />
+                        )}
+                        {widget.type === "codeSection" && (
+                          <div
+                            className="w-full"
+                            dangerouslySetInnerHTML={{
+                              __html: (widget.data as any).code || "",
+                            }}
+                          />
                         )}
                       </div>
                     ))}

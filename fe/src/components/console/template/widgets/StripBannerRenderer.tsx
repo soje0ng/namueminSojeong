@@ -72,6 +72,68 @@ export const STRIP_BANNER_DEFAULTS = {
     lineHeight: "32px",
   },
   layout2ImageUrl: "/images/placeholder/strip-banr-layout2.png",
+  // Layout 3 defaults
+  layout3LeftImageUrl: "/images/placeholder/strip_banner_03_left.png",
+  layout3RightImageUrl: "/images/placeholder/strip_banner_03_right.png",
+  layout3LeftTitle: "9월 30일 이전 접수",
+  layout3LeftTitleStyle: {
+    fontSize: "36px",
+    fontSizeMobile: "20px",
+    fontWeight: "700",
+    color: "#ffffff",
+    lineHeight: "150%",
+    letterSpacing: "-0.72px",
+    backgroundColor:
+      "linear-gradient(172.16deg, #285DE1 2.89%, #59A1B9 48.56%, #44A075 100%)",
+  },
+  layout3RightTitle: "9월 30일 이후 접수",
+  layout3RightTitleStyle: {
+    fontSize: "36px",
+    fontSizeMobile: "20px",
+    fontWeight: "700",
+    color: "#131416",
+    lineHeight: "150%",
+    letterSpacing: "-0.72px",
+    backgroundColor: "#59A1B9",
+  },
+  layout3LeftSubText: "제도가 바뀌어도",
+  layout3LeftSubTextStyle: {
+    fontSize: "24px",
+    fontSizeMobile: "16px",
+    fontWeight: "400",
+    color: "#131416",
+    lineHeight: "150%",
+    letterSpacing: "-0.48px",
+    backgroundColor: "#ffffff",
+  },
+  layout3LeftMainText: "100% 보호",
+  layout3LeftMainTextStyle: {
+    fontSize: "40px",
+    fontSizeMobile: "22px",
+    fontWeight: "700",
+    color: "#131416",
+    lineHeight: "150%",
+    letterSpacing: "-0.8px",
+  },
+  layout3RightSubText: "투자금 인상・제도 변경・대기기간",
+  layout3RightSubTextStyle: {
+    fontSize: "24px",
+    fontSizeMobile: "16px",
+    fontWeight: "400",
+    color: "#ffffff",
+    lineHeight: "150%",
+    letterSpacing: "-0.48px",
+    backgroundColor: "#295E92",
+  },
+  layout3RightMainText: "증가 가능성",
+  layout3RightMainTextStyle: {
+    fontSize: "40px",
+    fontSizeMobile: "22px",
+    fontWeight: "700",
+    color: "#ffffff",
+    lineHeight: "150%",
+    letterSpacing: "-0.8px",
+  },
 };
 
 export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
@@ -133,7 +195,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
     const textContainerStyle: React.CSSProperties =
       viewport === "tablet" || viewport === "mobile"
         ? { gap: "8px", paddingTop: 0, paddingBottom: 0 }
-        : {};
+        : { paddingLeft: "80px" };
 
     // Image container: tablet = 200×133px flow; mobile = full-width on top
     const imageContainerStyle: React.CSSProperties =
@@ -697,7 +759,15 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               />
             </div>
-            <div className="flex-1 self-stretch p-8 xl:p-14 inline-flex flex-col justify-between items-start w-full">
+            <div
+              className="flex-1 self-stretch inline-flex flex-col justify-between items-start w-full"
+              style={{
+                paddingTop: "56px",
+                paddingBottom: "56px",
+                paddingRight: "56px",
+                paddingLeft: "80px",
+              }}
+            >
               <div className="self-stretch flex flex-col justify-center items-start w-full">
                 {!data.layout2SubTitleStyle?.isHidden && (
                   <SafeHtml
@@ -771,6 +841,284 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
               </div>
             </div>
           </div>
+        </div>
+      </section>
+    );
+
+    if (data.targetUrl) {
+      return (
+        <a
+          href={data.targetUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full cursor-pointer hover:opacity-95 transition-opacity"
+        >
+          {content}
+        </a>
+      );
+    }
+    return content;
+  }
+
+  // Layout 3: 2-column cards (image + title bar + text area)
+  if (layout === "3") {
+    const defaultBg3Color = "#0B1D48";
+    const bg3Color =
+      widget.style?.backgroundColor &&
+      widget.style.backgroundColor !== "#295E92"
+        ? widget.style.backgroundColor
+        : defaultBg3Color;
+
+    const leftTitleStyle =
+      data.layout3LeftTitleStyle || STRIP_BANNER_DEFAULTS.layout3LeftTitleStyle;
+    const rightTitleStyle =
+      data.layout3RightTitleStyle ||
+      STRIP_BANNER_DEFAULTS.layout3RightTitleStyle;
+    const leftSubTextStyle =
+      data.layout3LeftSubTextStyle ||
+      STRIP_BANNER_DEFAULTS.layout3LeftSubTextStyle;
+    const rightSubTextStyle =
+      data.layout3RightSubTextStyle ||
+      STRIP_BANNER_DEFAULTS.layout3RightSubTextStyle;
+    const leftMainTextStyle =
+      data.layout3LeftMainTextStyle ||
+      STRIP_BANNER_DEFAULTS.layout3LeftMainTextStyle;
+    const rightMainTextStyle =
+      data.layout3RightMainTextStyle ||
+      STRIP_BANNER_DEFAULTS.layout3RightMainTextStyle;
+
+    // Helper: background 스타일 (gradient 문자열이면 background, 아니면 backgroundColor)
+    const getBgStyle = (bgValue?: string): React.CSSProperties => {
+      if (!bgValue) return {};
+      if (bgValue.startsWith("linear-gradient") || bgValue.startsWith("radial-gradient")) {
+        return { background: bgValue };
+      }
+      return { backgroundColor: bgValue };
+    };
+
+    const isMobile = viewport === "mobile";
+    const isTablet = viewport === "tablet";
+
+    const outerPadding: React.CSSProperties = isMobile
+      ? { padding: "32px 20px" }
+      : isTablet
+        ? { padding: "40px 40px" }
+        : { padding: "60px 280px" };
+
+    const cardGap = isMobile ? "20px" : isTablet ? "20px" : "40px";
+    const innerGap = isMobile ? "8px" : "16px";
+    const titleFontSize = isMobile ? "20px" : "36px";
+    const titlePadding = isMobile ? "12px" : "16px";
+    const subFontSize = isMobile ? "16px" : "24px";
+    const mainFontSize = isMobile ? "22px" : "40px";
+    const textPadding = isMobile ? "16px" : "24px";
+    const borderRadius = isMobile ? "8px" : "16px";
+
+    const renderCard = (
+      side: "left" | "right",
+      imageUrl: string,
+      imageKey: string,
+      titleText: string,
+      titleKey: string,
+      titleStyleObj: any,
+      subText: string,
+      subKey: string,
+      subStyleObj: any,
+      mainText: string,
+      mainKey: string,
+      mainStyleObj: any,
+    ) => (
+      <div
+        style={{
+          flex: isMobile ? "unset" : "1 0 0",
+          display: "flex",
+          flexDirection: "column",
+          gap: innerGap,
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: 0,
+          width: isMobile ? "100%" : undefined,
+        }}
+      >
+        {/* Image */}
+        {!data[imageKey + "Style"]?.isHidden && (
+          <div
+            style={{
+              width: "100%",
+              aspectRatio: "11 / 4",
+              borderRadius,
+              overflow: "hidden",
+              position: "relative",
+              flexShrink: 0,
+            }}
+            className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+            onDoubleClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onElementSelect?.(imageKey);
+            }}
+          >
+            <UniversalMedia
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.(imageKey);
+              }}
+              url={imageUrl}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ borderRadius }}
+              alt={`Banner ${side} Image`}
+            />
+          </div>
+        )}
+        {/* Title bar + Text area (gap 0) */}
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* Title bar */}
+          {!titleStyleObj?.isHidden && (
+            <div
+              style={{
+                ...getBgStyle(titleStyleObj?.backgroundColor),
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: titlePadding,
+                borderRadius,
+              }}
+            >
+              <SafeHtml
+                html={titleText}
+                className="font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text transition-all"
+                style={{
+                  ...getElementStyle(titleStyleObj, viewport),
+                  fontSize: titleFontSize,
+                  backgroundColor: "transparent",
+                  wordBreak: "keep-all",
+                  overflowWrap: "break-word",
+                }}
+                onDoubleClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onElementSelect?.(titleKey);
+                }}
+              />
+            </div>
+          )}
+          {/* Text area */}
+          <div
+            style={{
+              ...getBgStyle(subStyleObj?.backgroundColor),
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "4px",
+              padding: textPadding,
+              borderRadius,
+              textAlign: "center",
+            }}
+          >
+            {!subStyleObj?.isHidden && (
+              <SafeHtml
+                html={subText}
+                className="font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text transition-all"
+                style={{
+                  ...getElementStyle(subStyleObj, viewport),
+                  fontSize: subFontSize,
+                  backgroundColor: "transparent",
+                  wordBreak: "keep-all",
+                  overflowWrap: "break-word",
+                }}
+                onDoubleClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onElementSelect?.(subKey);
+                }}
+              />
+            )}
+            {!mainStyleObj?.isHidden && (
+              <SafeHtml
+                html={mainText}
+                className="font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text transition-all"
+                style={{
+                  ...getElementStyle(mainStyleObj, viewport),
+                  fontSize: mainFontSize,
+                  backgroundColor: "transparent",
+                  wordBreak: "keep-all",
+                  overflowWrap: "break-word",
+                }}
+                onDoubleClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onElementSelect?.(mainKey);
+                }}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+
+    const content = (
+      <section
+        className="w-full relative overflow-hidden"
+        style={{
+          paddingTop: widget.style?.paddingTop || "0px",
+          paddingBottom: widget.style?.paddingBottom || "0px",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: bg3Color,
+            ...outerPadding,
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: cardGap,
+            alignItems: "flex-start",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          {renderCard(
+            "left",
+            data.layout3LeftImageUrl ||
+              STRIP_BANNER_DEFAULTS.layout3LeftImageUrl,
+            "layout3LeftImageUrl",
+            data.layout3LeftTitle || STRIP_BANNER_DEFAULTS.layout3LeftTitle,
+            "layout3LeftTitle",
+            leftTitleStyle,
+            data.layout3LeftSubText ||
+              STRIP_BANNER_DEFAULTS.layout3LeftSubText,
+            "layout3LeftSubText",
+            leftSubTextStyle,
+            data.layout3LeftMainText ||
+              STRIP_BANNER_DEFAULTS.layout3LeftMainText,
+            "layout3LeftMainText",
+            leftMainTextStyle,
+          )}
+          {renderCard(
+            "right",
+            data.layout3RightImageUrl ||
+              STRIP_BANNER_DEFAULTS.layout3RightImageUrl,
+            "layout3RightImageUrl",
+            data.layout3RightTitle || STRIP_BANNER_DEFAULTS.layout3RightTitle,
+            "layout3RightTitle",
+            rightTitleStyle,
+            data.layout3RightSubText ||
+              STRIP_BANNER_DEFAULTS.layout3RightSubText,
+            "layout3RightSubText",
+            rightSubTextStyle,
+            data.layout3RightMainText ||
+              STRIP_BANNER_DEFAULTS.layout3RightMainText,
+            "layout3RightMainText",
+            rightMainTextStyle,
+          )}
         </div>
       </section>
     );

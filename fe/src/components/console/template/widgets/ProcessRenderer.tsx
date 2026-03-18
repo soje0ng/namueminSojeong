@@ -3,6 +3,7 @@ import { ProcessWidget } from "@/types/console/template";
 import {
   useWidgetStyle,
   getElementStyle,
+  mergeTextStyleWithFallback,
   SafeHtml,
   WidgetRendererProps,
   formatUnit,
@@ -159,7 +160,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
   ) => {
     return {
       ...getElementStyle(
-        {
+        mergeTextStyleWithFallback(textStyle, {
           ...(role === "title"
             ? {
                 fontSize: "40px",
@@ -173,8 +174,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
               }),
           ...(role === "subTitle" ? { color: "#285DE1" } : {}),
           ...(role === "desc" ? { color: "#666666" } : {}),
-          ...(textStyle || {}),
-        },
+        }),
         viewport as any,
       ),
       ...overrides,
@@ -426,14 +426,19 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* 2. Body Area: Steps Grid Layout 2 */}
             <div
-              className={`self-stretch w-full grid ${processGridColsClass} gap-y-12 mt-6`}
+              className={`self-stretch w-full grid ${processGridColsClass} gap-y-12 mt-6 items-start content-start`}
+              style={{
+                alignItems: "flex-start",
+                alignContent: "flex-start",
+                alignSelf: "stretch",
+              }}
             >
               {(() => {
                 const stepsArr = data.steps || (data as any).items || [];
                 return stepsArr.map((step: any, idx: number) => (
                   <div
                     key={step.id || idx}
-                    className={`${viewport === "mobile" ? "self-start justify-start" : "self-stretch justify-center"} min-w-36 w-full inline-flex flex-col items-center gap-3`}
+                    className={`${viewport === "mobile" ? "self-start justify-start" : "self-stretch justify-start"} min-w-36 w-full inline-flex flex-col items-center gap-3`}
                   >
                     <div
                       className="w-24 h-24 relative bg-시안-mode-gray5 rounded-[80px] flex justify-center items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden"
@@ -455,9 +460,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       />
                     </div>
 
-                    <div
-                      className="self-stretch border-t border-white flex flex-col justify-start items-center"
-                    >
+                    <div className="self-stretch border-t border-white flex flex-col justify-start items-center">
                       <div className="self-stretch inline-flex justify-start items-center gap-2">
                         <div className="flex-1 h-px bg-zinc-300"></div>
                         {!step.numberStyle?.isHidden && (
@@ -846,10 +849,12 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                                         fontWeight:
                                           step.numberStyle?.fontWeight || "700",
                                         ...getElementStyle(
-                                          {
+                                          mergeTextStyleWithFallback(
+                                            step.numberStyle,
+                                            {
                                             fontSizeMobile: "16px",
-                                            ...step.numberStyle,
-                                          },
+                                            },
+                                          ),
                                           viewport,
                                         ),
                                       }}

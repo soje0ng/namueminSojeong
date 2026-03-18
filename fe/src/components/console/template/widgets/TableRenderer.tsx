@@ -3,6 +3,7 @@ import { TableWidget } from "@/types/console/template";
 import {
   useWidgetStyle,
   getElementStyle,
+  mergeTextStyleWithFallback,
   SafeHtml,
   WidgetRendererProps,
   UniversalMedia,
@@ -39,7 +40,7 @@ export const TABLE_DEFAULTS = {
   headerStyle: {
     fontSize: "20px",
     fontSizeMobile: "20px",
-    fontWeight: "500",
+    fontWeight: "400",
     backgroundColor: "#E5F9FF",
     color: "#111827",
   },
@@ -53,7 +54,7 @@ export const TABLE_DEFAULTS = {
     fontSize: "18px",
     fontSizeMobile: "18px",
     color: "#6B7280",
-    fontWeight: "500",
+    fontWeight: "400",
   },
   comparisonHeaders: ["구분", "구분", "구분"],
   comparisonRows: [
@@ -117,6 +118,24 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
   const isComparison = w.data.variant === "comparison";
   const isTable02 =
     w.data.variant === "table02" || (w.data as any).layout === "2";
+  const handleSelectableElementClick = (
+    e: React.MouseEvent,
+    elementKey: string,
+    itemId?: string,
+  ) => {
+    e.stopPropagation();
+    onElementSelect?.(elementKey, itemId);
+  };
+  const getTableTextWrapStyle = (
+    style?: React.CSSProperties,
+  ): React.CSSProperties => ({
+    ...style,
+    display: "block",
+    width: "100%",
+    maxWidth: "100%",
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
+  });
   const isTable03 =
     w.data.variant === "table03" || (w.data as any).layout === "3";
   const isTable04 =
@@ -156,7 +175,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-[#285DE1] text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
                     ...getElementStyle(subTitleStyle, viewport as any),
                     backgroundColor: "transparent",
@@ -194,7 +213,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.descStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
                     ...getElementStyle(descStyle, viewport as any),
                     backgroundColor: "transparent",
@@ -233,7 +252,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 {tableHeaders.map((headerText, i) => (
                   <div
                     key={i}
-                    className={`${i === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                    className={`${i === 0 ? "w-24 xl:w-60" : "flex-1"} min-w-0 p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                     style={{
                       backgroundColor:
                         (w.data as any).headerCellStyles?.[i]
@@ -242,21 +261,23 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                         ? { flex: "1 0 0", width: "auto" }
                         : {}),
                     }}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("tableHeader", i.toString());
-                    }}
+                    onClick={(e) =>
+                      handleSelectableElementClick(e, "tableHeader", i.toString())
+                    }
+                    onDoubleClick={(e) =>
+                      handleSelectableElementClick(e, "tableHeader", i.toString())
+                    }
                   >
                     <SafeHtml
                       html={headerText}
                       className={`text-center justify-start text-시안-mode-gray95 text-xl font-bold font-['Pretendard'] leading-9`}
-                      style={{
+                      style={getTableTextWrapStyle({
                         ...headerStyle,
                         backgroundColor: "transparent",
                         ...(isTabletOrMobile
                           ? { letterSpacing: "-0.4px", lineHeight: "150%" }
                           : {}),
-                      }}
+                      })}
                     />
                   </div>
                 ))}
@@ -276,7 +297,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   {row.map((cell, cIdx) => (
                     <div
                       key={cIdx}
-                      className={`${cIdx === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                      className={`${cIdx === 0 ? "w-24 xl:w-60" : "flex-1"} min-w-0 p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                       style={{
                         backgroundColor:
                           (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
@@ -285,20 +306,30 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                           ? { flex: "1 0 0", width: "auto" }
                           : {}),
                       }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("tableCell", `${rIdx}-${cIdx}`);
-                      }}
+                      onClick={(e) =>
+                        handleSelectableElementClick(
+                          e,
+                          "tableCell",
+                          `${rIdx}-${cIdx}`,
+                        )
+                      }
+                      onDoubleClick={(e) =>
+                        handleSelectableElementClick(
+                          e,
+                          "tableCell",
+                          `${rIdx}-${cIdx}`,
+                        )
+                      }
                     >
                       <SafeHtml
                         html={cell}
-                        className={`text-center justify-start ${cIdx === 0 ? "text-[#285DE1]" : "text-시안-mode-gray50"} text-xl font-medium font-['Pretendard'] leading-8`}
-                        style={{
+                        className={`text-center justify-start ${cIdx === 0 ? "text-[#285DE1]" : "text-시안-mode-gray50"} text-xl font-normal font-['Pretendard'] leading-8`}
+                        style={getTableTextWrapStyle({
                           ...bodyStyle,
                           ...(isTabletOrMobile
                             ? { letterSpacing: "-0.4px", lineHeight: "150%" }
                             : {}),
-                        }}
+                        })}
                       />
                     </div>
                   ))}
@@ -367,7 +398,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-[#285DE1] text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
                     ...getElementStyle(subTitleStyle, viewport as any),
                     backgroundColor: "transparent",
@@ -405,7 +436,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.descStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
                     ...getElementStyle(descStyle, viewport as any),
                     backgroundColor: "transparent",
@@ -442,7 +473,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 {tableHeaders.map((headerText, i) => (
                   <div
                     key={i}
-                    className={`${i === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                    className={`${i === 0 ? "w-24 xl:w-60" : "flex-1"} min-w-0 p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                     style={{
                       backgroundColor:
                         i === 0 ? "#E6E8EA" : i === 1 ? "#131416" : "#285DE1",
@@ -452,22 +483,24 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                         ? { flex: "1 0 0", width: "auto" }
                         : {}),
                     }}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("tableHeader", i.toString());
-                    }}
+                    onClick={(e) =>
+                      handleSelectableElementClick(e, "tableHeader", i.toString())
+                    }
+                    onDoubleClick={(e) =>
+                      handleSelectableElementClick(e, "tableHeader", i.toString())
+                    }
                   >
                     <SafeHtml
                       html={headerText}
                       className={`text-center justify-start ${i === 0 ? "text-[#131416]" : "text-[#FFFFFF]"} text-xl font-bold font-['Pretendard'] leading-8`}
-                      style={{
+                      style={getTableTextWrapStyle({
                         ...headerStyle,
                         backgroundColor: "transparent",
                         color: i === 0 ? undefined : "#FFFFFF",
                         ...(isTabletOrMobile
                           ? { letterSpacing: "-0.4px", lineHeight: "150%" }
                           : {}),
-                      }}
+                      })}
                     />
                   </div>
                 ))}
@@ -481,7 +514,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   {row.map((cell, cIdx) => (
                     <div
                       key={cIdx}
-                      className={`${cIdx === 0 ? "w-24 xl:w-60" : "flex-1"} p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
+                      className={`${cIdx === 0 ? "w-24 xl:w-60" : "flex-1"} min-w-0 p-4 flex justify-center items-center gap-2.5 cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
                       style={{
                         backgroundColor:
                           (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
@@ -493,25 +526,37 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                           ? { flex: "1 0 0", width: "auto" }
                           : {}),
                       }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("tableCell", `${rIdx}-${cIdx}`);
-                      }}
+                      onClick={(e) =>
+                        handleSelectableElementClick(
+                          e,
+                          "tableCell",
+                          `${rIdx}-${cIdx}`,
+                        )
+                      }
+                      onDoubleClick={(e) =>
+                        handleSelectableElementClick(
+                          e,
+                          "tableCell",
+                          `${rIdx}-${cIdx}`,
+                        )
+                      }
                     >
                       <SafeHtml
                         html={cell}
-                        className="text-center justify-start text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8"
-                        style={{
+                        className="text-center justify-start text-[#6D7882] text-xl font-normal font-['Pretendard'] leading-8"
+                        style={getTableTextWrapStyle({
                           // Layout03 body cells: 20px on tablet/mobile (Figma spec)
                           ...getElementStyle(
-                            { fontSizeMobile: "20px", ...bodyTextStyle },
+                            mergeTextStyleWithFallback(bodyTextStyle, {
+                              fontSizeMobile: "20px",
+                            }),
                             viewport as any,
                           ),
                           backgroundColor: "transparent",
                           ...(isTabletOrMobile
                             ? { letterSpacing: "-0.4px", lineHeight: "150%" }
                             : {}),
-                        }}
+                        })}
                       />
                     </div>
                   ))}
@@ -567,7 +612,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.subTitleStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.subTitle || "( 서브타이틀 )"}
-                  className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-[#285DE1] text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
                     ...getElementStyle(subTitleStyle, viewport as any),
                     ...(viewport === "tablet"
@@ -603,7 +648,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {!w.data.descStyle?.isHidden && (
                 <SafeHtml
                   html={w.data.desc || "이민 프로그램명 입력"}
-                  className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                  className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
                     ...getElementStyle(descStyle, viewport as any),
                     ...(viewport === "tablet"
@@ -652,27 +697,37 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     {w.data.headers.map((h, i) => (
                       <div
                         key={i}
-                        className={`flex-1 p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${i !== w.data.headers.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
+                        className={`flex-1 min-w-0 p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${i !== w.data.headers.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
                         style={{
                           backgroundColor:
                             (w.data as any).headerCellStyles?.[i]
                               ?.backgroundColor || headerStyle?.backgroundColor,
                         }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("tableHeader", i.toString());
-                        }}
+                        onClick={(e) =>
+                          handleSelectableElementClick(
+                            e,
+                            "tableHeader",
+                            i.toString(),
+                          )
+                        }
+                        onDoubleClick={(e) =>
+                          handleSelectableElementClick(
+                            e,
+                            "tableHeader",
+                            i.toString(),
+                          )
+                        }
                       >
                         <SafeHtml
                           html={h}
-                          className="text-center justify-start text-시안-mode-gray95 text-xl font-medium font-['Pretendard'] leading-8"
-                          style={{
+                          className="text-center justify-start text-시안-mode-gray95 text-xl font-normal font-['Pretendard'] leading-8"
+                          style={getTableTextWrapStyle({
                             ...headerStyle,
                             backgroundColor: "transparent",
                             ...(viewport === "tablet" || viewport === "mobile"
                               ? { letterSpacing: "-0.4px", lineHeight: "150%" }
                               : {}),
-                          }}
+                          })}
                         />
                       </div>
                     ))}
@@ -685,21 +740,31 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                       {row.map((cell, cIdx) => (
                         <div
                           key={cIdx}
-                          className={`flex-1 self-stretch p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${cIdx !== row.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
+                          className={`flex-1 min-w-0 self-stretch p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${cIdx !== row.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
                           style={{
                             backgroundColor:
                               (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
                                 ?.backgroundColor || bodyStyle?.backgroundColor,
                           }}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("tableCell", `${rIdx}-${cIdx}`);
-                          }}
+                          onClick={(e) =>
+                            handleSelectableElementClick(
+                              e,
+                              "tableCell",
+                              `${rIdx}-${cIdx}`,
+                            )
+                          }
+                          onDoubleClick={(e) =>
+                            handleSelectableElementClick(
+                              e,
+                              "tableCell",
+                              `${rIdx}-${cIdx}`,
+                            )
+                          }
                         >
                           <SafeHtml
                             html={cell}
-                            className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8"
-                            style={{
+                            className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8"
+                            style={getTableTextWrapStyle({
                               ...bodyStyle,
                               backgroundColor: "transparent",
                               ...(viewport === "tablet" || viewport === "mobile"
@@ -708,7 +773,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                                     lineHeight: "150%",
                                   }
                                 : {}),
-                            }}
+                            })}
                           />
                         </div>
                       ))}
@@ -802,15 +867,19 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                           borderColor: headerStyle?.borderColor || "#D9D9D9",
                           textAlign: headerStyle?.textAlign || "center",
                         }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("tableHeaderGubun");
-                        }}
+                        onClick={(e) =>
+                          handleSelectableElementClick(e, "tableHeaderGubun")
+                        }
+                        onDoubleClick={(e) =>
+                          handleSelectableElementClick(e, "tableHeaderGubun")
+                        }
                       >
                         <SafeHtml
                           html={w.data.comparisonGubun || "구분"}
                           className="w-full overflow-hidden"
-                          style={{ backgroundColor: "transparent" }}
+                          style={getTableTextWrapStyle({
+                            backgroundColor: "transparent",
+                          })}
                         />
                       </th>
                       {compHeaders.map((h, i) => (
@@ -827,15 +896,27 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                             borderColor: headerStyle?.borderColor || "#D9D9D9",
                             textAlign: headerStyle?.textAlign || "center",
                           }}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("tableHeader", i.toString());
-                          }}
+                          onClick={(e) =>
+                            handleSelectableElementClick(
+                              e,
+                              "tableHeader",
+                              i.toString(),
+                            )
+                          }
+                          onDoubleClick={(e) =>
+                            handleSelectableElementClick(
+                              e,
+                              "tableHeader",
+                              i.toString(),
+                            )
+                          }
                         >
                           <SafeHtml
                             html={h}
                             className="header-content w-full overflow-hidden"
-                            style={{ backgroundColor: "transparent" }}
+                            style={getTableTextWrapStyle({
+                              backgroundColor: "transparent",
+                            })}
                           />
                         </th>
                       ))}
@@ -856,15 +937,27 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                             borderColor: bodyStyle?.borderColor || "#D9D9D9",
                             textAlign: bodyStyle?.textAlign || "center",
                           }}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.("tableCell", `${rIdx}-0`);
-                          }}
+                          onClick={(e) =>
+                            handleSelectableElementClick(
+                              e,
+                              "tableCell",
+                              `${rIdx}-0`,
+                            )
+                          }
+                          onDoubleClick={(e) =>
+                            handleSelectableElementClick(
+                              e,
+                              "tableCell",
+                              `${rIdx}-0`,
+                            )
+                          }
                         >
                           <SafeHtml
                             html={row[0]}
                             className="w-full overflow-hidden"
-                            style={{ backgroundColor: "transparent" }}
+                            style={getTableTextWrapStyle({
+                              backgroundColor: "transparent",
+                            })}
                           />
                         </th>
                         {(row.length > 1 ? row.slice(1) : []).map(
@@ -883,18 +976,27 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                                   bodyStyle?.backgroundColor ||
                                   "transparent",
                               }}
-                              onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                onElementSelect?.(
+                              onClick={(e) =>
+                                handleSelectableElementClick(
+                                  e,
                                   "tableCell",
                                   `${rIdx}-${cIdx + 1}`,
-                                );
-                              }}
+                                )
+                              }
+                              onDoubleClick={(e) =>
+                                handleSelectableElementClick(
+                                  e,
+                                  "tableCell",
+                                  `${rIdx}-${cIdx + 1}`,
+                                )
+                              }
                             >
                               <SafeHtml
                                 html={cell}
                                 className="w-full overflow-hidden"
-                                style={{ backgroundColor: "transparent" }}
+                                style={getTableTextWrapStyle({
+                                  backgroundColor: "transparent",
+                                })}
                               />
                             </td>
                           ),
@@ -926,7 +1028,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             {!w.data.subTitleStyle?.isHidden && (
               <SafeHtml
                 html={w.data.subTitle || "( 서브타이틀 )"}
-                className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                className="text-center justify-start text-[#285DE1] text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                 style={{
                   ...getElementStyle(subTitleStyle, viewport as any),
                   ...(viewport === "mobile"
@@ -958,7 +1060,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             {!w.data.descStyle?.isHidden && (
               <SafeHtml
                 html={w.data.desc || "이민 프로그램명 입력"}
-                className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
+                className="text-center justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                 style={{
                   ...getElementStyle(descStyle, viewport as any),
                   ...(viewport === "mobile"
@@ -995,27 +1097,29 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {w.data.headers.map((h, i) => (
                 <div
                   key={i}
-                  className={`flex-1 p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${i !== w.data.headers.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
+                  className={`flex-1 min-w-0 p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${i !== w.data.headers.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
                   style={{
                     backgroundColor:
                       (w.data as any).headerCellStyles?.[i]?.backgroundColor ??
                       headerStyle.backgroundColor,
                   }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("tableHeader", i.toString());
-                  }}
+                  onClick={(e) =>
+                    handleSelectableElementClick(e, "tableHeader", i.toString())
+                  }
+                  onDoubleClick={(e) =>
+                    handleSelectableElementClick(e, "tableHeader", i.toString())
+                  }
                 >
                   <SafeHtml
                     html={h}
-                    className="text-center justify-start text-시안-mode-gray95 text-xl font-medium font-['Pretendard'] leading-8"
-                    style={{
+                    className="text-center justify-start text-시안-mode-gray95 text-xl font-normal font-['Pretendard'] leading-8"
+                    style={getTableTextWrapStyle({
                       ...headerStyle,
                       backgroundColor: "transparent",
                       ...(viewport === "mobile"
                         ? { letterSpacing: "-0.4px", lineHeight: "150%" }
                         : {}),
-                    }}
+                    })}
                   />
                 </div>
               ))}
@@ -1030,27 +1134,37 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 {row.map((cell, cIdx) => (
                   <div
                     key={cIdx}
-                    className={`flex-1 self-stretch p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${cIdx !== row.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
+                    className={`flex-1 min-w-0 self-stretch p-4 flex justify-center items-center gap-2.5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer ${cIdx !== row.length - 1 ? "border-r border-시안-mode-gray2" : ""}`}
                     style={{
                       backgroundColor:
                         (w.data as any).cellStyles?.[`${rIdx}-${cIdx}`]
                           ?.backgroundColor || bodyStyle?.backgroundColor,
                     }}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("tableCell", `${rIdx}-${cIdx}`);
-                    }}
+                    onClick={(e) =>
+                      handleSelectableElementClick(
+                        e,
+                        "tableCell",
+                        `${rIdx}-${cIdx}`,
+                      )
+                    }
+                    onDoubleClick={(e) =>
+                      handleSelectableElementClick(
+                        e,
+                        "tableCell",
+                        `${rIdx}-${cIdx}`,
+                      )
+                    }
                   >
                     <SafeHtml
                       html={cell}
-                      className="text-center justify-start text-시안-mode-gray50 text-lg font-medium font-['Pretendard'] leading-7"
-                      style={{
+                      className="text-center justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7"
+                      style={getTableTextWrapStyle({
                         ...bodyStyle,
                         backgroundColor: "transparent",
                         ...(viewport === "mobile"
                           ? { letterSpacing: "-0.36px", lineHeight: "150%" }
                           : {}),
-                      }}
+                      })}
                     />
                   </div>
                 ))}

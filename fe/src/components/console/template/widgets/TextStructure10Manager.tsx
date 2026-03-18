@@ -16,8 +16,17 @@ export interface Section10Card {
   type: string;
   opacity?: string;
   number: string;
+  numberStyle?: {
+    isHidden?: boolean;
+  };
   title: string;
+  titleStyle?: {
+    isHidden?: boolean;
+  };
   iconUrl: string;
+  iconUrlStyle?: {
+    isHidden?: boolean;
+  };
   subTitle: string;
   subTitleStyle?: {
     isHidden?: boolean;
@@ -31,6 +40,9 @@ export interface Section10Card {
     isHidden?: boolean;
   };
   checkIconUrl: string;
+  checkIconUrlStyle?: {
+    isHidden?: boolean;
+  };
   badges: { id: string; text: string; active: boolean }[];
   badgesStyle?: {
     isHidden?: boolean;
@@ -68,7 +80,7 @@ const TextStructure10Manager: React.FC<Props> = ({
 
   const toggleSectionHidden = (
     id: string,
-    key: "subTitleStyle" | "descStyle" | "checkTitleStyle" | "badgesStyle",
+    key: "numberStyle" | "titleStyle" | "iconUrlStyle" | "subTitleStyle" | "descStyle" | "checkTitleStyle" | "checkIconUrlStyle" | "badgesStyle",
   ) => {
     const target = sections.find((section) => section.id === id);
     if (!target) return;
@@ -119,13 +131,21 @@ const TextStructure10Manager: React.FC<Props> = ({
     setExpandedId(newCard.id);
   };
 
-  const getBadgeInputValue = (badges: Section10Card["badges"]) =>
-    (badges || [])
+  const badgeRawRef = React.useRef<Record<string, string>>({});
+
+  const getBadgeInputValue = (section: Section10Card) => {
+    if (badgeRawRef.current[section.id] !== undefined) {
+      return badgeRawRef.current[section.id];
+    }
+    return (section.badges || [])
       .map((badge) => badge.text || "")
       .filter((text) => text.trim().length > 0)
       .join(", ");
+  };
 
   const updateBadges = (sectionId: string, value: string) => {
+    badgeRawRef.current[sectionId] = value;
+
     const texts = value
       .split(",")
       .map((text) => text.trim())
@@ -140,6 +160,10 @@ const TextStructure10Manager: React.FC<Props> = ({
       : [];
 
     updateSection(sectionId, { badges: nextBadges });
+  };
+
+  const handleBadgeBlur = (sectionId: string) => {
+    delete badgeRawRef.current[sectionId];
   };
 
   const toTextareaValue = (value?: string) =>
@@ -256,9 +280,20 @@ const TextStructure10Manager: React.FC<Props> = ({
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <label className="text-[10px] text-gray-400 font-semibold">
-                        번호
-                      </label>
+                      <div className="flex items-center justify-between gap-2">
+                        <label className="text-[10px] text-gray-400 font-semibold">
+                          번호
+                        </label>
+                        <button
+                          type="button"
+                          className="text-[10px] text-gray-500 font-semibold"
+                          onClick={() =>
+                            toggleSectionHidden(section.id, "numberStyle")
+                          }
+                        >
+                          {section.numberStyle?.isHidden ? "보이기" : "숨기기"}
+                        </button>
+                      </div>
                       <input
                         type="text"
                         className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
@@ -269,9 +304,20 @@ const TextStructure10Manager: React.FC<Props> = ({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] text-gray-400 font-semibold">
-                        타이틀
-                      </label>
+                      <div className="flex items-center justify-between gap-2">
+                        <label className="text-[10px] text-gray-400 font-semibold">
+                          타이틀
+                        </label>
+                        <button
+                          type="button"
+                          className="text-[10px] text-gray-500 font-semibold"
+                          onClick={() =>
+                            toggleSectionHidden(section.id, "titleStyle")
+                          }
+                        >
+                          {section.titleStyle?.isHidden ? "보이기" : "숨기기"}
+                        </button>
+                      </div>
                       <textarea
                         className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none resize-none"
                         rows={2}
@@ -286,9 +332,20 @@ const TextStructure10Manager: React.FC<Props> = ({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] text-gray-400 font-semibold">
-                      메인 이미지
-                    </label>
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-[10px] text-gray-400 font-semibold">
+                        메인 이미지
+                      </label>
+                      <button
+                        type="button"
+                        className="text-[10px] text-gray-500 font-semibold"
+                        onClick={() =>
+                          toggleSectionHidden(section.id, "iconUrlStyle")
+                        }
+                      >
+                        {section.iconUrlStyle?.isHidden ? "보이기" : "숨기기"}
+                      </button>
+                    </div>
                     <div className="flex gap-1.5">
                       <input
                         type="text"
@@ -395,9 +452,20 @@ const TextStructure10Manager: React.FC<Props> = ({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] text-gray-400 font-semibold">
-                      체크 아이콘
-                    </label>
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-[10px] text-gray-400 font-semibold">
+                        체크 아이콘
+                      </label>
+                      <button
+                        type="button"
+                        className="text-[10px] text-gray-500 font-semibold"
+                        onClick={() =>
+                          toggleSectionHidden(section.id, "checkIconUrlStyle")
+                        }
+                      >
+                        {section.checkIconUrlStyle?.isHidden ? "보이기" : "숨기기"}
+                      </button>
+                    </div>
                     <div className="flex gap-1.5">
                       <input
                         type="text"
@@ -440,10 +508,11 @@ const TextStructure10Manager: React.FC<Props> = ({
 	                    <input
 	                      type="text"
 	                      className="w-full bg-gray-50 border-none p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-100 outline-none"
-                      value={getBadgeInputValue(section.badges)}
+                      value={getBadgeInputValue(section)}
                       onChange={(e) =>
                         updateBadges(section.id, e.target.value)
                       }
+                      onBlur={() => handleBadgeBlur(section.id)}
                       placeholder="우선심사, I-956F, 높은 고용창출"
                     />
                     <p className="text-[10px] text-gray-400 leading-tight">

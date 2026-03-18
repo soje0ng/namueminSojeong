@@ -252,6 +252,13 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
         data: cloneDefaults(CULTURE_LETTER_DEFAULTS),
       } as any;
 
+    case "codeSection":
+      return {
+        id: widgetId,
+        type: "codeSection",
+        data: { code: '<div style="padding: 60px 40px; text-align: center; color: #6D7882; font-family: Pretendard, sans-serif;">\n  <p>HTML 코드를 입력하세요.</p>\n</div>' },
+      } as any;
+
     default:
       return null;
   }

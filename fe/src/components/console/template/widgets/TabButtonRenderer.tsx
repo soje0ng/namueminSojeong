@@ -37,56 +37,96 @@ export const TAB_BUTTON_DEFAULTS = {
     {
       id: "tab-1",
       title: "TAB 명 링크 연결",
-      titleStyle: { fontSize: "20px", fontWeight: "500", color: "#ffffff" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#ffffff",
+      },
       active: true,
       link: "#",
     },
     {
       id: "tab-2",
       title: "TAB 명 링크 연결",
-      titleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6b7280",
+      },
       active: false,
       link: "#",
     },
     {
       id: "tab-3",
       title: "TAB 명 링크 연결",
-      titleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6b7280",
+      },
       active: false,
       link: "#",
     },
     {
       id: "tab-4",
       title: "TAB 명 링크 연결",
-      titleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6b7280",
+      },
       active: false,
       link: "#",
     },
     {
       id: "tab-5",
       title: "TAB 명 링크 연결",
-      titleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6b7280",
+      },
       active: false,
       link: "#",
     },
     {
       id: "tab-6",
       title: "TAB 명 링크 연결",
-      titleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6b7280",
+      },
       active: false,
       link: "#",
     },
     {
       id: "tab-7",
       title: "TAB 명 링크 연결",
-      titleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6b7280",
+      },
       active: false,
       link: "#",
     },
     {
       id: "tab-8",
       title: "TAB 명 링크 연결",
-      titleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+      titleStyle: {
+        fontSize: "20px",
+        fontSizeMobile: "18px",
+        fontWeight: "500",
+        color: "#6b7280",
+      },
       active: false,
       link: "#",
     },
@@ -114,7 +154,13 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+            className={`self-stretch ${getPaddingClass(viewport)} inline-flex flex-col justify-start items-center w-full hover:ring-2 hover:ring-transparent transition-all`}
+            style={{
+              ...style,
+              paddingTop: viewport === "mobile" ? "30px" : style.paddingTop,
+              paddingBottom: viewport === "mobile" ? "30px" : style.paddingBottom,
+              gap: viewport === "mobile" ? "24px" : "40px",
+            }}
           >
             <div
               className={`flex flex-col justify-start items-center text-center w-full max-w-[800px] ${viewport === "mobile" ? "gap-0" : ""}`}
@@ -217,7 +263,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                     >
                       <SafeHtml
                         html={item.title || "TAB 명 링크 연결"}
-                        className={`flex-1 text-center justify-start ${viewport === "mobile" ? "text-[18px]" : "text-lg xl:text-xl"} font-medium leading-8 break-keep ${
+                        className={`flex-1 text-center justify-start font-medium leading-8 break-keep ${
                           !item.titleStyle?.color ? "text-white" : ""
                         } hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded`}
                         style={textOnlyStyle}
@@ -244,7 +290,7 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
                   >
                     <SafeHtml
                       html={item.title || "TAB 명 링크 연결"}
-                      className={`flex-1 text-center justify-start ${viewport === "mobile" ? "text-[18px]" : "text-lg xl:text-xl"} font-medium leading-8 break-keep ${
+                      className={`flex-1 text-center justify-start font-medium leading-8 break-keep ${
                         !item.titleStyle?.color ? "text-시안-mode-gray50" : ""
                       } hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded`}
                       style={textOnlyStyle}

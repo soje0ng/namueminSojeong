@@ -6,9 +6,11 @@ import {
   getImageUrl,
   getPaddingClass,
   getBorderRadiusClass,
+  isVideoUrl,
   UniversalMedia,
   SafeHtml,
   getElementStyle,
+  formatUnit,
 } from "./WidgetUtils";
 
 const CULTURE_LETTER_TEXT_STYLE_DEFAULTS = {
@@ -399,6 +401,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
   const style = useWidgetStyle(w.style);
   const data = w.data;
   const layout = String(data.layout || "1");
+  const hasCultureLetterLayoutState = Boolean((data as any).__layoutStateMap);
   const isMobileViewport = viewport === "mobile" || viewport === "tablet";
   const toHtmlWithBreaks = (value?: string) =>
     String(value || "").replace(/\n/g, "<br/>");
@@ -427,6 +430,20 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     ...getElementStyle(getCultureLetterStyleSource(styleKey), viewport),
     ...overrides,
   });
+  const getCultureLetterSectionStyle = (
+    sectionStyle: React.CSSProperties,
+  ): React.CSSProperties => ({
+    ...style,
+    ...sectionStyle,
+    paddingTop:
+      formatUnit((data as any).sectionPaddingTop) ??
+      (!hasCultureLetterLayoutState ? style.paddingTop : undefined) ??
+      sectionStyle.paddingTop,
+    paddingBottom:
+      formatUnit((data as any).sectionPaddingBottom) ??
+      (!hasCultureLetterLayoutState ? style.paddingBottom : undefined) ??
+      sectionStyle.paddingBottom,
+  });
   const isCultureLetterTextHidden = (styleKey: string) =>
     Boolean(data[styleKey]?.isHidden);
 
@@ -441,6 +458,65 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
   };
 
   const resolveThumbDisplay = (url: string) => getYoutubeThumbnail(url) || url;
+  const isInlinePlayableThumb = (url: string) => Boolean(url && isVideoUrl(url));
+  const renderLayout4ThumbMedia = (
+    thumbRaw: string,
+    thumbStyle: React.CSSProperties,
+  ) => {
+    const thumbDisplaySrc = resolveThumbDisplay(thumbRaw);
+
+    if (!onElementSelect && isInlinePlayableThumb(thumbRaw)) {
+      return (
+        <UniversalMedia
+          url={thumbRaw}
+          className="absolute inset-0 w-full h-full"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            borderRadius: thumbStyle.borderRadius,
+          }}
+        />
+      );
+    }
+
+    if (thumbDisplaySrc || thumbRaw) {
+      return (
+        <img
+          alt=""
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            ...thumbStyle,
+            objectPosition: thumbStyle.objectPosition || "center",
+            pointerEvents: "none",
+          }}
+          src={thumbDisplaySrc || thumbRaw}
+        />
+      );
+    }
+
+    return (
+      <div
+        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "#f3f4f6",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "13px",
+          color: "#9ca3af",
+        }}
+      >
+        썸네일 이미지
+      </div>
+    );
+  };
   const getResponsiveMedia = (
     desktopUrl: string | undefined,
     mobileUrl: string | undefined,
@@ -491,8 +567,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             backgroundImage: undefined,
             display: "flex",
             flexDirection: "column",
@@ -503,7 +578,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingRight: "40px",
             alignItems: "flex-start",
             justifyContent: "center",
-          }}
+          })}
           onDoubleClick={() => {
             onElementSelect?.("layout1BgImageUrl");
           }}
@@ -724,8 +799,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             backgroundImage: undefined,
             display: "flex",
             flexDirection: "column",
@@ -734,7 +808,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingBottom: "60px",
             paddingLeft: "20px",
             paddingRight: "20px",
-          }}
+          })}
           onDoubleClick={() => {
             onElementSelect?.("layout1MobileBgImageUrl");
           }}
@@ -948,10 +1022,9 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <div
         className={`content-stretch flex flex-col gap-[80px] items-start justify-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-        style={{
-          ...style,
+        style={getCultureLetterSectionStyle({
           backgroundImage: undefined,
-        }}
+        })}
         onDoubleClick={() => {
           onElementSelect?.(
             isMobileViewport ? "layout1MobileBgImageUrl" : "layout1BgImageUrl",
@@ -1147,8 +1220,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             backgroundColor: style.backgroundColor || "#ffffff",
             display: "flex",
             flexDirection: "column",
@@ -1158,7 +1230,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingBottom: "60px",
             paddingLeft: "40px",
             paddingRight: "40px",
-          }}
+          })}
         >
           {/* 상단 타이틀 섹션 */}
           <div
@@ -1226,8 +1298,6 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {cards.map((card, idx) => {
               const logoImg = data[card.logoKey] || CULTURE_LETTER_DEFAULTS[card.logoKey] || "";
               const thumbRaw = data[card.thumbKey] || CULTURE_LETTER_DEFAULTS[card.thumbKey] || "";
-              const thumbDisplaySrc = resolveThumbDisplay(thumbRaw);
-              const thumbLink = thumbRaw;
               const thumbStyle = getElementStyle(
                 data[card.thumbStyleKey] || CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
                 viewport,
@@ -1317,42 +1387,12 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                       onElementSelect?.(card.thumbKey);
                     }}
                     onClick={() => {
-                      if (!onElementSelect && thumbLink) {
-                        window.open(thumbLink, "_blank", "noopener,noreferrer");
-                      }
+                      if (!onElementSelect && thumbRaw && !isInlinePlayableThumb(thumbRaw)) {
+                        window.open(thumbRaw, "_blank", "noopener,noreferrer");
+                      } 
                     }}
                   >
-                    {thumbDisplaySrc || thumbRaw ? (
-                      <img
-                        alt=""
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          ...thumbStyle,
-                          objectPosition: thumbStyle.objectPosition || "center",
-                          pointerEvents: "none",
-                        }}
-                        src={thumbDisplaySrc || thumbRaw}
-                      />
-                    ) : (
-                      <div
-                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          backgroundColor: "#f3f4f6",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "13px",
-                          color: "#9ca3af",
-                        }}
-                      >
-                        썸네일 이미지
-                      </div>
-                    )}
+                    {renderLayout4ThumbMedia(thumbRaw, thumbStyle)}
                   </div>
 
                   {/* 영상 제목 */}
@@ -1383,8 +1423,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             backgroundColor: style.backgroundColor || "#ffffff",
             display: "flex",
             flexDirection: "column",
@@ -1394,7 +1433,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingBottom: "60px",
             paddingLeft: "20px",
             paddingRight: "20px",
-          }}
+          })}
         >
           {/* 상단 타이틀 섹션 */}
           <div
@@ -1460,8 +1499,6 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {cards.map((card, idx) => {
               const logoImg = data[card.logoKey] || CULTURE_LETTER_DEFAULTS[card.logoKey] || "";
               const thumbRaw = data[card.thumbKey] || CULTURE_LETTER_DEFAULTS[card.thumbKey] || "";
-              const thumbDisplaySrc = resolveThumbDisplay(thumbRaw);
-              const thumbLink = thumbRaw;
               const thumbStyle = getElementStyle(
                 data[card.thumbStyleKey] || CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
                 viewport,
@@ -1551,42 +1588,12 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                       onElementSelect?.(card.thumbKey);
                     }}
                     onClick={() => {
-                      if (!onElementSelect && thumbLink) {
-                        window.open(thumbLink, "_blank", "noopener,noreferrer");
+                      if (!onElementSelect && thumbRaw && !isInlinePlayableThumb(thumbRaw)) {
+                        window.open(thumbRaw, "_blank", "noopener,noreferrer");
                       }
                     }}
                   >
-                    {thumbDisplaySrc || thumbRaw ? (
-                      <img
-                        alt=""
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          ...thumbStyle,
-                          objectPosition: thumbStyle.objectPosition || "center",
-                          pointerEvents: "none",
-                        }}
-                        src={thumbDisplaySrc || thumbRaw}
-                      />
-                    ) : (
-                      <div
-                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          backgroundColor: "#f3f4f6",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "13px",
-                          color: "#9ca3af",
-                        }}
-                      >
-                        썸네일 이미지
-                      </div>
-                    )}
+                    {renderLayout4ThumbMedia(thumbRaw, thumbStyle)}
                   </div>
 
                   {/* 영상 제목 */}
@@ -1618,13 +1625,12 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <div
         className={`content-stretch flex flex-col items-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-        style={{
-          ...style,
+        style={getCultureLetterSectionStyle({
           backgroundColor: style.backgroundColor || "#ffffff",
           gap: "40px",
           paddingTop: "60px",
           paddingBottom: "60px",
-        }}
+        })}
       >
         {/* 상단 타이틀 섹션 */}
         <div
@@ -1688,9 +1694,6 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               data[card.thumbKey] ||
               CULTURE_LETTER_DEFAULTS[card.thumbKey] ||
               "";
-            // YouTube 링크 → 썸네일 자동 변환
-            const thumbDisplaySrc = resolveThumbDisplay(thumbRaw);
-            const thumbLink = thumbRaw; // 원본 링크(YouTube URL)는 클릭 이동에 사용
             const thumbStyle = getElementStyle(
               data[card.thumbStyleKey] ||
                 CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
@@ -1784,43 +1787,13 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                     e.stopPropagation();
                     onElementSelect?.(card.thumbKey);
                   }}
-                  onClick={(e) => {
-                    if (!onElementSelect && thumbLink) {
-                      window.open(thumbLink, "_blank", "noopener,noreferrer");
+                  onClick={() => {
+                    if (!onElementSelect && thumbRaw && !isInlinePlayableThumb(thumbRaw)) {
+                      window.open(thumbRaw, "_blank", "noopener,noreferrer");
                     }
                   }}
                 >
-                  {thumbDisplaySrc || thumbRaw ? (
-                    <img
-                      alt=""
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        width: "100%",
-                        height: "100%",
-                        ...thumbStyle,
-                        objectPosition: thumbStyle.objectPosition || "center",
-                        pointerEvents: "none",
-                      }}
-                      src={thumbDisplaySrc || thumbRaw}
-                    />
-                  ) : (
-                    <div
-                      className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: "#f3f4f6",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "13px",
-                        color: "#9ca3af",
-                      }}
-                    >
-                      썸네일 이미지
-                    </div>
-                  )}
+                  {renderLayout4ThumbMedia(thumbRaw, thumbStyle)}
                 </div>
 
                 {/* 영상 제목 */}
@@ -1871,8 +1844,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             backgroundImage: undefined,
             background: layout3DefaultBg,
             backgroundColor: layout3DefaultBg
@@ -1886,7 +1858,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingLeft: "40px",
             paddingRight: "40px",
             alignItems: "flex-start",
-          }}
+          })}
           onDoubleClick={() => {
             onElementSelect?.("cl3BgUrl");
           }}
@@ -2135,8 +2107,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             backgroundImage: undefined,
             background: layout3DefaultBg,
             backgroundColor: layout3DefaultBg
@@ -2151,7 +2122,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingRight: "20px",
             alignItems: "flex-start",
             justifyContent: "center",
-          }}
+          })}
           onDoubleClick={() => {
             onElementSelect?.("cl3MobileBgUrl");
           }}
@@ -2411,8 +2382,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <div
         className={`content-stretch flex flex-col items-start justify-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-        style={{
-          ...style,
+        style={getCultureLetterSectionStyle({
           backgroundImage: undefined,
           backgroundColor: style.backgroundColor,
           background:
@@ -2422,7 +2392,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           gap: "40px",
           paddingTop: "40px",
           paddingBottom: "120px",
-        }}
+        })}
         onDoubleClick={() => {
           onElementSelect?.(isMobileViewport ? "cl3MobileBgUrl" : "cl3BgUrl");
         }}
@@ -2663,8 +2633,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             backgroundImage: undefined,
             backgroundColor: style.backgroundColor || "#ffffff",
             display: "flex",
@@ -2676,7 +2645,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingRight: "40px",
             alignItems: "center",
             justifyContent: "center",
-          }}
+          })}
           onDoubleClick={() => {
             onElementSelect?.("cl2BgUrl");
           }}
@@ -2891,8 +2860,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             backgroundImage: undefined,
             backgroundColor: style.backgroundColor || "#ffffff",
             display: "flex",
@@ -2902,7 +2870,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingBottom: "60px",
             paddingLeft: "20px",
             paddingRight: "20px",
-          }}
+          })}
           onDoubleClick={() => {
             onElementSelect?.("cl2MobileBgUrl");
           }}
@@ -3109,14 +3077,13 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <div
         className={`content-stretch flex flex-col items-center justify-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-        style={{
-          ...style,
+        style={getCultureLetterSectionStyle({
           backgroundImage: undefined,
           backgroundColor: style.backgroundColor || "#ffffff",
           gap: "80px",
           paddingTop: "40px",
           paddingBottom: "120px",
-        }}
+        })}
         onDoubleClick={() => {
           onElementSelect?.(isMobileViewport ? "cl2MobileBgUrl" : "cl2BgUrl");
         }}
@@ -3536,8 +3503,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             background:
               style.backgroundImage || style.backgroundColor
                 ? undefined
@@ -3549,7 +3515,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingBottom: "60px",
             paddingLeft: "40px",
             paddingRight: "40px",
-          }}
+          })}
         >
           {/* 카드 3개 가로 배치 — 태블릿 */}
           <div
@@ -3596,8 +3562,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       return (
         <div
           className={`${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-          style={{
-            ...style,
+          style={getCultureLetterSectionStyle({
             background:
               style.backgroundImage || style.backgroundColor
                 ? undefined
@@ -3609,7 +3574,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             paddingBottom: "60px",
             paddingLeft: "20px",
             paddingRight: "20px",
-          }}
+          })}
         >
           {/* 카드 3개 세로 스택 — 모바일 */}
           <div
@@ -3652,15 +3617,14 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     return (
       <div
         className={`content-stretch flex flex-col items-center ${getPaddingClass(viewport, "xl:px-[280px]")} ${getBorderRadiusClass(viewport, "")} relative w-full overflow-hidden cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all`}
-        style={{
-          ...style,
+        style={getCultureLetterSectionStyle({
           background:
             style.backgroundImage || style.backgroundColor
               ? undefined
               : "linear-gradient(169.07deg, rgb(40, 93, 225) 2.89%, rgb(89, 161, 185) 48.56%, rgb(68, 160, 117) 100%)",
           paddingTop: "60px",
           paddingBottom: "60px",
-        }}
+        })}
       >
         {/* 카드 3개 가로 배치 */}
         <div

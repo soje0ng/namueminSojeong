@@ -3,6 +3,7 @@ import { IconCardWidget } from "@/types/console/template";
 import {
   useWidgetStyle,
   getElementStyle,
+  mergeTextStyleWithFallback,
   SafeHtml,
   WidgetRendererProps,
   formatUnit,
@@ -193,7 +194,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     overrides: React.CSSProperties = {},
   ) => ({
     ...getElementStyle(
-      {
+      mergeTextStyleWithFallback(textStyle, {
         ...(role === "title"
           ? {
               fontSize: "40px",
@@ -207,8 +208,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             }),
         ...(role === "subTitle" ? { color: "#285DE1" } : {}),
         ...(role === "desc" ? { color: "#666666" } : {}),
-        ...(textStyle || {}),
-      },
+      }),
       viewport,
     ),
     ...overrides,
@@ -401,7 +401,7 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                     backgroundImage:
                       "linear-gradient(to bottom right, #f8fafc, #eff6ff)",
                   })}
-                  className={`w-full px-5 py-6 ${getBorderRadiusClass(viewport, "rounded-2xl")} inline-flex flex-col justify-center items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all relative z-20`}
+                  className={`w-full px-5 py-6 ${getBorderRadiusClass(viewport, "rounded-2xl")} inline-flex flex-col items-center gap-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all relative z-20`}
                   onDoubleClick={(e) =>
                     handleItemBackgroundDoubleClick(e, item.id || `__idx_${i}`)
                   }
@@ -651,7 +651,19 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               <div
                 key={item.id || i}
                 className={`w-full px-5 py-8 bg-시안-mode-gray0 ${getBorderRadiusClass(viewport, "rounded-2xl")} shadow-[2px_2px_12px_0px_rgba(0,0,0,0.08)] inline-flex flex-col justify-start items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all`}
-                style={getItemCardBackgroundStyle(item.itemStyle)}
+                style={getItemCardBackgroundStyle(item.itemStyle, {
+                  ...(viewport === "mobile"
+                    ? {
+                        minWidth: "120px",
+                        maxWidth: "440px",
+                        padding: "12px 8px",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "8px",
+                        flex: "1 0 0",
+                      }
+                    : {}),
+                })}
                 onDoubleClick={(e) =>
                   handleItemBackgroundDoubleClick(e, item.id || `__idx_${i}`)
                 }
@@ -659,7 +671,11 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                 <SafeHtml
                   html={(item as any).subTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] text-lg xl:text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded"
-                  style={getIconCardTextStyle((item as any).subTitleStyle)}
+                  style={getIconCardTextStyle((item as any).subTitleStyle, {
+                    ...(viewport === "mobile"
+                      ? { fontSize: "16px", fontWeight: "500" }
+                      : {}),
+                  })}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("itemSubTitle", item.id || i.toString());
@@ -668,7 +684,12 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
 
                 <div
                   className="relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center shrink-0"
-                  style={getIconFrameStyle(item.iconStyle)}
+                  style={{
+                    ...getIconFrameStyle(item.iconStyle),
+                    ...(viewport === "mobile"
+                      ? { width: "60px", height: "60px" }
+                      : {}),
+                  }}
                 >
                   <UniversalMedia
                     url={(() => {
@@ -723,10 +744,6 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
     const items = w.data.items || [];
     const itemsPerRow = getLayout45ItemsPerRow(w.data.itemsPerRow);
     const rowItemGap = getResponsiveCardGap("20px", w.style?.gap);
-    const rowItemWidthStyle = getFixedRowItemWidthStyle(
-      itemsPerRow,
-      rowItemGap,
-    );
     const rows: any[][] = [];
     for (let i = 0; i < items.length; i += itemsPerRow) {
       rows.push(items.slice(i, i + itemsPerRow));
@@ -791,17 +808,19 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
             {rows.map((row, rowIndex) => (
               <div
                 key={rowIndex}
-                className="self-stretch inline-flex justify-start items-center flex-wrap"
-                style={{ gap: rowItemGap }}
+                className="self-stretch grid"
+                style={{
+                  gap: rowItemGap,
+                  gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+                }}
               >
                 {row.map((item: any, i: number) => {
                   const itemIndex = rowIndex * itemsPerRow + i;
                   return (
                     <div
                       key={item.id || itemIndex}
-                      className={`w-full ${viewport === "mobile" ? "px-4 py-3" : "px-5 py-6"} bg-시안-mode-gray5 ${getBorderRadiusClass(viewport, "rounded-2xl")} flex ${viewport === "mobile" ? "flex-row" : "flex-row-reverse"} justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all`}
+                      className={`w-full self-stretch ${viewport === "mobile" ? "px-4 py-3" : "px-5 py-6"} bg-시안-mode-gray5 ${getBorderRadiusClass(viewport, "rounded-2xl")} flex ${viewport === "mobile" ? "flex-row" : "flex-row-reverse"} justify-between items-center gap-4 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all`}
                       style={{
-                        ...rowItemWidthStyle,
                         ...getItemCardBackgroundStyle(item.itemStyle),
                       }}
                       onDoubleClick={(e) =>
@@ -1087,8 +1106,20 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
               {(w.data.items || []).map((item: any, idx: number) => (
                 <div
                   key={item.id || idx}
-                  className={`w-full px-5 py-10 bg-시안-mode-gray0 ${getBorderRadiusClass(viewport, "rounded-2xl")} outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col justify-center items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all`}
-                  style={getItemCardBackgroundStyle(item.itemStyle)}
+                  className={`w-full px-5 py-10 bg-시안-mode-gray0 ${getBorderRadiusClass(viewport, "rounded-2xl")} outline outline-1 outline-offset-[-1px] outline-[#E6E8EA] inline-flex flex-col items-center gap-3 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all`}
+                  style={getItemCardBackgroundStyle(item.itemStyle, {
+                    ...(viewport === "mobile"
+                      ? {
+                          minWidth: "120px",
+                          maxWidth: "440px",
+                          padding: "12px 8px",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "8px",
+                          flex: "1 0 0",
+                        }
+                      : {}),
+                  })}
                   onDoubleClick={(e) => {
                     handleItemBackgroundDoubleClick(
                       e,

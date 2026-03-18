@@ -3,6 +3,7 @@ import { GenericNewWidget } from "@/types/console/template";
 import {
   useWidgetStyle,
   getElementStyle,
+  mergeTextStyleWithFallback,
   SafeHtml,
   WidgetRendererProps,
   UniversalMedia,
@@ -135,7 +136,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
     overrides: React.CSSProperties = {},
   ) => ({
     ...getElementStyle(
-      {
+      mergeTextStyleWithFallback(textStyle, {
         ...(role === "title"
           ? {
               fontSize: "40px",
@@ -145,8 +146,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
               fontSize: "20px",
               fontSizeMobile: "18px",
             }),
-        ...(textStyle || {}),
-      },
+      }),
       viewport as any,
     ),
     ...overrides,
@@ -157,7 +157,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
     overrides: React.CSSProperties = {},
   ) => ({
     ...getElementStyle(
-      {
+      mergeTextStyleWithFallback(textStyle, {
         ...(role === "itemTitle"
           ? {
               fontSize: "30px",
@@ -181,8 +181,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   fontSizeMobile: "18px",
                   fontWeight: "400",
                 }),
-        ...(textStyle || {}),
-      },
+      }),
       viewport as any,
     ),
     ...overrides,
@@ -576,7 +575,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
             },
           ];
     const layout2MiddleWidth =
-      viewport === "desktop" ? "240px" : viewport === "tablet" ? "200px" : "80px";
+      viewport === "desktop" ? "240px" : viewport === "tablet" ? "200px" : "120px";
     const layout2GridTemplateColumns = `minmax(0,1fr) minmax(0, ${layout2MiddleWidth}) minmax(0,1fr)`;
     const layout2RowLabels: string[] = data.rowLabels || [];
     const layout2RowCount = Math.max(
@@ -714,7 +713,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   />
                 </div>
                 <div
-                  className={`self-stretch py-3 bg-시안-mode-subColor50 inline-flex justify-center items-center ${comparisonLayout2GapClassName} ${comparisonTableCellPaddingClassName}`}
+                  className={`self-stretch py-3 bg-시안-mode-subColor50 flex justify-center items-center ${comparisonLayout2GapClassName} ${comparisonTableCellPaddingClassName}`}
                   style={{
                     gridColumn: "2",
                     gridRow: "1 / span 2",
@@ -728,7 +727,7 @@ export const ComparisonCardRenderer: React.FC<WidgetRendererProps> = ({
                   {!data.middleTitleStyle?.isHidden && (
                     <SafeHtml
                       html={data.middleTitle || "비교 head명"}
-                      className="text-center justify-start font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded cursor-text transition-all break-keep"
+                      className="text-center justify-start w-full font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded cursor-text transition-all whitespace-pre-wrap break-all"
                       style={getComparisonLayout2TextStyle(
                         "middleTitle",
                         data.middleTitleStyle || {},

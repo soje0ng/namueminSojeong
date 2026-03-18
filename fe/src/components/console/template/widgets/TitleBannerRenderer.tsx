@@ -391,7 +391,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   }}
                   html={getResponsiveTextHtml(
                     data.title ||
-                      `<span style="color:#131416;font-weight:700;">2026년 </span><span style="color:#285DE1;font-weight:700;">미국 투자이민,</span><br/><span style="color:#131416;font-weight:700;">꼭 알아야 할 3가지 핵심 트렌드</span>`,
+                      TITLE_BANNER_DEFAULTS.title,
                   )}
                 />
               </div>
@@ -425,7 +425,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "20px",
+                gap: "24px",
                 alignItems: "flex-start",
                 width: "100%",
               }}
@@ -437,7 +437,6 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   ...getTitleBannerTextStyle(
                     getTitleBannerStyleSource("textContentStyle"),
                   ),
-                  fontWeight: "500",
                   color: "#6d7882",
                   letterSpacing: "-0.36px",
                   lineHeight: "1.5",
@@ -454,6 +453,42 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                     "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다. 또한, 반응형 그리드 시스템을 적용하여 데스크톱, 태블릿, 모바일에 최적화된 화면을 자동으로 구성합니다.",
                 )}
               />
+
+              {/* 하단 이미지 (프로그램 특징 위로 이동) — 200px height */}
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "200px",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}
+              >
+                <UniversalMedia
+                  className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                  url={getImageUrl(
+                    data.layout1MobileImageStyle || data.layout1ImageStyle,
+                    viewport,
+                    data.layout1MobileImage || data.layout1Image,
+                  )}
+                  style={{
+                    ...getElementStyle(
+                      data.layout1MobileImageStyle || data.layout1ImageStyle,
+                      viewport,
+                    ),
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center",
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1Image");
+                  }}
+                />
+              </div>
 
               {/* 아이콘박스 2열 그리드 */}
               <div
@@ -589,42 +624,6 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 })}
               </div>
             </div>
-
-            {/* 하단 이미지 — 200px height (피그마 스펙), 이미지 자체에 height 고정 없음 */}
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                height: "200px",
-                overflow: "hidden",
-                flexShrink: 0,
-              }}
-            >
-              <UniversalMedia
-                className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                url={getImageUrl(
-                  data.layout1MobileImageStyle || data.layout1ImageStyle,
-                  viewport,
-                  data.layout1MobileImage || data.layout1Image,
-                )}
-                style={{
-                  ...getElementStyle(
-                    data.layout1MobileImageStyle || data.layout1ImageStyle,
-                    viewport,
-                  ),
-                  position: "absolute",
-                  inset: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center",
-                }}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("layout1Image");
-                }}
-              />
-            </div>
           </div>
         </section>
       );
@@ -651,7 +650,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
         >
           <div className="mx-auto w-full max-w-[1920px] relative">
             <div
-              className={`${viewport === "tablet" ? "px-10" : viewport === "mobile" ? "px-5" : "pl-5 pr-0 md:pl-10 md:pr-0 xl:pl-[280px] xl:pr-0"} ${getVerticalPaddingClass(viewport, "py-[60px]")} flex flex-col gap-[60px] w-full`}
+              className={`${viewport === "tablet" ? "px-10" : viewport === "mobile" ? "px-5" : "pl-5 pr-0 md:pl-10 md:pr-0 xl:pl-[280px] xl:pr-0"} ${getVerticalPaddingClass(viewport, "py-[60px]")} flex flex-col gap-[40px] w-full`}
             >
               {/* 텍스트 섹션 */}
               <div className="flex flex-col gap-[40px] w-full">
@@ -696,13 +695,29 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   />
                 </div>
 
+                {/* 하단 이미지 (태블릿 상단으로 이동) */}
+                <div className="relative shrink-0 w-full h-[360px] overflow-hidden">
+                  <UniversalMedia
+                    className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                    url={getImageUrl(
+                      data.layout1ImageStyle,
+                      viewport,
+                      data.layout1Image,
+                    )}
+                    style={getElementStyle(data.layout1ImageStyle, viewport)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout1Image");
+                    }}
+                  />
+                </div>
+
                 {/* 본문 + 특징 그룹 */}
                 <div className="flex flex-col gap-[20px] w-full">
                   <SafeHtml
                     className="w-full font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                     style={getTitleBannerTextStyle(data.textContentStyle, {
                       color: "#6d7882",
-                      fontSize: "18px",
                       letterSpacing: "-0.4px",
                     })}
                     onDoubleClick={(e) => {
@@ -802,23 +817,6 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                   </div>
                 </div>
               </div>
-
-              {/* 하단 이미지 */}
-              <div className="relative shrink-0 w-full h-[360px] overflow-hidden">
-                <UniversalMedia
-                  className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                  url={getImageUrl(
-                    data.layout1ImageStyle,
-                    viewport,
-                    data.layout1Image,
-                  )}
-                  style={getElementStyle(data.layout1ImageStyle, viewport)}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("layout1Image");
-                  }}
-                />
-              </div>
             </div>
           </div>
         </section>
@@ -895,7 +893,7 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               {/* 하단 특징 및 본문 그룹 */}
               <div className="self-stretch flex flex-col justify-start items-start gap-5">
                 <SafeHtml
-                  className="self-stretch justify-start text-gray-500 text-lg xl:text-xl font-medium font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
+                  className="self-stretch justify-start text-gray-500 text-lg xl:text-xl font-['Pretendard'] leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-text"
                   style={getTitleBannerTextStyle(data.textContentStyle)}
                   onDoubleClick={(e) => {
                     e.stopPropagation();

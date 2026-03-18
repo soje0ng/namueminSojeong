@@ -3,6 +3,7 @@ import { GenericNewWidget } from "@/types/console/template";
 import {
   useWidgetStyle,
   getElementStyle,
+  mergeTextStyleWithFallback,
   SafeHtml,
   WidgetRendererProps,
   UniversalMedia,
@@ -291,6 +292,47 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
   const isMediaUrl = (value: any) =>
     typeof value === "string" &&
     /^(https?:\/\/|\/|\.{1,2}\/|data:|blob:)/i.test(value);
+  const getLayout5CardTitleStyle = (itemStyle: any, index: number) => {
+    if (index === 0) {
+      return mergeTextStyleWithFallback(
+        data.layout5Card1TitleStyle,
+        INFO_BANNER_DEFAULTS.layout5Card1TitleStyle,
+      );
+    }
+
+    if (index === 1) {
+      return mergeTextStyleWithFallback(
+        data.layout5Card2TitleStyle,
+        INFO_BANNER_DEFAULTS.layout5Card2TitleStyle,
+      );
+    }
+
+    return mergeTextStyleWithFallback(
+      itemStyle,
+      data.layout5Card1TitleStyle ||
+        INFO_BANNER_DEFAULTS.layout5Card1TitleStyle,
+    );
+  };
+  const getLayout5CardDescStyle = (itemStyle: any, index: number) => {
+    if (index === 0) {
+      return mergeTextStyleWithFallback(
+        data.layout5Card1DescStyle,
+        INFO_BANNER_DEFAULTS.layout5Card1DescStyle,
+      );
+    }
+
+    if (index === 1) {
+      return mergeTextStyleWithFallback(
+        data.layout5Card2DescStyle,
+        INFO_BANNER_DEFAULTS.layout5Card2DescStyle,
+      );
+    }
+
+    return mergeTextStyleWithFallback(
+      itemStyle,
+      data.layout5Card1DescStyle || INFO_BANNER_DEFAULTS.layout5Card1DescStyle,
+    );
+  };
 
   if (layout === "1") {
     const isTablet = viewport === "tablet";
@@ -347,6 +389,9 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                 {/* Header Text Group — gap-12px desktop/tablet, gap-0 mobile (피그마 스펙) */}
                 <div
                   className={`self-stretch flex flex-col justify-center ${isMobile ? "items-start text-left gap-0" : "items-start gap-[12px]"}`}
+                  style={{
+                    marginBottom: isDesktop ? "60px" : undefined,
+                  }}
                 >
                   {!data.subTitleStyle?.isHidden && (
                     <SafeHtml
@@ -428,7 +473,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       : {
                           display: "flex",
                           flexDirection: "row",
-                          flexWrap: isDesktop ? "wrap" : "nowrap",
+                          flexWrap: "wrap",
                           gap: "12px",
                           paddingLeft: "24px",
                           paddingRight: "24px",
@@ -448,13 +493,13 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             : {
                                 flex: isDesktop
                                   ? "0 0 calc(25% - 9px)"
-                                  : "1 0 0",
+                                  : "0 0 calc(33.333% - 8px)",
                               }),
                           display: "flex",
                           flexDirection: "column",
                           gap: "12px",
                           alignItems: "flex-start",
-                          justifyContent: "center",
+                          justifyContent: "flex-start",
                           paddingTop: "24px",
                           paddingBottom: "24px",
                           minWidth: 0,
@@ -465,8 +510,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                           style={{
                             width: "48px",
                             height: "48px",
-                            borderRadius: "12px",
-                            backgroundColor: "#e6e8ea",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -761,7 +804,6 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                           flexWrap: isDesktop2 ? "wrap" : "nowrap",
                           gap: "12px",
                           alignItems: "center",
-                          justifyContent: "center",
                         }
                   }
                 >
@@ -782,7 +824,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                           flexDirection: "column",
                           gap: isMobile2 ? "8px" : "20px",
                           alignItems: "center",
-                          justifyContent: "center",
+
                           paddingLeft: isMobile2 ? "8px" : "24px",
                           paddingRight: isMobile2 ? "8px" : "24px",
                           paddingTop: isMobile2 ? "20px" : "24px",
@@ -941,12 +983,13 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               {/* Full-bleed image area */}
               <div
                 style={{
-                  width: "100%",
+                  width: isTablet3 ? "calc(100% + 80px)" : "100%",
                   height: isTablet3 ? "400px" : isMobile3 ? undefined : "480px",
                   overflow: "hidden",
                   cursor: "pointer",
+                  marginLeft: isTablet3 ? "-40px" : undefined,
+                  marginRight: isTablet3 ? "-40px" : undefined,
                   marginBottom: isMobile3 ? "-20px" : "-80px",
-                  borderRadius: isMobile3 ? "0px" : "16px",
                 }}
                 onClick={() => onElementSelect?.("layout3ImageUrl")}
               >
@@ -976,8 +1019,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   display: "flex",
                   alignItems: "flex-end",
                   justifyContent: "flex-end",
-                  paddingLeft: isMobile3 ? "8px" : "40px",
-                  paddingRight: isMobile3 ? "8px" : "40px",
+                  paddingLeft: isMobile3 ? "20px" : "40px",
+                  paddingRight: isMobile3 ? "20px" : "40px",
                 }}
               >
                 {/* Card */}
@@ -1012,8 +1055,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         gap: "0px",
                         flex: 1,
                         minWidth: 0,
-                        alignItems: isMobile3 ? "center" : "flex-start",
-                        textAlign: isMobile3 ? "center" : "left",
+                        alignItems: "flex-start",
+                        textAlign: "left",
                       }}
                     >
                       {!l3SubTitleStyle?.isHidden && (
@@ -1031,6 +1074,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             letterSpacing: isMobile3 ? "-0.36px" : "-0.4px",
                             lineHeight: 1.5,
                             color: "#285DE1",
+                            textAlign: "left",
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -1051,6 +1095,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             letterSpacing: isMobile3 ? "-0.4px" : "-0.56px",
                             lineHeight: 1.5,
                             color: "#060606",
+                            textAlign: "left",
                           }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -1113,7 +1158,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         lineHeight: 1.5,
                         color: "#6d7882",
                         width: "100%",
-                        textAlign: isMobile3 ? "center" : "left",
+                        textAlign: "left",
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
@@ -1130,12 +1175,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: isMobile3 ? "center" : "flex-start",
+                alignItems: "flex-start",
                 gap: isMobile3 ? "16px" : "24px",
                 width: "100%",
                 paddingLeft: isMobile3 ? "20px" : "0px",
                 paddingRight: isMobile3 ? "20px" : "0px",
-                textAlign: isMobile3 ? "center" : "left",
+                textAlign: "left",
               }}
             >
               {!l3ContentTitleStyle?.isHidden && (
@@ -1154,6 +1199,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     lineHeight: 1.5,
                     color: "#131416",
                     width: "100%",
+                    textAlign: "left",
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -1181,11 +1227,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   style={{
                     ...getElementStyle(l3ContentDescStyle, viewport),
                     fontFamily: "Pretendard, sans-serif",
-                    fontWeight: 500,
+                    fontWeight: 400,
                     letterSpacing: isMobile3 ? "-0.36px" : "-0.4px",
                     lineHeight: 1.5,
                     color: "#6d7882",
                     width: "100%",
+                    textAlign: "left",
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -1274,7 +1321,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   html={
                     data.layout4Title ||
                     data.title ||
-                    "이미 수많은 자산가들은<br/><span style='font-weight:700'>미국 영주권 취득</span>으로<br/><span style='font-weight:700'>수억 원을 절감</span>하며 미국에서<br/>자녀를 <span style='font-weight:700'>글로벌 리더</span>로 키우고 있습니다."
+                    INFO_BANNER_DEFAULTS.layout4Title
                   }
                   className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
@@ -1598,16 +1645,14 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                         : item?.imageUrl ||
                           item?.image ||
                           "/images/placeholder/infobanner_layout5_card1_image.jpg";
-                    const titleStyle = isFirstCard
-                      ? data.layout5Card1TitleStyle
-                      : isSecondCard
-                        ? data.layout5Card2TitleStyle
-                        : item?.titleStyle;
-                    const descStyle = isFirstCard
-                      ? data.layout5Card1DescStyle
-                      : isSecondCard
-                        ? data.layout5Card2DescStyle
-                        : item?.descStyle;
+                    const titleStyle = getLayout5CardTitleStyle(
+                      item?.titleStyle,
+                      idx,
+                    );
+                    const descStyle = getLayout5CardDescStyle(
+                      item?.descStyle,
+                      idx,
+                    );
                     const titleText = isFirstCard
                       ? data.layout5Card1Title || item?.title || "영상명 입력"
                       : isSecondCard
@@ -1626,7 +1671,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     return (
                       <div
                         key={itemSelectId}
-                        className="w-80 inline-flex flex-col justify-center items-center gap-4 overflow-hidden"
+                        className="w-80 inline-flex flex-col justify-start items-start gap-4 overflow-hidden"
                       >
                         <div className="w-80 aspect-[16/9] relative rounded-2xl overflow-hidden">
                           <UniversalMedia
@@ -1652,7 +1697,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             <SafeHtml
                               html={titleText}
                               className="justify-start text-zinc-950 text-2xl font-medium font-['Pretendard'] leading-9"
-                              style={getElementStyle(titleStyle, viewport)}
+                              style={{
+                                ...getElementStyle(titleStyle, viewport),
+                                fontFamily: "Pretendard, sans-serif",
+                                letterSpacing: "-0.48px",
+                                lineHeight: "1.5",
+                              }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 if (isFirstCard) {
@@ -1671,7 +1721,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                             <SafeHtml
                               html={descText}
                               className="self-stretch justify-start text-gray-500 text-xl font-medium font-['Pretendard'] leading-8"
-                              style={getElementStyle(descStyle, viewport)}
+                              style={{
+                                ...getElementStyle(descStyle, viewport),
+                                fontFamily: "Pretendard, sans-serif",
+                                letterSpacing: "-0.4px",
+                                lineHeight: "1.5",
+                              }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 if (isFirstCard) {
@@ -1873,214 +1928,174 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               {/* 영상 카드 리스트 */}
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                   gap: isMobile5 ? "8px" : "20px",
                   alignItems: "flex-start",
                   width: "100%",
                 }}
               >
-                {/* Card 1 */}
-                <div
-                  style={{
-                    flex: "1 0 0",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: isMobile5 ? "8px" : "16px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minWidth: 0,
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      height: isMobile5 ? "100px" : "180px",
-                      width: "100%",
-                      borderRadius: isMobile5 ? "8px" : "16px",
-                      overflow: "hidden",
-                      flexShrink: 0,
-                      cursor: "pointer",
-                    }}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("layout5Card1ImageUrl");
-                    }}
-                  >
-                    <UniversalMedia
-                      url={
-                        data.layout5Card1ImageUrl ||
-                        "/images/placeholder/infobanner_layout5_card1_image.jpg"
-                      }
-                      alt="card1-image"
-                      className="w-full h-full"
-                      style={{
-                        objectFit: "cover",
-                        width: "100%",
-                        height: "100%",
-                      }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("layout5Card1ImageUrl");
-                      }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0px",
-                      alignItems: "flex-start",
-                      width: "100%",
-                      textAlign: "left",
-                    }}
-                  >
-                    {!data.layout5Card1TitleStyle?.isHidden && (
-                      <SafeHtml
-                        html={data.layout5Card1Title || "영상명 입력"}
-                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          ...getElementStyle(
-                            data.layout5Card1TitleStyle,
-                            viewport,
-                          ),
-                          fontFamily: "Pretendard, sans-serif",
-                          fontWeight: 500,
-                          letterSpacing: isMobile5 ? "-0.4px" : "-0.48px",
-                          lineHeight: 1.5,
-                          color: "#060606",
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("layout5Card1Title");
-                        }}
-                      />
-                    )}
-                    {!data.layout5Card1DescStyle?.isHidden && (
-                      <SafeHtml
-                        html={data.layout5Card1Desc || "영상 소개 문구 적는 곳"}
-                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          ...getElementStyle(
-                            data.layout5Card1DescStyle,
-                            viewport,
-                          ),
-                          fontFamily: "Pretendard, sans-serif",
-                          fontWeight: 500,
-                          letterSpacing: isMobile5 ? "-0.36px" : "-0.4px",
-                          lineHeight: 1.5,
-                          color: "#6d7882",
-                          width: "100%",
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("layout5Card1Desc");
-                        }}
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {/* Card 2 */}
-                <div
-                  style={{
-                    flex: "1 0 0",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: isMobile5 ? "8px" : "16px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minWidth: 0,
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      height: isMobile5 ? "100px" : "180px",
-                      width: "100%",
-                      borderRadius: isMobile5 ? "8px" : "16px",
-                      overflow: "hidden",
-                      flexShrink: 0,
-                      cursor: "pointer",
-                    }}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("layout5Card2ImageUrl");
-                    }}
-                  >
-                    <UniversalMedia
-                      url={
-                        data.layout5Card2ImageUrl ||
+                {(data.items || []).map((item: any, idx: number) => {
+                  const itemSelectId = item?.id || `ib-layout5-item-${idx}`;
+                  const isFirstCard = idx === 0;
+                  const isSecondCard = idx === 1;
+                  const imageUrl = isFirstCard
+                    ? data.layout5Card1ImageUrl ||
+                      item?.imageUrl ||
+                      item?.image ||
+                      "/images/placeholder/infobanner_layout5_card1_image.jpg"
+                    : isSecondCard
+                      ? data.layout5Card2ImageUrl ||
+                        item?.imageUrl ||
+                        item?.image ||
                         "/images/placeholder/infobanner_layout5_card2_image.jpg"
-                      }
-                      alt="card2-image"
-                      className="w-full h-full"
+                      : item?.imageUrl ||
+                        item?.image ||
+                        "/images/placeholder/infobanner_layout5_card1_image.jpg";
+                  const titleStyle = getLayout5CardTitleStyle(
+                    item?.titleStyle,
+                    idx,
+                  );
+                  const descStyle = getLayout5CardDescStyle(
+                    item?.descStyle,
+                    idx,
+                  );
+                  const titleText = isFirstCard
+                    ? data.layout5Card1Title || item?.title || "영상명 입력"
+                    : isSecondCard
+                      ? data.layout5Card2Title || item?.title || "영상명 입력"
+                      : item?.title || "영상명 입력";
+                  const descText = isFirstCard
+                    ? data.layout5Card1Desc ||
+                      item?.desc ||
+                      "영상 소개 문구 적는 곳"
+                    : isSecondCard
+                      ? data.layout5Card2Desc ||
+                        item?.desc ||
+                        "영상 소개 문구 적는 곳"
+                      : item?.desc || "영상 소개 문구 적는 곳";
+
+                  return (
+                    <div
+                      key={itemSelectId}
                       style={{
-                        objectFit: "cover",
-                        width: "100%",
-                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: isMobile5 ? "8px" : "16px",
+                        alignItems: "flex-start",
+                        justifyContent: "flex-start",
+                        minWidth: 0,
+                        overflow: "hidden",
                       }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("layout5Card2ImageUrl");
-                      }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0px",
-                      alignItems: "flex-start",
-                      width: "100%",
-                      textAlign: "left",
-                    }}
-                  >
-                    {!data.layout5Card2TitleStyle?.isHidden && (
-                      <SafeHtml
-                        html={data.layout5Card2Title || "영상명 입력"}
-                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                    >
+                      <div
                         style={{
-                          ...getElementStyle(
-                            data.layout5Card2TitleStyle,
-                            viewport,
-                          ),
-                          fontFamily: "Pretendard, sans-serif",
-                          fontWeight: 500,
-                          letterSpacing: isMobile5 ? "-0.4px" : "-0.48px",
-                          lineHeight: 1.5,
-                          color: "#060606",
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("layout5Card2Title");
-                        }}
-                      />
-                    )}
-                    {!data.layout5Card2DescStyle?.isHidden && (
-                      <SafeHtml
-                        html={data.layout5Card2Desc || "영상 소개 문구 적는 곳"}
-                        className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          ...getElementStyle(
-                            data.layout5Card2DescStyle,
-                            viewport,
-                          ),
-                          fontFamily: "Pretendard, sans-serif",
-                          fontWeight: 500,
-                          letterSpacing: isMobile5 ? "-0.36px" : "-0.4px",
-                          lineHeight: 1.5,
-                          color: "#6d7882",
+                          height: isMobile5 ? "100px" : "180px",
                           width: "100%",
+                          borderRadius: isMobile5 ? "8px" : "16px",
+                          overflow: "hidden",
+                          flexShrink: 0,
+                          cursor: "pointer",
                         }}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
-                          onElementSelect?.("layout5Card2Desc");
+                          if (isFirstCard) {
+                            onElementSelect?.("layout5Card1ImageUrl");
+                            return;
+                          }
+                          if (isSecondCard) {
+                            onElementSelect?.("layout5Card2ImageUrl");
+                            return;
+                          }
+                          onElementSelect?.("itemImage", itemSelectId);
                         }}
-                      />
-                    )}
-                  </div>
-                </div>
+                      >
+                        <UniversalMedia
+                          url={imageUrl}
+                          alt={titleText}
+                          className="w-full h-full"
+                          style={{
+                            objectFit: "cover",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            if (isFirstCard) {
+                              onElementSelect?.("layout5Card1ImageUrl");
+                              return;
+                            }
+                            if (isSecondCard) {
+                              onElementSelect?.("layout5Card2ImageUrl");
+                              return;
+                            }
+                            onElementSelect?.("itemImage", itemSelectId);
+                          }}
+                        />
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "0px",
+                          alignItems: "flex-start",
+                          width: "100%",
+                          textAlign: "left",
+                        }}
+                      >
+                        {!titleStyle?.isHidden && (
+                          <SafeHtml
+                            html={titleText}
+                            className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                            style={{
+                              ...getElementStyle(titleStyle, viewport),
+                              fontFamily: "Pretendard, sans-serif",
+                              letterSpacing: isMobile5 ? "-0.4px" : "-0.48px",
+                              lineHeight: 1.5,
+                            }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              if (isFirstCard) {
+                                onElementSelect?.("layout5Card1Title");
+                                return;
+                              }
+                              if (isSecondCard) {
+                                onElementSelect?.("layout5Card2Title");
+                                return;
+                              }
+                              onElementSelect?.("itemTitle", itemSelectId);
+                            }}
+                          />
+                        )}
+                        {!descStyle?.isHidden && (
+                          <SafeHtml
+                            html={descText}
+                            className="hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                            style={{
+                              ...getElementStyle(descStyle, viewport),
+                              fontFamily: "Pretendard, sans-serif",
+                              letterSpacing: isMobile5 ? "-0.36px" : "-0.4px",
+                              lineHeight: 1.5,
+                              width: "100%",
+                            }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              if (isFirstCard) {
+                                onElementSelect?.("layout5Card1Desc");
+                                return;
+                              }
+                              if (isSecondCard) {
+                                onElementSelect?.("layout5Card2Desc");
+                                return;
+                              }
+                              onElementSelect?.("itemDesc", itemSelectId);
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

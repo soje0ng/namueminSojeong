@@ -9,6 +9,8 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 
 import { Widget } from "@/types/console/template";
@@ -31,6 +33,7 @@ import {
   DEFAULT_LEFT_DESC_ITEMS,
   DEFAULT_RIGHT_DESC_ITEMS,
 } from "../widgets/ComparisonCardRenderer";
+import { INFO_BANNER_DEFAULTS } from "../widgets/InfoBannerRenderer";
 import { TITLE_BANNER_DEFAULTS } from "../widgets/TitleBannerRenderer";
 import ImgUploadPop from "@/components/console/popup/ImgUploadPop";
 import { usePopupStore } from "@/store/console/usePopupStore";
@@ -109,6 +112,18 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     }
     return data[arrayName] || [];
   };
+  const getImageCardFeatureStorageKey = () => {
+    if (widget.type !== "imageCard") return "features";
+    const layoutVal = String((data as any).layout || "1").replace(
+      /^layout/,
+      "",
+    );
+    if (layoutVal === "3") return "layout3Features";
+    if (layoutVal === "4") return "layout4Features";
+    if (layoutVal === "6") return "layout6Features";
+    return "features";
+  };
+  const imageCardFeatureStorageKey = getImageCardFeatureStorageKey();
 
   // Helper to update style for item or root property
   const updateStyle = (
@@ -259,7 +274,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       }
       if (sectionType === "basicText") {
         if (layoutVal === "8" && key === "sectionBasicText")
-          return textStyle("20px", "500", "#6D7882");
+          return textStyle("20px", "400", "#6D7882");
         if (layoutVal === "9" && key === "sectionBasicText")
           return textStyle("20px", "400", "#6D7882");
       }
@@ -680,6 +695,77 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     const fallback = (TITLE_BANNER_DEFAULTS as any)[styleKey];
     return fallback && typeof fallback === "object" ? { ...fallback } : {};
   };
+  const getInfoBannerFallbackStyle = () => {
+    if (widget.type !== "infoBanner") return {};
+
+    const layoutVal = String(data.layout || "1").replace(/^layout/, "");
+    if (layoutVal !== "5") return {};
+
+    const cloneStyle = (value: any) =>
+      value && typeof value === "object" ? { ...value } : {};
+
+    if (elementKey === "layout5SubTitle") {
+      return cloneStyle(
+        data.layout5SubTitleStyle || INFO_BANNER_DEFAULTS.layout5SubTitleStyle,
+      );
+    }
+
+    if (elementKey === "layout5Title") {
+      return cloneStyle(
+        data.layout5TitleStyle || INFO_BANNER_DEFAULTS.layout5TitleStyle,
+      );
+    }
+
+    if (elementKey === "layout5Desc") {
+      return cloneStyle(
+        data.layout5DescStyle || INFO_BANNER_DEFAULTS.layout5DescStyle,
+      );
+    }
+
+    if (elementKey === "layout5Card1Title") {
+      return cloneStyle(
+        data.layout5Card1TitleStyle ||
+          INFO_BANNER_DEFAULTS.layout5Card1TitleStyle,
+      );
+    }
+
+    if (elementKey === "layout5Card1Desc") {
+      return cloneStyle(
+        data.layout5Card1DescStyle ||
+          INFO_BANNER_DEFAULTS.layout5Card1DescStyle,
+      );
+    }
+
+    if (elementKey === "layout5Card2Title") {
+      return cloneStyle(
+        data.layout5Card2TitleStyle ||
+          INFO_BANNER_DEFAULTS.layout5Card2TitleStyle,
+      );
+    }
+
+    if (elementKey === "layout5Card2Desc") {
+      return cloneStyle(
+        data.layout5Card2DescStyle ||
+          INFO_BANNER_DEFAULTS.layout5Card2DescStyle,
+      );
+    }
+
+    if (elementKey === "itemTitle") {
+      return cloneStyle(
+        data.layout5Card1TitleStyle ||
+          INFO_BANNER_DEFAULTS.layout5Card1TitleStyle,
+      );
+    }
+
+    if (elementKey === "itemDesc") {
+      return cloneStyle(
+        data.layout5Card1DescStyle ||
+          INFO_BANNER_DEFAULTS.layout5Card1DescStyle,
+      );
+    }
+
+    return {};
+  };
 
   if (elementKey === "tableHeaderGubun") {
     textValue = data.comparisonGubun || "구분";
@@ -690,7 +776,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       updateWidgetData(widget.id, { comparisonGubun: val });
     onStyleChange = (k, v) =>
       updateWidgetData(widget.id, {
-        [styleKey]: { ...(data[styleKey] || {}), [k]: v },
+        [styleKey]: { ...(data[styleKey] || {}), ...(typeof k === "object" ? k : { [k]: v }) },
       });
   } else if (elementKey === "tableHeader") {
     const idx = parseInt(itemId || "0");
@@ -719,7 +805,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         updateWidgetData(widget.id, { headerCellStyles: current });
       } else {
         updateWidgetData(widget.id, {
-          headerStyle: { ...(data.headerStyle || {}), [k]: v },
+          headerStyle: { ...(data.headerStyle || {}), ...(typeof k === "object" ? k : { [k]: v }) },
         });
       }
     };
@@ -759,7 +845,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         updateWidgetData(widget.id, { cellStyles: current });
       } else {
         updateWidgetData(widget.id, {
-          bodyStyle: { ...(data.bodyStyle || {}), [k]: v },
+          bodyStyle: { ...(data.bodyStyle || {}), ...(typeof k === "object" ? k : { [k]: v }) },
         });
       }
     };
@@ -770,7 +856,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     styleValue = data.middleTitleStyle || {};
     onStyleChange = (k, v) =>
       updateWidgetData(widget.id, {
-        [styleKey]: { ...(data[styleKey] || {}), [k]: v },
+        [styleKey]: { ...(data[styleKey] || {}), ...(typeof k === "object" ? k : { [k]: v }) },
       });
   } else if (elementKey === "rowLabel") {
     const idx = parseInt(itemId || "0");
@@ -786,7 +872,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     styleValue = data.rowLabelStyle || {};
     onStyleChange = (k, v) =>
       updateWidgetData(widget.id, {
-        [styleKey]: { ...(data[styleKey] || {}), [k]: v },
+        [styleKey]: { ...(data[styleKey] || {}), ...(typeof k === "object" ? k : { [k]: v }) },
       });
   } else if (
     widget.type === "comparisonCard" &&
@@ -852,7 +938,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         ...sideItem,
         descStyle: {
           ...(sideItem.descStyle || {}),
-          [k]: v,
+          ...(typeof k === "object" ? k : { [k]: v }),
         },
       };
       updateWidgetData(widget.id, { items: nextItems });
@@ -967,7 +1053,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     onStyleChange = (k, v) => {
       const updated = sectionsArr.map((s: any) =>
         s.id === itemId
-          ? { ...s, [styleProp]: { ...(s[styleProp] || {}), [k]: v } }
+          ? { ...s, [styleProp]: { ...(s[styleProp] || {}), ...(typeof k === "object" ? k : { [k]: v }) } }
           : s,
       );
       updateWidgetData(widget.id, { [sectionsKey]: updated });
@@ -1024,7 +1110,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         const oldStyle = updated[idx][styleField] || {};
         updated[idx] = {
           ...updated[idx],
-          [styleField]: { ...oldStyle, [k]: v },
+          [styleField]: { ...oldStyle, ...(typeof k === "object" ? k : { [k]: v }) },
         };
         updateWidgetData(widget.id, { sections10: updated });
       };
@@ -1062,7 +1148,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 ...candidate,
                 [caseStyleKey]: {
                   ...(candidate[caseStyleKey] || {}),
-                  [k]: v,
+                  ...(typeof k === "object" ? k : { [k]: v }),
                 },
               },
         );
@@ -1101,7 +1187,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 ...candidate,
                 featureStyle: {
                   ...(candidate.featureStyle || {}),
-                  [k]: v,
+                  ...(typeof k === "object" ? k : { [k]: v }),
                 },
               },
         );
@@ -1180,7 +1266,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                       ...s,
                       imageStyle: {
                         ...(s.imageStyle || {}),
-                        [k]: v,
+                        ...(typeof k === "object" ? k : { [k]: v }),
                       },
                     },
               );
@@ -1314,7 +1400,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             ...it,
                             [targetStyleProp]: {
                               ...(it[targetStyleProp] || {}),
-                              [k]: v,
+                              ...(typeof k === "object" ? k : { [k]: v }),
                             },
                           }
                         : it,
@@ -1460,7 +1546,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                                   ...it,
                                   [styleProp]: {
                                     ...(it[styleProp] || {}),
-                                    [k]: v,
+                                    ...(typeof k === "object" ? k : { [k]: v }),
                                   },
                                 }
                               : it,
@@ -1532,8 +1618,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           return lines.length > 0 ? lines : [""];
         };
 
-        const rawFeatures = Array.isArray(targetItem?.features)
-          ? targetItem.features
+        const rawFeatures = Array.isArray(targetItem?.[imageCardFeatureStorageKey])
+          ? targetItem[imageCardFeatureStorageKey]
+          : Array.isArray(targetItem?.features)
+            ? targetItem.features
           : [];
 
         if (!rawFeatures.length) {
@@ -1557,36 +1645,27 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           }
 
           if (typeof feature === "string") {
-            return parseLines(feature).map((line: string) => {
-              const row = {
-                label: defaultLabel(idx),
-                value: line,
-                labelStyle: undefined,
-                valueStyle: undefined,
-              };
-              idx += 1;
-              return row;
-            });
+            const row = {
+              label: defaultLabel(idx),
+              value: feature,
+              labelStyle: undefined,
+              valueStyle: undefined,
+            };
+            idx += 1;
+            return [row];
           }
 
           if (typeof feature !== "object") return [];
 
           const baseLabel = (feature.label || "").trim();
-          return parseLines(feature.value).map(
-            (line: string, lineIdx: number) => {
-              const row = {
-                label:
-                  lineIdx === 0
-                    ? baseLabel || defaultLabel(idx)
-                    : defaultLabel(idx),
-                value: line,
-                labelStyle: feature.labelStyle,
-                valueStyle: feature.valueStyle,
-              };
-              idx += 1;
-              return row;
-            },
-          );
+          const row = {
+            label: baseLabel || defaultLabel(idx),
+            value: typeof feature.value === "string" ? feature.value : "",
+            labelStyle: feature.labelStyle,
+            valueStyle: feature.valueStyle,
+          };
+          idx += 1;
+          return [row];
         });
       };
 
@@ -1680,7 +1759,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             if (!isTarget) return it;
             return {
               ...it,
-              features: normalizedRows.map((row) => ({
+              [imageCardFeatureStorageKey]: normalizedRows.map((row) => ({
                 label: row.label,
                 value: row.value,
                 ...(row.labelStyle ? { labelStyle: row.labelStyle } : {}),
@@ -1721,7 +1800,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             };
             return {
               ...it,
-              features: nextRows.map((row) => ({
+              [imageCardFeatureStorageKey]: nextRows.map((row) => ({
                 label: row.label,
                 value: row.value,
                 ...(row.labelStyle ? { labelStyle: row.labelStyle } : {}),
@@ -1845,7 +1924,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
               ...(item[styleKey] || {}),
-              [k]: v,
+              ...(typeof k === "object" ? k : { [k]: v }),
             }),
           });
       } else if (
@@ -1898,7 +1977,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
               ...currentStyle,
-              [k]: v,
+              ...(typeof k === "object" ? k : { [k]: v }),
             }),
           });
         };
@@ -1946,7 +2025,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
               ...(item[styleKey] || {}),
-              [k]: v,
+              ...(typeof k === "object" ? k : { [k]: v }),
             }),
           });
       } else if (
@@ -2017,7 +2096,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
               ...(item[styleKey] || {}),
-              [k]: v,
+              ...(typeof k === "object" ? k : { [k]: v }),
             }),
           });
 
@@ -2074,7 +2153,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           updateWidgetData(widget.id, {
             [arrayName]: updateItemInArray(data[arrayName], itemId, styleKey, {
               ...(item[styleKey] || {}),
-              [k]: v,
+              ...(typeof k === "object" ? k : { [k]: v }),
             }),
           });
       }
@@ -2126,6 +2205,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             ? "contentDescStyle"
             : elementKey === "layout3ContentDesc"
               ? "layout3ContentDescStyle"
+          : elementKey === "layout3LeftImageUrl"
+            ? "layout3LeftImageUrlStyle"
+            : elementKey === "layout3RightImageUrl"
+              ? "layout3RightImageUrlStyle"
           : elementKey === "image" ||
               elementKey === "imageUrl" ||
               elementKey === "imageMobile"
@@ -2212,6 +2295,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   if (widget.type === "titleBanner" && titleBannerFallbackStyle) {
     styleValue = { ...titleBannerFallbackStyle, ...styleValue };
   }
+  const infoBannerFallbackStyle = getInfoBannerFallbackStyle();
+  if (widget.type === "infoBanner" && infoBannerFallbackStyle) {
+    styleValue = { ...infoBannerFallbackStyle, ...styleValue };
+  }
   if (
     (widget.type === "process" || widget.type === "processCard") &&
     elementKey === "subTitle" &&
@@ -2270,6 +2357,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     widget.type === "titleBanner" &&
     String((widget.data as any).layout || "1") === "3" &&
     ["layout3Image", "layout3MobileImage"].includes(elementKey);
+  const isTextStructureLayout1ItemIconFrameEditor =
+    widget.type === "textStructure" &&
+    String((widget.data as any).layout || "1").replace(/^layout/, "") ===
+      "1" &&
+    elementKey === "itemIcon";
 
   // [Banner Section] Default Placeholder Logic
   if (widget.type === "bannerSection") {
@@ -2285,7 +2377,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   if (isMediaKey) {
     if (styleValue.objectFit === undefined)
       styleValue = { ...styleValue, objectFit: "contain" };
-    if (styleValue.width === undefined)
+    if (
+      styleValue.width === undefined &&
+      !isTextStructureLayout1ItemIconFrameEditor
+    )
       styleValue = { ...styleValue, width: "100%" };
   }
   // Inject sensible defaults so inputs are never completely blank.
@@ -2422,6 +2517,27 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
   const currentPlaceholder = getPlaceholderText();
 
   const displayValue = textValue ? textValue.replace(/<br\s*\/?>/gi, "\n") : "";
+  const normalizeFontSizeStyleValue = (value: any) => {
+    if (value === undefined || value === null || value === "") return "";
+    const normalized = String(value).trim();
+    if (!normalized) return "";
+    return !isNaN(Number(normalized)) ? `${normalized}px` : normalized;
+  };
+  const getNextFontSizeValue = (value: string) => {
+    if (value === "") return "";
+    return !isNaN(Number(value)) && value.trim() !== "" ? `${value}px` : value;
+  };
+  const shouldSyncMobileFontSizeWithDesktop = () => {
+    const currentDesktop = normalizeFontSizeStyleValue(styleValue.fontSize);
+    const currentMobile = normalizeFontSizeStyleValue(styleValue.fontSizeMobile);
+    const defaultMobile = normalizeFontSizeStyleValue(placeholderMobile);
+
+    return (
+      !currentMobile ||
+      currentMobile === defaultMobile ||
+      (currentDesktop !== "" && currentMobile === currentDesktop)
+    );
+  };
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4 duration-200">
@@ -2466,7 +2582,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   const itemsList = data[arrayName] || [];
                   const targetItem =
                     itemsList.find((i: any) => i.id === itemId) || {};
-                  const currentFeatures = targetItem.features || [
+                  const currentFeatures =
+                    targetItem[imageCardFeatureStorageKey] ||
+                    targetItem.features || [
                     {
                       label: targetItem.featureLabel || "특징 01",
                       value: "프로그램 특징 내용 입력",
@@ -2481,7 +2599,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                     { label: "특징", value: "새로운 내용 입력" },
                   ];
                   const newItems = itemsList.map((it: any) =>
-                    it.id === itemId ? { ...it, features: newFeatures } : it,
+                    it.id === itemId
+                      ? { ...it, [imageCardFeatureStorageKey]: newFeatures }
+                      : it,
                   );
                   updateWidgetData(widget.id, { [arrayName]: newItems });
                 }}
@@ -2497,7 +2617,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 const itemsList = data[arrayName] || [];
                 const targetItem =
                   itemsList.find((i: any) => i.id === itemId) || {};
-                const features = targetItem.features || [
+                const features =
+                  targetItem[imageCardFeatureStorageKey] ||
+                  targetItem.features || [
                   {
                     label: targetItem.featureLabel || "특징 01",
                     value: "프로그램 특징 내용 입력",
@@ -2528,7 +2650,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                               ];
                               const newItems = itemsList.map((it: any) =>
                                 it.id === itemId
-                                  ? { ...it, features: newFeatures }
+                                  ? {
+                                      ...it,
+                                      [imageCardFeatureStorageKey]: newFeatures,
+                                    }
                                   : it,
                               );
                               updateWidgetData(widget.id, {
@@ -2538,9 +2663,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             className="p-1 bg-gray-50 rounded text-gray-500 hover:text-blue-500 hover:bg-blue-50"
                             title="위로 이동"
                           >
-                            <span className="material-symbols-outlined text-[14px]">
-                              arrow_upward
-                            </span>
+                            <ArrowUp size={14} />
                           </button>
                         )}
                         {idx < features.length - 1 && (
@@ -2553,7 +2676,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                               ];
                               const newItems = itemsList.map((it: any) =>
                                 it.id === itemId
-                                  ? { ...it, features: newFeatures }
+                                  ? {
+                                      ...it,
+                                      [imageCardFeatureStorageKey]: newFeatures,
+                                    }
                                   : it,
                               );
                               updateWidgetData(widget.id, {
@@ -2563,9 +2689,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             className="p-1 bg-gray-50 rounded text-gray-500 hover:text-blue-500 hover:bg-blue-50"
                             title="아래로 이동"
                           >
-                            <span className="material-symbols-outlined text-[14px]">
-                              arrow_downward
-                            </span>
+                            <ArrowDown size={14} />
                           </button>
                         )}
                         <button
@@ -2575,7 +2699,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             );
                             const newItems = itemsList.map((it: any) =>
                               it.id === itemId
-                                ? { ...it, features: newFeatures }
+                                ? {
+                                    ...it,
+                                    [imageCardFeatureStorageKey]: newFeatures,
+                                  }
                                 : it,
                             );
                             updateWidgetData(widget.id, {
@@ -2585,9 +2712,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                           className="p-1 bg-gray-50 rounded text-gray-500 hover:text-red-500 hover:bg-red-50"
                           title="삭제"
                         >
-                          <span className="material-symbols-outlined text-[14px]">
-                            delete
-                          </span>
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
@@ -2606,7 +2731,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                           };
                           const newItems = itemsList.map((it: any) =>
                             it.id === itemId
-                              ? { ...it, features: newFeatures }
+                              ? {
+                                  ...it,
+                                  [imageCardFeatureStorageKey]: newFeatures,
+                                }
                               : it,
                           );
                           updateWidgetData(widget.id, {
@@ -2631,7 +2759,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                           };
                           const newItems = itemsList.map((it: any) =>
                             it.id === itemId
-                              ? { ...it, features: newFeatures }
+                              ? {
+                                  ...it,
+                                  [imageCardFeatureStorageKey]: newFeatures,
+                                }
                               : it,
                           );
                           updateWidgetData(widget.id, {
@@ -3694,77 +3825,81 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   </label>
 
                   {/* 100% 전체 너비 토글 */}
-                  <div className="mb-3 flex items-center justify-between p-2.5 bg-blue-50/50 rounded-lg border border-blue-100">
-                    <span className="text-[10px] font-bold text-gray-600">
-                      전체 너비 (100%)
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const isCurrently100 = styleValue.width === "100%";
-                        const newWidth = isCurrently100 ? "" : "100%";
-                        const newHeight = "auto"; // 항상 auto로 리셋
+                  {!isTextStructureLayout1ItemIconFrameEditor && (
+                    <div className="mb-3 flex items-center justify-between p-2.5 bg-blue-50/50 rounded-lg border border-blue-100">
+                      <span className="text-[10px] font-bold text-gray-600">
+                        전체 너비 (100%)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const isCurrently100 = styleValue.width === "100%";
+                          const newWidth = isCurrently100 ? "" : "100%";
+                          const newHeight = "auto"; // 항상 auto로 리셋
 
-                        const updates = {
-                          width: newWidth,
-                          height: newHeight,
-                        };
+                          const updates = {
+                            width: newWidth,
+                            height: newHeight,
+                          };
 
-                        if (itemId) {
-                          let arrayName = "items";
-                          if (widget.type === "process") arrayName = "steps";
-                          else if (widget.type === "tabCarousel")
-                            arrayName = "tabs";
-                          else if (
-                            widget.type === "textSplit" &&
-                            data.variant === "image-left-list"
-                          )
-                            arrayName = "listItems";
-                          else if (widget.type === "textSection") {
-                            if (
-                              data.variant === "text2" ||
-                              data.variant === "text3"
+                          if (itemId) {
+                            let arrayName = "items";
+                            if (widget.type === "process") arrayName = "steps";
+                            else if (widget.type === "tabCarousel")
+                              arrayName = "tabs";
+                            else if (
+                              widget.type === "textSplit" &&
+                              data.variant === "image-left-list"
                             )
-                              arrayName = "items";
-                            else arrayName = "blocks";
-                          }
-
-                          const currentItems = data[arrayName] || [];
-                          const updatedItems = currentItems.map((item: any) => {
-                            if (item.id === itemId) {
-                              const oldStyle = item[styleKey] || {};
-                              return {
-                                ...item,
-                                [styleKey]: { ...oldStyle, ...updates },
-                              };
+                              arrayName = "listItems";
+                            else if (widget.type === "textSection") {
+                              if (
+                                data.variant === "text2" ||
+                                data.variant === "text3"
+                              )
+                                arrayName = "items";
+                              else arrayName = "blocks";
                             }
-                            return item;
-                          });
-                          updateWidgetData(widget.id, {
-                            [arrayName]: updatedItems,
-                          });
-                        } else {
-                          const oldStyle = data[styleKey] || {};
-                          updateWidgetData(widget.id, {
-                            [styleKey]: { ...oldStyle, ...updates },
-                          });
-                        }
-                      }}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${
-                        styleValue.width === "100%"
-                          ? "bg-blue-500"
-                          : "bg-gray-300"
-                      }`}
-                    >
-                      <span
-                        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+
+                            const currentItems = data[arrayName] || [];
+                            const updatedItems = currentItems.map(
+                              (item: any) => {
+                                if (item.id === itemId) {
+                                  const oldStyle = item[styleKey] || {};
+                                  return {
+                                    ...item,
+                                    [styleKey]: { ...oldStyle, ...updates },
+                                  };
+                                }
+                                return item;
+                              },
+                            );
+                            updateWidgetData(widget.id, {
+                              [arrayName]: updatedItems,
+                            });
+                          } else {
+                            const oldStyle = data[styleKey] || {};
+                            updateWidgetData(widget.id, {
+                              [styleKey]: { ...oldStyle, ...updates },
+                            });
+                          }
+                        }}
+                        className={`relative w-12 h-6 rounded-full transition-colors ${
                           styleValue.width === "100%"
-                            ? "translate-x-6"
-                            : "translate-x-0"
+                            ? "bg-blue-500"
+                            : "bg-gray-300"
                         }`}
-                      />
-                    </button>
-                  </div>
+                      >
+                        <span
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                            styleValue.width === "100%"
+                              ? "translate-x-6"
+                              : "translate-x-0"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
 
                   <div className="space-y-3 p-3 bg-gray-50/50 rounded-xl border border-gray-200">
                     <div className="grid grid-cols-2 gap-3">
@@ -3778,6 +3913,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             type="text"
                             placeholder=""
                             value={
+                              !isTextStructureLayout1ItemIconFrameEditor &&
                               styleValue.width === "100%"
                                 ? ""
                                 : styleValue.width
@@ -3792,8 +3928,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                               if (val === "") onStyleChange("width", "");
                               else onStyleChange("width", val + "px");
                             }}
-                            disabled={styleValue.width === "100%"}
+                            disabled={
+                              !isTextStructureLayout1ItemIconFrameEditor &&
+                              styleValue.width === "100%"
+                            }
                             className={`w-full border border-gray-300 p-2.5 pr-8 rounded-lg text-xs font-bold focus:ring-2 focus:ring-gray-400 focus:border-gray-400 ${
+                              !isTextStructureLayout1ItemIconFrameEditor &&
                               styleValue.width === "100%"
                                 ? "bg-gray-100 cursor-not-allowed opacity-50"
                                 : "bg-white"
@@ -3814,6 +3954,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                             type="text"
                             placeholder=""
                             value={
+                              !isTextStructureLayout1ItemIconFrameEditor &&
                               styleValue.width === "100%"
                                 ? ""
                                 : styleValue.height
@@ -3828,8 +3969,12 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                               if (val === "") onStyleChange("height", "auto");
                               else onStyleChange("height", val + "px");
                             }}
-                            disabled={styleValue.width === "100%"}
+                            disabled={
+                              !isTextStructureLayout1ItemIconFrameEditor &&
+                              styleValue.width === "100%"
+                            }
                             className={`w-full border border-gray-300 p-2.5 pr-8 rounded-lg text-xs font-bold focus:ring-2 focus:ring-gray-400 focus:border-gray-400 ${
+                              !isTextStructureLayout1ItemIconFrameEditor &&
                               styleValue.width === "100%"
                                 ? "bg-gray-100 cursor-not-allowed opacity-50"
                                 : "bg-white"
@@ -3843,16 +3988,29 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                     </div>
                     <p className="text-[9px] text-gray-400 leading-tight font-medium">
                       *{" "}
-                      {styleValue.width === "100%"
+                      {!isTextStructureLayout1ItemIconFrameEditor &&
+                      styleValue.width === "100%"
                         ? "전체 너비로 설정되었습니다. 토글을 해제하면 픽셀 단위로 조정할 수 있습니다."
-                        : "이미지 영역(Container)의 크기를 픽셀 단위로 직접 변경합니다."}
+                        : isTextStructureLayout1ItemIconFrameEditor
+                          ? "아이콘 박스 영역의 크기를 픽셀 단위로 직접 변경합니다."
+                          : "이미지 영역(Container)의 크기를 픽셀 단위로 직접 변경합니다."}
                     </p>
 
                     {/* 설정 초기화 버튼 */}
                     <button
                       onClick={() => {
-                        onStyleChange("width", "100%");
-                        onStyleChange("height", "auto");
+                        onStyleChange(
+                          "width",
+                          isTextStructureLayout1ItemIconFrameEditor
+                            ? ""
+                            : "100%",
+                        );
+                        onStyleChange(
+                          "height",
+                          isTextStructureLayout1ItemIconFrameEditor
+                            ? ""
+                            : "auto",
+                        );
                         onStyleChange("objectFit", "contain");
                       }}
                       className="w-full mt-2 py-2 px-3 text-[10px] font-bold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all"
@@ -3886,6 +4044,88 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                       </span>
                     </div>
                   </div>
+
+                  {isTextStructureLayout1ItemIconFrameEditor && (
+                    <div className="space-y-4 pt-4 border-t border-gray-100">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 block uppercase tracking-tight">
+                          아이콘 박스 배경 이미지
+                        </label>
+                        <ImgUploadPop
+                          onSelect={(url) => {
+                            onStyleChange("backgroundImage", url);
+                            onStyleChange("backgroundSize", "cover");
+                            onStyleChange("backgroundPosition", "center");
+                            onStyleChange("backgroundRepeat", "no-repeat");
+                          }}
+                          button={
+                            <div className="flex flex-row items-center justify-center gap-3 w-full bg-gray-50 border border-dashed border-gray-200 p-3 rounded-xl text-sm cursor-pointer hover:bg-white hover:border-blue-400 transition-all">
+                              <div className="w-9 h-9 shrink-0 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                                <Upload size={18} />
+                              </div>
+                              <div className="text-left">
+                                <p className="font-bold text-gray-700 text-xs">
+                                  배경 이미지 선택
+                                </p>
+                                <p className="text-[10px] text-gray-400">
+                                  아이콘 박스에 적용됩니다
+                                </p>
+                              </div>
+                            </div>
+                          }
+                        />
+                        <input
+                          type="text"
+                          className="w-full bg-gray-50 border-none p-2.5 rounded-lg text-xs font-medium outline-none text-blue-600"
+                          value={styleValue.backgroundImage || ""}
+                          onChange={(e) =>
+                            onStyleChange("backgroundImage", e.target.value)
+                          }
+                          placeholder="배경 이미지 URL 입력"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 block uppercase tracking-tight">
+                          아이콘 박스 배경색
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            className="w-12 h-10 rounded-lg cursor-pointer border border-gray-100 p-0.5 bg-white shrink-0"
+                            value={styleValue.backgroundColor || "#ffffff"}
+                            onChange={(e) =>
+                              onStyleChange("backgroundColor", e.target.value)
+                            }
+                          />
+                          <input
+                            type="text"
+                            className="flex-1 bg-gray-50 border-none p-2.5 rounded-lg text-xs font-mono outline-none text-gray-700"
+                            value={styleValue.backgroundColor || ""}
+                            onChange={(e) =>
+                              onStyleChange("backgroundColor", e.target.value)
+                            }
+                            placeholder="#ffffff"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => onStyleChange("backgroundImage", "")}
+                          className="flex-1 text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold transition-colors"
+                        >
+                          배경 이미지 제거
+                        </button>
+                        <button
+                          onClick={() => onStyleChange("backgroundColor", "")}
+                          className="flex-1 text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold transition-colors"
+                        >
+                          배경색 초기화
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Link URL Control */}
@@ -3992,11 +4232,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 placeholder="Size"
                 value={styleValue.fontSize?.toString().replace("px", "") || ""}
                 onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === "") onStyleChange("fontSize", "");
-                  else if (!isNaN(Number(val)) && val.trim() !== "")
-                    onStyleChange("fontSize", val + "px");
-                  else onStyleChange("fontSize", val);
+                  const nextFontSize = getNextFontSizeValue(e.target.value);
+                  if (shouldSyncMobileFontSizeWithDesktop()) {
+                    onStyleChange({
+                      fontSize: nextFontSize,
+                      fontSizeMobile: nextFontSize,
+                    });
+                    return;
+                  }
+                  onStyleChange("fontSize", nextFontSize);
                 }}
                 className="w-full bg-gray-50 border-none p-2.5 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-100 outline-none text-center placeholder:text-gray-400"
               />

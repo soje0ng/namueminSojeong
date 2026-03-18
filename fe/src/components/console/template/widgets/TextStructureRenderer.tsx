@@ -3,12 +3,14 @@ import { GenericNewWidget } from "@/types/console/template";
 import {
   useWidgetStyle,
   getElementStyle,
+  mergeTextStyleWithFallback,
   formatUnit,
   SafeHtml,
   WidgetRendererProps,
   UniversalMedia,
   getPaddingClass,
   getVerticalPaddingClass,
+  isVideoUrl,
 } from "./WidgetUtils";
 import {
   ImageIcon,
@@ -69,6 +71,58 @@ const mergeWithOpacity = (
   return { ...base, ...opacityStyle };
 };
 
+const getTextStructureBannerMediaProps = (
+  url: string | undefined,
+  style: React.CSSProperties,
+  bannerHeight: string | null,
+) => {
+  const isVideoMedia = Boolean(url && isVideoUrl(url));
+
+  return {
+    className:
+      !bannerHeight && isVideoMedia ? "w-full" : "w-full h-full object-cover",
+    style: {
+      ...style,
+      ...(bannerHeight
+        ? { height: bannerHeight, minHeight: bannerHeight }
+        : isVideoMedia
+          ? { height: "auto", minHeight: undefined }
+          : { height: "100%", minHeight: undefined }),
+    } as React.CSSProperties,
+  };
+};
+
+const getTextStructureItemCardBackgroundStyle = (
+  itemStyle: any,
+  viewport: "mobile" | "tablet" | "desktop",
+  baseStyle: React.CSSProperties = {},
+) => {
+  const resolvedStyle = getElementStyle(itemStyle, viewport) as any;
+  const mergedBaseStyle = { ...baseStyle } as React.CSSProperties;
+
+  if (resolvedStyle.backgroundColor && !resolvedStyle.backgroundImage) {
+    delete (mergedBaseStyle as any).backgroundImage;
+    delete (mergedBaseStyle as any).backgroundSize;
+    delete (mergedBaseStyle as any).backgroundPosition;
+    delete (mergedBaseStyle as any).backgroundRepeat;
+  }
+
+  return {
+    ...mergedBaseStyle,
+    ...(resolvedStyle.backgroundColor
+      ? { backgroundColor: resolvedStyle.backgroundColor }
+      : {}),
+    ...(resolvedStyle.backgroundImage
+      ? {
+          backgroundImage: resolvedStyle.backgroundImage,
+          backgroundSize: resolvedStyle.backgroundSize || "cover",
+          backgroundPosition: resolvedStyle.backgroundPosition || "center",
+          backgroundRepeat: resolvedStyle.backgroundRepeat || "no-repeat",
+        }
+      : {}),
+  } as React.CSSProperties;
+};
+
 export const TEXT_STRUCTURE_DEFAULTS = {
   layout: "1",
   itemColumns: 2,
@@ -124,11 +178,11 @@ export const TEXT_STRUCTURE_DEFAULTS = {
   l4CheckIconUrl: "/images/placeholder/check_bullet.png",
 
   bgImageUrl: "/images/placeholder/bg-image.jpg",
-  contentTitle: "USCIS 우선심사 프로젝트<br/>Copper Valley",
+  contentTitle: "타이틀명 입력",
   contentSubTitle: "캘리포디나 대형 리조트 건설 프로젝트",
   contentDesc:
     "캘리포디나 대형 리조트 건설 프로젝트 서브 텍스트<br/>내용 적는 곳 에디터로 활용",
-  contentTitleStyle: { fontSize: "48px", fontWeight: "700", color: "#09090b" },
+  contentTitleStyle: { fontSize: "48px", fontSizeMobile: "28px", fontWeight: "700", color: "#09090b" },
   contentSubTitleStyle: {
     fontSize: "20px",
     fontWeight: "400",
@@ -139,7 +193,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     fontWeight: "400",
     color: "#6D7882",
   },
-  layout3ContentTitle: "USCIS 우선심사 프로젝트<br/>Copper Valley",
+  layout3ContentTitle: "타이틀명 입력",
   layout3ContentSubTitle: "캘리포디나 대형 리조트 건설 프로젝트",
   layout3ContentDesc:
     "캘리포디나 대형 리조트 건설 프로젝트 서브 텍스트<br/>내용 적는 곳 에디터로 활용",
@@ -147,7 +201,7 @@ export const TEXT_STRUCTURE_DEFAULTS = {
     fontSize: "48px",
     fontWeight: "700",
     color: "#09090b",
-    fontSizeMobile: "24px",
+    fontSizeMobile: "28px",
   },
   layout3ContentSubTitleStyle: {
     fontSize: "20px",
@@ -411,21 +465,28 @@ export const TEXT_STRUCTURE_7_DEFAULT_SECTIONS = [
     id: "s7-text-1",
     type: "text",
     subTitle: "서브 타이틀 입력",
+    subTitleStyle: { fontSize: "24px", fontSizeMobile: "20px", fontWeight: "500", color: "#131416" },
     content: "내용을 입력하세요.",
+    contentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
   },
   {
     id: "s7-news-1",
     type: "newsletter",
-    newsletterSubTitle: "서브 타이틀 입력",
+    newsletterSubTitle: "보조 타이틀 문구 입력",
+    newsletterSubTitleStyle: { fontSize: "20px", fontSizeMobile: "20px", fontWeight: "700", color: "#285DE1" },
     leftContent: "왼쪽 내용을 입력하세요.",
+    leftContentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
     rightContent: "오른쪽 내용을 입력하세요.",
+    rightContentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
   },
   {
     id: "s7-banner-1",
     type: "stripBanner",
     imageUrl: "/images/placeholder/card-sm.jpg",
     bannerSubTitle: "서브 타이틀 입력",
+    bannerSubTitleStyle: { fontSize: "24px", fontSizeMobile: "20px", fontWeight: "700", color: "#131416" },
     bannerDesc: "내용을 입력하세요.",
+    bannerDescStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "500", color: "#6D7882" },
   },
 ];
 
@@ -440,8 +501,10 @@ export const TEXT_STRUCTURE_8_DEFAULT_SECTIONS = [
     id: "s8-text-1",
     type: "text",
     subTitle: "서브 타이틀 입력",
+    subTitleStyle: { fontSize: "24px", fontSizeMobile: "20px", fontWeight: "500", color: "#131416" },
     content:
       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
+    contentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
   },
   {
     id: "s8-feat-1",
@@ -450,19 +513,25 @@ export const TEXT_STRUCTURE_8_DEFAULT_SECTIONS = [
       {
         id: "f8-1",
         title: "첫째. 타이틀",
+        titleStyle: { fontSize: "20px", fontSizeMobile: "20px", fontWeight: "700", color: "#285DE1" },
         desc: "설명 텍스트를 입력하세요.",
+        descStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
         iconUrl: "/images/placeholder/icon_arrow_right.png",
       },
       {
         id: "f8-2",
         title: "둘째. 타이틀",
+        titleStyle: { fontSize: "20px", fontSizeMobile: "20px", fontWeight: "700", color: "#285DE1" },
         desc: "설명 텍스트를 입력하세요.",
+        descStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
         iconUrl: "/images/placeholder/icon_arrow_right.png",
       },
       {
         id: "f8-3",
         title: "셋째. 타이틀",
+        titleStyle: { fontSize: "20px", fontSizeMobile: "20px", fontWeight: "700", color: "#285DE1" },
         desc: "설명 텍스트를 입력하세요.",
+        descStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
         iconUrl: "/images/placeholder/icon_arrow_right.png",
       },
     ],
@@ -472,6 +541,7 @@ export const TEXT_STRUCTURE_8_DEFAULT_SECTIONS = [
     type: "basicText",
     content:
       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
+    contentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
   },
 ];
 
@@ -483,7 +553,7 @@ export const TEXT_STRUCTURE_9_DEFAULT_SECTIONS = [
     subTitleStyle: { fontSize: "24px", fontSizeMobile: "20px", fontWeight: "500", color: "#131416" },
     content:
       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
-    contentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "500", color: "#6D7882" },
+    contentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
   },
   {
     id: "s9-feat-1",
@@ -520,7 +590,7 @@ export const TEXT_STRUCTURE_9_DEFAULT_SECTIONS = [
     type: "basicText",
     content:
       "웹 빌더의 핵심은 속도와 안정성입니다. 우리는 자체 개발한 렌더링 엔진을 통해 기존 방식 대비 페이지 로딩 속도를 40% 이상 개선했습니다.",
-    contentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "500", color: "#6D7882" },
+    contentStyle: { fontSize: "20px", fontSizeMobile: "18px", fontWeight: "400", color: "#6D7882" },
   },
 ];
 
@@ -724,7 +794,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-left justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle({ fontSizeMobile: "18px", ...data.subTitleStyle }, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.subTitleStyle , { fontSizeMobile: "18px", }), viewport),
                     lineHeight: "1.5",
                     letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                   }}
@@ -746,7 +816,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     html={data.title || "타이틀명 입력"}
                     className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
                     style={{
-                      ...getElementStyle({ fontSizeMobile: "28px", ...data.titleStyle }, viewport),
+                      ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
                       lineHeight: "1.5",
                       letterSpacing: viewport === "tablet" ? "-0.8px" : viewport === "mobile" ? "-0.56px" : undefined,
                     }}
@@ -758,7 +828,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-left justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle({ fontSizeMobile: "18px", ...data.descStyle }, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.descStyle , { fontSizeMobile: "18px", }), viewport),
                     lineHeight: "1.5",
                     letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                   }}
@@ -801,101 +871,107 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     }
                   >
                     <div className="flex flex-col justify-start items-start">
-                      <TextStructureSafeHtml
-                        html={
-                          section.number ||
-                          `${(i + 1).toString().padStart(2, "0")}.`
-                        }
-                        className="text-center justify-start text-xl font-bold font-['Pretendard'] leading-[150%] tracking-[-0.4px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          ...getElementStyle(
-                            {
-                              fontSizeMobile: "20px",
-                              ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
-                                ?.numberStyle || {}),
-                              ...(section.numberStyle || {}),
-                            },
-                            viewport,
-                          ),
-                          lineHeight: "1.5",
-                          letterSpacing: viewport === "tablet" || viewport === "mobile" ? "-0.4px" : undefined,
-                          ...(!section.numberStyle?.color &&
-                          !section.numberStyle?.backgroundImage
-                            ? {
-                                background:
-                                  "linear-gradient(133deg, #285DE1 -2.89%, #59A1B9 48.56%, #44A075 100%)",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                              }
-                            : {}),
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("sections10_number", i.toString());
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("sections10_number", i.toString());
-                        }}
-                      />
-                      <TextStructureSafeHtml
-                        html={section.title || "프로그램 특징"}
-                        className="text-center justify-start font-['Pretendard'] italic-normal hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                        style={{
-                          ...getElementStyle(
-                            {
-                              fontSizeMobile: "20px",
-                              ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
-                                ?.titleStyle || {}),
-                              ...(section.titleStyle || {}),
-                            },
-                            viewport,
-                          ),
-                          lineHeight: "1.5",
-                          letterSpacing: viewport === "tablet" ? "-0.56px" : viewport === "mobile" ? "-0.4px" : undefined,
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("sections10_title", i.toString());
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("sections10_title", i.toString());
-                        }}
-                      />
+                      {!section.numberStyle?.isHidden && (
+                        <TextStructureSafeHtml
+                          html={
+                            section.number ||
+                            `${(i + 1).toString().padStart(2, "0")}.`
+                          }
+                          className="text-center justify-start text-xl font-bold font-['Pretendard'] leading-[150%] tracking-[-0.4px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                          style={{
+                            ...getElementStyle(
+                              {
+                                fontSizeMobile: "20px",
+                                ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
+                                  ?.numberStyle || {}),
+                                ...(section.numberStyle || {}),
+                              },
+                              viewport,
+                            ),
+                            lineHeight: "1.5",
+                            letterSpacing: viewport === "tablet" || viewport === "mobile" ? "-0.4px" : undefined,
+                            ...(!section.numberStyle?.color &&
+                            !section.numberStyle?.backgroundImage
+                              ? {
+                                  background:
+                                    "linear-gradient(133deg, #285DE1 -2.89%, #59A1B9 48.56%, #44A075 100%)",
+                                  WebkitBackgroundClip: "text",
+                                  WebkitTextFillColor: "transparent",
+                                }
+                              : {}),
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("sections10_number", i.toString());
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("sections10_number", i.toString());
+                          }}
+                        />
+                      )}
+                      {!section.titleStyle?.isHidden && (
+                        <TextStructureSafeHtml
+                          html={section.title || "프로그램 특징"}
+                          className="text-center justify-start font-['Pretendard'] italic-normal hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                          style={{
+                            ...getElementStyle(
+                              {
+                                fontSizeMobile: "20px",
+                                ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
+                                  ?.titleStyle || {}),
+                                ...(section.titleStyle || {}),
+                              },
+                              viewport,
+                            ),
+                            lineHeight: "1.5",
+                            letterSpacing: viewport === "tablet" ? "-0.56px" : viewport === "mobile" ? "-0.4px" : undefined,
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("sections10_title", i.toString());
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("sections10_title", i.toString());
+                          }}
+                        />
+                      )}
                     </div>
-                    <div
-                      className="w-[200px] h-[200px] shrink-0 relative flex justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
-                      style={mobileImageRadiusStyle}
-                    >
-                      <UniversalMedia
-                        url={
-                          section.iconUrl ||
-                          "/images/placeholder/textcard10.png"
-                        }
-                        className="w-full h-full object-cover"
-                        alt="card image"
-                        style={{
-                          ...getElementStyle(
-                            {
-                              ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
-                                ?.imageStyle || {}),
-                              ...(section.imageStyle || {}),
-                            },
-                            viewport,
-                          ),
-                          ...mobileImageRadiusStyle,
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("sections10_image", i.toString());
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("sections10_image", i.toString());
-                        }}
-                      />
-                    </div>
+                    {!section.iconUrlStyle?.isHidden && (
+                      <div
+                        className="w-[200px] h-[200px] shrink-0 relative flex justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                        style={mobileImageRadiusStyle}
+                      >
+                        <UniversalMedia
+                          url={
+                            section.iconUrl ||
+                            "/images/placeholder/textcard10.png"
+                          }
+                          className="w-full h-full object-cover"
+                          alt="card image"
+                          style={{
+                            ...getElementStyle(
+                              {
+                                ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
+                                  ?.imageStyle || {}),
+                                ...(section.imageStyle || {}),
+                              },
+                              viewport,
+                            ),
+                            ...mobileImageRadiusStyle,
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("sections10_image", i.toString());
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("sections10_image", i.toString());
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* 우측 텍스트/상세 영역 (flex: 1) */}
@@ -982,29 +1058,31 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           );
                         }}
                       >
-                        <UniversalMedia
-                          url={
-                            section.checkIconUrl ||
-                            "/images/placeholder/card_img6.png"
-                          }
-                          className="w-6 h-6 object-contain"
-                          alt="check icon"
-                          style={getElementStyle(
-                            {
-                              ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
-                                ?.checkIconStyle || {}),
-                              ...(section.checkIconStyle || {}),
-                            },
-                            viewport,
-                          )}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "sections10_checkIcon",
-                              i.toString(),
-                            );
-                          }}
-                        />
+                        {!section.checkIconUrlStyle?.isHidden && (
+                          <UniversalMedia
+                            url={
+                              section.checkIconUrl ||
+                              "/images/placeholder/card_img6.png"
+                            }
+                            className="w-6 h-6 object-contain"
+                            alt="check icon"
+                            style={getElementStyle(
+                              {
+                                ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
+                                  ?.checkIconStyle || {}),
+                                ...(section.checkIconStyle || {}),
+                              },
+                              viewport,
+                            )}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "sections10_checkIcon",
+                                i.toString(),
+                              );
+                            }}
+                          />
+                        )}
                         <TextStructureSafeHtml
                           html={section.checkTitle || "첫째, 타이틀"}
                           className="justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-[150%] tracking-[-0.4px]"
@@ -1125,10 +1203,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       html={data.subTitle || "( 서브타이틀 )"}
                       className="text-left justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                       style={{
-                        ...getElementStyle(
-                          { fontSizeMobile: "18px", ...data.subTitleStyle },
-                          viewport,
-                        ),
+                        ...getElementStyle(mergeTextStyleWithFallback(data.subTitleStyle , { fontSizeMobile: "18px", }), viewport),
                         letterSpacing:
                           viewport === "mobile"
                             ? "-0.36px"
@@ -1154,10 +1229,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         html={data.title || "타이틀명 입력"}
                         className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
                         style={{
-                          ...getElementStyle(
-                            { fontSizeMobile: "28px", ...data.titleStyle },
-                            viewport,
-                          ),
+                          ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
                           ...(viewport === "tablet"
                             ? { fontSize: "40px", letterSpacing: "-0.8px" }
                             : viewport === "mobile"
@@ -1172,10 +1244,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       html={data.desc || "이민 프로그램명 입력"}
                       className="text-left justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                       style={{
-                        ...getElementStyle(
-                          { fontSizeMobile: "18px", ...data.descStyle },
-                          viewport,
-                        ),
+                        ...getElementStyle(mergeTextStyleWithFallback(data.descStyle , { fontSizeMobile: "18px", }), viewport),
                         letterSpacing:
                           viewport === "mobile"
                             ? "-0.36px"
@@ -1233,13 +1302,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               html={item.title || "프로그램 특징"}
                               className="justify-start text-zinc-950 text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                               style={{
-                                ...getElementStyle(
-                                  {
+                                ...getElementStyle(mergeTextStyleWithFallback(item.titleStyle, {
                                     fontSizeMobile: "20px",
-                                    ...item.titleStyle,
-                                  },
-                                  viewport,
-                                ),
+                                    }), viewport),
                                 ...(viewport !== "desktop"
                                   ? { letterSpacing: "-0.4px" }
                                   : {}),
@@ -1255,10 +1320,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               html={item.desc || "프로그램 특징 내용 입력"}
                               className="justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                               style={{
-                                ...getElementStyle(
-                                  { fontSizeMobile: "18px", ...item.descStyle },
-                                  viewport,
-                                ),
+                                ...getElementStyle(mergeTextStyleWithFallback(item.descStyle , { fontSizeMobile: "18px", }), viewport),
                                 ...(viewport !== "desktop"
                                   ? { letterSpacing: "-0.36px" }
                                   : {}),
@@ -1344,10 +1406,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={l3SubTitle || "( 서브타이틀 )"}
                   className="text-center justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(
-                      { fontSizeMobile: "18px", ...l3SubTitleStyle },
-                      viewport,
-                    ),
+                    ...getElementStyle(mergeTextStyleWithFallback(l3SubTitleStyle , { fontSizeMobile: "18px", }), viewport),
                     letterSpacing:
                       viewport === "mobile"
                         ? "-0.36px"
@@ -1373,10 +1432,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     html={l3Title || "타이틀명 입력"}
                     className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[150%] break-keep"
                     style={{
-                      ...getElementStyle(
-                        { fontSizeMobile: "28px", ...l3TitleStyle },
-                        viewport,
-                      ),
+                      ...getElementStyle(mergeTextStyleWithFallback(l3TitleStyle , { fontSizeMobile: "28px", }), viewport),
                       ...(viewport === "tablet" ? { fontSize: "40px" } : {}),
                     }}
                   />
@@ -1387,10 +1443,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={l3Desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(
-                      { fontSizeMobile: "18px", ...l3DescStyle },
-                      viewport,
-                    ),
+                    ...getElementStyle(mergeTextStyleWithFallback(l3DescStyle , { fontSizeMobile: "18px", }), viewport),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -1479,10 +1532,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         }
                         className="justify-start text-시안-mode-gray95 text-3xl font-bold font-['Pretendard'] leading-[150%] break-keep text-left hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
                         style={{
-                          ...getElementStyle(
-                            { fontSizeMobile: "24px", ...l3ContentTitleStyle },
-                            viewport,
-                          ),
+                          ...getElementStyle(mergeTextStyleWithFallback(l3ContentTitleStyle , { fontSizeMobile: "24px", }), viewport),
                           ...(viewport === "tablet"
                             ? { fontSize: "32px" }
                             : {}),
@@ -1500,10 +1550,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           "캘리포디나 대형 리조트 건설 프로젝트"
                         }
                         className="justify-start text-시안-mode-gray95 text-xl font-normal font-['Pretendard'] leading-[150%] break-keep text-left hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
-                        style={getElementStyle(
-                          { fontSizeMobile: "18px", ...l3ContentSubTitleStyle },
-                          viewport,
-                        )}
+                        style={getElementStyle(mergeTextStyleWithFallback(l3ContentSubTitleStyle , { fontSizeMobile: "18px", }), viewport)}
                         onDoubleClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("layout3ContentSubTitle");
@@ -1518,10 +1565,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         "캘리포디나 대형 리조트 건설 프로젝트 서브 텍스트<br/>내용 적는 곳 에디터로 활용"
                       }
                       className="self-stretch justify-start text-시안-mode-gray50 text-lg font-normal font-['Pretendard'] leading-[150%] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep text-left"
-                      style={getElementStyle(
-                        { fontSizeMobile: "18px", ...l3ContentDescStyle },
-                        viewport,
-                      )}
+                      style={getElementStyle(mergeTextStyleWithFallback(l3ContentDescStyle , { fontSizeMobile: "18px", }), viewport)}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("layout3ContentDesc");
@@ -1606,6 +1650,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             {(data.cases || []).map((c: any, i: number) => {
               const imageOnRight = c.imageOnRight || false;
               const isLastCase = i === (data.cases || []).length - 1;
+              const isL4CheckIconHidden = Boolean(
+                (data as any).l4CheckIconUrlStyle?.isHidden,
+              );
               return (
                 <div
                   key={c.id || i}
@@ -1715,10 +1762,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           <TextStructureSafeHtml
                             html={c.title || "케이스 타이틀 입력"}
                             style={{
-                              ...getElementStyle(
-                                { fontSizeMobile: "28px", ...c.titleStyle },
-                                viewport,
-                              ),
+                              ...getElementStyle(mergeTextStyleWithFallback(c.titleStyle , { fontSizeMobile: "28px", }), viewport),
                               ...(viewport === "tablet"
                                 ? { fontSize: "40px", letterSpacing: "-0.8px" }
                                 : viewport === "mobile"
@@ -1755,32 +1799,43 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               );
                             }}
                           >
+                            {!isL4CheckIconHidden && (
+                              <div
+                                className="w-8 h-8 flex justify-center items-center shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("l4CheckIconUrl");
+                                }}
+                              >
+                                <UniversalMedia
+                                  url={
+                                    data.l4CheckIconUrl ||
+                                    "/images/placeholder/check_bullet.png"
+                                  }
+                                  alt="check"
+                                  className="w-full h-full object-contain"
+                                  style={getElementStyle(
+                                    (data as any).l4CheckIconUrlStyle,
+                                    viewport,
+                                  )}
+                                />
+                              </div>
+                            )}
                             <div
-                              className="w-8 h-8 flex justify-center items-center shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
-                              onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                onElementSelect?.("l4CheckIconUrl");
-                              }}
+                              className={
+                                isL4CheckIconHidden
+                                  ? "flex-1 min-w-0 inline-flex flex-col justify-start items-start gap-2"
+                                  : "inline-flex flex-col justify-start items-start gap-2"
+                              }
                             >
-                              <UniversalMedia
-                                url={
-                                  data.l4CheckIconUrl ||
-                                  "/images/placeholder/check_bullet.png"
-                                }
-                                alt="check"
-                                className="w-full h-full object-contain"
-                                style={getElementStyle(
-                                  (data as any).l4CheckIconUrlStyle,
-                                  viewport,
-                                )}
-                              />
-                            </div>
-                            <div className="inline-flex flex-col justify-start items-start gap-2">
                               <TextStructureSafeHtml
                                 html={feature}
                                 className="justify-start text-zinc-950 text-xl font-normal font-['Pretendard'] leading-8 break-keep text-left"
                                 style={{
                                   ...getElementStyle(c.featureStyle, viewport),
+                                  ...(isL4CheckIconHidden
+                                    ? { width: "100%" }
+                                    : {}),
                                   letterSpacing:
                                     viewport === "mobile"
                                       ? "-0.36px"
@@ -1862,10 +1917,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       data.sections5 ||
       cloneTextStructureDefaults(TEXT_STRUCTURE_5_DEFAULT_SECTIONS);
     const l5SubTitleStyle: React.CSSProperties = {
-      ...getElementStyle(
-        { fontSizeMobile: "18px", ...data.l5SubTitleStyle },
-        viewport,
-      ),
+      ...getElementStyle(mergeTextStyleWithFallback(data.l5SubTitleStyle , { fontSizeMobile: "18px", }), viewport),
       ...(data.l5SubTitleStyle?.textAlign
         ? {}
         : { textAlign: "center" as React.CSSProperties["textAlign"] }),
@@ -1878,10 +1930,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             : undefined,
     };
     const l5TitleStyle: React.CSSProperties = {
-      ...getElementStyle(
-        { fontSizeMobile: "28px", ...data.l5TitleStyle },
-        viewport,
-      ),
+      ...getElementStyle(mergeTextStyleWithFallback(data.l5TitleStyle , { fontSizeMobile: "28px", }), viewport),
       ...(data.l5TitleStyle?.textAlign
         ? {}
         : { textAlign: "center" as React.CSSProperties["textAlign"] }),
@@ -1892,10 +1941,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
           : {}),
     };
     const l5DescStyle: React.CSSProperties = {
-      ...getElementStyle(
-        { fontSizeMobile: "18px", ...data.l5DescStyle },
-        viewport,
-      ),
+      ...getElementStyle(mergeTextStyleWithFallback(data.l5DescStyle , { fontSizeMobile: "18px", }), viewport),
       ...(data.l5DescStyle?.textAlign
         ? {}
         : { textAlign: "center" as React.CSSProperties["textAlign"] }),
@@ -1991,10 +2037,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     html={data.l5SideTitle || "타이틀명 입력"}
                     className="text-[#131416] text-3xl font-bold font-['Pretendard'] leading-10 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
                     style={{
-                      ...getElementStyle(
-                        { fontSizeMobile: "24px", ...data.l5SideTitleStyle },
-                        viewport,
-                      ),
+                      ...getElementStyle(mergeTextStyleWithFallback(data.l5SideTitleStyle , { fontSizeMobile: "24px", }), viewport),
                       ...(viewport === "tablet"
                         ? { fontSize: "28px", letterSpacing: "-0.56px" }
                         : viewport === "mobile"
@@ -2012,10 +2055,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     html={data.l5SideDesc || "이민 프로그램명 입력"}
                     className="text-[#6D7882] text-xl font-medium font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text w-full"
                     style={{
-                      ...getElementStyle(
-                        { fontSizeMobile: "18px", ...data.l5SideDescStyle },
-                        viewport,
-                      ),
+                      ...getElementStyle(mergeTextStyleWithFallback(data.l5SideDescStyle , { fontSizeMobile: "18px", }), viewport),
                       letterSpacing:
                         viewport === "mobile"
                           ? "-0.36px"
@@ -2140,13 +2180,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             html={section.subTitle || "서브 타이틀 입력"}
                             className="self-stretch text-[#131416] text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
-                              ...getElementStyle(
-                                {
+                              ...getElementStyle(mergeTextStyleWithFallback(section.subTitleStyle, {
                                   fontSizeMobile: "20px",
-                                  ...section.subTitleStyle,
-                                },
-                                viewport,
-                              ),
+                                  }), viewport),
                               ...(viewport === "tablet"
                                 ? { fontSize: "24px", letterSpacing: "-0.48px" }
                                 : viewport === "mobile"
@@ -2164,13 +2200,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             html={section.content || "내용을 입력하세요."}
                             className="self-stretch text-[#6D7882] text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
-                              ...getElementStyle(
-                                {
+                              ...getElementStyle(mergeTextStyleWithFallback(section.contentStyle, {
                                   fontSizeMobile: "18px",
-                                  ...section.contentStyle,
-                                },
-                                viewport,
-                              ),
+                                  }), viewport),
                               letterSpacing:
                                 viewport === "mobile"
                                   ? "-0.36px"
@@ -2331,13 +2363,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                     html={item.title || "프로그램 특징"}
                                     className="text-[#09090b] text-xl font-bold font-['Pretendard'] leading-8 break-keep"
                                     style={{
-                                      ...getElementStyle(
-                                        {
+                                      ...getElementStyle(mergeTextStyleWithFallback(item.titleStyle, {
                                           fontSizeMobile: "20px",
-                                          ...item.titleStyle,
-                                        },
-                                        viewport,
-                                      ),
+                                          }), viewport),
                                       letterSpacing:
                                         viewport === "mobile" ||
                                         viewport === "tablet"
@@ -2363,13 +2391,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                     html={item.desc || "프로그램 특징 내용 입력"}
                                     className="text-[#6D7882] text-lg font-normal font-['Pretendard'] leading-7 break-keep"
                                     style={{
-                                      ...getElementStyle(
-                                        {
+                                      ...getElementStyle(mergeTextStyleWithFallback(item.descStyle, {
                                           fontSizeMobile: "18px",
-                                          ...item.descStyle,
-                                        },
-                                        viewport,
-                                      ),
+                                          }), viewport),
                                       letterSpacing:
                                         viewport === "mobile" ||
                                         viewport === "tablet"
@@ -2498,13 +2522,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                     html={item.label || "라벨명"}
                                     className="flex-1 min-w-0 text-[#09090b] text-xl font-bold font-['Pretendard'] leading-8 break-keep cursor-text"
                                     style={{
-                                      ...getElementStyle(
-                                        {
+                                      ...getElementStyle(mergeTextStyleWithFallback(item.labelStyle, {
                                           fontSizeMobile: "20px",
-                                          ...item.labelStyle,
-                                        },
-                                        viewport,
-                                      ),
+                                          }), viewport),
                                       ...(isContentHidden
                                         ? { width: "100%" }
                                         : {}),
@@ -2537,13 +2557,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                     }
                                     className="flex-1 text-[#6D7882] text-lg font-normal font-['Pretendard'] leading-7 break-keep"
                                     style={{
-                                      ...getElementStyle(
-                                        {
+                                      ...getElementStyle(mergeTextStyleWithFallback(item.contentStyle, {
                                           fontSizeMobile: "18px",
-                                          ...item.contentStyle,
-                                        },
-                                        viewport,
-                                      ),
+                                          }), viewport),
                                       letterSpacing:
                                         viewport === "mobile" ||
                                         viewport === "tablet"
@@ -2643,6 +2659,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     const bannerHeight = section.imageHeight
                       ? formatUnit(section.imageHeight, "px")
                       : null;
+                    const bannerMediaUrl =
+                      section.imageUrl || "/images/placeholder/card-sm.jpg";
+                    const bannerMediaProps = getTextStructureBannerMediaProps(
+                      bannerMediaUrl,
+                      getElementStyle(section.imageStyle, viewport),
+                      bannerHeight,
+                    );
                     return (
                       <div
                         key={section.id}
@@ -2703,17 +2726,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           }}
                         >
                           <UniversalMedia
-                            url={
-                              section.imageUrl ||
-                              "/images/placeholder/card-sm.jpg"
-                            }
-                            className="w-full h-full object-cover"
+                            url={bannerMediaUrl}
+                            className={bannerMediaProps.className}
                             alt=""
-                            style={{
-                              ...getElementStyle(section.imageStyle, viewport),
-                              height: bannerHeight || "100%",
-                              minHeight: bannerHeight || undefined,
-                            }}
+                            style={bannerMediaProps.style}
                           />
                         </div>
                         <div
@@ -2735,13 +2751,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               }
                               className="self-stretch text-[#131416] text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                               style={{
-                                ...getElementStyle(
-                                  {
+                                ...getElementStyle(mergeTextStyleWithFallback(section.bannerSubTitleStyle, {
                                     fontSizeMobile: "20px",
-                                    ...section.bannerSubTitleStyle,
-                                  },
-                                  viewport,
-                                ),
+                                    }), viewport),
                                 ...(viewport === "tablet"
                                   ? {
                                       fontSize: "24px",
@@ -2766,13 +2778,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               }
                               className="self-stretch text-[#6D7882] text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                               style={{
-                                ...getElementStyle(
-                                  {
+                                ...getElementStyle(mergeTextStyleWithFallback(section.bannerDescStyle, {
                                     fontSizeMobile: "18px",
-                                    ...section.bannerDescStyle,
-                                  },
-                                  viewport,
-                                ),
+                                    }), viewport),
                                 letterSpacing:
                                   viewport === "mobile"
                                     ? "-0.36px"
@@ -2802,6 +2810,38 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (layout === "1") {
+    const isTabletOrMobile = viewport === "mobile" || viewport === "tablet";
+    const renderLayout1ImageBlock = () => (
+      <div
+        className="w-full xl:w-[560px] relative shrink-0 flex justify-center items-center h-auto"
+        style={{
+          borderRadius: data.imageStyle?.borderRadius
+            ? formatUnit(data.imageStyle.borderRadius)
+            : undefined,
+          minHeight: "0px",
+          ...(isTabletOrMobile ? { width: "100%" } : {}),
+        }}
+      >
+        <UniversalMedia
+          url={data.imageUrl || "/images/placeholder/card-sm.jpg"}
+          className="w-full h-auto object-contain"
+          alt="Structure Image"
+          style={{
+            ...getElementStyle(data.imageStyle, viewport),
+            objectFit: (data.imageStyle?.objectFit as any) || "contain",
+          }}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("imageUrl");
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("imageUrl");
+          }}
+        />
+      </div>
+    );
+
     return (
       <section
         style={style}
@@ -2844,10 +2884,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       html={data.subTitle || "( 서브타이틀 )"}
                       className="text-left justify-start text-blue-500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                       style={{
-                        ...getElementStyle(
-                          { fontSizeMobile: "18px", ...data.subTitleStyle },
-                          viewport,
-                        ),
+                        ...getElementStyle(mergeTextStyleWithFallback(data.subTitleStyle , { fontSizeMobile: "18px", }), viewport),
                         letterSpacing:
                           viewport === "mobile"
                             ? "-0.36px"
@@ -2873,10 +2910,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         html={data.title || "타이틀명 입력"}
                         className="justify-start text-시안-mode-gray90 text-3xl xl:text-4xl font-bold leading-tight xl:leading-[60px] break-keep"
                         style={{
-                          ...getElementStyle(
-                            { fontSizeMobile: "28px", ...data.titleStyle },
-                            viewport,
-                          ),
+                          ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
                           ...(viewport === "tablet"
                             ? { fontSize: "40px", letterSpacing: "-0.8px" }
                             : viewport === "mobile"
@@ -2891,10 +2925,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       html={data.desc || "이민 프로그램명 입력"}
                       className="text-left justify-start text-시안-mode-gray500 text-lg xl:text-xl font-medium leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                       style={{
-                        ...getElementStyle(
-                          { fontSizeMobile: "18px", ...data.descStyle },
-                          viewport,
-                        ),
+                        ...getElementStyle(mergeTextStyleWithFallback(data.descStyle , { fontSizeMobile: "18px", }), viewport),
                         letterSpacing:
                           viewport === "mobile"
                             ? "-0.36px"
@@ -2909,6 +2940,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     />
                   )}
                 </div>
+
+                {isTabletOrMobile && renderLayout1ImageBlock()}
 
                 {/* Feature Cards Grid */}
                 <div
@@ -2932,6 +2965,66 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   {(data.items || []).map((item: any, i: number) => {
                     const isTitleHidden = item.titleStyle?.isHidden;
                     const isDescHidden = item.descStyle?.isHidden;
+                    const itemCardSelectId = item.id || `__idx_${i}`;
+                    const itemCardBackgroundStyle =
+                      getTextStructureItemCardBackgroundStyle(
+                        item.itemStyle,
+                        viewport,
+                        {
+                          backgroundColor: "#ffffff",
+                        },
+                      );
+                    const resolvedItemIconStyle = getElementStyle(
+                      item.iconStyle,
+                      viewport,
+                    );
+                    const itemIconFrameStyle: React.CSSProperties = {
+                      ...(resolvedItemIconStyle.width
+                        ? { width: resolvedItemIconStyle.width }
+                        : {}),
+                      ...(resolvedItemIconStyle.height
+                        ? { height: resolvedItemIconStyle.height }
+                        : {}),
+                      ...(resolvedItemIconStyle.backgroundColor
+                        ? {
+                            backgroundColor:
+                              resolvedItemIconStyle.backgroundColor,
+                          }
+                        : {}),
+                      ...(resolvedItemIconStyle.backgroundImage
+                        ? {
+                            backgroundImage:
+                              resolvedItemIconStyle.backgroundImage,
+                            backgroundSize:
+                              resolvedItemIconStyle.backgroundSize || "cover",
+                            backgroundPosition:
+                              resolvedItemIconStyle.backgroundPosition ||
+                              "center",
+                            backgroundRepeat:
+                              resolvedItemIconStyle.backgroundRepeat ||
+                              "no-repeat",
+                          }
+                        : {}),
+                      ...(resolvedItemIconStyle.borderRadius
+                        ? { borderRadius: resolvedItemIconStyle.borderRadius }
+                        : {}),
+                      ...(resolvedItemIconStyle.opacity !== undefined
+                        ? { opacity: resolvedItemIconStyle.opacity }
+                        : {}),
+                    };
+                    const itemIconMediaStyle: React.CSSProperties = {
+                      ...resolvedItemIconStyle,
+                      width: "100%",
+                      height: "100%",
+                      display: "block",
+                      objectFit: resolvedItemIconStyle.objectFit || "contain",
+                      backgroundColor: undefined,
+                      backgroundImage: undefined,
+                      backgroundSize: undefined,
+                      backgroundPosition: undefined,
+                      backgroundRepeat: undefined,
+                      opacity: undefined,
+                    };
 
                     if (isTitleHidden && isDescHidden) return null;
 
@@ -2940,6 +3033,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         key={item.id || i}
                         className="bg-white outline outline-1 outline-offset-[-1px] outline-시안-mode-gray20 flex flex-col justify-center items-center gap-3 hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
                         style={{
+                          ...itemCardBackgroundStyle,
                           width:
                             viewport === "mobile"
                               ? "calc(50% - 4px)"
@@ -2952,27 +3046,63 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             viewport === "mobile" ? "16px 8px" : "40px 24px",
                           borderRadius: viewport === "mobile" ? "8px" : "16px",
                         }}
-                        onDoubleClick={(e) => {
+                        onClick={(e) => {
+                          if (e.target !== e.currentTarget) return;
                           e.stopPropagation();
-                          onElementSelect?.("items", i.toString());
+                          onElementSelect?.("itemStyle", itemCardSelectId);
+                        }}
+                        onDoubleClick={(e) => {
+                          if (e.target !== e.currentTarget) return;
+                          e.stopPropagation();
+                          onElementSelect?.("itemStyle", itemCardSelectId);
                         }}
                       >
                         {/* 체크박스 이미지 */}
-                        <UniversalMedia
-                          url={
-                            item.iconUrl ||
-                            "/images/placeholder/icon_checkbox.png"
-                          }
-                          className="w-6 h-6 object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
-                          alt="icon"
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemIcon",
-                              item.id || i.toString(),
-                            );
-                          }}
-                        />
+                        {!item.iconStyle?.isHidden && (
+                          <div
+                            className="w-6 h-6 flex items-center justify-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                            style={itemIconFrameStyle}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "itemIcon",
+                                item.id || i.toString(),
+                              );
+                            }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "itemIcon",
+                                item.id || i.toString(),
+                              );
+                            }}
+                          >
+                            <UniversalMedia
+                              url={
+                                item.iconUrl ??
+                                item.icon ??
+                                "/images/placeholder/icon_checkbox.png"
+                              }
+                              className="w-full h-full"
+                              style={itemIconMediaStyle}
+                              alt="icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  "itemIcon",
+                                  item.id || i.toString(),
+                                );
+                              }}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                onElementSelect?.(
+                                  "itemIcon",
+                                  item.id || i.toString(),
+                                );
+                              }}
+                            />
+                          </div>
+                        )}
 
                         <div className="flex flex-col justify-center items-center gap-1 text-center">
                           {!isTitleHidden && (
@@ -2980,13 +3110,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               html={item.title || "프로그램 특징"}
                               className="justify-start text-zinc-950 text-xl xl:text-2xl font-bold leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                               style={{
-                                ...getElementStyle(
-                                  {
+                                ...getElementStyle(mergeTextStyleWithFallback(item.titleStyle, {
                                     fontSizeMobile: "20px",
-                                    ...item.titleStyle,
-                                  },
-                                  viewport,
-                                ),
+                                    }), viewport),
                                 ...(viewport === "tablet"
                                   ? { letterSpacing: "-0.48px" }
                                   : viewport === "mobile"
@@ -3007,10 +3133,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               html={item.desc || "프로그램 특징 내용 입력"}
                               className="justify-start text-시안-mode-gray500 font-normal leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                               style={{
-                                ...getElementStyle(
-                                  { fontSizeMobile: "18px", ...item.descStyle },
-                                  viewport,
-                                ),
+                                ...getElementStyle(mergeTextStyleWithFallback(item.descStyle , { fontSizeMobile: "18px", }), viewport),
                                 ...(viewport !== "desktop"
                                   ? { letterSpacing: "-0.36px" }
                                   : {}),
@@ -3031,36 +3154,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
               </div>
 
-              <div
-                className="w-full xl:w-[560px] relative shrink-0 flex justify-center items-center h-auto"
-                style={{
-                  borderRadius: data.imageStyle?.borderRadius
-                    ? formatUnit(data.imageStyle.borderRadius)
-                    : undefined,
-                  minHeight: "0px",
-                  ...(viewport === "mobile" || viewport === "tablet"
-                    ? { width: "100%" }
-                    : {}),
-                }}
-              >
-                <UniversalMedia
-                  url={data.imageUrl || "/images/placeholder/card-sm.jpg"}
-                  className="w-full h-auto object-contain"
-                  alt="Structure Image"
-                  style={{
-                    ...getElementStyle(data.imageStyle, viewport),
-                    objectFit: (data.imageStyle?.objectFit as any) || "contain",
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("imageUrl");
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("imageUrl");
-                  }}
-                />
-              </div>
+              {!isTabletOrMobile && renderLayout1ImageBlock()}
             </div>
           </div>
         </div>
@@ -3095,10 +3189,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-left justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(
-                      { fontSizeMobile: "18px", ...data.subTitleStyle },
-                      viewport,
-                    ),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.subTitleStyle , { fontSizeMobile: "18px", }), viewport),
                     letterSpacing:
                       viewport === "mobile"
                         ? "-0.36px"
@@ -3132,10 +3223,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     html={data.title || "타이틀명 입력"}
                     className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
                     style={{
-                      ...getElementStyle(
-                        { fontSizeMobile: "28px", ...data.titleStyle },
-                        viewport,
-                      ),
+                      ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
                       ...(viewport === "tablet"
                         ? { fontSize: "40px", letterSpacing: "-0.8px" }
                         : viewport === "mobile"
@@ -3150,10 +3238,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-left justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(
-                      { fontSizeMobile: "18px", ...data.descStyle },
-                      viewport,
-                    ),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.descStyle , { fontSizeMobile: "18px", }), viewport),
                     letterSpacing:
                       viewport === "mobile"
                         ? "-0.36px"
@@ -3270,13 +3355,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           html={section.subTitle || "서브 타이틀 입력"}
                           className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
-                            ...getElementStyle(
-                              {
+                            ...getElementStyle(mergeTextStyleWithFallback(section.subTitleStyle, {
                                 fontSizeMobile: "20px",
-                                ...section.subTitleStyle,
-                              },
-                              viewport,
-                            ),
+                                }), viewport),
                             ...(viewport === "tablet"
                               ? { fontSize: "24px", letterSpacing: "-0.48px" }
                               : viewport === "mobile"
@@ -3294,13 +3375,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           html={section.content || "내용을 입력하세요."}
                           className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
-                            ...getElementStyle(
-                              {
+                            ...getElementStyle(mergeTextStyleWithFallback(section.contentStyle, {
                                 fontSizeMobile: "18px",
-                                ...section.contentStyle,
-                              },
-                              viewport,
-                            ),
+                                }), viewport),
                             letterSpacing:
                               viewport === "mobile"
                                 ? "-0.36px"
@@ -3338,13 +3415,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           }
                           className="self-stretch text-center justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
-                            ...getElementStyle(
-                              {
+                            ...getElementStyle(mergeTextStyleWithFallback(section.newsletterSubTitleStyle, {
                                 fontSizeMobile: "20px",
-                                ...section.newsletterSubTitleStyle,
-                              },
-                              viewport,
-                            ),
+                                }), viewport),
                             ...(viewport === "tablet"
                               ? { fontSize: "24px", letterSpacing: "-0.48px" }
                               : viewport === "mobile"
@@ -3376,13 +3449,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             <TextStructureSafeHtml
                               html={section.leftContent || "내용을 입력하세요."}
                               style={{
-                                ...getElementStyle(
-                                  {
+                                ...getElementStyle(mergeTextStyleWithFallback(section.leftContentStyle, {
                                     fontSizeMobile: "18px",
-                                    ...section.leftContentStyle,
-                                  },
-                                  viewport,
-                                ),
+                                    }), viewport),
                                 letterSpacing:
                                   viewport === "mobile"
                                     ? "-0.36px"
@@ -3407,13 +3476,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                 section.rightContent || "내용을 입력하세요."
                               }
                               style={{
-                                ...getElementStyle(
-                                  {
+                                ...getElementStyle(mergeTextStyleWithFallback(section.rightContentStyle, {
                                     fontSizeMobile: "18px",
-                                    ...section.rightContentStyle,
-                                  },
-                                  viewport,
-                                ),
+                                    }), viewport),
                                 letterSpacing:
                                   viewport === "mobile"
                                     ? "-0.36px"
@@ -3546,6 +3611,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   const bannerHeight = section.imageHeight
                     ? formatUnit(section.imageHeight, "px")
                     : null;
+                  const bannerMediaUrl =
+                    section.imageUrl || "/images/placeholder/card-sm.jpg";
+                  const bannerMediaProps = getTextStructureBannerMediaProps(
+                    bannerMediaUrl,
+                    getElementStyle(section.imageStyle, viewport),
+                    bannerHeight,
+                  );
                   return (
                     <div
                       key={section.id}
@@ -3586,16 +3658,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         }}
                       >
                         <UniversalMedia
-                          url={
-                            section.imageUrl ||
-                            "/images/placeholder/card-sm.jpg"
-                          }
-                          className="w-full h-full object-cover"
-                          style={{
-                            ...getElementStyle(section.imageStyle, viewport),
-                            height: bannerHeight || "100%",
-                            minHeight: bannerHeight || undefined,
-                          }}
+                          url={bannerMediaUrl}
+                          className={bannerMediaProps.className}
+                          style={bannerMediaProps.style}
                           alt=""
                         />
                       </div>
@@ -3614,13 +3679,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             html={section.bannerSubTitle || "서브 타이틀 입력"}
                             className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
-                              ...getElementStyle(
-                                {
+                              ...getElementStyle(mergeTextStyleWithFallback(section.bannerSubTitleStyle, {
                                   fontSizeMobile: "20px",
-                                  ...section.bannerSubTitleStyle,
-                                },
-                                viewport,
-                              ),
+                                  }), viewport),
                               ...(viewport === "tablet"
                                 ? { fontSize: "24px", letterSpacing: "-0.48px" }
                                 : viewport === "mobile"
@@ -3638,13 +3699,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             html={section.bannerDesc || "내용을 입력하세요."}
                             className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                             style={{
-                              ...getElementStyle(
-                                {
+                              ...getElementStyle(mergeTextStyleWithFallback(section.bannerDescStyle, {
                                   fontSizeMobile: "18px",
-                                  ...section.bannerDescStyle,
-                                },
-                                viewport,
-                              ),
+                                  }), viewport),
                               letterSpacing:
                                 viewport === "mobile"
                                   ? "-0.36px"
@@ -3684,6 +3741,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
             className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+            style={
+              viewport === "tablet"
+                ? { paddingLeft: "40px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px", gap: "40px" }
+                : viewport === "mobile"
+                  ? { paddingLeft: "20px", paddingRight: "20px", gap: "24px" }
+                  : undefined
+            }
           >
             {/* 고정 헤더 */}
             <div className="flex flex-col justify-start items-center w-full">
@@ -3692,7 +3756,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-left justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(data.subTitleStyle, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.subTitleStyle , { fontSizeMobile: "18px", }), viewport),
+                    lineHeight: "1.5",
+                    letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -3719,7 +3785,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   <TextStructureSafeHtml
                     html={data.title || "타이틀명 입력"}
                     className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
-                    style={getElementStyle(data.titleStyle, viewport)}
+                    style={{
+                      ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
+                      lineHeight: "1.5",
+                      letterSpacing: viewport === "mobile" ? "-0.56px" : "-0.8px",
+                    }}
                   />
                 </div>
               )}
@@ -3728,7 +3798,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-left justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(data.descStyle, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.descStyle , { fontSizeMobile: "18px", }), viewport),
+                    lineHeight: "1.5",
+                    letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -3743,14 +3815,32 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 2열 레이아웃: 왼쪽 고정 사이드바 + 오른쪽 동적 섹션 */}
-            <div className="self-stretch inline-flex flex-col xl:flex-row justify-start items-start gap-14 w-full">
+            <div
+              className={`self-stretch inline-flex justify-start items-start w-full ${
+                viewport === "tablet" || viewport === "mobile"
+                  ? "flex-col"
+                  : "flex-col xl:flex-row"
+              }`}
+              style={{
+                gap: viewport === "tablet" ? "60px" : viewport === "mobile" ? "24px" : "56px",
+              }}
+            >
               {/* 왼쪽 사이드바 (고정) */}
-              <div className="w-full xl:w-60 inline-flex flex-col justify-start items-start gap-2 shrink-0">
+              <div
+                className={`inline-flex flex-col justify-start items-start gap-2 shrink-0 ${
+                  viewport === "tablet" || viewport === "mobile" ? "w-full" : "w-full xl:w-60"
+                }`}
+                style={{ gap: "8px" }}
+              >
                 {!data.contentTitleStyle?.isHidden && (
                   <TextStructureSafeHtml
                     html={data.contentTitle || "타이틀명 입력"}
                     className="justify-start text-시안-mode-gray95 text-3xl font-bold font-['Pretendard'] leading-10 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                    style={getElementStyle(data.contentTitleStyle, viewport)}
+                    style={{
+                      ...getElementStyle(mergeTextStyleWithFallback(data.contentTitleStyle , { fontSizeMobile: "24px", }), viewport),
+                      lineHeight: "1.5",
+                      letterSpacing: viewport === "mobile" ? "-0.48px" : "-0.56px",
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("contentTitle");
@@ -3761,7 +3851,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   <TextStructureSafeHtml
                     html={data.contentSubTitle || "이민 프로그램명 입력"}
                     className="justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                    style={getElementStyle(data.contentSubTitleStyle, viewport)}
+                    style={{
+                      ...getElementStyle(mergeTextStyleWithFallback(data.contentSubTitleStyle , { fontSizeMobile: "18px", }), viewport),
+                      lineHeight: "1.5",
+                      letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("contentSubTitle");
@@ -3771,7 +3865,12 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               </div>
 
               {/* 오른쪽: 동적 섹션 (sections7) */}
-              <div className="flex-1 inline-flex flex-col justify-start items-start gap-10 w-full">
+              <div
+                className="flex-1 inline-flex flex-col justify-start items-start gap-10 w-full"
+                style={{
+                  gap: viewport === "tablet" ? "40px" : viewport === "mobile" ? "24px" : "40px",
+                }}
+              >
                 {sections7.map((section: any) => {
                   /* ── IMAGE ── */
                   if (section.type === "image") {
@@ -3795,8 +3894,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     return (
                       <div
                         key={section.id}
-                        className={`grid ${colClass} gap-5 w-full`}
-                        style={getOpacityStyle(section.opacity)}
+                        className={`grid ${colClass} w-full`}
+                        style={{
+                          ...getOpacityStyle(section.opacity),
+                          gap: viewport === "mobile" ? "8px" : "20px",
+                        }}
                       >
                         {images.map((img: string, imgIdx: number) => (
                           <div
@@ -3848,15 +3950,22 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={section.id}
                         className="self-stretch flex flex-col justify-start items-start gap-2"
-                        style={getOpacityStyle(section.opacity)}
+                        style={{
+                          ...getOpacityStyle(section.opacity),
+                          gap: viewport === "mobile" ? "0px" : "8px",
+                        }}
                       >
                         <TextStructureSafeHtml
                           html={section.subTitle || "서브 타이틀 입력"}
                           className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                          style={getElementStyle(
-                            section.subTitleStyle,
-                            viewport,
-                          )}
+                          style={{
+                            ...getElementStyle(
+                              section.subTitleStyle,
+                              viewport,
+                            ),
+                            lineHeight: "1.5",
+                            letterSpacing: viewport === "mobile" ? "-0.4px" : "-0.48px",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(`sectionSubTitle`, section.id);
@@ -3865,10 +3974,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         <TextStructureSafeHtml
                           html={section.content || "내용을 입력하세요."}
                           className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                          style={getElementStyle(
-                            section.contentStyle,
-                            viewport,
-                          )}
+                          style={{
+                            ...getElementStyle(
+                              section.contentStyle,
+                              viewport,
+                            ),
+                            lineHeight: "1.5",
+                            letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(`sectionContent`, section.id);
@@ -3884,21 +3997,29 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       !section.leftContentStyle?.isHidden;
                     const showRightContent =
                       !section.rightContentStyle?.isHidden;
+                    const isMobileView = viewport === "mobile";
                     return (
                       <div
                         key={section.id}
-                        className="self-stretch flex flex-col justify-center items-center gap-5 w-full"
-                        style={getOpacityStyle(section.opacity)}
+                        className="self-stretch flex flex-col justify-center items-start w-full"
+                        style={{
+                          ...getOpacityStyle(section.opacity),
+                          gap: isMobileView ? "0px" : "20px",
+                        }}
                       >
                         <TextStructureSafeHtml
                           html={
-                            section.newsletterSubTitle || "서브 타이틀 입력"
+                            section.newsletterSubTitle || "보조 타이틀 문구 입력"
                           }
-                          className="self-stretch text-center justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                          style={getElementStyle(
-                            section.newsletterSubTitleStyle,
-                            viewport,
-                          )}
+                          className="self-stretch text-left justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                          style={{
+                            ...getElementStyle(
+                              section.newsletterSubTitleStyle,
+                              viewport,
+                            ),
+                            lineHeight: "1.5",
+                            letterSpacing: "-0.4px",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.(
@@ -3907,15 +4028,27 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             );
                           }}
                         />
-                        <div className="self-stretch flex flex-col xl:flex-row justify-start items-start gap-14 w-full">
+                        <div
+                          className="self-stretch flex flex-row justify-start items-start w-full"
+                          style={{
+                            gap: isMobileView ? "8px" : "8px",
+                          }}
+                        >
                           {showLeftContent && (
-                            <div className="flex-1 text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text">
+                            <div
+                              className="text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                              style={{ flex: "1 0 0" }}
+                            >
                               <TextStructureSafeHtml
                                 html={section.leftContent || "내용을 입력하세요."}
-                                style={getElementStyle(
-                                  section.leftContentStyle,
-                                  viewport,
-                                )}
+                                style={{
+                                  ...getElementStyle(
+                                    section.leftContentStyle,
+                                    viewport,
+                                  ),
+                                  lineHeight: "1.5",
+                                  letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                                }}
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.(
@@ -3927,15 +4060,22 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             </div>
                           )}
                           {showRightContent && (
-                            <div className="flex-1 text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text">
+                            <div
+                              className="text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
+                              style={{ flex: "1 0 0" }}
+                            >
                               <TextStructureSafeHtml
                                 html={
                                   section.rightContent || "내용을 입력하세요."
                                 }
-                                style={getElementStyle(
-                                  section.rightContentStyle,
-                                  viewport,
-                                )}
+                                style={{
+                                  ...getElementStyle(
+                                    section.rightContentStyle,
+                                    viewport,
+                                  ),
+                                  lineHeight: "1.5",
+                                  letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                                }}
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.(
@@ -3956,12 +4096,20 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     const bannerHeight = section.imageHeight
                       ? formatUnit(section.imageHeight, "px")
                       : null;
+                    const isMobileView = viewport === "mobile";
+                    const bannerMediaUrl =
+                      section.imageUrl || "/images/placeholder/card-sm.jpg";
+                    const bannerMediaProps = getTextStructureBannerMediaProps(
+                      bannerMediaUrl,
+                      getElementStyle(section.imageStyle, viewport),
+                      isMobileView ? "120px" : bannerHeight,
+                    );
                     return (
                       <div
                         key={section.id}
-                        className="self-stretch bg-시안-mode-gray5 rounded-[20px] inline-flex flex-col md:flex-row justify-center md:items-stretch items-center overflow-hidden w-full"
+                        className="self-stretch bg-시안-mode-gray5 inline-flex justify-center items-center overflow-hidden w-full"
                         style={{
-                          ...(bannerHeight
+                          ...(bannerHeight && !isMobileView
                             ? mergeWithOpacity(
                                 {
                                   minHeight: bannerHeight,
@@ -3970,18 +4118,21 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                 section.opacity,
                               )
                             : getOpacityStyle(section.opacity)),
-                          ...mobileImageRadiusStyle,
+                          borderRadius: isMobileView ? "8px" : "20px",
+                          flexDirection: isMobileView ? "column" : "row",
                         }}
                       >
                         <div
-                          className="w-full md:w-96 h-auto shrink-0 self-stretch cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all overflow-hidden"
+                          className="shrink-0 self-stretch cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all overflow-hidden"
                           style={
-                            bannerHeight
-                              ? {
-                                  minHeight: bannerHeight,
-                                  height: bannerHeight,
+                            isMobileView
+                              ? { width: "100%", height: "120px" }
+                              : {
+                                  width: "240px",
+                                  ...(bannerHeight
+                                    ? { minHeight: bannerHeight, height: bannerHeight }
+                                    : {}),
                                 }
-                              : undefined
                           }
                           onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -3999,30 +4150,30 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           }}
                         >
                           <UniversalMedia
-                            url={
-                              section.imageUrl ||
-                              "/images/placeholder/card-sm.jpg"
-                            }
-                            className="w-full h-full object-cover"
-                            style={{
-                              ...getElementStyle(section.imageStyle, viewport),
-                              ...mobileImageRadiusStyle,
-                              height: bannerHeight || "100%",
-                              minHeight: bannerHeight || undefined,
-                            }}
+                            url={bannerMediaUrl}
+                            className={bannerMediaProps.className}
+                            style={bannerMediaProps.style}
                             alt=""
                           />
                         </div>
                         <div
-                          className={`flex-1 self-stretch ${sectionPadding40Class} py-5 inline-flex flex-col justify-center items-start gap-3`}
+                          className="flex-1 self-stretch inline-flex flex-col justify-center items-start"
+                          style={{
+                            padding: isMobileView ? "12px" : "24px 40px",
+                            gap: isMobileView ? "0px" : "12px",
+                          }}
                         >
                           <TextStructureSafeHtml
                             html={section.bannerSubTitle || "서브 타이틀 입력"}
                             className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                            style={getElementStyle(
-                              section.bannerSubTitleStyle,
-                              viewport,
-                            )}
+                            style={{
+                              ...getElementStyle(
+                                section.bannerSubTitleStyle,
+                                viewport,
+                              ),
+                              lineHeight: "1.5",
+                              letterSpacing: viewport === "mobile" ? "-0.4px" : "-0.48px",
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.(`bannerSubTitle`, section.id);
@@ -4031,10 +4182,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           <TextStructureSafeHtml
                             html={section.bannerDesc || "내용을 입력하세요."}
                             className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                            style={getElementStyle(
-                              section.bannerDescStyle,
-                              viewport,
-                            )}
+                            style={{
+                              ...getElementStyle(
+                                section.bannerDescStyle,
+                                viewport,
+                              ),
+                              lineHeight: "1.5",
+                              letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.(`bannerDesc`, section.id);
@@ -4067,6 +4222,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
             className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            style={
+              viewport === "tablet"
+                ? { paddingLeft: "40px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px", gap: "40px" }
+                : viewport === "mobile"
+                  ? { paddingLeft: "20px", paddingRight: "20px", gap: "24px" }
+                  : undefined
+            }
           >
             {/* 헤더 영역 */}
             <div
@@ -4077,7 +4239,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-left justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(data.subTitleStyle, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.subTitleStyle , { fontSizeMobile: "18px", }), viewport),
+                    lineHeight: "1.5",
+                    letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -4089,7 +4253,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 <TextStructureSafeHtml
                   html={data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.titleStyle, viewport)}
+                  style={{
+                    ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
+                    lineHeight: "1.5",
+                    letterSpacing: viewport === "mobile" ? "-0.56px" : "-0.8px",
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -4101,7 +4269,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-left justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(data.descStyle, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.descStyle , { fontSizeMobile: "18px", }), viewport),
+                    lineHeight: "1.5",
+                    letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -4112,7 +4282,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 동적 섹션 */}
-            <div className="self-stretch flex flex-col justify-center items-center gap-6 w-full">
+            <div
+              className="self-stretch flex flex-col justify-center items-center gap-6 w-full"
+              style={
+                viewport === "tablet" || viewport === "mobile"
+                  ? { gap: "24px" }
+                  : undefined
+              }
+            >
               {sections8.map((section: any) => {
                 /* ── IMAGE ── */
                 if (section.type === "image") {
@@ -4185,16 +4362,23 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     <div
                       key={section.id}
                       className="self-stretch flex flex-col justify-start items-start gap-2"
-                      style={getOpacityStyle(section.opacity)}
+                      style={{
+                        ...getOpacityStyle(section.opacity),
+                        gap: viewport === "mobile" ? "0px" : "8px",
+                      }}
                     >
                       {!section.subTitleStyle?.isHidden && (
                         <TextStructureSafeHtml
                           html={section.subTitle || "서브 타이틀 입력"}
                           className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                          style={getElementStyle(
-                            section.subTitleStyle,
-                            viewport,
-                          )}
+                          style={{
+                            ...getElementStyle(
+                              section.subTitleStyle,
+                              viewport,
+                            ),
+                            lineHeight: "1.5",
+                            letterSpacing: viewport === "mobile" ? "-0.4px" : "-0.48px",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("sectionSubTitle", section.id);
@@ -4205,10 +4389,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         <TextStructureSafeHtml
                           html={section.content || "내용을 입력하세요."}
                           className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                          style={getElementStyle(
-                            section.contentStyle,
-                            viewport,
-                          )}
+                          style={{
+                            ...getElementStyle(
+                              section.contentStyle,
+                              viewport,
+                            ),
+                            lineHeight: "1.5",
+                            letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                          }}
                           onDoubleClick={(e) => {
                             e.stopPropagation();
                             onElementSelect?.("sectionContent", section.id);
@@ -4221,11 +4409,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
 
                 /* ── FEATURES ── */
                 if (section.type === "features") {
+                  const isMobileView = viewport === "mobile";
                   return (
                     <div
                       key={section.id}
-                      className="self-stretch flex flex-col justify-start items-start gap-2"
-                      style={getOpacityStyle(section.opacity)}
+                      className="self-stretch flex flex-col justify-start items-start w-full"
+                      style={{
+                        ...getOpacityStyle(section.opacity),
+                        gap: "8px",
+                      }}
                     >
                       {(section.items || []).map((item: any, i: number) => {
                         const isTitleHidden = item.titleStyle?.isHidden;
@@ -4236,8 +4428,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         return (
                           <div
                             key={item.id || i}
-                            className={`self-stretch p-4 bg-시안-mode-gray5 inline-flex justify-start items-center ${isDescHidden ? "gap-0" : "gap-5"}`}
-                            style={getOpacityStyle(item.opacity)}
+                            className="self-stretch bg-시안-mode-gray5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                            style={{
+                              ...getOpacityStyle(item.opacity),
+                              padding: isMobileView ? "12px" : "16px",
+                              display: "flex",
+                              flexDirection: isMobileView ? "column" : "row",
+                              justifyContent: isMobileView ? "center" : "flex-start",
+                              alignItems: isMobileView ? "flex-start" : "center",
+                              gap: isMobileView ? "0px" : (isDescHidden ? "0px" : "20px"),
+                            }}
                             onClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("itemTitle", featureItemId);
@@ -4249,10 +4449,12 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           >
                             {!isTitleHidden && (
                               <div
-                                className={
-                                  isDescHidden
-                                    ? "flex-1 min-w-0 w-full"
-                                    : "w-40 shrink-0"
+                                style={
+                                  isMobileView
+                                    ? { width: "100%" }
+                                    : isDescHidden
+                                      ? { flex: "1 1 0", minWidth: 0, width: "100%" }
+                                      : { width: "160px", flexShrink: 0 }
                                 }
                               >
                                 <TextStructureSafeHtml
@@ -4263,7 +4465,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                       item.titleStyle,
                                       viewport,
                                     ),
-                                    ...(isDescHidden ? { width: "100%" } : {}),
+                                    lineHeight: "1.5",
+                                    letterSpacing: "-0.4px",
+                                    ...(isDescHidden && !isMobileView
+                                      ? { width: "100%" }
+                                      : {}),
                                   }}
                                   onDoubleClick={(e) => {
                                     e.stopPropagation();
@@ -4282,31 +4488,40 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                 />
                               </div>
                             )}
-                            <UniversalMedia
-                              url={
-                                item.iconUrl ||
-                                "/images/placeholder/icon_arrow_right.png"
-                              }
-                              className="w-6 h-6 object-contain shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
-                              alt="feature icon"
-                              style={getElementStyle(item.iconStyle, viewport)}
-                              onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                onElementSelect?.("itemIcon", featureItemId);
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onElementSelect?.("itemIcon", featureItemId);
-                              }}
-                            />
+                            {/* 아이콘: 모바일에서는 숨김 */}
+                            {!isMobileView && (
+                              <UniversalMedia
+                                url={
+                                  item.iconUrl ||
+                                  "/images/placeholder/icon_arrow_right.png"
+                                }
+                                className="w-6 h-6 object-contain shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                                alt="feature icon"
+                                style={getElementStyle(item.iconStyle, viewport)}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("itemIcon", featureItemId);
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("itemIcon", featureItemId);
+                                }}
+                              />
+                            )}
                             {!isDescHidden && (
                               <TextStructureSafeHtml
                                 html={item.desc || "설명 텍스트를 입력하세요."}
-                                className="flex-1 justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                                style={getElementStyle(
-                                  item.descStyle,
-                                  viewport,
-                                )}
+                                className="justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                                style={{
+                                  ...getElementStyle(
+                                    item.descStyle,
+                                    viewport,
+                                  ),
+                                  flex: isMobileView ? undefined : "1 0 0",
+                                  width: isMobileView ? "100%" : undefined,
+                                  lineHeight: "1.5",
+                                  letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                                }}
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.("itemDesc", featureItemId);
@@ -4331,11 +4546,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     <TextStructureSafeHtml
                       key={section.id}
                       html={section.content || "내용을 입력하세요."}
-                      className="self-stretch justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                      style={mergeWithOpacity(
-                        getElementStyle(section.contentStyle, viewport),
-                        section.opacity,
-                      )}
+                      className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                      style={{
+                        ...mergeWithOpacity(
+                          getElementStyle(section.contentStyle, viewport),
+                          section.opacity,
+                        ),
+                        lineHeight: "1.5",
+                        letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                      }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         onElementSelect?.("sectionBasicText", section.id);
@@ -4365,6 +4584,13 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
             className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            style={
+              viewport === "tablet"
+                ? { paddingLeft: "40px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px", gap: "40px" }
+                : viewport === "mobile"
+                  ? { paddingLeft: "20px", paddingRight: "20px", paddingTop: "30px", paddingBottom: "30px", gap: "24px" }
+                  : undefined
+            }
           >
             {/* 헤더 영역 */}
             <div className="flex flex-col justify-start items-center w-full">
@@ -4373,7 +4599,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-left justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(data.subTitleStyle, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.subTitleStyle , { fontSizeMobile: "18px", }), viewport),
+                    lineHeight: "1.5",
+                    letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -4392,7 +4620,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   <TextStructureSafeHtml
                     html={data.title || "타이틀명 입력"}
                     className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] break-keep"
-                    style={getElementStyle(data.titleStyle, viewport)}
+                    style={{
+                      ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
+                      lineHeight: "1.5",
+                      letterSpacing: viewport === "mobile" ? "-0.56px" : "-0.8px",
+                    }}
                   />
                 </div>
               )}
@@ -4401,7 +4633,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-left justify-start text-시안-mode-gray50 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle(data.descStyle, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.descStyle , { fontSizeMobile: "18px", }), viewport),
+                    lineHeight: "1.5",
+                    letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -4413,12 +4647,19 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* 2열 레이아웃: 왼쪽 고정 이미지 + 오른쪽 동적 섹션 */}
             <div
-              className={`self-stretch inline-flex flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"} justify-center items-start gap-14 w-full`}
+              className={`self-stretch inline-flex justify-center items-start w-full ${
+                viewport === "tablet" || viewport === "mobile"
+                  ? "flex-col items-center"
+                  : `flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"}`
+              }`}
+              style={{
+                gap: viewport === "tablet" || viewport === "mobile" ? "24px" : "56px",
+              }}
             >
               {/* 왼쪽: 고정 이미지 */}
               <div
-                className="w-full xl:flex-1 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden rounded-2xl shrink-0 flex justify-center items-center h-auto"
-                style={mobileImageRadiusStyle}
+                className={`w-full xl:flex-1 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden shrink-0 flex justify-center items-center h-auto ${viewport === "desktop" ? "rounded-2xl" : ""}`}
+                style={viewport === "mobile" ? { borderRadius: "0px" } : viewport === "tablet" ? { borderRadius: "0px" } : mobileImageRadiusStyle}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("imageUrl");
@@ -4434,7 +4675,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   alt="Text Structure 9 Image"
                   style={{
                     ...getElementStyle(data.imageStyle, viewport),
-                    ...mobileImageRadiusStyle,
+                    ...(viewport === "tablet" || viewport === "mobile" ? { borderRadius: "0px" } : mobileImageRadiusStyle),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
@@ -4448,7 +4689,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               </div>
 
               {/* 오른쪽: 동적 섹션 (sections9) */}
-              <div className="flex-1 inline-flex flex-col justify-start items-start gap-6 w-full">
+              <div
+                className="flex-1 inline-flex flex-col justify-start items-start gap-6 w-full"
+                style={
+                  viewport === "tablet" || viewport === "mobile"
+                    ? { gap: "24px" }
+                    : undefined
+                }
+              >
                 {sections9.map((section: any) => {
                   /* ── TEXT ── */
                   if (section.type === "text") {
@@ -4456,16 +4704,23 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={section.id}
                         className="self-stretch flex flex-col justify-start items-start gap-2"
-                        style={getOpacityStyle(section.opacity)}
+                        style={{
+                          ...getOpacityStyle(section.opacity),
+                          gap: viewport === "mobile" ? "0px" : "8px",
+                        }}
                       >
                         {!section.subTitleStyle?.isHidden && (
                           <TextStructureSafeHtml
                             html={section.subTitle || "서브 타이틀 입력"}
                             className="self-stretch justify-start text-시안-mode-gray95 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                            style={getElementStyle(
-                              section.subTitleStyle,
-                              viewport,
-                            )}
+                            style={{
+                              ...getElementStyle(
+                                section.subTitleStyle,
+                                viewport,
+                              ),
+                              lineHeight: "1.5",
+                              letterSpacing: viewport === "mobile" ? "-0.4px" : "-0.48px",
+                            }}
                             onClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("sectionSubTitle", section.id);
@@ -4480,10 +4735,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           <TextStructureSafeHtml
                             html={section.content || "내용을 입력하세요."}
                             className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
-                            style={getElementStyle(
-                              section.contentStyle,
-                              viewport,
-                            )}
+                            style={{
+                              ...getElementStyle(
+                                section.contentStyle,
+                                viewport,
+                              ),
+                              lineHeight: "1.5",
+                              letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                            }}
                             onClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("sectionContent", section.id);
@@ -4500,11 +4759,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
 
                   /* ── FEATURES ── */
                   if (section.type === "features") {
+                    const isMobileView = viewport === "mobile";
                     return (
                       <div
                         key={section.id}
-                        className="self-stretch flex flex-col justify-start items-start gap-2 w-full"
-                        style={getOpacityStyle(section.opacity)}
+                        className="self-stretch flex flex-col justify-start items-start w-full"
+                        style={{
+                          ...getOpacityStyle(section.opacity),
+                          gap: "8px",
+                        }}
                       >
                         {(section.items || []).map((item: any, i: number) => {
                           const isTitleHidden = item.titleStyle?.isHidden;
@@ -4515,8 +4778,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           return (
                             <div
                               key={item.id || i}
-                              className={`self-stretch p-4 bg-시안-mode-gray5 inline-flex justify-start items-center ${isDescHidden ? "gap-0" : "gap-5"} hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer`}
-                              style={getOpacityStyle(item.opacity)}
+                              className="self-stretch bg-시안-mode-gray5 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                              style={{
+                                ...getOpacityStyle(item.opacity),
+                                padding: "16px",
+                                display: "flex",
+                                flexDirection: isMobileView ? "column" : "row",
+                                justifyContent: isMobileView ? "center" : "flex-start",
+                                alignItems: isMobileView ? "flex-start" : "center",
+                                gap: isMobileView ? "0px" : (isDescHidden ? "0px" : "20px"),
+                              }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("itemTitle", featureItemId);
@@ -4528,10 +4799,12 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             >
                               {!isTitleHidden && (
                                 <div
-                                  className={
-                                    isDescHidden
-                                      ? "flex-1 min-w-0 w-full"
-                                      : "w-40 shrink-0"
+                                  style={
+                                    isMobileView
+                                      ? { width: "100%" }
+                                      : isDescHidden
+                                        ? { flex: "1 1 0", minWidth: 0, width: "100%" }
+                                        : { width: "160px", flexShrink: 0 }
                                   }
                                 >
                                   <TextStructureSafeHtml
@@ -4542,7 +4815,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                         item.titleStyle,
                                         viewport,
                                       ),
-                                      ...(isDescHidden
+                                      lineHeight: "1.5",
+                                      letterSpacing: "-0.4px",
+                                      ...(isDescHidden && !isMobileView
                                         ? { width: "100%" }
                                         : {}),
                                     }}
@@ -4563,16 +4838,26 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                   />
                                 </div>
                               )}
+                              {/* 화살표 아이콘: 모바일에서는 숨김 */}
+                              {!isMobileView && !isTitleHidden && !isDescHidden && (
+                                <div style={{ width: "24px", height: "24px", flexShrink: 0 }} />
+                              )}
                               {!isDescHidden && (
                                 <TextStructureSafeHtml
                                   html={
                                     item.desc || "설명 텍스트를 입력하세요."
                                   }
-                                  className="flex-1 justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
-                                  style={getElementStyle(
-                                    item.descStyle,
-                                    viewport,
-                                  )}
+                                  className="justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
+                                  style={{
+                                    ...getElementStyle(
+                                      item.descStyle,
+                                      viewport,
+                                    ),
+                                    flex: isMobileView ? undefined : "1 0 0",
+                                    width: isMobileView ? "100%" : undefined,
+                                    lineHeight: "1.5",
+                                    letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                                  }}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     onElementSelect?.(
@@ -4604,10 +4889,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         key={section.id}
                         html={section.content || "내용을 입력하세요."}
                         className="self-stretch justify-start text-시안-mode-gray50 text-xl font-normal font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                        style={mergeWithOpacity(
-                          getElementStyle(section.contentStyle, viewport),
-                          section.opacity,
-                        )}
+                        style={{
+                          ...mergeWithOpacity(
+                            getElementStyle(section.contentStyle, viewport),
+                            section.opacity,
+                          ),
+                          lineHeight: "1.5",
+                          letterSpacing: viewport === "mobile" ? "-0.36px" : "-0.4px",
+                        }}
                         onClick={(e) => {
                           e.stopPropagation();
                           onElementSelect?.("sectionBasicText", section.id);
@@ -4672,7 +4961,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.subTitle || "( 서브타이틀 )"}
                   className="text-left justify-start text-[#285DE1] text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle({ fontSizeMobile: "18px", ...data.subTitleStyle }, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.subTitleStyle , { fontSizeMobile: "18px", }), viewport),
                     letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                   }}
                   onClick={(e) => {
@@ -4690,7 +4979,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.title || "타이틀명 입력"}
                   className="justify-start text-gray-900 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle({ fontSizeMobile: "28px", ...data.titleStyle }, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
                     letterSpacing: viewport === "tablet" ? "-0.8px" : viewport === "mobile" ? "-0.56px" : undefined,
                   }}
                   onClick={(e) => {
@@ -4708,7 +4997,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   html={data.desc || "이민 프로그램명 입력"}
                   className="text-center justify-start text-gray-600 text-xl font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
-                    ...getElementStyle({ fontSizeMobile: "18px", ...data.descStyle }, viewport),
+                    ...getElementStyle(mergeTextStyleWithFallback(data.descStyle , { fontSizeMobile: "18px", }), viewport),
                     letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                   }}
                   onClick={(e) => {
@@ -4744,10 +5033,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           html={section.subTitle || "서브 타이틀 입력"}
                           className="self-stretch justify-start text-gray-800 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
-                            ...getElementStyle(
-                              { fontSize: "24px", fontSizeMobile: "20px", ...section.subTitleStyle },
-                              viewport,
-                            ),
+                            ...getElementStyle(mergeTextStyleWithFallback(section.subTitleStyle , { fontSize: "24px", fontSizeMobile: "20px", }), viewport),
                             letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                           }}
                           onClick={(e) => {
@@ -4765,10 +5051,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           html={section.content || "내용을 입력하세요."}
                           className="self-stretch justify-start text-gray-500 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
-                            ...getElementStyle(
-                              { fontSize: "20px", fontSizeMobile: "18px", ...section.contentStyle },
-                              viewport,
-                            ),
+                            ...getElementStyle(mergeTextStyleWithFallback(section.contentStyle , { fontSize: "20px", fontSizeMobile: "18px", }), viewport),
                             letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                           }}
                           onClick={(e) => {
@@ -4807,10 +5090,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         html={section.bannerSubTitle || "배너명 입력하는 부분"}
                         className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                         style={{
-                          ...getElementStyle(
-                            { fontSize: "24px", fontSizeMobile: "20px", ...section.bannerSubTitleStyle },
-                            viewport,
-                          ),
+                          ...getElementStyle(mergeTextStyleWithFallback(section.bannerSubTitleStyle , { fontSize: "24px", fontSizeMobile: "20px", }), viewport),
                           letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                         }}
                         onClick={(e) => {
@@ -4829,10 +5109,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         }
                         className="self-stretch text-center justify-start text-gray-400 text-lg font-normal font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                         style={{
-                          ...getElementStyle(
-                            { fontSize: "18px", fontSizeMobile: "18px", ...section.bannerDescStyle },
-                            viewport,
-                          ),
+                          ...getElementStyle(mergeTextStyleWithFallback(section.bannerDescStyle , { fontSize: "18px", fontSizeMobile: "18px", }), viewport),
                           letterSpacing: viewport === "tablet" || viewport === "mobile" ? "-0.36px" : undefined,
                           lineHeight: viewport === "tablet" || viewport === "mobile" ? "1.6" : undefined,
                         }}
@@ -5044,10 +5321,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                             html={item.number || `0${i + 1}.`}
                                             className="text-left justify-start text-[#285DE1] font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                                             style={{
-                                              ...getElementStyle(
-                                                { fontSize: "20px", fontSizeMobile: "20px", ...item.numberStyle },
-                                                viewport,
-                                              ),
+                                              ...getElementStyle(mergeTextStyleWithFallback(item.numberStyle , { fontSize: "20px", fontSizeMobile: "20px", }), viewport),
                                               letterSpacing: viewport === "tablet" || viewport === "mobile" ? "-0.4px" : undefined,
                                             }}
                                             onClick={(e) => {
@@ -5071,10 +5345,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                             html={item.title || "프로그램 특징"}
                                             className="justify-start text-gray-900 text-2xl font-bold font-['Pretendard'] break-keep mt-1 mb-2 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                                             style={{
-                                              ...getElementStyle(
-                                                { fontSize: "28px", fontSizeMobile: "20px", ...item.titleStyle },
-                                                viewport,
-                                              ),
+                                              ...getElementStyle(mergeTextStyleWithFallback(item.titleStyle , { fontSize: "28px", fontSizeMobile: "20px", }), viewport),
                                               letterSpacing: viewport === "tablet" ? "-0.56px" : viewport === "mobile" ? "-0.4px" : undefined,
                                             }}
                                             onClick={(e) => {
@@ -5101,10 +5372,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                             }
                                             className="self-stretch justify-start text-gray-400 text-lg font-normal font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text"
                                             style={{
-                                              ...getElementStyle(
-                                                { fontSize: "18px", fontSizeMobile: "18px", ...item.descStyle },
-                                                viewport,
-                                              ),
+                                              ...getElementStyle(mergeTextStyleWithFallback(item.descStyle , { fontSize: "18px", fontSizeMobile: "18px", }), viewport),
                                               letterSpacing: viewport === "tablet" || viewport === "mobile" ? "-0.36px" : undefined,
                                               lineHeight: viewport === "tablet" || viewport === "mobile" ? "1.6" : undefined,
                                               marginTop: viewport === "mobile" ? "12px" : undefined,
@@ -5183,10 +5451,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           html={section.subTitle || "서브 타이틀 입력"}
                           className="self-stretch justify-start text-gray-800 text-2xl font-bold font-['Pretendard'] leading-9 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
-                            ...getElementStyle(
-                              { fontSize: "24px", fontSizeMobile: "20px", ...section.subTitleStyle },
-                              viewport,
-                            ),
+                            ...getElementStyle(mergeTextStyleWithFallback(section.subTitleStyle , { fontSize: "24px", fontSizeMobile: "20px", }), viewport),
                             letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                           }}
                           onClick={(e) => {
@@ -5204,10 +5469,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           html={section.content || "내용을 입력하세요."}
                           className="self-stretch justify-start text-gray-500 text-lg font-normal font-['Pretendard'] leading-7 break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 transition-all cursor-text"
                           style={{
-                            ...getElementStyle(
-                              { fontSize: "20px", fontSizeMobile: "18px", ...section.contentStyle },
-                              viewport,
-                            ),
+                            ...getElementStyle(mergeTextStyleWithFallback(section.contentStyle , { fontSize: "20px", fontSizeMobile: "18px", }), viewport),
                             letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                           }}
                           onClick={(e) => {
@@ -5246,10 +5508,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         html={section.bannerSubTitle || "배너명 입력하는 부분"}
                         className="text-center justify-start text-[#285DE1] text-xl font-bold font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                         style={{
-                          ...getElementStyle(
-                            { fontSize: "24px", fontSizeMobile: "20px", ...section.bannerSubTitleStyle },
-                            viewport,
-                          ),
+                          ...getElementStyle(mergeTextStyleWithFallback(section.bannerSubTitleStyle , { fontSize: "24px", fontSizeMobile: "20px", }), viewport),
                           letterSpacing: viewport === "tablet" ? "-0.4px" : viewport === "mobile" ? "-0.36px" : undefined,
                         }}
                         onClick={(e) => {
@@ -5268,10 +5527,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         }
                         className="self-stretch text-center justify-start text-gray-400 text-lg font-normal font-['Pretendard'] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                         style={{
-                          ...getElementStyle(
-                            { fontSize: "18px", fontSizeMobile: "18px", ...section.bannerDescStyle },
-                            viewport,
-                          ),
+                          ...getElementStyle(mergeTextStyleWithFallback(section.bannerDescStyle , { fontSize: "18px", fontSizeMobile: "18px", }), viewport),
                           letterSpacing: viewport === "tablet" || viewport === "mobile" ? "-0.36px" : undefined,
                           lineHeight: viewport === "tablet" || viewport === "mobile" ? "1.6" : undefined,
                         }}

@@ -8,25 +8,10 @@ import ConsoleDialogContent from "@/components/console/common/ConsoleDialogConte
 import MonacoHtmlEditor from "@/components/console/form/MonacoEditor";
 import { Dialog } from "@/components/ui/dialog";
 
-import { MainTitleRenderer } from "../widgets/MainTitleRenderer";
-import { TextSectionRenderer } from "../widgets/TextSectionRenderer";
-import { VideoRenderer } from "../widgets/VideoRenderer";
-import { GridCardRenderer } from "../widgets/GridCardRenderer";
-import { InfoBannerRenderer } from "../widgets/InfoBannerRenderer";
-import { ProcessRenderer } from "../widgets/ProcessRenderer";
-import { IconCardRenderer } from "../widgets/IconCardRenderer";
-import { TableRenderer } from "../widgets/TableRenderer";
-import { FaqRenderer } from "../widgets/FaqRenderer";
-import { BannerSectionRenderer } from "../widgets/BannerSectionRenderer";
-import { CardRenderer } from "../widgets/CardRenderer";
-import { TitleBannerRenderer } from "../widgets/TitleBannerRenderer";
-import { ImageAreaRenderer } from "../widgets/ImageAreaRenderer";
-import { TitleTextRenderer } from "../widgets/TitleTextRenderer";
-import { TabButtonRenderer } from "../widgets/TabButtonRenderer";
-import { TextStructureRenderer } from "../widgets/TextStructureRenderer";
-import { ImageCardRenderer } from "../widgets/ImageCardRenderer";
-import { StripBannerRenderer } from "../widgets/StripBannerRenderer";
-import { ComparisonCardRenderer } from "../widgets/ComparisonCardRenderer";
+import {
+  getTemplateWidgetRenderer,
+  supportsTemplateWidgetHtmlConversion,
+} from "../WidgetRendererRegistry";
 
 export interface HtmlCodeEditorProps {
   widget: Widget;
@@ -36,29 +21,6 @@ export interface HtmlCodeEditorProps {
   setPageData: (data: PageData) => void;
   pushHistory: () => void;
 }
-
-const RENDERER_MAP: Record<string, React.ComponentType<any>> = {
-  mainTitle: MainTitleRenderer,
-  textSection: TextSectionRenderer,
-  video: VideoRenderer,
-  gridCard: GridCardRenderer,
-  infoBanner: InfoBannerRenderer,
-  process: ProcessRenderer,
-  iconCard: IconCardRenderer,
-  table: TableRenderer,
-  faq: FaqRenderer,
-  bannerSection: BannerSectionRenderer,
-  cardList: CardRenderer,
-  titleBanner: TitleBannerRenderer,
-  imageArea: ImageAreaRenderer,
-  titleText: TitleTextRenderer,
-  tabButton: TabButtonRenderer,
-  textStructure: TextStructureRenderer,
-  imageCard: ImageCardRenderer,
-  comparisonCard: ComparisonCardRenderer,
-  processCard: ProcessRenderer,
-  stripBanner: StripBannerRenderer,
-};
 
 // HTML 포맷팅 함수
 const formatHtml = (html: string): string => {
@@ -109,14 +71,17 @@ export const HtmlCodeEditor: React.FC<HtmlCodeEditorProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [editedCode, setEditedCode] = useState("");
   const { setConfirmPop } = usePopupStore();
+  const isCodeSection = widget.type === "codeSection";
+  const canConvertToHtml =
+    isCodeSection || supportsTemplateWidgetHtmlConversion(widget.type);
 
   const getHtmlCode = () => {
     // codeSection일 경우 저장된 코드 반환
-    if (widget.type === "codeSection") {
+    if (isCodeSection) {
       return (widget.data as any).code || "";
     }
 
-    const Renderer = RENDERER_MAP[widget.type];
+    const Renderer = getTemplateWidgetRenderer(widget.type);
     if (!Renderer) return "이 위젯은 HTML 변환을 지원하지 않습니다.";
     try {
       let rawHtml = ReactDOMServer.renderToStaticMarkup(
@@ -129,6 +94,8 @@ export const HtmlCodeEditor: React.FC<HtmlCodeEditorProps> = ({
       return "HTML 변환 중 오류가 발생했습니다.";
     }
   };
+
+  if (!canConvertToHtml) return null;
 
   const handleOpenExpanded = () => {
     setEditedCode(getHtmlCode());
@@ -211,7 +178,7 @@ export const HtmlCodeEditor: React.FC<HtmlCodeEditorProps> = ({
           }
           className="max-w-[95vw] w-full h-[95vh] flex flex-col p-0 gap-0"
         >
-          {widget.type !== "codeSection" && (
+          {!isCodeSection && (
             <p className="px-6 py-2 text-xs text-yellow-600 bg-yellow-50 border-b">
               ⚠️ 저장하면 코드 편집 모드로 전환되며, GUI 설정을 사용할 수 없게
               됩니다.

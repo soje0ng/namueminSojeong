@@ -17,7 +17,10 @@ import { MainTitleRenderer } from "./widgets/MainTitleRenderer";
 import { TextSectionRenderer } from "./widgets/TextSectionRenderer";
 import { VideoRenderer } from "./widgets/VideoRenderer";
 import { GridCardRenderer } from "./widgets/GridCardRenderer";
-import { InfoBannerRenderer } from "./widgets/InfoBannerRenderer";
+import {
+  InfoBannerRenderer,
+  INFO_BANNER_DEFAULTS,
+} from "./widgets/InfoBannerRenderer";
 import { ProcessRenderer } from "./widgets/ProcessRenderer";
 import { IconCardRenderer } from "./widgets/IconCardRenderer";
 import { ImageCardRenderer } from "./widgets/ImageCardRenderer";
@@ -63,6 +66,7 @@ import {
   Layers,
   ChevronUp,
   ChevronDown,
+  Code,
 } from "lucide-react";
 
 import { usePopupStore } from "@/store/console/usePopupStore";
@@ -417,6 +421,34 @@ const Builder: React.FC<BuilderProps> = ({
         needsUpdate = true;
       }
     };
+    const normalizeColor = (value: any) =>
+      typeof value === "string" ? value.trim().toLowerCase() : "";
+    const isLegacyLayout5TitleStyle = (style: any) => {
+      if (!style || typeof style !== "object") return true;
+
+      const desktop = normalizeFontSize(style.fontSize);
+      const mobile = normalizeFontSize(style.fontSizeMobile);
+
+      return (
+        desktop === "20px" &&
+        (mobile === "" || mobile === "20px") &&
+        (style.fontWeight === undefined || String(style.fontWeight) === "700") &&
+        (!style.color || normalizeColor(style.color) === "#ffffff")
+      );
+    };
+    const isLegacyLayout5DescStyle = (style: any) => {
+      if (!style || typeof style !== "object") return true;
+
+      const desktop = normalizeFontSize(style.fontSize);
+      const mobile = normalizeFontSize(style.fontSizeMobile);
+
+      return (
+        desktop === "18px" &&
+        (mobile === "" || mobile === "16px") &&
+        (style.fontWeight === undefined || String(style.fontWeight) === "400") &&
+        (!style.color || normalizeColor(style.color) === "#ffffff")
+      );
+    };
 
     const migrateTitleTextWidget = (widget: any) => {
       if (widget?.type !== "titleText" || !widget.data) return;
@@ -429,6 +461,94 @@ const Builder: React.FC<BuilderProps> = ({
       backfillMobileFontSize(widget.data.layout3DescStyle, "20px", "18px");
       backfillMobileFontSize(widget.data.layout4SubTitleStyle, "20px", "18px");
       backfillMobileFontSize(widget.data.layout4DescStyle, "20px", "18px");
+    };
+
+    const migrateTabButtonWidget = (widget: any) => {
+      if (widget?.type !== "tabButton" || !widget.data?.items) return;
+
+      widget.data.items.forEach((item: any) => {
+        backfillMobileFontSize(item?.titleStyle, "20px", "18px");
+      });
+    };
+    const migrateInfoBannerWidget = (widget: any) => {
+      if (
+        widget?.type !== "infoBanner" ||
+        String(widget.data?.layout || "1") !== "5" ||
+        !Array.isArray(widget.data?.items)
+      ) {
+        return;
+      }
+
+      const fallbackTitleStyle = JSON.parse(
+        JSON.stringify(
+          widget.data.layout5Card1TitleStyle ||
+            INFO_BANNER_DEFAULTS.layout5Card1TitleStyle,
+        ),
+      );
+      const fallbackDescStyle = JSON.parse(
+        JSON.stringify(
+          widget.data.layout5Card1DescStyle ||
+            INFO_BANNER_DEFAULTS.layout5Card1DescStyle,
+        ),
+      );
+
+      widget.data.items = widget.data.items.map((item: any, idx: number) => {
+        if (idx < 2) return item;
+
+        let changed = false;
+        const nextItem = { ...item };
+
+        if (isLegacyLayout5TitleStyle(item?.titleStyle)) {
+          nextItem.titleStyle = JSON.parse(JSON.stringify(fallbackTitleStyle));
+          changed = true;
+        }
+
+        if (isLegacyLayout5DescStyle(item?.descStyle)) {
+          nextItem.descStyle = JSON.parse(JSON.stringify(fallbackDescStyle));
+          changed = true;
+        }
+
+        if (!changed) return item;
+
+        needsUpdate = true;
+        return nextItem;
+      });
+    };
+    const migrateTextStructureWidget = (widget: any) => {
+      if (widget?.type !== "textStructure" || !widget.data) return;
+
+      const layout = String(widget.data.layout || "1");
+      if (!["8", "9"].includes(layout)) return;
+
+      const sectionsKey = layout === "8" ? "sections8" : "sections9";
+      if (!Array.isArray(widget.data[sectionsKey])) return;
+
+      widget.data[sectionsKey] = widget.data[sectionsKey].map((section: any) => {
+        if (
+          !section ||
+          typeof section !== "object" ||
+          !["text", "basicText"].includes(section.type)
+        ) {
+          return section;
+        }
+
+        const currentWeight = section.contentStyle?.fontWeight;
+        if (
+          currentWeight !== undefined &&
+          String(currentWeight).trim() !== "500"
+        ) {
+          return section;
+        }
+
+        needsUpdate = true;
+        return {
+          ...section,
+          contentStyle: {
+            ...(section.contentStyle || {}),
+            fontWeight: "400",
+          },
+        };
+      });
     };
 
     const recursiveUpdateFontSize = (obj: any) => {
@@ -459,6 +579,9 @@ const Builder: React.FC<BuilderProps> = ({
     updatedData.sections.forEach((section: any) => {
       section.widgets.forEach((widget: any) => {
         migrateTitleTextWidget(widget);
+        migrateTabButtonWidget(widget);
+        migrateInfoBannerWidget(widget);
+        migrateTextStructureWidget(widget);
         recursiveUpdateFontSize(widget.data);
         recursiveUpdateFontSize(widget.style);
       });
@@ -762,15 +885,39 @@ const Builder: React.FC<BuilderProps> = ({
         if (newItem.titleStyle && typeof newItem.titleStyle === "object") {
           newItem.titleStyle = {
             ...newItem.titleStyle,
+            fontSizeMobile: newItem.titleStyle.fontSizeMobile || "18px",
             color: "#6b7280",
           };
         } else {
           newItem.titleStyle = {
             fontSize: "20px",
+            fontSizeMobile: "18px",
             fontWeight: "500",
             color: "#6b7280",
           };
         }
+      }
+      if (widget.type === "infoBanner" && String(data.layout || "1") === "5") {
+        newItem.image =
+          data.layout5Card2ImageUrl ||
+          data.layout5Card1ImageUrl ||
+          "/images/placeholder/infobanner_layout5_card1_image.jpg";
+        newItem.title = "영상명 입력";
+        newItem.desc = "영상 소개 문구 적는 곳";
+        newItem.titleStyle = JSON.parse(
+          JSON.stringify(
+            data.layout5Card2TitleStyle ||
+              data.layout5Card1TitleStyle ||
+              INFO_BANNER_DEFAULTS.layout5Card1TitleStyle,
+          ),
+        );
+        newItem.descStyle = JSON.parse(
+          JSON.stringify(
+            data.layout5Card2DescStyle ||
+              data.layout5Card1DescStyle ||
+              INFO_BANNER_DEFAULTS.layout5Card1DescStyle,
+          ),
+        );
       }
     } else {
       // 💡 [새 항목 추가 시 기본값 설정 (Fallback)]
@@ -884,16 +1031,46 @@ const Builder: React.FC<BuilderProps> = ({
       } else if (widget.type === "comingSoon") {
         newItem = { id, text: "새로운 Coming Soon 항목" };
       } else if (widget.type === "infoBanner") {
-        newItem = {
-          id,
-          icon: "task_alt",
-          iconUrl: "/images/template/icon_program.png",
-          image: "/images/template/img1.png",
-          title: "프로그램 특징",
-          titleStyle: { fontSize: "20px", fontWeight: "700", color: "#FFFFFF" },
-          desc: "프로그램 특징 내용 입력",
-          descStyle: { fontSize: "16px", fontWeight: "400", color: "#FFFFFF" },
-        };
+        newItem =
+          String(data.layout || "1") === "5"
+            ? {
+                id,
+                image:
+                  data.layout5Card1ImageUrl ||
+                  "/images/placeholder/infobanner_layout5_card1_image.jpg",
+                title: "영상명 입력",
+                titleStyle: JSON.parse(
+                  JSON.stringify(
+                    data.layout5Card1TitleStyle ||
+                      INFO_BANNER_DEFAULTS.layout5Card1TitleStyle,
+                  ),
+                ),
+                desc: "영상 소개 문구 적는 곳",
+                descStyle: JSON.parse(
+                  JSON.stringify(
+                    data.layout5Card1DescStyle ||
+                      INFO_BANNER_DEFAULTS.layout5Card1DescStyle,
+                  ),
+                ),
+              }
+            : {
+                id,
+                icon: "task_alt",
+                iconUrl: "/images/template/icon_program.png",
+                image: "/images/template/img1.png",
+                title: "프로그램 특징",
+                titleStyle: {
+                  fontSize: "20px",
+                  fontWeight: "700",
+                  color: "#FFFFFF",
+                },
+                desc: "프로그램 특징 내용 입력",
+                descStyle: {
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  color: "#FFFFFF",
+                },
+              };
       } else if (widget.type === "titleBanner") {
         const defaultFeature =
           ((TITLE_BANNER_DEFAULTS as any).items || [])[0] || {};
@@ -909,7 +1086,12 @@ const Builder: React.FC<BuilderProps> = ({
         newItem = {
           id,
           title: "TAB 명 링크 연결",
-          titleStyle: { fontSize: "20px", fontWeight: "500", color: "#6b7280" },
+          titleStyle: {
+            fontSize: "20px",
+            fontSizeMobile: "18px",
+            fontWeight: "500",
+            color: "#6b7280",
+          },
           active: false,
           link: "#",
         };
@@ -1178,20 +1360,118 @@ const Builder: React.FC<BuilderProps> = ({
     updateWidgetData(widget.id, updates);
   };
 
-  const removeTableRow = (widget: Widget) => {
+  const remapHeaderCellStylesAfterColumnRemoval = (
+    headerCellStyles: Record<string, any> | undefined,
+    removedColumnIndex: number,
+  ) => {
+    if (!headerCellStyles) return {};
+
+    return Object.entries(headerCellStyles).reduce(
+      (acc, [key, value]) => {
+        const index = Number.parseInt(key, 10);
+        if (!Number.isInteger(index) || index === removedColumnIndex) {
+          return acc;
+        }
+        acc[index > removedColumnIndex ? index - 1 : index] = value;
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
+  };
+
+  const remapCellStylesAfterRowRemoval = (
+    cellStyles: Record<string, any> | undefined,
+    removedRowIndex: number,
+  ) => {
+    if (!cellStyles) return {};
+
+    return Object.entries(cellStyles).reduce(
+      (acc, [key, value]) => {
+        const [rowText, colText] = key.split("-");
+        const rowIndex = Number.parseInt(rowText, 10);
+        const colIndex = Number.parseInt(colText, 10);
+        if (
+          !Number.isInteger(rowIndex) ||
+          !Number.isInteger(colIndex) ||
+          rowIndex === removedRowIndex
+        ) {
+          return acc;
+        }
+
+        const nextRowIndex =
+          rowIndex > removedRowIndex ? rowIndex - 1 : rowIndex;
+        acc[`${nextRowIndex}-${colIndex}`] = value;
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
+  };
+
+  const remapCellStylesAfterColumnRemoval = (
+    cellStyles: Record<string, any> | undefined,
+    removedColumnIndex: number,
+    isComparisonVariant: boolean,
+  ) => {
+    if (!cellStyles) return {};
+
+    const actualRemovedColumnIndex = isComparisonVariant
+      ? removedColumnIndex + 1
+      : removedColumnIndex;
+
+    return Object.entries(cellStyles).reduce(
+      (acc, [key, value]) => {
+        const [rowText, colText] = key.split("-");
+        const rowIndex = Number.parseInt(rowText, 10);
+        const colIndex = Number.parseInt(colText, 10);
+        if (!Number.isInteger(rowIndex) || !Number.isInteger(colIndex)) {
+          return acc;
+        }
+        if (colIndex === actualRemovedColumnIndex) {
+          return acc;
+        }
+
+        const nextColIndex =
+          colIndex > actualRemovedColumnIndex ? colIndex - 1 : colIndex;
+        acc[`${rowIndex}-${nextColIndex}`] = value;
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
+  };
+
+  const removeTableRow = (widget: Widget, rowIndex?: number) => {
     const data = (widget as any).data;
     const updates: any = {};
+    const resolvedRowIndex =
+      typeof rowIndex === "number" && rowIndex >= 0
+        ? rowIndex
+        : Math.max(
+            (data.rows?.length || 0) - 1,
+            (data.comparisonRows?.length || 0) - 1,
+          );
 
     if (data.rows && data.rows.length > 1) {
-      const newRows = [...data.rows];
-      newRows.pop();
-      updates.rows = newRows;
+      const targetIndex = Math.min(resolvedRowIndex, data.rows.length - 1);
+      updates.rows = data.rows.filter(
+        (_: string[], index: number) => index !== targetIndex,
+      );
     }
 
     if (data.comparisonRows && data.comparisonRows.length > 1) {
-      const newCompRows = [...data.comparisonRows];
-      newCompRows.pop();
-      updates.comparisonRows = newCompRows;
+      const targetIndex = Math.min(
+        resolvedRowIndex,
+        data.comparisonRows.length - 1,
+      );
+      updates.comparisonRows = data.comparisonRows.filter(
+        (_: string[], index: number) => index !== targetIndex,
+      );
+    }
+
+    if (data.cellStyles && resolvedRowIndex >= 0) {
+      updates.cellStyles = remapCellStylesAfterRowRemoval(
+        data.cellStyles,
+        resolvedRowIndex,
+      );
     }
 
     if (Object.keys(updates).length > 0) {
@@ -1199,34 +1479,60 @@ const Builder: React.FC<BuilderProps> = ({
     }
   };
 
-  const removeTableCol = (widget: Widget) => {
+  const removeTableCol = (widget: Widget, columnIndex?: number) => {
     const data = (widget as any).data;
     const updates: any = {};
+    const isComparisonVariant = data.variant === "comparison";
+    const resolvedColumnIndex =
+      typeof columnIndex === "number" && columnIndex >= 0
+        ? columnIndex
+        : Math.max(
+            (data.headers?.length || 0) - 1,
+            (data.comparisonHeaders?.length || 0) - 1,
+          );
 
     if (data.headers && data.headers.length > 1) {
-      const newHeaders = [...data.headers];
-      newHeaders.pop();
-      updates.headers = newHeaders;
+      const targetIndex = Math.min(resolvedColumnIndex, data.headers.length - 1);
+      updates.headers = data.headers.filter(
+        (_: string, index: number) => index !== targetIndex,
+      );
 
-      updates.rows = data.rows.map((row: string[]) => {
-        const r = [...row];
-        r.pop();
-        return r;
-      });
+      updates.rows = data.rows.map((row: string[]) =>
+        row.filter((_: string, index: number) => index !== targetIndex),
+      );
     }
 
     if (data.comparisonHeaders && data.comparisonHeaders.length > 1) {
-      const newCompHeaders = [...data.comparisonHeaders];
-      newCompHeaders.pop();
-      updates.comparisonHeaders = newCompHeaders;
+      const targetIndex = Math.min(
+        resolvedColumnIndex,
+        data.comparisonHeaders.length - 1,
+      );
+      updates.comparisonHeaders = data.comparisonHeaders.filter(
+        (_: string, index: number) => index !== targetIndex,
+      );
 
       if (data.comparisonRows) {
-        updates.comparisonRows = data.comparisonRows.map((row: string[]) => {
-          const r = [...row];
-          r.pop();
-          return r;
-        });
+        updates.comparisonRows = data.comparisonRows.map((row: string[]) =>
+          row.filter((_: string, index: number) =>
+            isComparisonVariant ? index !== targetIndex + 1 : index !== targetIndex,
+          ),
+        );
       }
+    }
+
+    if (data.headerCellStyles && resolvedColumnIndex >= 0) {
+      updates.headerCellStyles = remapHeaderCellStylesAfterColumnRemoval(
+        data.headerCellStyles,
+        resolvedColumnIndex,
+      );
+    }
+
+    if (data.cellStyles && resolvedColumnIndex >= 0) {
+      updates.cellStyles = remapCellStylesAfterColumnRemoval(
+        data.cellStyles,
+        resolvedColumnIndex,
+        isComparisonVariant,
+      );
     }
 
     if (Object.keys(updates).length > 0) {
@@ -1323,6 +1629,7 @@ const Builder: React.FC<BuilderProps> = ({
       bannerSection: "안내배너",
       cardList: "카드 리스트",
       imageArea: "이미지 영역",
+      codeSection: "코드 섹션",
     };
     return names[type] || type;
   };
@@ -1653,6 +1960,7 @@ const Builder: React.FC<BuilderProps> = ({
             { type: "stripBanner", label: "띠배너", color: "text-green-700" },
             { type: "faq", label: "FAQ", color: "text-green-700" },
             { type: "table", label: "테이블", color: "text-green-700" },
+            { type: "codeSection", label: "코드", color: "text-orange-700" },
           ].map((btn) => (
             <button
               key={btn.type}
@@ -1941,6 +2249,38 @@ const Builder: React.FC<BuilderProps> = ({
                           handleElementSelect(section.id, w.id, k, i)
                         }
                       />
+                    )}
+                    {w.type === "codeSection" && (
+                      <div
+                        className={`relative group border-2 ${
+                          selectedWidgetId === w.id
+                            ? "border-blue-500 bg-blue-50/5"
+                            : "border-transparent hover:border-blue-200"
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleElementSelect(section.id, w.id, "code");
+                        }}
+                      >
+                        {(w.data as any).code ? (
+                          <div
+                            className="w-full"
+                            dangerouslySetInnerHTML={{
+                              __html: (w.data as any).code || "",
+                            }}
+                          />
+                        ) : (
+                          <div className="py-20 flex flex-col items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl">
+                            <Code size={40} className="text-gray-300 mb-4" />
+                            <p className="text-base font-bold text-gray-400">
+                              HTML 코드가 비어있습니다.
+                            </p>
+                            <p className="text-sm text-gray-400">
+                              클릭하여 편집을 시작하세요.
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}
