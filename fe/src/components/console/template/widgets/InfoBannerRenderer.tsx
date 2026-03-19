@@ -12,6 +12,7 @@ import {
   getBorderRadiusClass,
   getBorderRadiusStyle,
   getVerticalPaddingClass,
+  getWidgetVerticalPaddingStyle,
 } from "./WidgetUtils";
 
 export const INFO_BANNER_DEFAULTS = {
@@ -273,6 +274,8 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
   const data = w.data;
   const layout = data.layout || "1";
   const infoBannerImageHeight = formatUnit((data as any).imageHeight);
+  const isInfoBannerElementHidden = (styleKey: string) =>
+    Boolean(data[styleKey]?.isHidden);
   const getMainImageStyle = (imageStyle: any) => {
     const resolvedStyle = getElementStyle(imageStyle, viewport);
     return infoBannerImageHeight && !resolvedStyle.height
@@ -349,8 +352,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div
             className="self-stretch flex flex-col justify-start items-center"
             style={{
-              paddingTop: isTablet ? "60px" : isMobile ? "40px" : "56px",
-              paddingBottom: isTablet ? "60px" : isMobile ? "40px" : "56px",
+              ...getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                desktopTop: "56px",
+                desktopBottom: "56px",
+                tabletTop: "60px",
+                tabletBottom: "60px",
+              }),
               gap: "40px",
             }}
           >
@@ -601,36 +608,38 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               </div>
 
               {/* Image Area — rounded-16px desktop, rounded-8px mobile/tablet, shadow */}
-              <div
-                className="cursor-pointer hover:ring-4 hover:ring-white transition-all z-10 flex justify-center items-center"
-                style={{
-                  width: isDesktop ? "560px" : "100%",
-                  flexShrink: isDesktop ? 0 : undefined,
-                  height:
-                    infoBannerImageHeight ||
-                    data.imageStyle?.height ||
-                    (isDesktop ? "auto" : undefined),
-                  borderRadius: isMobile ? "8px" : "16px",
-                  boxShadow: "24px 12px 16px 0px rgba(0,0,0,0.20)",
-                  overflow: "hidden",
-                  position: "relative",
-                }}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("imageUrl");
-                }}
-              >
-                <UniversalMedia
-                  url={data.imageUrl}
-                  className="w-full h-full object-cover"
-                  alt="banner image"
-                  style={getMainImageStyle(data.imageStyle)}
+              {!isInfoBannerElementHidden("imageStyle") && (
+                <div
+                  className="cursor-pointer hover:ring-4 hover:ring-white transition-all z-10 flex justify-center items-center"
+                  style={{
+                    width: isDesktop ? "560px" : "100%",
+                    flexShrink: isDesktop ? 0 : undefined,
+                    height:
+                      infoBannerImageHeight ||
+                      data.imageStyle?.height ||
+                      (isDesktop ? "auto" : undefined),
+                    borderRadius: isMobile ? "8px" : "16px",
+                    boxShadow: "24px 12px 16px 0px rgba(0,0,0,0.20)",
+                    overflow: "hidden",
+                    position: "relative",
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("imageUrl");
                   }}
-                />
-              </div>
+                >
+                  <UniversalMedia
+                    url={data.imageUrl}
+                    className="w-full h-full object-cover"
+                    alt="banner image"
+                    style={getMainImageStyle(data.imageStyle)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("imageUrl");
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -657,8 +666,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
           <div
             className="self-stretch flex flex-col justify-start items-center"
             style={{
-              paddingTop: isTablet2 ? "60px" : isMobile2 ? "40px" : "100px",
-              paddingBottom: isTablet2 ? "60px" : isMobile2 ? "40px" : "100px",
+              ...getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                desktopTop: "100px",
+                desktopBottom: "100px",
+                tabletTop: "60px",
+                tabletBottom: "60px",
+              }),
               paddingLeft: isTablet2 ? "40px" : isMobile2 ? "0px" : "280px",
               paddingRight: isTablet2 ? "40px" : isMobile2 ? "0px" : "280px",
             }}
@@ -676,42 +689,46 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               {/* Image Area — h-260px, rounded-16px */}
-              <div
-                className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all overflow-hidden"
-                style={{
-                  width: isDesktop2 ? "600px" : "100%",
-                  flexShrink: isDesktop2 ? 0 : undefined,
-                  height:
-                    infoBannerImageHeight ||
-                    l2ImageStyle?.height ||
-                    (isDesktop2 ? "480px" : undefined),
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  position: "relative",
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("layout2ImageUrl");
-                }}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("layout2ImageUrl");
-                }}
-              >
-                <UniversalMedia
-                  url={
-                    data.layout2ImageUrl ||
-                    "/images/placeholder/infobanner_layout2_main_image.jpg"
-                  }
-                  alt="layout2-main-image"
-                  className="w-full h-full object-cover"
-                  style={getMainImageStyle(l2ImageStyle)}
+              {!isInfoBannerElementHidden(
+                data.layout2ImageUrlStyle ? "layout2ImageUrlStyle" : "imageStyle"
+              ) && (
+                <div
+                  className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all overflow-hidden"
+                  style={{
+                    width: isDesktop2 ? "600px" : "100%",
+                    flexShrink: isDesktop2 ? 0 : undefined,
+                    height:
+                      infoBannerImageHeight ||
+                      l2ImageStyle?.height ||
+                      (isDesktop2 ? "480px" : undefined),
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    position: "relative",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2ImageUrl");
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout2ImageUrl");
                   }}
-                />
-              </div>
+                >
+                  <UniversalMedia
+                    url={
+                      data.layout2ImageUrl ||
+                      "/images/placeholder/infobanner_layout2_main_image.jpg"
+                    }
+                    alt="layout2-main-image"
+                    className="w-full h-full object-cover"
+                    style={getMainImageStyle(l2ImageStyle)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout2ImageUrl");
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Content Section — gap-24px */}
               <div
@@ -788,7 +805,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   )}
                 </div>
 
-                {/* Feature Row — mobile: 2-col grid gap-8px / desktop: flex-row gap-12px */}
+                {/* Feature Row — mobile: 2-col grid / tablet: max 4 cols with wrap / desktop: flex-row wrap */}
                 <div
                   className="self-stretch w-full"
                   style={
@@ -798,10 +815,16 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                           gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                           gap: "8px",
                         }
+                      : isTablet2
+                        ? {
+                            display: "grid",
+                            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                            gap: "12px",
+                          }
                       : {
                           display: "flex",
                           flexDirection: "row",
-                          flexWrap: isDesktop2 ? "wrap" : "nowrap",
+                          flexWrap: "wrap",
                           gap: "12px",
                           alignItems: "center",
                         }
@@ -813,7 +836,7 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                       <div
                         key={item.id || itemSelectId}
                         style={{
-                          ...(isMobile2
+                          ...(isMobile2 || isTablet2
                             ? {}
                             : {
                                 flex: isDesktop2
@@ -964,8 +987,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               width: "100%",
               paddingLeft: isTablet3 ? "40px" : isMobile3 ? "0px" : "280px",
               paddingRight: isTablet3 ? "40px" : isMobile3 ? "0px" : "280px",
-              paddingTop: isTablet3 ? "60px" : isMobile3 ? "0px" : "100px",
-              paddingBottom: isTablet3 ? "60px" : isMobile3 ? "60px" : "100px",
+              ...getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                desktopTop: "100px",
+                desktopBottom: "100px",
+                tabletTop: "60px",
+                tabletBottom: "60px",
+              }),
               gap: isTablet3 ? "40px" : isMobile3 ? "24px" : "40px",
             }}
           >
@@ -981,34 +1008,38 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               {/* Full-bleed image area */}
-              <div
-                style={{
-                  width: isTablet3 ? "calc(100% + 80px)" : "100%",
-                  height: isTablet3 ? "400px" : isMobile3 ? undefined : "480px",
-                  overflow: "hidden",
-                  cursor: "pointer",
-                  marginLeft: isTablet3 ? "-40px" : undefined,
-                  marginRight: isTablet3 ? "-40px" : undefined,
-                  marginBottom: isMobile3 ? "-20px" : "-80px",
-                }}
-                onClick={() => onElementSelect?.("layout3ImageUrl")}
-              >
-                <UniversalMedia
-                  url={data.layout3ImageUrl || data.imageUrl}
-                  alt="banner"
-                  className="w-full h-full"
+              {!isInfoBannerElementHidden(
+                data.layout3ImageUrlStyle ? "layout3ImageUrlStyle" : "imageStyle"
+              ) && (
+                <div
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
+                    width: isTablet3 ? "calc(100% + 80px)" : "100%",
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    marginLeft: isTablet3 ? "-40px" : undefined,
+                    marginRight: isTablet3 ? "-40px" : undefined,
+                    marginBottom: isMobile3 ? "-20px" : "-80px",
                   }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("layout3ImageUrl");
-                  }}
-                />
-              </div>
+                  onClick={() => onElementSelect?.("layout3ImageUrl")}
+                >
+                  <UniversalMedia
+                    url={data.layout3ImageUrl || data.imageUrl}
+                    alt="banner"
+                    className="w-full"
+                    naturalSize
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout3ImageUrl");
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Offset card wrapper — overlaps image bottom */}
               <div
@@ -1270,8 +1301,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               width: "100%",
               paddingLeft: isTablet4 ? "40px" : isMobile4 ? "20px" : "280px",
               paddingRight: isTablet4 ? "40px" : isMobile4 ? "20px" : "280px",
-              paddingTop: isTablet4 ? "60px" : isMobile4 ? "60px" : "56px",
-              paddingBottom: isTablet4 ? "60px" : isMobile4 ? "60px" : "112px",
+              ...getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                desktopTop: "56px",
+                desktopBottom: "112px",
+                tabletTop: "60px",
+                tabletBottom: "60px",
+              }),
             }}
           >
             {/* Top icon + Title */}
@@ -1396,39 +1431,46 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   </div>
                 )}
                 {/* Image — z:1, below card */}
-                <div
-                  style={{
-                    width: "100%",
-                    borderTopRightRadius: "40px",
-                    borderBottomLeftRadius: "40px",
-                    borderTopLeftRadius: "0px",
-                    borderBottomRightRadius: "0px",
-                    boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
-                    overflow: "hidden",
-                    cursor: "pointer",
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("layout4ImageUrl");
-                  }}
-                >
-                  <UniversalMedia
-                    url={
-                      data.layout4ImageUrl ||
-                      data.imageUrl ||
-                      "/images/placeholder/infobanner_layout4_main_image.jpg"
-                    }
-                    alt="layout4-main-image"
-                    className="w-full h-auto block"
-                    style={getElementStyle(l4ImageStyle, viewport)}
+                {!isInfoBannerElementHidden(
+                  data.layout4ImageUrlStyle ? "layout4ImageUrlStyle" : "imageStyle"
+                ) && (
+                  <div
+                    style={{
+                      width: "100%",
+                      borderTopRightRadius: "40px",
+                      borderBottomLeftRadius: "40px",
+                      borderTopLeftRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                      boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("layout4ImageUrl");
                     }}
-                  />
-                </div>
+                  >
+                    <UniversalMedia
+                      url={
+                        data.layout4ImageUrl ||
+                        data.imageUrl ||
+                        "/images/placeholder/infobanner_layout4_main_image.jpg"
+                      }
+                      alt="layout4-main-image"
+                      className="w-full h-full block object-cover"
+                      style={{
+                        ...getElementStyle(l4ImageStyle, viewport),
+                        objectFit: "cover",
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("layout4ImageUrl");
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               /* Tablet / Desktop: card overlaps image (card left z-2, image right z-1) */
@@ -1489,41 +1531,50 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                   </div>
                 )}
                 {/* Image — z:1 */}
-                <div
-                  style={{
-                    width: isTablet4 ? "483px" : "620px",
-                    height: isTablet4 ? "400px" : "384px",
-                    borderTopRightRadius: "40px",
-                    borderBottomLeftRadius: "40px",
-                    borderTopLeftRadius: "0px",
-                    borderBottomRightRadius: "0px",
-                    boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
-                    overflow: "hidden",
-                    position: "relative",
-                    zIndex: 1,
-                    flexShrink: 0,
-                    cursor: "pointer",
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("layout4ImageUrl");
-                  }}
-                >
-                  <UniversalMedia
-                    url={
-                      data.layout4ImageUrl ||
-                      data.imageUrl ||
-                      "https://placehold.co/620x400"
-                    }
-                    alt="layout4-main-image"
-                    className="w-full h-full"
-                    style={getMainImageStyle(l4ImageStyle)}
+                {!isInfoBannerElementHidden(
+                  data.layout4ImageUrlStyle ? "layout4ImageUrlStyle" : "imageStyle"
+                ) && (
+                  <div
+                    style={{
+                      width: isTablet4 ? "483px" : "620px",
+                      borderTopRightRadius: "40px",
+                      borderBottomLeftRadius: "40px",
+                      borderTopLeftRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                      boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
+                      overflow: "hidden",
+                      position: "relative",
+                      zIndex: 1,
+                      flexShrink: 0,
+                      cursor: "pointer",
+                    }}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       onElementSelect?.("layout4ImageUrl");
                     }}
-                  />
-                </div>
+                  >
+                    <UniversalMedia
+                      url={
+                        data.layout4ImageUrl ||
+                        data.imageUrl ||
+                        "https://placehold.co/620x400"
+                      }
+                      alt="layout4-main-image"
+                      className="w-full h-full object-cover"
+                      naturalSize
+                      style={{
+                        ...getMainImageStyle(l4ImageStyle),
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("layout4ImageUrl");
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1746,24 +1797,29 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
                     );
                   })}
                 </div>
-                <div
-                  className="w-[620px] aspect-[31/22] rounded-2xl overflow-hidden cursor-pointer"
-                  style={getMainImageFrameStyle(l5ImageStyle)}
-                >
-                  <UniversalMedia
-                    url={
-                      data.layout5ImageUrl ||
-                      "/images/placeholder/infobanner_layout5_main_image.jpg"
-                    }
-                    alt="banner"
-                    className="w-full h-full"
-                    style={getMainImageStyle(l5ImageStyle)}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("layout5ImageUrl");
-                    }}
-                  />
-                </div>
+                {!isInfoBannerElementHidden(
+                  data.layout5ImageUrlStyle ? "layout5ImageUrlStyle" : "imageStyle"
+                ) && (
+                  <div
+                    className="w-[620px] rounded-2xl overflow-hidden cursor-pointer"
+                    style={{ ...getMainImageFrameStyle(l5ImageStyle), height: "auto" }}
+                  >
+                    <UniversalMedia
+                      url={
+                        data.layout5ImageUrl ||
+                        "/images/placeholder/infobanner_layout5_main_image.jpg"
+                      }
+                      alt="banner"
+                      className="w-full"
+                      naturalSize
+                      style={{ ...getMainImageStyle(l5ImageStyle), width: "100%", height: "auto", objectFit: "cover" }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("layout5ImageUrl");
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1781,8 +1837,12 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              paddingTop: isMobile5 ? "30px" : "60px",
-              paddingBottom: isMobile5 ? "100px" : "140px",
+              paddingTop: isMobile5
+                ? "var(--widget-mobile-padding-top)"
+                : "60px",
+              paddingBottom: isMobile5
+                ? "var(--widget-mobile-padding-bottom)"
+                : "140px",
               width: "100%",
             }}
           >
@@ -1790,16 +1850,22 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
             <div
               style={{
                 width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                paddingLeft: "40px",
-                paddingRight: "40px",
-                paddingTop: isTablet5 ? "120px" : "60px",
-                paddingBottom: isTablet5 ? "120px" : "60px",
-                marginBottom: isMobile5 ? "-40px" : "-80px",
-                backgroundImage: data.layout5BgImageUrl
-                  ? `url(${data.layout5BgImageUrl})`
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              paddingLeft: "40px",
+              paddingRight: "40px",
+              ...getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                desktopTop: "60px",
+                desktopBottom: "60px",
+                tabletTop: "80px",
+                tabletBottom: "80px",
+                mobileTop: "40px",
+                mobileBottom: "50px",
+              }),
+              marginBottom: isMobile5 ? "-24px" : isTablet5 ? "-40px" : "-80px",
+              backgroundImage: data.layout5BgImageUrl
+                ? `url(${data.layout5BgImageUrl})`
                   : "linear-gradient(147.64deg, #285DE1 2.89%, #59A1B9 48.56%, #44A075 100%)",
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
@@ -1896,34 +1962,38 @@ export const InfoBannerRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               {/* 메인 이미지 */}
-              <div
-                style={{
-                  height: isTablet5 ? "240px" : isMobile5 ? "160px" : undefined,
-                  width: "100%",
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  flexShrink: 0,
-                  cursor: "pointer",
-                }}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("layout5ImageUrl");
-                }}
-              >
-                <UniversalMedia
-                  url={
-                    data.layout5ImageUrl ||
-                    "/images/placeholder/infobanner_layout5_main_image.jpg"
-                  }
-                  alt="banner"
-                  className="w-full h-full"
-                  style={getMainImageStyle(l5ImageStyle)}
+              {!isInfoBannerElementHidden(
+                data.layout5ImageUrlStyle ? "layout5ImageUrlStyle" : "imageStyle"
+              ) && (
+                <div
+                  style={{
+                    width: "100%",
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    cursor: "pointer",
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout5ImageUrl");
                   }}
-                />
-              </div>
+                >
+                  <UniversalMedia
+                    url={
+                      data.layout5ImageUrl ||
+                      "/images/placeholder/infobanner_layout5_main_image.jpg"
+                    }
+                    alt="banner"
+                    className="w-full"
+                    naturalSize
+                    style={{ ...getMainImageStyle(l5ImageStyle), width: "100%", height: "auto", objectFit: "cover" }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout5ImageUrl");
+                    }}
+                  />
+                </div>
+              )}
 
               {/* 영상 카드 리스트 */}
               <div

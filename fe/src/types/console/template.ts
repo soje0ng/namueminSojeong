@@ -438,6 +438,12 @@ export interface ProcessWidget extends BaseWidget {
       iconStyle?: ElementStyle;
       label?: string;
       labelStyle?: ElementStyle;
+      layout4NumberStyle?: ElementStyle;
+      layout4Items?: {
+        id: string;
+        number: string;
+        text: string;
+      }[];
     }[];
     layout?: "horizontal" | "vertical" | "1";
     itemsPerRow?: number;

@@ -11,6 +11,7 @@ import {
   getBorderRadiusClass,
   getBorderRadiusStyle,
   getVerticalPaddingClass,
+  getWidgetVerticalPaddingStyle,
 } from "./WidgetUtils";
 
 export const TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS = [
@@ -31,6 +32,7 @@ export const TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS = [
       fontSizeMobile: "18px",
       fontWeight: "400",
     },
+    imageStyle: {},
   },
   {
     id: "title-banner-feature-2",
@@ -49,6 +51,7 @@ export const TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS = [
       fontSizeMobile: "18px",
       fontWeight: "400",
     },
+    imageStyle: {},
   },
   {
     id: "title-banner-feature-3",
@@ -67,6 +70,7 @@ export const TITLE_BANNER_LAYOUT1_DEFAULT_ITEMS = [
       fontSizeMobile: "18px",
       fontWeight: "400",
     },
+    imageStyle: {},
   },
 ] as const;
 
@@ -275,6 +279,19 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
     ...getElementStyle(textStyle, viewport as any),
     ...overrides,
   });
+  const layout1DesktopImageStyleSource = getElementStyle(
+    data.layout1ImageStyle,
+    viewport,
+  );
+  const layout1DesktopImageStyle: React.CSSProperties = {
+    ...layout1DesktopImageStyleSource,
+    width: "auto",
+    height: "auto",
+    maxWidth: "820px",
+    maxHeight: "575px",
+  };
+  const isTitleBannerElementHidden = (styleKey: string) =>
+    Boolean(data[styleKey]?.isHidden);
   const stripResponsiveTypographyStyles = (html?: string) => {
     if (!html || typeof html !== "string") return html;
 
@@ -328,8 +345,14 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               alignItems: "flex-start",
               paddingLeft: "20px",
               paddingRight: "20px",
-              paddingTop: viewport === "mobile" ? "30px" : "60px",
-              paddingBottom: viewport === "mobile" ? "30px" : "60px",
+              paddingTop:
+                viewport === "mobile"
+                  ? "var(--widget-mobile-padding-top)"
+                  : "60px",
+              paddingBottom:
+                viewport === "mobile"
+                  ? "var(--widget-mobile-padding-bottom)"
+                  : "60px",
               width: "100%",
             }}
           >
@@ -455,40 +478,42 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               />
 
               {/* 하단 이미지 (프로그램 특징 위로 이동) — 200px height */}
-              <div
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  height: "200px",
-                  overflow: "hidden",
-                  flexShrink: 0,
-                }}
-              >
-                <UniversalMedia
-                  className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                  url={getImageUrl(
-                    data.layout1MobileImageStyle || data.layout1ImageStyle,
-                    viewport,
-                    data.layout1MobileImage || data.layout1Image,
-                  )}
+              {!isTitleBannerElementHidden("layout1ImageStyle") && (
+                <div
                   style={{
-                    ...getElementStyle(
+                    position: "relative",
+                    width: "100%",
+                    height: "200px",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                  }}
+                >
+                  <UniversalMedia
+                    className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                    url={getImageUrl(
                       data.layout1MobileImageStyle || data.layout1ImageStyle,
                       viewport,
-                    ),
-                    position: "absolute",
-                    inset: 0,
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "center",
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("layout1Image");
-                  }}
-                />
-              </div>
+                      data.layout1MobileImage || data.layout1Image,
+                    )}
+                    style={{
+                      ...getElementStyle(
+                        data.layout1MobileImageStyle || data.layout1ImageStyle,
+                        viewport,
+                      ),
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout1Image");
+                    }}
+                  />
+                </div>
+              )}
 
               {/* 아이콘박스 2열 그리드 */}
               <div
@@ -696,21 +721,23 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
 
                 {/* 하단 이미지 (태블릿 상단으로 이동) */}
-                <div className="relative shrink-0 w-full h-[360px] overflow-hidden">
-                  <UniversalMedia
-                    className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                    url={getImageUrl(
-                      data.layout1ImageStyle,
-                      viewport,
-                      data.layout1Image,
-                    )}
-                    style={getElementStyle(data.layout1ImageStyle, viewport)}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("layout1Image");
-                    }}
-                  />
-                </div>
+                {!isTitleBannerElementHidden("layout1ImageStyle") && (
+                  <div className="relative shrink-0 w-full h-[360px] overflow-hidden">
+                    <UniversalMedia
+                      className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                      url={getImageUrl(
+                        data.layout1ImageStyle,
+                        viewport,
+                        data.layout1Image,
+                      )}
+                      style={getElementStyle(data.layout1ImageStyle, viewport)}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("layout1Image");
+                      }}
+                    />
+                  </div>
+                )}
 
                 {/* 본문 + 특징 그룹 */}
                 <div className="flex flex-col gap-[20px] w-full">
@@ -843,9 +870,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${isTablet ? "px-10" : isMobile ? "px-5" : "pl-5 md:pl-10 xl:pl-[280px] pr-0"} ${getVerticalPaddingClass(viewport)} inline-flex justify-start items-center gap-20`}
+            className={`w-full ${isTablet ? "px-10" : isMobile ? "px-5" : "pl-5 md:pl-10 xl:pl-[280px] pr-0"} ${getVerticalPaddingClass(viewport)} flex justify-between items-center gap-20`}
           >
-            <div className="flex-1 inline-flex flex-col justify-between items-start">
+            <div className="min-w-0 flex-1 flex flex-col justify-start items-start gap-[60px]">
               {/* 상단 텍스트 그룹 */}
               <div className="flex flex-col justify-start items-start gap-3">
                 {/* 버지니아 해안 리조트 건설 프로젝트 */}
@@ -981,19 +1008,21 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 </div>
               </div>
             </div>
-            <UniversalMedia
-              className={`w-[820px] h-[575px] ${getBorderRadiusClass(viewport, "rounded-tl-2xl rounded-bl-2xl")} object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer`}
-              url={getImageUrl(
-                data.layout1ImageStyle,
-                viewport,
-                data.layout1Image,
-              )}
-              style={getElementStyle(data.layout1ImageStyle, viewport)}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("layout1Image");
-              }}
-            />
+            {!isTitleBannerElementHidden("layout1ImageStyle") && (
+              <UniversalMedia
+                className={`w-auto h-auto shrink-0 ${getBorderRadiusClass(viewport, "rounded-tl-2xl rounded-bl-2xl")} object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer`}
+                url={getImageUrl(
+                  data.layout1ImageStyle,
+                  viewport,
+                  data.layout1Image,
+                )}
+                style={layout1DesktopImageStyle}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("layout1Image");
+                }}
+              />
+            )}
           </div>
         </div>
       </section>
@@ -1020,8 +1049,8 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               alignItems: "flex-start",
               paddingLeft: "20px",
               paddingRight: "20px",
-              paddingTop: "30px",
-              paddingBottom: "30px",
+              paddingTop: "var(--widget-mobile-padding-top)",
+              paddingBottom: "var(--widget-mobile-padding-bottom)",
               width: "100%",
             }}
           >
@@ -1116,39 +1145,41 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               {/* 히어로 이미지 — aspect:360/440, rounded-tl:60px, width:100% */}
-              <div
-                style={{
-                  aspectRatio: "360 / 440",
-                  width: "100%",
-                  position: "relative",
-                  borderRadius: "60px 0 0 0",
-                  overflow: "hidden",
-                  flexShrink: 0,
-                }}
-              >
-                <UniversalMedia
-                  className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                  url={getImageUrl(
-                    data.layout2HeroImageStyle,
-                    viewport,
-                    data.layout2HeroImage ||
-                      "/images/placeholder/title_banner_img2.png",
-                  )}
+              {!isTitleBannerElementHidden("layout2HeroImageStyle") && (
+                <div
                   style={{
-                    ...getElementStyle(data.layout2HeroImageStyle, viewport),
-                    position: "absolute",
-                    inset: 0,
+                    aspectRatio: "360 / 440",
                     width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
+                    position: "relative",
                     borderRadius: "60px 0 0 0",
+                    overflow: "hidden",
+                    flexShrink: 0,
                   }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("layout2HeroImage");
-                  }}
-                />
-              </div>
+                >
+                  <UniversalMedia
+                    className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                    url={getImageUrl(
+                      data.layout2HeroImageStyle,
+                      viewport,
+                      data.layout2HeroImage ||
+                        "/images/placeholder/title_banner_img2.png",
+                    )}
+                    style={{
+                      ...getElementStyle(data.layout2HeroImageStyle, viewport),
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "60px 0 0 0",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout2HeroImage");
+                    }}
+                  />
+                </div>
+              )}
 
               {/* txt01 — gap:8px items-start justify-center w-full */}
               <div
@@ -1311,37 +1342,39 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 {/* 이미지: w-360px h-440px rounded-tl-[60px] */}
-                <div
-                  style={{
-                    position: "relative",
-                    width: "360px",
-                    height: "440px",
-                    borderRadius: "60px 0 0 0",
-                    overflow: "hidden",
-                    flexShrink: 0,
-                  }}
-                >
-                  <UniversalMedia
-                    className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
-                    url={getImageUrl(
-                      data.layout2HeroImageStyle,
-                      viewport,
-                      data.layout2HeroImage ||
-                        "/images/placeholder/title_banner_img2.png",
-                    )}
+                {!isTitleBannerElementHidden("layout2HeroImageStyle") && (
+                  <div
                     style={{
-                      ...getElementStyle(data.layout2HeroImageStyle, viewport),
-                      borderRadius: getBorderRadiusStyle(
+                      position: "relative",
+                      width: "360px",
+                      height: "440px",
+                      borderRadius: "60px 0 0 0",
+                      overflow: "hidden",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <UniversalMedia
+                      className="absolute inset-0 w-full h-full object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer"
+                      url={getImageUrl(
+                        data.layout2HeroImageStyle,
                         viewport,
-                        "60px 0 0 0",
-                      ),
-                    }}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      onElementSelect?.("layout2HeroImage");
-                    }}
-                  />
-                </div>
+                        data.layout2HeroImage ||
+                          "/images/placeholder/title_banner_img2.png",
+                      )}
+                      style={{
+                        ...getElementStyle(data.layout2HeroImageStyle, viewport),
+                        borderRadius: getBorderRadiusStyle(
+                          viewport,
+                          "60px 0 0 0",
+                        ),
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        onElementSelect?.("layout2HeroImage");
+                      }}
+                    />
+                  </div>
+                )}
 
                 {/* txt01: flex-1 flex-col gap-[8px] items-start justify-center */}
                 <div
@@ -1417,9 +1450,9 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`w-full ${getPaddingClass(viewport)} ${viewport === "mobile" ? "py-[30px]" : "py-[60px]"} flex justify-between items-start self-stretch`}
+            className={`w-full ${getPaddingClass(viewport)} ${getVerticalPaddingClass(viewport, "py-[60px]")} flex justify-between items-start gap-10 self-stretch`}
           >
-            <div className="inline-flex flex-col justify-start items-start gap-3">
+            <div className="min-w-0 flex-1 flex flex-col justify-start items-start gap-3">
               <SafeHtml
                 html={data.subTitle || "Program Name."}
                 className="justify-start text-시안-mode-Primary70 text-lg xl:text-xl font-medium font-['Pretendard'] leading-normal hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all"
@@ -1458,22 +1491,25 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 justifyContent: "center",
                 alignItems: "flex-end",
                 gap: "40px",
+                flexShrink: 0,
               }}
             >
-              <UniversalMedia
-                className={`w-[360px] h-auto max-h-[440px] ${getBorderRadiusClass(viewport, "rounded-tl-[60px]")} object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer`}
-                url={getImageUrl(
-                  data.layout2HeroImageStyle,
-                  viewport,
-                  data.layout2HeroImage ||
-                    "/images/placeholder/title_banner_img2.png",
-                )}
-                style={getElementStyle(data.layout2HeroImageStyle, viewport)}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("layout2HeroImage");
-                }}
-              />
+              {!isTitleBannerElementHidden("layout2HeroImageStyle") && (
+                <UniversalMedia
+                  className={`w-[360px] h-auto max-h-[440px] ${getBorderRadiusClass(viewport, "rounded-tl-[60px]")} object-cover hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all cursor-pointer`}
+                  url={getImageUrl(
+                    data.layout2HeroImageStyle,
+                    viewport,
+                    data.layout2HeroImage ||
+                      "/images/placeholder/title_banner_img2.png",
+                  )}
+                  style={getElementStyle(data.layout2HeroImageStyle, viewport)}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout2HeroImage");
+                  }}
+                />
+              )}
               <div className="flex-1 inline-flex flex-col justify-center items-start gap-2">
                 <SafeHtml
                   html={data.textContentTitle || "서브 타이틀 입력"}
@@ -1527,8 +1563,12 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
                 flexDirection: "column",
                 alignItems: "center",
                 gap: "24px",
-                paddingTop: isMobile ? "30px" : "60px",
-                paddingBottom: isMobile ? "30px" : "60px",
+                paddingTop: isMobile
+                  ? "var(--widget-mobile-padding-top)"
+                  : "60px",
+                paddingBottom: isMobile
+                  ? "var(--widget-mobile-padding-bottom)"
+                  : "60px",
                 paddingLeft: "20px",
                 paddingRight: "20px",
                 width: "100%",
@@ -1961,7 +2001,13 @@ export const TitleBannerRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${getPaddingClass(viewport)} pt-28 pb-14 inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${getPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            style={getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+              desktopTop: "112px",
+              desktopBottom: "56px",
+              tabletTop: "112px",
+              tabletBottom: "56px",
+            })}
           >
             {/* 상단: 따옴표 + 텍스트 */}
             <div className="inline-flex justify-start items-start gap-14">

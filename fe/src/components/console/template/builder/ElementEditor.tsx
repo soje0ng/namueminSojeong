@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 
 import { Widget } from "@/types/console/template";
-import { BANNER_SECTION_DEFAULTS } from "../widgets/BannerSectionRenderer";
 import { updateItemInArray, findItem } from "@/utils/template/itemUtils";
 import { isVideoUrl } from "../widgets/WidgetUtils";
 import {
@@ -144,11 +143,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         data.variant === "image-left-list"
       )
         arrayName = "listItems";
-      else if (widget.type === "textSection") {
-        if (data.variant === "text2" || data.variant === "text3")
-          arrayName = "items";
-        else arrayName = "blocks";
-      } else if (widget.type === "imageCard") {
+      else if (widget.type === "imageCard") {
         arrayName = "items";
       }
 
@@ -1093,10 +1088,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
 
       const textField = textFieldMap[fieldRef];
       const styleField = styleFieldMap[fieldRef];
+      const legacyStyleFieldMap: Record<string, string> = {
+        image: "iconUrlStyle",
+        checkIcon: "checkIconUrlStyle",
+      };
+      const legacyStyleField = legacyStyleFieldMap[fieldRef];
 
       textValue = section[textField] || "";
       styleKey = styleField || "";
-      styleValue = section[styleField] || {};
+      styleValue = section[styleField] || section[legacyStyleField] || {};
 
       onTextChange = (val) => {
         const updated = [...sections10];
@@ -1107,7 +1107,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       onStyleChange = (k, v) => {
         if (!styleField) return;
         const updated = [...sections10];
-        const oldStyle = updated[idx][styleField] || {};
+        const oldStyle =
+          updated[idx][styleField] || updated[idx][legacyStyleField] || {};
         updated[idx] = {
           ...updated[idx],
           [styleField]: { ...oldStyle, ...(typeof k === "object" ? k : { [k]: v }) },
@@ -1201,11 +1202,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     else if (widget.type === "tabCarousel") arrayName = "tabs";
     else if (widget.type === "textSplit" && data.variant === "image-left-list")
       arrayName = "listItems";
-    else if (widget.type === "textSection") {
-      if (data.variant === "text2" || data.variant === "text3")
-        arrayName = "items";
-      else arrayName = "blocks";
-    } else if (widget.type === "textStructure") {
+    else if (widget.type === "textStructure") {
       const layoutVal = String(data.layout || "1");
 
       if (elementKey === "image") {
@@ -1432,6 +1429,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             "itemTitle",
             "itemDesc",
             "itemIcon",
+            "image",
             "sectionImage",
           ].includes(elementKey)
         ) {
@@ -1443,9 +1441,25 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             const section = sections.find((s: any) => s.id === itemId);
             if (section) {
               textValue = section.imageUrl || "";
+              styleKey = "imageStyle";
+              styleValue = section.imageStyle || {};
               onTextChange = (val) => {
                 const updated = sections.map((s: any) =>
                   s.id === itemId ? { ...s, imageUrl: val } : s,
+                );
+                updateWidgetData(widget.id, { sections11: updated });
+              };
+              onStyleChange = (k, v) => {
+                const updated = sections.map((s: any) =>
+                  s.id !== itemId
+                    ? s
+                    : {
+                        ...s,
+                        imageStyle: {
+                          ...(s.imageStyle || {}),
+                          ...(typeof k === "object" ? k : { [k]: v }),
+                        },
+                      },
                 );
                 updateWidgetData(widget.id, { sections11: updated });
               };
@@ -1453,25 +1467,44 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           } else if (elementKey === "image" && itemId?.startsWith("s11img_")) {
             // [Multi-Image Grid Support for Layout 11]
             // itemId: s11img_{sectionId}_{imgIdx}
-            const [, sectionId, imgIdxStr] = itemId.split("_");
-            const imgIdx = parseInt(imgIdxStr);
-            const sections =
-              data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
-            const section = sections.find((s: any) => s.id === sectionId);
-            if (section) {
-              const images = section.images || [
-                section.imageUrl ||
-                  "/images/placeholder/text_structure_img11.png",
-              ];
-              textValue = images[imgIdx] || "";
-              onTextChange = (val) => {
-                const newImages = [...images];
-                newImages[imgIdx] = val;
-                const updatedSections = sections.map((s: any) =>
-                  s.id === sectionId ? { ...s, images: newImages } : s,
-                );
-                updateWidgetData(widget.id, { sections11: updatedSections });
-              };
+            const imageMatch = String(itemId).match(/^s11img_(.+)_(\d+)$/);
+            if (imageMatch) {
+              const [, sectionId, imgIdxStr] = imageMatch;
+              const imgIdx = Number.parseInt(imgIdxStr, 10);
+              const sections =
+                data.sections11 || TEXT_STRUCTURE_11_DEFAULT_SECTIONS;
+              const section = sections.find((s: any) => s.id === sectionId);
+              if (section) {
+                const images = section.images || [
+                  section.imageUrl ||
+                    "/images/placeholder/text_structure_img11.png",
+                ];
+                textValue = images[imgIdx] || "";
+                styleKey = "imageStyle";
+                styleValue = section.imageStyle || {};
+                onTextChange = (val) => {
+                  const newImages = [...images];
+                  newImages[imgIdx] = val;
+                  const updatedSections = sections.map((s: any) =>
+                    s.id === sectionId ? { ...s, images: newImages } : s,
+                  );
+                  updateWidgetData(widget.id, { sections11: updatedSections });
+                };
+                onStyleChange = (k, v) => {
+                  const updatedSections = sections.map((s: any) =>
+                    s.id !== sectionId
+                      ? s
+                      : {
+                          ...s,
+                          imageStyle: {
+                            ...(s.imageStyle || {}),
+                            ...(typeof k === "object" ? k : { [k]: v }),
+                          },
+                        },
+                  );
+                  updateWidgetData(widget.id, { sections11: updatedSections });
+                };
+              }
             }
           } else {
             // For nested items in sections
@@ -1569,6 +1602,57 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       }
     }
 
+    // layout4Items: nested array inside each step (process layout 4)
+    if (
+      elementKey === "layout4Item" ||
+      elementKey === "layout4Number" ||
+      elementKey === "layout4Text"
+    ) {
+      const [stepId, l4ItemId] = (itemId || "").split("::");
+      const stepsArr = data.steps || [];
+      const step = stepsArr.find((s: any) => s.id === stepId);
+      if (step) {
+        const l4Items: Array<{ id: string; number: string; text: string }> =
+          step.layout4Items || [
+            { id: "l4i-1", number: "01", text: "체계적인 절차에 따라 업무를 수행합니다." },
+          ];
+        const l4Index = l4Items.findIndex((it) => it.id === l4ItemId);
+        const l4Item = l4Items[l4Index] || l4Items[0];
+
+        if (elementKey === "layout4Number") {
+          textValue = l4Item?.number || "01";
+          styleKey = "layout4NumberStyle";
+          styleValue = step.layout4NumberStyle || {};
+        } else {
+          textValue = l4Item?.text || "내용을 입력하세요";
+          styleKey = "descStyle";
+          styleValue = step.descStyle || {};
+        }
+
+        onTextChange = (val) => {
+          const prop = elementKey === "layout4Number" ? "number" : "text";
+          const updatedL4Items = l4Items.map((it) =>
+            it.id === (l4ItemId || l4Items[0]?.id)
+              ? { ...it, [prop]: val }
+              : it,
+          );
+          const updatedSteps = stepsArr.map((s: any) =>
+            s.id === stepId ? { ...s, layout4Items: updatedL4Items } : s,
+          );
+          updateWidgetData(widget.id, { steps: updatedSteps });
+        };
+
+        onStyleChange = (k, v) => {
+          const updates = typeof k === "object" ? k : { [k]: v };
+          const updatedSteps = stepsArr.map((s: any) =>
+            s.id === stepId
+              ? { ...s, [styleKey]: { ...(s[styleKey] || {}), ...updates } }
+              : s,
+          );
+          updateWidgetData(widget.id, { steps: updatedSteps });
+        };
+      }
+    } else {
     const currentItems = getEditorItemArray(arrayName);
     let item = findItem(currentItems, itemId);
     if (
@@ -1810,10 +1894,28 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           });
           updateWidgetData(widget.id, { [arrayName]: updatedItems });
         };
-      } else if (
-        elementKey === "item" ||
-        elementKey === "itemText" ||
-        elementKey === "text" ||
+	      } else if (
+	        (widget.type === "process" || widget.type === "processCard") &&
+	        elementKey === "stepLabel"
+	      ) {
+	        textValue = item.label || "";
+	        styleKey = "labelStyle";
+	        styleValue = item.labelStyle || {};
+	        onTextChange = (val) =>
+	          updateWidgetData(widget.id, {
+	            [arrayName]: updateItemInArray(currentItems, itemId, "label", val),
+	          });
+	        onStyleChange = (k, v) =>
+	          updateWidgetData(widget.id, {
+	            [arrayName]: updateItemInArray(currentItems, itemId, styleKey, {
+	              ...(item[styleKey] || {}),
+	              ...(typeof k === "object" ? k : { [k]: v }),
+	            }),
+	          });
+	      } else if (
+	        elementKey === "item" ||
+	        elementKey === "itemText" ||
+	        elementKey === "text" ||
         elementKey === "itemTitle" ||
         elementKey === "title" ||
         elementKey === "stepTitle" ||
@@ -1890,18 +1992,16 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           onTextChange = (val) =>
             updateWidgetData(widget.id, { buttonText: val });
         }
-        if (widget.type === "video" && targetProp === "title") {
-          styleKey = "itemTitleStyle";
-        } else if (elementKey === "blockText" || elementKey === "buttonText") {
+        if (elementKey === "blockText" || elementKey === "buttonText") {
           styleKey = "style";
         } else {
           styleKey =
             targetProp === "title"
               ? "titleStyle"
               : targetProp === "label"
-                ? widget.type === "process" || widget.type === "cardList"
-                  ? "labelStyle"
-                  : "style"
+	                ? widget.type === "process" || widget.type === "processCard"
+	                  ? "labelStyle"
+	                  : "style"
                 : targetProp === "tag"
                   ? "tagStyle"
                   : targetProp === "author"
@@ -2009,9 +2109,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
           item[targetProp] ||
           (targetProp === "subTitle" ? "( 서브타이틀 )" : "");
         styleKey =
-          widget.type === "video" && targetProp === "desc"
-            ? "itemDescStyle"
-            : targetProp === "subTitle"
+          targetProp === "subTitle"
               ? "subTitleStyle"
               : targetProp === "answer"
                 ? "answerStyle"
@@ -2036,7 +2134,6 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
         elementKey === "itemImage" ||
         elementKey === "imageUrl" ||
         elementKey === "mobileImageUrl" ||
-        elementKey === "videoUrl" ||
         elementKey === "url" ||
         elementKey === "blockUrl"
       ) {
@@ -2050,11 +2147,9 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 ? "icon"
                 : elementKey === "imageUrl"
                   ? "imageUrl"
-                  : elementKey === "videoUrl"
-                    ? "videoUrl"
-                    : elementKey === "blockUrl"
-                      ? "url"
-                      : elementKey === "url"
+                  : elementKey === "blockUrl"
+                    ? "url"
+                    : elementKey === "url"
                         ? "url"
                         : elementKey;
         const mediaPropName =
@@ -2162,6 +2257,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       if (!onStyleChange && styleKey)
         onStyleChange = (k, v) => updateStyle(styleKey, k, v);
     }
+    } // close else block for non-layout4 items
   } else {
     const getRootDefaultText = () => {
       if (widget.type === "cultureLetter") {
@@ -2213,7 +2309,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               elementKey === "imageUrl" ||
               elementKey === "imageMobile"
             ? "imageStyle"
-            : elementKey === "videoUrl" || elementKey === "url"
+            : elementKey === "url"
               ? "videoStyle"
               : elementKey === "buttonText" && widget.type === "stripBanner"
                 ? "buttonStyle"
@@ -2363,16 +2459,6 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       "1" &&
     elementKey === "itemIcon";
 
-  // [Banner Section] Default Placeholder Logic
-  if (widget.type === "bannerSection") {
-    const defaults = BANNER_SECTION_DEFAULTS as any;
-    if (defaults[styleKey]) {
-      placeholder = defaults[styleKey].fontSize?.replace("px", "") || "";
-      placeholderMobile =
-        defaults[styleKey].fontSizeMobile?.replace("px", "") || "";
-    }
-  }
-
   // Ensure default objectFit is 'contain' for new media items
   if (isMediaKey) {
     if (styleValue.objectFit === undefined)
@@ -2438,10 +2524,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       }
     }
 
-    if (widget.type === "process") {
-      if (isTitle) color = "#000000";
-      if (elementKey === "number") {
-        fontSize = "20px";
+	    if (widget.type === "process" || widget.type === "processCard") {
+	      if (elementKey === "stepLabel") {
+	        fontSize = "18px";
+	        fontWeight = "500";
+	        color = "#6D7882";
+	      }
+	      if (isTitle) color = "#000000";
+	      if (elementKey === "number") {
+	        fontSize = "20px";
         fontWeight = "700";
         color = "#285DE1";
       }
@@ -2450,15 +2541,28 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
     return { fontSize, fontWeight, color };
   };
 
-  if (!isMediaKey && elementKey !== "bannerButton" && !isItemBackgroundKey) {
-    const fb = getFallbackStyles();
-    styleValue = {
-      ...styleValue,
-      fontSize: styleValue.fontSize ?? "",
+	  if (!isMediaKey && elementKey !== "bannerButton" && !isItemBackgroundKey) {
+	    const fb = getFallbackStyles();
+	    styleValue = {
+	      ...styleValue,
+	      fontSize: styleValue.fontSize ?? "",
       fontWeight: styleValue.fontWeight ?? fb.fontWeight ?? "400",
-      color: styleValue.color ?? fb.color ?? "#000000",
-    };
-  }
+	      color: styleValue.color ?? fb.color ?? "#000000",
+	    };
+	  }
+	  if (
+	    (widget.type === "process" || widget.type === "processCard") &&
+	    elementKey === "stepLabel"
+	  ) {
+	    styleValue = {
+	      backgroundColor: "#f6f7fb",
+	      fontSize: "18px",
+	      fontSizeMobile: "16px",
+	      fontWeight: "500",
+	      color: "#6D7882",
+	      ...styleValue,
+	    };
+	  }
 
   const getPlaceholderText = () => {
     if (isMediaKey) {
@@ -2569,7 +2673,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
       {/* Editor Body */}
       <div>
         {/* Banner Button Link Editor (Exclusive) */}
-        {/* Button (Banner/Process Step) Editor */}
+	        {/* Button Editor */}
         {elementKey === "itemFeatures" && itemId ? (
           <div className="space-y-4 p-2">
             <div className="flex justify-between items-center mb-2">
@@ -2778,61 +2882,54 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               })()}
             </div>
           </div>
-        ) : elementKey === "bannerButton" || elementKey === "stepLabel" ? (
+	        ) : elementKey === "bannerButton" ? (
           <div className="space-y-5 p-2">
             {/* 1. Text & Typography Settings */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
                 버튼 텍스트 & 스타일
               </label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border-none p-2.5 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-100 outline-none text-gray-800 font-medium placeholder-gray-400"
-                value={
-                  elementKey === "stepLabel"
-                    ? textValue
-                    : (widget.data as any).items?.find(
-                        (i: any) => i.id === itemId,
-                      )?.text ||
-                      (widget.data as any).items?.[0]?.text ||
-                      (widget.data as any).buttonText ||
-                      "버튼 텍스트"
-                }
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (elementKey === "stepLabel") {
-                    onTextChange(val);
-                  } else {
-                    let items = (widget.data as any).items || [];
-                    if (
-                      items.length === 0 &&
-                      (widget.data as any).variant === "banner2"
-                    ) {
-                      items = [
-                        {
-                          id: "b2-1",
-                          link: "#",
-                          icon: "download",
-                          text: val,
-                        },
-                      ];
-                    }
-                    const newItems = itemId
-                      ? items.map((it: any) =>
-                          it.id === itemId ? { ...it, text: val } : it,
-                        )
-                      : items.map((it: any, idx: number) =>
-                          idx === 0 ? { ...it, text: val } : it,
-                        );
+	              <input
+	                type="text"
+	                className="w-full bg-gray-50 border-none p-2.5 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-100 outline-none text-gray-800 font-medium placeholder-gray-400"
+	                value={
+	                  (widget.data as any).items?.find((i: any) => i.id === itemId)
+	                    ?.text ||
+	                  (widget.data as any).items?.[0]?.text ||
+	                  (widget.data as any).buttonText ||
+	                  "버튼 텍스트"
+	                }
+	                onChange={(e) => {
+	                  const val = e.target.value;
+	                  let items = (widget.data as any).items || [];
+	                  if (
+	                    items.length === 0 &&
+	                    (widget.data as any).variant === "banner2"
+	                  ) {
+	                    items = [
+	                      {
+	                        id: "b2-1",
+	                        link: "#",
+	                        icon: "download",
+	                        text: val,
+	                      },
+	                    ];
+	                  }
+	                  const newItems = itemId
+	                    ? items.map((it: any) =>
+	                        it.id === itemId ? { ...it, text: val } : it,
+	                      )
+	                    : items.map((it: any, idx: number) =>
+	                        idx === 0 ? { ...it, text: val } : it,
+	                      );
 
-                    updateWidgetData(widget.id, {
-                      items: newItems,
-                      buttonText: val,
-                    });
-                  }
-                }}
-                placeholder="버튼 텍스트 입력"
-              />
+	                  updateWidgetData(widget.id, {
+	                    items: newItems,
+	                    buttonText: val,
+	                  });
+	                }}
+	                placeholder="버튼 텍스트 입력"
+	              />
               <div className="flex gap-2">
                 <div className="flex-1 space-y-1">
                   <input
@@ -2885,16 +2982,13 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                     배경색
                   </label>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      className="w-full h-10 rounded-lg cursor-pointer border border-gray-100 p-0.5 bg-white"
-                      value={
-                        styleValue.backgroundColor ||
-                        (elementKey === "stepLabel" ? "#2563EB" : "#ffffff")
-                      }
-                      onChange={(e) =>
-                        onStyleChange("backgroundColor", e.target.value)
-                      }
+	                    <input
+	                      type="color"
+	                      className="w-full h-10 rounded-lg cursor-pointer border border-gray-100 p-0.5 bg-white"
+	                      value={styleValue.backgroundColor || "#ffffff"}
+	                      onChange={(e) =>
+	                        onStyleChange("backgroundColor", e.target.value)
+	                      }
                     />
                   </div>
                 </div>
@@ -3598,11 +3692,6 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                           d.variant === "image-left-list"
                         )
                           arrayName = "listItems";
-                        else if (widget.type === "textSection") {
-                          if (d.variant === "text2" || d.variant === "text3")
-                            arrayName = "items";
-                          else arrayName = "blocks";
-                        }
 
                         const currentItems = d[arrayName] || [];
                         const updatedItems = currentItems.map((item: any) => {
@@ -3657,11 +3746,6 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                           d.variant === "image-left-list"
                         )
                           arrayName = "listItems";
-                        else if (widget.type === "textSection") {
-                          if (d.variant === "text2" || d.variant === "text3")
-                            arrayName = "items";
-                          else arrayName = "blocks";
-                        }
 
                         const currentItems = d[arrayName] || [];
                         const updatedItems = currentItems.map((item: any) => {
@@ -3695,7 +3779,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               )}
             </div>
 
-            {/* Widget Specific Options (Layout Swap, Height) */}
+	            {/* Widget Specific Options (Layout Swap) */}
             {(widget.type === "comparisonCard" ||
               widget.type === "imageCard") &&
               elementKey === "style" &&
@@ -3726,29 +3810,8 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-500 block uppercase">
-                      대표 이미지 영역 높이
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        className="w-full border p-2 rounded text-xs focus:ring-1 focus:ring-blue-500 bg-white pr-8"
-                        value={data.imageHeight || "320px"}
-                        onChange={(e) =>
-                          updateWidgetData(widget.id, {
-                            imageHeight: e.target.value,
-                          })
-                        }
-                        placeholder="예) 320px, 400px"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">
-                        px
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
+	                </div>
+	              )}
 
             {/* Image/Media Visibility Toggle */}
             <div className="pt-4 border-t border-gray-100 mb-4">
@@ -3778,7 +3841,7 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
             </div>
 
             {/* Image Size / Fill Controls - Hidden for Video and CardList Widget as requested */}
-            {widget.type !== "video" && widget.type !== "cardList" && (
+            {true && (
               <div className="space-y-4 pt-4 border-t border-gray-100">
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-gray-400 block uppercase">
@@ -3812,17 +3875,15 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-gray-400 block uppercase mb-3">
-                    크기 설정
-                    <span className="ml-2 text-[10px] font-normal text-gray-400 normal-case">
-                      (
-                      {styleValue.width === "100%"
-                        ? "100%"
-                        : styleValue.width || "Auto"}{" "}
-                      x {styleValue.height || "Auto"})
-                    </span>
-                  </label>
+	                <div className="space-y-3">
+	                  <label className="text-[10px] font-bold text-gray-400 block uppercase mb-3">
+	                    크기 설정
+	                    <span className="ml-2 text-[10px] font-normal text-gray-400 normal-case">
+	                      ({styleValue.width === "100%"
+	                        ? "100%"
+	                        : styleValue.width || "Auto"})
+	                    </span>
+	                  </label>
 
                   {/* 100% 전체 너비 토글 */}
                   {!isTextStructureLayout1ItemIconFrameEditor && (
@@ -3852,14 +3913,6 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                               data.variant === "image-left-list"
                             )
                               arrayName = "listItems";
-                            else if (widget.type === "textSection") {
-                              if (
-                                data.variant === "text2" ||
-                                data.variant === "text3"
-                              )
-                                arrayName = "items";
-                              else arrayName = "blocks";
-                            }
 
                             const currentItems = data[arrayName] || [];
                             const updatedItems = currentItems.map(
@@ -3901,11 +3954,11 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                     </div>
                   )}
 
-                  <div className="space-y-3 p-3 bg-gray-50/50 rounded-xl border border-gray-200">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-black tracking-wider">
-                          <span className="text-gray-400">↔</span>
+	                  <div className="space-y-3 p-3 bg-gray-50/50 rounded-xl border border-gray-200">
+	                    <div className="grid grid-cols-1 gap-3">
+	                      <div className="space-y-1.5">
+	                        <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-black tracking-wider">
+	                          <span className="text-gray-400">↔</span>
                           <span>가로 너비</span>
                         </div>
                         <div className="relative">
@@ -3941,60 +3994,19 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">
                             px
-                          </span>
-                        </div>
-                      </div>
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase font-black tracking-wider">
-                          <span className="text-gray-400">↕</span>
-                          <span>세로 높이</span>
-                        </div>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder=""
-                            value={
-                              !isTextStructureLayout1ItemIconFrameEditor &&
-                              styleValue.width === "100%"
-                                ? ""
-                                : styleValue.height
-                                    ?.toString()
-                                    .replace("px", "")
-                                    .replace("%", "")
-                                    .replace("auto", "") || ""
-                            }
-                            onFocus={(e) => e.target.select()}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/[^0-9]/g, "");
-                              if (val === "") onStyleChange("height", "auto");
-                              else onStyleChange("height", val + "px");
-                            }}
-                            disabled={
-                              !isTextStructureLayout1ItemIconFrameEditor &&
-                              styleValue.width === "100%"
-                            }
-                            className={`w-full border border-gray-300 p-2.5 pr-8 rounded-lg text-xs font-bold focus:ring-2 focus:ring-gray-400 focus:border-gray-400 ${
-                              !isTextStructureLayout1ItemIconFrameEditor &&
-                              styleValue.width === "100%"
-                                ? "bg-gray-100 cursor-not-allowed opacity-50"
-                                : "bg-white"
-                            }`}
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">
-                            px
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-[9px] text-gray-400 leading-tight font-medium">
-                      *{" "}
-                      {!isTextStructureLayout1ItemIconFrameEditor &&
-                      styleValue.width === "100%"
-                        ? "전체 너비로 설정되었습니다. 토글을 해제하면 픽셀 단위로 조정할 수 있습니다."
-                        : isTextStructureLayout1ItemIconFrameEditor
-                          ? "아이콘 박스 영역의 크기를 픽셀 단위로 직접 변경합니다."
-                          : "이미지 영역(Container)의 크기를 픽셀 단위로 직접 변경합니다."}
-                    </p>
+	                          </span>
+	                        </div>
+	                      </div>
+	                    </div>
+	                    <p className="text-[9px] text-gray-400 leading-tight font-medium">
+	                      *{" "}
+	                      {!isTextStructureLayout1ItemIconFrameEditor &&
+	                      styleValue.width === "100%"
+	                        ? "전체 너비로 설정되었습니다. 토글을 해제하면 픽셀 단위로 조정할 수 있습니다."
+	                        : isTextStructureLayout1ItemIconFrameEditor
+	                          ? "아이콘 박스 영역의 가로 너비를 픽셀 단위로 직접 변경합니다."
+	                          : "이미지 영역(Container)의 가로 너비를 픽셀 단위로 직접 변경합니다."}
+	                    </p>
 
                     {/* 설정 초기화 버튼 */}
                     <button
@@ -4293,15 +4305,21 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
               <div className="relative w-10 h-10 rounded-lg border-none shadow-sm overflow-hidden shrink-0 ring-1 ring-gray-100">
                 <input
                   type="color"
-                  value={styleValue.color || "#000000"}
-                  onChange={(e) => onStyleChange("color", e.target.value)}
+	                  value={
+	                    styleValue.color ||
+	                    (elementKey === "stepLabel" ? "#6D7882" : "#000000")
+	                  }
+	                  onChange={(e) => onStyleChange("color", e.target.value)}
                   className="absolute inset-[0] w-[150%] h-[150%] -translate-x-1/4 -translate-y-1/4 cursor-pointer p-0 border-0"
                 />
               </div>
               <input
                 type="text"
-                value={styleValue.color || "#000000"}
-                onChange={(e) => onStyleChange("color", e.target.value)}
+	                value={
+	                  styleValue.color ||
+	                  (elementKey === "stepLabel" ? "#6D7882" : "#000000")
+	                }
+	                onChange={(e) => onStyleChange("color", e.target.value)}
                 className="flex-1 min-w-0 bg-transparent border-none p-1 text-xs font-bold uppercase font-mono focus:ring-0 text-gray-600"
                 placeholder="#000000"
               />
@@ -4318,7 +4336,10 @@ export const ElementEditor: React.FC<ElementEditorProps> = ({
                 <div className="relative w-8 h-8 rounded-lg border-none shadow-sm overflow-hidden shrink-0 ring-1 ring-gray-100">
                   <input
                     type="color"
-                    value={styleValue.backgroundColor || "#ffffff"}
+	                    value={
+	                      styleValue.backgroundColor ||
+	                      (elementKey === "stepLabel" ? "#f6f7fb" : "#ffffff")
+	                    }
                     onChange={(e) =>
                       onStyleChange("backgroundColor", e.target.value)
                     }

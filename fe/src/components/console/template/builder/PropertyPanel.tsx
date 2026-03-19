@@ -1223,7 +1223,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
               "cultureLetter",
               "faq",
               "table",
-              "imageArea",
             ].includes(widget.type) && (
               <div className="space-y-4">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
@@ -1382,12 +1381,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     : widget.type === "titleBanner"
                                       ? 3
                                       : widget.type === "processCard"
-                                        ? 3
+                                        ? 4
                                         : widget.type === "comparisonCard"
                                           ? 2
-                                          : widget.type === "imageArea"
-                                            ? 4
-                                            : widget.type === "stripBanner"
+                                          : widget.type === "stripBanner"
                                               ? 3
                                               : 1,
                   }).map((_, i) => (
@@ -1404,9 +1401,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                 "컬처레터 유튜브 타이틀",
                                 "컬처레터 바로가기 버튼",
                               ][i]
-                            : widget.type === "imageArea"
-                              ? `이미지 영역 레이아웃 ${i + 1}`
-                              : `${getWidgetName(widget.type)} 레이아웃 ${i + 1}`}
+                            : `${getWidgetName(widget.type)} 레이아웃 ${i + 1}`}
                     </option>
                   ))}
                 </select>
@@ -1477,12 +1472,12 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   >
                     세로형
                   </button>
-                </div>
-              </div>
-            )}
+	                </div>
+	              </div>
+	            )}
 
-            {widget.type === "process" && (
-              <div className="space-y-2">
+	            {["process", "processCard"].includes(widget.type) && (
+	              <div className="space-y-2">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
                   프로세스 구조
                 </label>
@@ -1505,6 +1500,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   <option value="vertical">세로 정렬형 (4열)</option>
                   <option value="number">번호 강조형</option>
                   <option value="layout1">프로세스 레이아웃 01</option>
+                  <option value="layout2">프로세스 레이아웃 02</option>
+                  <option value="layout3">프로세스 레이아웃 03</option>
+                  <option value="layout4">프로세스 레이아웃 04</option>
                 </select>
 
                 <div className="flex items-center justify-between bg-gray-50/50 p-4 rounded-xl border border-gray-100 mt-2">
@@ -1536,8 +1534,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     />
                   </button>
                 </div>
-              </div>
-            )}
+
+	              </div>
+	            )}
 
             {["iconCard", "process", "processCard"].includes(widget.type) &&
               viewport === "desktop" && (
@@ -3205,6 +3204,111 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                   </div>
                                 </div>
 
+                                {/* Layout 4: 세부 항목 아코디언 */}
+                                {["process", "processCard"].includes(widget.type) &&
+                                  ((widget.data as any).variant === "layout4" ||
+                                    (widget.data as any).layout === "layout4" ||
+                                    (widget.data as any).layout === "4") &&
+                                  (() => {
+                                    const stepsArr = (widget.data as any).steps || [];
+                                    const step = stepsArr.find((s: any) => s.id === item.id);
+                                    if (!step) return null;
+                                    const l4Items: Array<{ id: string; number: string; text: string }> =
+                                      step.layout4Items || [
+                                        { id: "l4i-1", number: "01", text: "체계적인 절차에 따라 업무를 수행합니다." },
+                                      ];
+                                    const isOpen = selectedItemId === item.id;
+                                    return (
+                                      <div className="mt-1 border-t border-gray-100 pt-1">
+                                        <button
+                                          type="button"
+                                          onClick={() => setSelectedItemId(isOpen ? null : item.id)}
+                                          className="flex items-center justify-between w-full text-[10px] font-bold text-amber-700 py-1 px-1 hover:bg-amber-50/50 rounded transition-colors"
+                                        >
+                                          <span>세부 항목 ({l4Items.length})</span>
+                                          {isOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                                        </button>
+                                        {isOpen && (
+                                          <div className="space-y-1.5 mt-1">
+                                            {l4Items.map((l4, l4Idx) => (
+                                              <div
+                                                key={l4.id}
+                                                className="flex flex-col gap-1 p-1.5 bg-amber-50/30 rounded border border-amber-100/50 text-[11px]"
+                                              >
+                                                <div className="flex items-center justify-between">
+                                                  <input
+                                                    type="text"
+                                                    value={l4.number}
+                                                    onChange={(e) => {
+                                                      const updatedL4 = l4Items.map((it) =>
+                                                        it.id === l4.id ? { ...it, number: e.target.value } : it,
+                                                      );
+                                                      const updatedSteps = stepsArr.map((s: any) =>
+                                                        s.id === step.id ? { ...s, layout4Items: updatedL4 } : s,
+                                                      );
+                                                      updateWidgetData(widget.id, { steps: updatedSteps });
+                                                    }}
+                                                    className="w-12 px-1.5 py-1 border border-gray-200 rounded text-center font-bold text-gray-700 bg-white text-[11px]"
+                                                  />
+                                                  {l4Items.length > 1 && (
+                                                    <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                        const updatedL4 = l4Items.filter((it) => it.id !== l4.id);
+                                                        const updatedSteps = stepsArr.map((s: any) =>
+                                                          s.id === step.id ? { ...s, layout4Items: updatedL4 } : s,
+                                                        );
+                                                        updateWidgetData(widget.id, { steps: updatedSteps });
+                                                      }}
+                                                      className="text-red-400 hover:text-red-600 transition-colors px-0.5"
+                                                    >
+                                                      <Trash2 size={10} />
+                                                    </button>
+                                                  )}
+                                                </div>
+                                                <textarea
+                                                  value={l4.text}
+                                                  rows={2}
+                                                  onChange={(e) => {
+                                                    const updatedL4 = l4Items.map((it) =>
+                                                      it.id === l4.id ? { ...it, text: e.target.value } : it,
+                                                    );
+                                                    const updatedSteps = stepsArr.map((s: any) =>
+                                                      s.id === step.id ? { ...s, layout4Items: updatedL4 } : s,
+                                                    );
+                                                    updateWidgetData(widget.id, { steps: updatedSteps });
+                                                  }}
+                                                  className="w-full px-2 py-1.5 border border-gray-200 rounded text-gray-600 bg-white resize-none text-[11px]"
+                                                />
+                                              </div>
+                                            ))}
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                const newId = `l4i-${Date.now()}`;
+                                                const newItems = [
+                                                  ...l4Items,
+                                                  {
+                                                    id: newId,
+                                                    number: String(l4Items.length + 1).padStart(2, "0"),
+                                                    text: "내용을 입력하세요",
+                                                  },
+                                                ];
+                                                const updatedSteps = stepsArr.map((s: any) =>
+                                                  s.id === step.id ? { ...s, layout4Items: newItems } : s,
+                                                );
+                                                updateWidgetData(widget.id, { steps: updatedSteps });
+                                              }}
+                                              className="w-full text-[10px] py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded font-bold hover:bg-amber-100 transition-colors"
+                                            >
+                                              + 항목 추가
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })()}
+
                                 {widget.type === "imageCard" &&
                                   isImageCardLayout3Or4 && (
                                     <div className="flex flex-col gap-1 px-1 pt-2 border-t border-gray-100 mt-2">
@@ -4284,70 +4388,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                   )}
 
                   {/* Image Height Controls */}
-                  {[
-                    "imageCard",
-                    "iconCard",
-                    "comparisonCard",
-                    "imageCarousel",
-                    "infoBanner",
-                    "process",
-                    "processCard",
-                    "imageTitle3",
-                  ].includes(widget.type) && (
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">
-                        이미지 높이
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min={80}
-                          max={800}
-                          className="flex-1 bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all hover:bg-gray-100 text-center font-mono"
-                          value={
-                            parseInt(
-                              ((widget.data as any).imageHeight || "0").replace(
-                                "px",
-                                "",
-                              ),
-                            ) ||
-                            (widget.type === "iconCard"
-                              ? 320
-                              : widget.type === "comparisonCard"
-                                ? 320
-                                : widget.type === "imageCarousel"
-                                  ? 300
-                                  : widget.type === "infoBanner"
-                                    ? 412
-                                    : widget.type === "process"
-                                      ? 176
-                                      : widget.type === "processCard"
-                                        ? 176
-                                        : widget.type === "titleBanner"
-                                          ? 384
-                                          : widget.type === "imageTitle3"
-                                            ? 400
-                                            : 240)
-                          }
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            if (val && !isNaN(Number(val))) {
-                              updateWidgetData(widget.id, {
-                                imageHeight: val + "px",
-                              });
-                            }
-                          }}
-                        />
-                        <span className="text-xs font-mono text-gray-400 shrink-0">
-                          px
-                        </span>
-                      </div>
-                      <p className="text-[10px] text-gray-400">
-                        * 이미지 영역 높이를 조절합니다.
-                      </p>
-                    </div>
-                  )}
-
                   {/* Table Controls - Reverted Position */}
 
                   {/* Image Layout Controls */}

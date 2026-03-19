@@ -830,36 +830,40 @@ export const IconCardRenderer: React.FC<WidgetRendererProps> = ({
                         )
                       }
                     >
-                      <div
-                        className="shrink-0 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center"
-                        style={{
-                          ...getIconFrameStyle(item.iconStyle),
-                          ...(viewport === "mobile" ? { width: "60px", height: "60px" } : {}),
-                        }}
-                      >
-                        <UniversalMedia
-                          url={(() => {
-                            const currentImg = item.iconUrl || item.icon;
-                            if (
-                              currentImg &&
-                              !currentImg.includes("/images/placeholder/")
-                            )
-                              return currentImg;
-                            return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
-                          })()}
-                          alt="icon"
-                          className="max-w-full"
-                          naturalSize
-                          style={getIconMediaStyle(item.iconStyle)}
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "itemIcon",
-                              item.id || itemIndex.toString(),
-                            );
+                      {!item.iconStyle?.isHidden && (
+                        <div
+                          className="shrink-0 relative overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all flex items-center justify-center"
+                          style={{
+                            ...getIconFrameStyle(item.iconStyle),
+                            ...(viewport === "mobile"
+                              ? { width: "60px", height: "60px" }
+                              : {}),
                           }}
-                        />
-                      </div>
+                        >
+                          <UniversalMedia
+                            url={(() => {
+                              const currentImg = item.iconUrl || item.icon;
+                              if (
+                                currentImg &&
+                                !currentImg.includes("/images/placeholder/")
+                              )
+                                return currentImg;
+                              return `/images/placeholder/card_img${iconPlaceholderLayout}.png`;
+                            })()}
+                            alt="icon"
+                            className="max-w-full"
+                            naturalSize
+                            style={getIconMediaStyle(item.iconStyle)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "itemIcon",
+                                item.id || itemIndex.toString(),
+                              );
+                            }}
+                          />
+                        </div>
+                      )}
 
                       <div className="inline-flex flex-col justify-start items-start gap-2 flex-1 min-w-0">
                         <SafeHtml

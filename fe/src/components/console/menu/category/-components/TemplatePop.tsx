@@ -10,16 +10,11 @@ import ConsoleDialogContent from "@/components/console/common/ConsoleDialogConte
 import Builder from "@/components/console/template/Builder";
 import {
   MainTitleRenderer,
-  VideoRenderer,
-  GridCardRenderer,
   InfoBannerRenderer,
   ProcessRenderer,
   IconCardRenderer,
   TableRenderer,
   FaqRenderer,
-  TextSectionRenderer,
-  BannerSectionRenderer,
-  CardRenderer,
   TitleBannerRenderer,
   ImageAreaRenderer,
   TitleTextRenderer,
@@ -31,21 +26,17 @@ import {
 } from "@/components/console/template/Widgets";
 import { ComparisonCardRenderer } from "@/components/console/template/widgets/ComparisonCardRenderer";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { DEFAULT_TEMPLATE } from "@/constants/console/widgetDefaults";
 import type { PageData, Widget } from "@/types/console/template";
 
 const RENDERER_MAP: Record<string, React.ComponentType<any>> = {
   mainTitle: MainTitleRenderer,
-  textSection: TextSectionRenderer,
-  video: VideoRenderer,
-  gridCard: GridCardRenderer,
-  infoBanner: InfoBannerRenderer,
+    infoBanner: InfoBannerRenderer,
   process: ProcessRenderer,
   iconCard: IconCardRenderer,
   table: TableRenderer,
   faq: FaqRenderer,
-  bannerSection: BannerSectionRenderer,
-  cardList: CardRenderer,
   titleBanner: TitleBannerRenderer,
   imageArea: ImageAreaRenderer,
   titleText: TitleTextRenderer,
@@ -108,12 +99,15 @@ export default function TemplatePop({
     );
   };
 
+  const { toast } = useToast();
+
   // 저장하기
   const handleSave = (newData: PageData) => {
     setCurrentData(newData);
     const htmlCode = convertPageDataToHtml(newData);
     onSave(htmlCode, newData);
-    setOpen(false);
+    // setOpen(false);
+    toast({ title: "저장되었습니다." });
   };
 
   const handlePreview = (newData: PageData) => {
@@ -194,13 +188,8 @@ export default function TemplatePop({
                         {widget.type === "mainTitle" && (
                           <MainTitleRenderer widget={widget as any} />
                         )}
-                        {widget.type === "video" && (
-                          <VideoRenderer widget={widget as any} />
-                        )}
-                        {widget.type === "gridCard" && (
-                          <GridCardRenderer widget={widget as any} />
-                        )}
-                        {widget.type === "infoBanner" && (
+
+                                                {widget.type === "infoBanner" && (
                           <InfoBannerRenderer widget={widget as any} />
                         )}
                         {widget.type === "process" && (
@@ -218,15 +207,7 @@ export default function TemplatePop({
                         {widget.type === "faq" && (
                           <FaqRenderer widget={widget as any} />
                         )}
-                        {widget.type === "textSection" && (
-                          <TextSectionRenderer widget={widget as any} />
-                        )}
-                        {widget.type === "bannerSection" && (
-                          <BannerSectionRenderer widget={widget as any} />
-                        )}
-                        {widget.type === "cardList" && (
-                          <CardRenderer widget={widget as any} />
-                        )}
+
                         {widget.type === "titleBanner" && (
                           <TitleBannerRenderer widget={widget as any} />
                         )}

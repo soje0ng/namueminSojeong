@@ -113,6 +113,12 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
   // Global Header & Body Styles (사용자가 설정한 배경색은 여기에 들어있습니다)
   const headerStyle = getElementStyle(headerTextStyle, viewport as any);
   const bodyStyle = getElementStyle(bodyTextStyle, viewport as any);
+  const rootTitleStyle = {
+    ...getElementStyle(titleStyle, viewport as any),
+    display: "block",
+    textAlign: "center" as const,
+    width: "100%",
+  };
 
   const isSideBySide = w.data.layout !== "vertical";
   const isComparison = w.data.variant === "comparison";
@@ -163,8 +169,6 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               gap: viewport === "mobile" ? "24px" : "40px",
               ...(viewport === "tablet"
                 ? {
-                    paddingTop: "60px",
-                    paddingBottom: "60px",
                     paddingLeft: "40px",
                     paddingRight: "40px",
                   }
@@ -196,7 +200,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(titleStyle, viewport as any),
+                    ...rootTitleStyle,
                     backgroundColor: "transparent",
                     ...(viewport === "tablet"
                       ? { letterSpacing: "-0.8px", lineHeight: "150%" }
@@ -248,7 +252,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             {/* Table Area for Layout 04 - No Top/Bottom Borders, Rounded rows */}
             <div className="self-stretch flex flex-col justify-start items-start gap-1 overflow-hidden w-full">
               {/* Header Row */}
-              <div className="self-stretch inline-flex justify-start items-center overflow-hidden w-full rounded-lg">
+              <div className="self-stretch inline-flex justify-start items-stretch overflow-hidden w-full rounded-lg">
                 {tableHeaders.map((headerText, i) => (
                   <div
                     key={i}
@@ -287,7 +291,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {tableRows.map((row, rIdx) => (
                 <div
                   key={rIdx}
-                  className={`self-stretch inline-flex justify-start items-center overflow-hidden w-full rounded-lg`}
+                  className={`self-stretch inline-flex justify-start items-stretch overflow-hidden w-full rounded-lg`}
                   style={{
                     backgroundColor:
                       (w.data as any).rowStyles?.[rIdx]?.backgroundColor ||
@@ -386,8 +390,6 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               gap: viewport === "mobile" ? "24px" : "40px",
               ...(viewport === "tablet"
                 ? {
-                    paddingTop: "60px",
-                    paddingBottom: "60px",
                     paddingLeft: "40px",
                     paddingRight: "40px",
                   }
@@ -419,7 +421,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(titleStyle, viewport as any),
+                    ...rootTitleStyle,
                     backgroundColor: "transparent",
                     ...(viewport === "tablet"
                       ? { letterSpacing: "-0.8px", lineHeight: "150%" }
@@ -469,7 +471,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               />
             </div>
             <div className="self-stretch flex flex-col justify-start items-start gap-2 overflow-hidden w-full">
-              <div className="self-stretch inline-flex justify-start items-center gap-2 overflow-hidden w-full">
+              <div className="self-stretch inline-flex justify-start items-stretch gap-2 overflow-hidden w-full">
                 {tableHeaders.map((headerText, i) => (
                   <div
                     key={i}
@@ -509,7 +511,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               {tableRows.map((row, rIdx) => (
                 <div
                   key={rIdx}
-                  className="self-stretch inline-flex justify-start items-center gap-2 overflow-hidden w-full"
+                  className="self-stretch inline-flex justify-start items-stretch gap-2 overflow-hidden w-full"
                 >
                   {row.map((cell, cIdx) => (
                     <div
@@ -591,6 +593,27 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
   }
 
   if (isTable02) {
+    const isTabletOrMobile = viewport === "tablet" || viewport === "mobile";
+    const table02Image = (
+      <div className="w-full xl:flex-1 h-auto min-h-[200px] xl:min-h-0 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
+        <UniversalMedia
+          className="w-full h-auto object-contain"
+          url={w.data.image || "/images/placeholder/wide-image.jpg"}
+          alt="Table Image"
+          style={{
+            ...getElementStyle(w.data.imageStyle, viewport as any),
+            width: "100%",
+            height: "auto",
+            display: "block",
+          }}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onElementSelect?.("image");
+          }}
+        />
+      </div>
+    );
+
     return (
       <section style={sectionStyle} className="w-full h-auto">
         <div className="mx-auto w-full max-w-[1920px]">
@@ -600,8 +623,6 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               gap: viewport === "mobile" ? "24px" : "40px",
               ...(viewport === "tablet"
                 ? {
-                    paddingTop: "60px",
-                    paddingBottom: "60px",
                     paddingLeft: "40px",
                     paddingRight: "40px",
                   }
@@ -632,7 +653,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   html={w.data.title || "타이틀명 입력"}
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                   style={{
-                    ...getElementStyle(titleStyle, viewport as any),
+                    ...rootTitleStyle,
                     ...(viewport === "tablet"
                       ? { letterSpacing: "-0.8px", lineHeight: "150%" }
                       : viewport === "mobile"
@@ -692,8 +713,9 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                     }}
                   />
                 )}
+                {isTabletOrMobile && table02Image}
                 <div className="self-stretch border-t-2 border-시안-mode-Primary50 flex flex-col justify-start items-start overflow-hidden w-full">
-                  <div className="self-stretch border-b border-시안-mode-gray2 inline-flex justify-start items-center overflow-hidden w-full">
+                  <div className="self-stretch border-b border-시안-mode-gray2 inline-flex justify-start items-stretch overflow-hidden w-full">
                     {w.data.headers.map((h, i) => (
                       <div
                         key={i}
@@ -735,7 +757,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   {w.data.rows.map((row, rIdx) => (
                     <div
                       key={rIdx}
-                      className="self-stretch border-b border-시안-mode-gray2 inline-flex justify-start items-center overflow-hidden w-full"
+                      className="self-stretch border-b border-시안-mode-gray2 inline-flex justify-start items-stretch overflow-hidden w-full"
                     >
                       {row.map((cell, cIdx) => (
                         <div
@@ -781,23 +803,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                   ))}
                 </div>
               </div>
-              <div className="w-full xl:flex-1 h-auto min-h-[200px] xl:min-h-0 relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer overflow-hidden flex justify-center items-center">
-                <UniversalMedia
-                  className="w-full h-auto object-contain"
-                  url={w.data.image || "/images/placeholder/wide-image.jpg"}
-                  alt="Table Image"
-                  style={{
-                    ...getElementStyle(w.data.imageStyle, viewport as any),
-                    width: "100%",
-                    height: "auto",
-                    display: "block",
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("image");
-                  }}
-                />
-              </div>
+              {!isTabletOrMobile && table02Image}
             </div>
           </div>
         </div>
@@ -825,7 +831,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
               <SafeHtml
                 html={w.data.title}
                 className="font-bold text-[#060606] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block"
-                style={getElementStyle(titleStyle, viewport as any)}
+                style={rootTitleStyle}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   onElementSelect?.("title");
@@ -1046,7 +1052,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
                 html={w.data.title || "타이틀명 입력"}
                 className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded inline-block cursor-pointer transition-all"
                 style={{
-                  ...getElementStyle(titleStyle, viewport as any),
+                  ...rootTitleStyle,
                   ...(viewport === "mobile"
                     ? { letterSpacing: "-0.48px", lineHeight: "150%" }
                     : {}),
@@ -1093,7 +1099,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
 
           <div className="self-stretch border-t-2 border-시안-mode-Primary50 flex flex-col justify-start items-start overflow-hidden w-full">
             {/* Table Header Row for Layout 01 */}
-            <div className="self-stretch border-b border-시안-mode-gray2 inline-flex justify-start items-center overflow-hidden w-full">
+            <div className="self-stretch border-b border-시안-mode-gray2 inline-flex justify-start items-stretch overflow-hidden w-full">
               {w.data.headers.map((h, i) => (
                 <div
                   key={i}
@@ -1129,7 +1135,7 @@ export const TableRenderer: React.FC<WidgetRendererProps> = ({
             {w.data.rows.map((row, rIdx) => (
               <div
                 key={rIdx}
-                className="self-stretch border-b border-시안-mode-gray2 inline-flex justify-start items-center overflow-hidden w-full"
+                className="self-stretch border-b border-시안-mode-gray2 inline-flex justify-start items-stretch overflow-hidden w-full"
               >
                 {row.map((cell, cIdx) => (
                   <div

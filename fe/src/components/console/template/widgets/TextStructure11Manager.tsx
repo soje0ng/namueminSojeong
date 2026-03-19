@@ -31,9 +31,17 @@ export interface Section11Item {
   content?: string;
   // image
   columns?: number;
+  imageUrl?: string;
   images?: string[];
   imageOpacities?: string[];
   imageHeight?: string;
+  imageStyle?: {
+    isHidden?: boolean;
+    objectFit?: string;
+    width?: string;
+    height?: string;
+    borderRadius?: string;
+  };
   // features
   items?: Section11FeatItem[];
   // banner
@@ -385,25 +393,7 @@ const TextStructure11Manager: React.FC<Props> = ({
                   {/* IMAGE */}
                   {section.type === "image" && (
                     <>
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-500 w-16 shrink-0">
-                          이미지 높이
-                        </label>
-                        <input
-                          type="number"
-                          min={80}
-                          max={800}
-                          className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={section.imageHeight || ""}
-                          onChange={(e) =>
-                            updateSection(section.id, {
-                              imageHeight: e.target.value,
-                            })
-                          }
-                        />
-                        <span className="text-[10px] text-gray-400">px</span>
-                      </div>
-                      {(section.images || []).map((img, imgIdx) => (
+	                      {(section.images || []).map((img, imgIdx) => (
                         <div key={imgIdx} className="space-y-1">
                           <label className="text-[10px] text-gray-400 font-semibold">
                             이미지 {imgIdx + 1}

@@ -547,14 +547,12 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     const { url: bgImage, style: bgImageStyle } = getResponsiveMedia(
       data.layout1BgImageUrl,
       data.layout1MobileBgImageUrl,
-      data.layout1BgImageUrlStyle ||
-        CULTURE_LETTER_DEFAULTS.layout1BgImageUrlStyle,
-      data.layout1MobileBgImageUrlStyle ||
-        CULTURE_LETTER_DEFAULTS.layout1MobileBgImageUrlStyle,
-      CULTURE_LETTER_DEFAULTS.layout1BgImageUrl,
+      data.layout1BgImageUrlStyle ?? CULTURE_LETTER_DEFAULTS.layout1BgImageUrlStyle,
+      data.layout1MobileBgImageUrlStyle ?? CULTURE_LETTER_DEFAULTS.layout1MobileBgImageUrlStyle,
+      data.layout1BgImageUrl === "" ? "" : (data.layout1BgImageUrl || CULTURE_LETTER_DEFAULTS.layout1BgImageUrl),
     );
     const logoImage =
-      data.layout1LogoImageUrl || CULTURE_LETTER_DEFAULTS.layout1LogoImageUrl;
+      data.layout1LogoImageUrl ?? CULTURE_LETTER_DEFAULTS.layout1LogoImageUrl;
 
     // 사용자가 배경색을 지정했거나 배경 이미지가 있으면 기본 그라디언트를 숨김
     const layout1BackgroundImage =
@@ -640,8 +638,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout1IssueNoStyle") && (
                 <SafeHtml
                   html={
-                    data.layout1IssueNo ||
-                    CULTURE_LETTER_DEFAULTS.layout1IssueNo
+                    data.layout1IssueNo ?? CULTURE_LETTER_DEFAULTS.layout1IssueNo
                   }
                   className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -660,8 +657,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout1IssueDateStyle") && (
                 <SafeHtml
                   html={
-                    data.layout1IssueDate ||
-                    CULTURE_LETTER_DEFAULTS.layout1IssueDate
+                    data.layout1IssueDate ?? CULTURE_LETTER_DEFAULTS.layout1IssueDate
                   }
                   className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -692,35 +688,49 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                 className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                 style={{ display: "flex", alignItems: "center" }}
                 onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("layout1LogoImageUrl");
-                }}
+                    e.stopPropagation();
+                    onElementSelect?.("layout1LogoImageUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1LogoImageUrl");
+                    } else if (data.layout1LogoImageUrlLink) {
+                      window.open(data.layout1LogoImageUrlLink, "_self");
+                    }
+                  }}
               >
                 <UniversalMedia
                   alt="logo"
                   className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
                   url={logoImage}
                   style={{
-                    ...getElementStyle(
-                      data.layout1LogoImageUrlStyle ||
-                        CULTURE_LETTER_DEFAULTS.layout1LogoImageUrlStyle,
-                      viewport,
-                    ),
                     height: "40px",
                     width: "auto",
                     display: "block",
+                    ...getElementStyle(
+                      data.layout1LogoImageUrlStyle ?? CULTURE_LETTER_DEFAULTS.layout1LogoImageUrlStyle,
+                      viewport
+                    ),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout1LogoImageUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1LogoImageUrl");
+                    } else if (data.layout1LogoImageUrlLink) {
+                      window.open(data.layout1LogoImageUrlLink, "_self");
+                    }
                   }}
                 />
               </div>
               {!isCultureLetterTextHidden("layout1CultureLetterStyle") && (
                 <SafeHtml
                   html={
-                    data.layout1CultureLetter ||
-                    CULTURE_LETTER_DEFAULTS.layout1CultureLetter
+                    data.layout1CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout1CultureLetter
                   }
                   className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -733,6 +743,14 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout1CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1CultureLetter");
+                    } else if (data.layout1CultureLetterLink) {
+                      window.open(data.layout1CultureLetterLink, "_self");
+                    }
                   }}
                 />
               )}
@@ -754,7 +772,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout1TitleStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout1Title || CULTURE_LETTER_DEFAULTS.layout1Title,
+                  data.layout1Title ?? CULTURE_LETTER_DEFAULTS.layout1Title,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -773,7 +791,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout1DescStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout1Desc || CULTURE_LETTER_DEFAULTS.layout1Desc,
+                  data.layout1Desc ?? CULTURE_LETTER_DEFAULTS.layout1Desc,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -869,8 +887,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout1IssueNoStyle") && (
                 <SafeHtml
                   html={
-                    data.layout1IssueNo ||
-                    CULTURE_LETTER_DEFAULTS.layout1IssueNo
+                    data.layout1IssueNo ?? CULTURE_LETTER_DEFAULTS.layout1IssueNo
                   }
                   className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all font-['Tenor_Sans',sans-serif]"
                   style={{
@@ -888,8 +905,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout1IssueDateStyle") && (
                 <SafeHtml
                   html={
-                    data.layout1IssueDate ||
-                    CULTURE_LETTER_DEFAULTS.layout1IssueDate
+                    data.layout1IssueDate ?? CULTURE_LETTER_DEFAULTS.layout1IssueDate
                   }
                   className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -919,35 +935,49 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                 className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                 style={{ display: "flex", alignItems: "center" }}
                 onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("layout1LogoImageUrl");
-                }}
+                    e.stopPropagation();
+                    onElementSelect?.("layout1LogoImageUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1LogoImageUrl");
+                    } else if (data.layout1LogoImageUrlLink) {
+                      window.open(data.layout1LogoImageUrlLink, "_self");
+                    }
+                  }}
               >
                 <UniversalMedia
                   alt="logo"
                   className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
                   url={logoImage}
                   style={{
-                    ...getElementStyle(
-                      data.layout1LogoImageUrlStyle ||
-                        CULTURE_LETTER_DEFAULTS.layout1LogoImageUrlStyle,
-                      viewport,
-                    ),
                     height: "24px",
                     width: "auto",
                     display: "block",
+                    ...getElementStyle(
+                      data.layout1LogoImageUrlStyle ?? CULTURE_LETTER_DEFAULTS.layout1LogoImageUrlStyle,
+                      viewport
+                    ),
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout1LogoImageUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1LogoImageUrl");
+                    } else if (data.layout1LogoImageUrlLink) {
+                      window.open(data.layout1LogoImageUrlLink, "_self");
+                    }
                   }}
                 />
               </div>
               {!isCultureLetterTextHidden("layout1CultureLetterStyle") && (
                 <SafeHtml
                   html={
-                    data.layout1CultureLetter ||
-                    CULTURE_LETTER_DEFAULTS.layout1CultureLetter
+                    data.layout1CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout1CultureLetter
                   }
                   className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all font-['Tenor_Sans',sans-serif]"
                   style={{
@@ -959,6 +989,14 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout1CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1CultureLetter");
+                    } else if (data.layout1CultureLetterLink) {
+                      window.open(data.layout1CultureLetterLink, "_self");
+                    }
                   }}
                 />
               )}
@@ -980,7 +1018,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout1TitleStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout1Title || CULTURE_LETTER_DEFAULTS.layout1Title,
+                  data.layout1Title ?? CULTURE_LETTER_DEFAULTS.layout1Title,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -998,7 +1036,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout1DescStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout1Desc || CULTURE_LETTER_DEFAULTS.layout1Desc,
+                  data.layout1Desc ?? CULTURE_LETTER_DEFAULTS.layout1Desc,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -1081,28 +1119,43 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             className="cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
             style={{ display: "flex", alignItems: "center" }}
             onDoubleClick={(e) => {
-              e.stopPropagation();
-              onElementSelect?.("layout1LogoImageUrl");
-            }}
+                    e.stopPropagation();
+                    onElementSelect?.("layout1LogoImageUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1LogoImageUrl");
+                    } else if (data.layout1LogoImageUrlLink) {
+                      window.open(data.layout1LogoImageUrlLink, "_self");
+                    }
+                  }}
           >
             <UniversalMedia
               alt="logo"
               className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
               url={logoImage}
               style={{
-                ...getElementStyle(
-                  data.layout1LogoImageUrlStyle ||
-                    CULTURE_LETTER_DEFAULTS.layout1LogoImageUrlStyle,
-                  viewport,
-                ),
                 height: "40px",
-                width: "auto",
-                display: "block",
+                    width: "auto",
+                    display: "block",
+                    ...getElementStyle(
+                      data.layout1LogoImageUrlStyle ?? CULTURE_LETTER_DEFAULTS.layout1LogoImageUrlStyle,
+                      viewport
+                    ),
               }}
               onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("layout1LogoImageUrl");
-              }}
+                    e.stopPropagation();
+                    onElementSelect?.("layout1LogoImageUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1LogoImageUrl");
+                    } else if (data.layout1LogoImageUrlLink) {
+                      window.open(data.layout1LogoImageUrlLink, "_self");
+                    }
+                  }}
             />
           </div>
 
@@ -1110,17 +1163,24 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout1CultureLetterStyle") && (
             <SafeHtml
               html={
-                data.layout1CultureLetter ||
-                CULTURE_LETTER_DEFAULTS.layout1CultureLetter
+                data.layout1CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout1CultureLetter
               }
               className={`not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
               style={getCultureLetterTextStyle("layout1CultureLetterStyle", {
                 justifySelf: "center",
               })}
               onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("layout1CultureLetter");
-              }}
+                    e.stopPropagation();
+                    onElementSelect?.("layout1CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout1CultureLetter");
+                    } else if (data.layout1CultureLetterLink) {
+                      window.open(data.layout1CultureLetterLink, "_self");
+                    }
+                  }}
             />
           )}
 
@@ -1129,7 +1189,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout1IssueNoStyle") && (
               <SafeHtml
                 html={
-                  data.layout1IssueNo || CULTURE_LETTER_DEFAULTS.layout1IssueNo
+                  data.layout1IssueNo ?? CULTURE_LETTER_DEFAULTS.layout1IssueNo
                 }
                 className={`not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
                 style={getCultureLetterTextStyle("layout1IssueNoStyle")}
@@ -1142,8 +1202,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout1IssueDateStyle") && (
               <SafeHtml
                 html={
-                  data.layout1IssueDate ||
-                  CULTURE_LETTER_DEFAULTS.layout1IssueDate
+                  data.layout1IssueDate ?? CULTURE_LETTER_DEFAULTS.layout1IssueDate
                 }
                 className={`text-right cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={getCultureLetterTextStyle("layout1IssueDateStyle")}
@@ -1161,7 +1220,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout1TitleStyle") && (
             <SafeHtml
               html={toHtmlWithBreaks(
-                data.layout1Title || CULTURE_LETTER_DEFAULTS.layout1Title,
+                data.layout1Title ?? CULTURE_LETTER_DEFAULTS.layout1Title,
               )}
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={getCultureLetterTextStyle("layout1TitleStyle")}
@@ -1174,7 +1233,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout1DescStyle") && (
             <SafeHtml
               html={toHtmlWithBreaks(
-                data.layout1Desc || CULTURE_LETTER_DEFAULTS.layout1Desc,
+                data.layout1Desc ?? CULTURE_LETTER_DEFAULTS.layout1Desc,
               )}
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={getCultureLetterTextStyle("layout1DescStyle")}
@@ -1244,7 +1303,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           >
             {!isCultureLetterTextHidden("layout4SubLabelStyle") && (
               <SafeHtml
-                html={data.layout4SubLabel || CULTURE_LETTER_DEFAULTS.layout4SubLabel}
+                html={data.layout4SubLabel ?? CULTURE_LETTER_DEFAULTS.layout4SubLabel}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
                   ...getCultureLetterTextStyle("layout4SubLabelStyle"),
@@ -1265,7 +1324,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             )}
             {!isCultureLetterTextHidden("layout4MainTitleStyle") && (
               <SafeHtml
-                html={data.layout4MainTitle || CULTURE_LETTER_DEFAULTS.layout4MainTitle}
+                html={data.layout4MainTitle ?? CULTURE_LETTER_DEFAULTS.layout4MainTitle}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
                   ...getCultureLetterTextStyle("layout4MainTitleStyle"),
@@ -1296,13 +1355,13 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             }}
           >
             {cards.map((card, idx) => {
-              const logoImg = data[card.logoKey] || CULTURE_LETTER_DEFAULTS[card.logoKey] || "";
-              const thumbRaw = data[card.thumbKey] || CULTURE_LETTER_DEFAULTS[card.thumbKey] || "";
+              const logoImg =(data[card.logoKey] ?? CULTURE_LETTER_DEFAULTS[card.logoKey]) || "";
+              const thumbRaw =(data[card.thumbKey] ?? CULTURE_LETTER_DEFAULTS[card.thumbKey]) || "";
               const thumbStyle = getElementStyle(
-                data[card.thumbStyleKey] || CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
+                data[card.thumbStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
                 viewport,
               );
-              const titleText = data[card.titleKey] || CULTURE_LETTER_DEFAULTS[card.titleKey];
+              const titleText = data[card.titleKey] ?? CULTURE_LETTER_DEFAULTS[card.titleKey];
               const titleStyleKey = `${card.titleKey}Style`;
 
               return (
@@ -1339,7 +1398,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                         url={logoImg}
                         style={{
                           ...getElementStyle(
-                            data[card.logoStyleKey] || CULTURE_LETTER_DEFAULTS[card.logoStyleKey],
+                            data[card.logoStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.logoStyleKey],
                             viewport,
                           ),
                           height: "24px",
@@ -1447,7 +1506,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           >
             {!isCultureLetterTextHidden("layout4SubLabelStyle") && (
               <SafeHtml
-                html={data.layout4SubLabel || CULTURE_LETTER_DEFAULTS.layout4SubLabel}
+                html={data.layout4SubLabel ?? CULTURE_LETTER_DEFAULTS.layout4SubLabel}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
                   ...getCultureLetterTextStyle("layout4SubLabelStyle"),
@@ -1467,7 +1526,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             )}
             {!isCultureLetterTextHidden("layout4MainTitleStyle") && (
               <SafeHtml
-                html={data.layout4MainTitle || CULTURE_LETTER_DEFAULTS.layout4MainTitle}
+                html={data.layout4MainTitle ?? CULTURE_LETTER_DEFAULTS.layout4MainTitle}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
                   ...getCultureLetterTextStyle("layout4MainTitleStyle"),
@@ -1497,13 +1556,13 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             }}
           >
             {cards.map((card, idx) => {
-              const logoImg = data[card.logoKey] || CULTURE_LETTER_DEFAULTS[card.logoKey] || "";
-              const thumbRaw = data[card.thumbKey] || CULTURE_LETTER_DEFAULTS[card.thumbKey] || "";
+              const logoImg =(data[card.logoKey] ?? CULTURE_LETTER_DEFAULTS[card.logoKey]) || "";
+              const thumbRaw =(data[card.thumbKey] ?? CULTURE_LETTER_DEFAULTS[card.thumbKey]) || "";
               const thumbStyle = getElementStyle(
-                data[card.thumbStyleKey] || CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
+                data[card.thumbStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
                 viewport,
               );
-              const titleText = data[card.titleKey] || CULTURE_LETTER_DEFAULTS[card.titleKey];
+              const titleText = data[card.titleKey] ?? CULTURE_LETTER_DEFAULTS[card.titleKey];
               const titleStyleKey = `${card.titleKey}Style`;
 
               return (
@@ -1540,7 +1599,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                         url={logoImg}
                         style={{
                           ...getElementStyle(
-                            data[card.logoStyleKey] || CULTURE_LETTER_DEFAULTS[card.logoStyleKey],
+                            data[card.logoStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.logoStyleKey],
                             viewport,
                           ),
                           height: "24px",
@@ -1646,7 +1705,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout4SubLabelStyle") && (
             <SafeHtml
               html={
-                data.layout4SubLabel || CULTURE_LETTER_DEFAULTS.layout4SubLabel
+                data.layout4SubLabel ?? CULTURE_LETTER_DEFAULTS.layout4SubLabel
               }
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={getCultureLetterTextStyle("layout4SubLabelStyle", {
@@ -1661,8 +1720,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout4MainTitleStyle") && (
             <SafeHtml
               html={
-                data.layout4MainTitle ||
-                CULTURE_LETTER_DEFAULTS.layout4MainTitle
+                data.layout4MainTitle ?? CULTURE_LETTER_DEFAULTS.layout4MainTitle
               }
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={getCultureLetterTextStyle("layout4MainTitleStyle", {
@@ -1688,19 +1746,14 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           }}
         >
           {cards.map((card, idx) => {
-            const logoImg =
-              data[card.logoKey] || CULTURE_LETTER_DEFAULTS[card.logoKey] || "";
-            const thumbRaw =
-              data[card.thumbKey] ||
-              CULTURE_LETTER_DEFAULTS[card.thumbKey] ||
-              "";
+            const logoImg =(data[card.logoKey] ?? CULTURE_LETTER_DEFAULTS[card.logoKey]) || "";
+            const thumbRaw =(data[card.thumbKey] ?? CULTURE_LETTER_DEFAULTS[card.thumbKey]) || "";
             const thumbStyle = getElementStyle(
-              data[card.thumbStyleKey] ||
-                CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
+              data[card.thumbStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.thumbStyleKey],
               viewport,
             );
             const titleText =
-              data[card.titleKey] || CULTURE_LETTER_DEFAULTS[card.titleKey];
+              data[card.titleKey] ?? CULTURE_LETTER_DEFAULTS[card.titleKey];
             const titleStyleKey = `${card.titleKey}Style`;
 
             return (
@@ -1739,8 +1792,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                       url={logoImg}
                       style={{
                         ...getElementStyle(
-                          data[card.logoStyleKey] ||
-                            CULTURE_LETTER_DEFAULTS[card.logoStyleKey],
+                          data[card.logoStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.logoStyleKey],
                           viewport,
                         ),
                         height: "24px",
@@ -1824,13 +1876,13 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     const { url: bgImage, style: bgImageStyle } = getResponsiveMedia(
       data.cl3BgUrl,
       data.cl3MobileBgUrl,
-      data.cl3BgUrlStyle || CULTURE_LETTER_DEFAULTS.cl3BgUrlStyle,
-      data.cl3MobileBgUrlStyle || CULTURE_LETTER_DEFAULTS.cl3MobileBgUrlStyle,
+      data.cl3BgUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl3BgUrlStyle,
+      data.cl3MobileBgUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl3MobileBgUrlStyle,
     );
-    const logoImage = data.cl3LogoUrl || CULTURE_LETTER_DEFAULTS.cl3LogoUrl;
-    const cardImg = data.cl3CardImgUrl || CULTURE_LETTER_DEFAULTS.cl3CardImgUrl;
+    const logoImage = data.cl3LogoUrl ?? CULTURE_LETTER_DEFAULTS.cl3LogoUrl;
+    const cardImg = data.cl3CardImgUrl ?? CULTURE_LETTER_DEFAULTS.cl3CardImgUrl;
     const cardImgStyle = getElementStyle(
-      data.cl3CardImgUrlStyle || CULTURE_LETTER_DEFAULTS.cl3CardImgUrlStyle,
+      data.cl3CardImgUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl3CardImgUrlStyle,
       viewport,
     );
 
@@ -1897,8 +1949,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout3IssueNoStyle") && (
                 <SafeHtml
                   html={
-                    data.layout3IssueNo ||
-                    CULTURE_LETTER_DEFAULTS.layout3IssueNo
+                    data.layout3IssueNo ?? CULTURE_LETTER_DEFAULTS.layout3IssueNo
                   }
                   className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -1917,8 +1968,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout3IssueDateStyle") && (
                 <SafeHtml
                   html={
-                    data.layout3IssueDate ||
-                    CULTURE_LETTER_DEFAULTS.layout3IssueDate
+                    data.layout3IssueDate ?? CULTURE_LETTER_DEFAULTS.layout3IssueDate
                   }
                   className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -1965,18 +2015,26 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                     width: "auto",
                     objectFit: "contain",
                     display: "block",
+                    ...getElementStyle(data.cl3LogoUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl3LogoUrlStyle, viewport)
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("cl3LogoUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("cl3LogoUrl");
+                    } else if (data.cl3LogoUrlLink) {
+                      window.open(data.cl3LogoUrlLink, "_self");
+                    }
                   }}
                 />
               </div>
               {!isCultureLetterTextHidden("layout3CultureLetterStyle") && (
                 <SafeHtml
                   html={
-                    data.layout3CultureLetter ||
-                    CULTURE_LETTER_DEFAULTS.layout3CultureLetter
+                    data.layout3CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout3CultureLetter
                   }
                   className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -1989,6 +2047,14 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout3CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout3CultureLetter");
+                    } else if (data.layout3CultureLetterLink) {
+                      window.open(data.layout3CultureLetterLink, "_self");
+                    }
                   }}
                 />
               )}
@@ -2010,7 +2076,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout3TitleStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout3Title || CULTURE_LETTER_DEFAULTS.layout3Title,
+                  data.layout3Title ?? CULTURE_LETTER_DEFAULTS.layout3Title,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -2029,7 +2095,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout3DescStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout3Desc || CULTURE_LETTER_DEFAULTS.layout3Desc,
+                  data.layout3Desc ?? CULTURE_LETTER_DEFAULTS.layout3Desc,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -2048,56 +2114,58 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           {/* 카드 이미지 — 가로 full, aspect 620:360, radius 20px */}
-          <div
-            style={{
-              aspectRatio: "620 / 360",
-              width: "100%",
-              position: "relative",
-              borderRadius: "20px",
-              boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
-              flexShrink: 0,
-              overflow: "hidden",
-              cursor: "pointer",
-            }}
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-              onElementSelect?.("cl3CardImgUrl");
-            }}
-          >
-            {cardImg ? (
-              <img
-                alt=""
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  width: "100%",
-                  height: "100%",
-                  ...cardImgStyle,
-                  objectPosition: cardImgStyle.objectPosition || "center",
-                  borderRadius: "20px",
-                  pointerEvents: "none",
-                }}
-                src={cardImg}
-              />
-            ) : (
-              <div
-                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "rgba(255,255,255,0.1)",
-                  borderRadius: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "rgba(255,255,255,0.5)",
-                  fontSize: "14px",
-                }}
-              >
-                이미지를 등록해 주세요
-              </div>
-            )}
-          </div>
+          {!isCultureLetterTextHidden("cl3CardImgUrlStyle") && (
+            <div
+              style={{
+                aspectRatio: "620 / 360",
+                width: "100%",
+                position: "relative",
+                borderRadius: "20px",
+                boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
+                flexShrink: 0,
+                overflow: "hidden",
+                cursor: "pointer",
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("cl3CardImgUrl");
+              }}
+            >
+              {cardImg ? (
+                <img
+                  alt=""
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    ...cardImgStyle,
+                    objectPosition: cardImgStyle.objectPosition || "center",
+                    borderRadius: "20px",
+                    pointerEvents: "none",
+                  }}
+                  src={cardImg}
+                />
+              ) : (
+                <div
+                  className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                    borderRadius: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "rgba(255,255,255,0.5)",
+                    fontSize: "14px",
+                  }}
+                >
+                  이미지를 등록해 주세요
+                </div>
+              )}
+            </div>
+          )}
         </div>
       );
     }
@@ -2167,8 +2235,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout3IssueNoStyle") && (
                 <SafeHtml
                   html={
-                    data.layout3IssueNo ||
-                    CULTURE_LETTER_DEFAULTS.layout3IssueNo
+                    data.layout3IssueNo ?? CULTURE_LETTER_DEFAULTS.layout3IssueNo
                   }
                   className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -2186,8 +2253,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout3IssueDateStyle") && (
                 <SafeHtml
                   html={
-                    data.layout3IssueDate ||
-                    CULTURE_LETTER_DEFAULTS.layout3IssueDate
+                    data.layout3IssueDate ?? CULTURE_LETTER_DEFAULTS.layout3IssueDate
                   }
                   className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -2233,18 +2299,26 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                     width: "auto",
                     objectFit: "contain",
                     display: "block",
+                    ...getElementStyle(data.cl3LogoUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl3LogoUrlStyle, viewport)
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("cl3LogoUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("cl3LogoUrl");
+                    } else if (data.cl3LogoUrlLink) {
+                      window.open(data.cl3LogoUrlLink, "_self");
+                    }
                   }}
                 />
               </div>
               {!isCultureLetterTextHidden("layout3CultureLetterStyle") && (
                 <SafeHtml
                   html={
-                    data.layout3CultureLetter ||
-                    CULTURE_LETTER_DEFAULTS.layout3CultureLetter
+                    data.layout3CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout3CultureLetter
                   }
                   className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -2256,6 +2330,14 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout3CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout3CultureLetter");
+                    } else if (data.layout3CultureLetterLink) {
+                      window.open(data.layout3CultureLetterLink, "_self");
+                    }
                   }}
                 />
               )}
@@ -2287,7 +2369,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout3TitleStyle") && (
                 <SafeHtml
                   html={toHtmlWithBreaks(
-                    data.layout3Title || CULTURE_LETTER_DEFAULTS.layout3Title,
+                    data.layout3Title ?? CULTURE_LETTER_DEFAULTS.layout3Title,
                   )}
                   className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                   style={{
@@ -2305,7 +2387,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout3DescStyle") && (
                 <SafeHtml
                   html={toHtmlWithBreaks(
-                    data.layout3Desc || CULTURE_LETTER_DEFAULTS.layout3Desc,
+                    data.layout3Desc ?? CULTURE_LETTER_DEFAULTS.layout3Desc,
                   )}
                   className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                   style={{
@@ -2323,56 +2405,58 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             </div>
 
             {/* 카드 이미지 — 가로 full, aspect 620:360, radius 8px */}
-            <div
-              style={{
-                aspectRatio: "620 / 360",
-                width: "100%",
-                position: "relative",
-                borderRadius: "8px",
-                boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
-                flexShrink: 0,
-                overflow: "hidden",
-                cursor: "pointer",
-              }}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("cl3CardImgUrl");
-              }}
-            >
-              {cardImg ? (
-                <img
-                  alt=""
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    width: "100%",
-                    height: "100%",
-                    ...cardImgStyle,
-                    objectPosition: cardImgStyle.objectPosition || "center",
-                    borderRadius: "8px",
-                    pointerEvents: "none",
-                  }}
-                  src={cardImg}
-                />
-              ) : (
-                <div
-                  className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: "rgba(255,255,255,0.1)",
-                    borderRadius: "8px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "rgba(255,255,255,0.5)",
-                    fontSize: "14px",
-                  }}
-                >
-                  이미지를 등록해 주세요
-                </div>
-              )}
-            </div>
+            {!isCultureLetterTextHidden("cl3CardImgUrlStyle") && (
+              <div
+                style={{
+                  aspectRatio: "620 / 360",
+                  width: "100%",
+                  position: "relative",
+                  borderRadius: "8px",
+                  boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
+                  flexShrink: 0,
+                  overflow: "hidden",
+                  cursor: "pointer",
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onElementSelect?.("cl3CardImgUrl");
+                }}
+              >
+                {cardImg ? (
+                  <img
+                    alt=""
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      ...cardImgStyle,
+                      objectPosition: cardImgStyle.objectPosition || "center",
+                      borderRadius: "8px",
+                      pointerEvents: "none",
+                    }}
+                    src={cardImg}
+                  />
+                ) : (
+                  <div
+                    className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "rgba(255,255,255,0.1)",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "rgba(255,255,255,0.5)",
+                      fontSize: "14px",
+                    }}
+                  >
+                    이미지를 등록해 주세요
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -2435,15 +2519,24 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
               url={logoImage}
               style={{
-                height: "40px",
-                width: "auto",
-                objectFit: "contain",
-                display: "block",
-              }}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("cl3LogoUrl");
-              }}
+                    height: "40px",
+                    width: "auto",
+                    objectFit: "contain",
+                    display: "block",
+                    ...getElementStyle(data.cl3LogoUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl3LogoUrlStyle, viewport)
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("cl3LogoUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("cl3LogoUrl");
+                    } else if (data.cl3LogoUrlLink) {
+                      window.open(data.cl3LogoUrlLink, "_self");
+                    }
+                  }}
             />
           </div>
 
@@ -2451,17 +2544,24 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout3CultureLetterStyle") && (
             <SafeHtml
               html={
-                data.layout3CultureLetter ||
-                CULTURE_LETTER_DEFAULTS.layout3CultureLetter
+                data.layout3CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout3CultureLetter
               }
               className={`not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
               style={getCultureLetterTextStyle("layout3CultureLetterStyle", {
                 justifySelf: "center",
               })}
               onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("layout3CultureLetter");
-              }}
+                    e.stopPropagation();
+                    onElementSelect?.("layout3CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout3CultureLetter");
+                    } else if (data.layout3CultureLetterLink) {
+                      window.open(data.layout3CultureLetterLink, "_self");
+                    }
+                  }}
             />
           )}
 
@@ -2477,7 +2577,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout3IssueNoStyle") && (
               <SafeHtml
                 html={
-                  data.layout3IssueNo || CULTURE_LETTER_DEFAULTS.layout3IssueNo
+                  data.layout3IssueNo ?? CULTURE_LETTER_DEFAULTS.layout3IssueNo
                 }
                 className={`not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
                 style={getCultureLetterTextStyle("layout3IssueNoStyle")}
@@ -2490,8 +2590,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout3IssueDateStyle") && (
               <SafeHtml
                 html={
-                  data.layout3IssueDate ||
-                  CULTURE_LETTER_DEFAULTS.layout3IssueDate
+                  data.layout3IssueDate ?? CULTURE_LETTER_DEFAULTS.layout3IssueDate
                 }
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={getCultureLetterTextStyle("layout3IssueDateStyle")}
@@ -2527,7 +2626,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout3TitleStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout3Title || CULTURE_LETTER_DEFAULTS.layout3Title,
+                  data.layout3Title ?? CULTURE_LETTER_DEFAULTS.layout3Title,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={getCultureLetterTextStyle("layout3TitleStyle", {
@@ -2542,7 +2641,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout3DescStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout3Desc || CULTURE_LETTER_DEFAULTS.layout3Desc,
+                  data.layout3Desc ?? CULTURE_LETTER_DEFAULTS.layout3Desc,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={getCultureLetterTextStyle("layout3DescStyle", {
@@ -2557,62 +2656,64 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           </div>
 
           {/* 우측 이미지 카드 — w-620px h-360px, radius-20px, shadow */}
-          <div
-            style={{
-              height: "360px",
-              width: "620px",
-              position: "relative",
-              borderRadius: "20px",
-              boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
-              flexShrink: 0,
-              overflow: "hidden",
-              cursor: "pointer",
-            }}
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-              onElementSelect?.("cl3CardImgUrl");
-            }}
-            onClick={(e) => {
-              if (!onElementSelect) {
-                // 레이아웃 3 카드 클릭 시 미리보기 동작
-                console.log("Layout 3 Card Clicked");
-              }
-            }}
-          >
-            {cardImg ? (
-              <img
-                alt=""
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  width: "100%",
-                  height: "100%",
-                  ...cardImgStyle,
-                  objectPosition: cardImgStyle.objectPosition || "center",
-                  borderRadius: "20px",
-                  pointerEvents: "none",
-                }}
-                src={cardImg}
-              />
-            ) : (
-              <div
-                className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "rgba(255,255,255,0.1)",
-                  borderRadius: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "rgba(255,255,255,0.5)",
-                  fontSize: "14px",
-                }}
-              >
-                이미지를 등록해 주세요
-              </div>
-            )}
-          </div>
+          {!isCultureLetterTextHidden("cl3CardImgUrlStyle") && (
+            <div
+              style={{
+                height: "360px",
+                width: "620px",
+                position: "relative",
+                borderRadius: "20px",
+                boxShadow: "8px 8px 20px 0px rgba(0,0,0,0.12)",
+                flexShrink: 0,
+                overflow: "hidden",
+                cursor: "pointer",
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                onElementSelect?.("cl3CardImgUrl");
+              }}
+              onClick={(e) => {
+                if (!onElementSelect) {
+                  // 레이아웃 3 카드 클릭 시 미리보기 동작
+                  console.log("Layout 3 Card Clicked");
+                }
+              }}
+            >
+              {cardImg ? (
+                <img
+                  alt=""
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    ...cardImgStyle,
+                    objectPosition: cardImgStyle.objectPosition || "center",
+                    borderRadius: "20px",
+                    pointerEvents: "none",
+                  }}
+                  src={cardImg}
+                />
+              ) : (
+                <div
+                  className="hover:outline-dashed hover:outline-2 hover:outline-blue-400"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                    borderRadius: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "rgba(255,255,255,0.5)",
+                    fontSize: "14px",
+                  }}
+                >
+                  이미지를 등록해 주세요
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -2623,10 +2724,10 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
     const { url: bgImage, style: bgImageStyle } = getResponsiveMedia(
       data.cl2BgUrl,
       data.cl2MobileBgUrl,
-      data.cl2BgUrlStyle || CULTURE_LETTER_DEFAULTS.cl2BgUrlStyle,
-      data.cl2MobileBgUrlStyle || CULTURE_LETTER_DEFAULTS.cl2MobileBgUrlStyle,
+      data.cl2BgUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl2BgUrlStyle,
+      data.cl2MobileBgUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl2MobileBgUrlStyle,
     );
-    const logoImage = data.cl2LogoUrl || CULTURE_LETTER_DEFAULTS.cl2LogoUrl;
+    const logoImage = data.cl2LogoUrl ?? CULTURE_LETTER_DEFAULTS.cl2LogoUrl;
 
     /* ── 태블릿 레이아웃 (피그마 node-id: 3298:29824, 768px) ── */
     if (viewport === "tablet") {
@@ -2699,8 +2800,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout2IssueNoStyle") && (
                 <SafeHtml
                   html={
-                    data.layout2IssueNo ||
-                    CULTURE_LETTER_DEFAULTS.layout2IssueNo
+                    data.layout2IssueNo ?? CULTURE_LETTER_DEFAULTS.layout2IssueNo
                   }
                   className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -2719,8 +2819,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout2IssueDateStyle") && (
                 <SafeHtml
                   html={
-                    data.layout2IssueDate ||
-                    CULTURE_LETTER_DEFAULTS.layout2IssueDate
+                    data.layout2IssueDate ?? CULTURE_LETTER_DEFAULTS.layout2IssueDate
                   }
                   className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -2767,18 +2866,26 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                     width: "auto",
                     objectFit: "contain",
                     display: "block",
+                    ...getElementStyle(data.cl2LogoUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl2LogoUrlStyle, viewport)
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("cl2LogoUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("cl2LogoUrl");
+                    } else if (data.cl2LogoUrlLink) {
+                      window.open(data.cl2LogoUrlLink, "_self");
+                    }
                   }}
                 />
               </div>
               {!isCultureLetterTextHidden("layout2CultureLetterStyle") && (
                 <SafeHtml
                   html={
-                    data.layout2CultureLetter ||
-                    CULTURE_LETTER_DEFAULTS.layout2CultureLetter
+                    data.layout2CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout2CultureLetter
                   }
                   className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -2791,6 +2898,14 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout2CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout2CultureLetter");
+                    } else if (data.layout2CultureLetterLink) {
+                      window.open(data.layout2CultureLetterLink, "_self");
+                    }
                   }}
                 />
               )}
@@ -2813,7 +2928,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout2TitleStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout2Title || CULTURE_LETTER_DEFAULTS.layout2Title,
+                  data.layout2Title ?? CULTURE_LETTER_DEFAULTS.layout2Title,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -2833,7 +2948,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout2DescStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout2Desc || CULTURE_LETTER_DEFAULTS.layout2Desc,
+                  data.layout2Desc ?? CULTURE_LETTER_DEFAULTS.layout2Desc,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -2926,8 +3041,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout2IssueNoStyle") && (
                 <SafeHtml
                   html={
-                    data.layout2IssueNo ||
-                    CULTURE_LETTER_DEFAULTS.layout2IssueNo
+                    data.layout2IssueNo ?? CULTURE_LETTER_DEFAULTS.layout2IssueNo
                   }
                   className="not-italic relative shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -2945,8 +3059,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden("layout2IssueDateStyle") && (
                 <SafeHtml
                   html={
-                    data.layout2IssueDate ||
-                    CULTURE_LETTER_DEFAULTS.layout2IssueDate
+                    data.layout2IssueDate ?? CULTURE_LETTER_DEFAULTS.layout2IssueDate
                   }
                   className="cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -2988,18 +3101,26 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                     width: "auto",
                     objectFit: "contain",
                     display: "block",
+                    ...getElementStyle(data.cl2LogoUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl2LogoUrlStyle, viewport)
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("cl2LogoUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("cl2LogoUrl");
+                    } else if (data.cl2LogoUrlLink) {
+                      window.open(data.cl2LogoUrlLink, "_self");
+                    }
                   }}
                 />
               </div>
               {!isCultureLetterTextHidden("layout2CultureLetterStyle") && (
                 <SafeHtml
                   html={
-                    data.layout2CultureLetter ||
-                    CULTURE_LETTER_DEFAULTS.layout2CultureLetter
+                    data.layout2CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout2CultureLetter
                   }
                   className="not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 transition-all"
                   style={{
@@ -3011,6 +3132,14 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("layout2CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout2CultureLetter");
+                    } else if (data.layout2CultureLetterLink) {
+                      window.open(data.layout2CultureLetterLink, "_self");
+                    }
                   }}
                 />
               )}
@@ -3033,7 +3162,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout2TitleStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout2Title || CULTURE_LETTER_DEFAULTS.layout2Title,
+                  data.layout2Title ?? CULTURE_LETTER_DEFAULTS.layout2Title,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -3052,7 +3181,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout2DescStyle") && (
               <SafeHtml
                 html={toHtmlWithBreaks(
-                  data.layout2Desc || CULTURE_LETTER_DEFAULTS.layout2Desc,
+                  data.layout2Desc ?? CULTURE_LETTER_DEFAULTS.layout2Desc,
                 )}
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={{
@@ -3138,15 +3267,24 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
               url={logoImage}
               style={{
-                height: "40px",
-                width: "auto",
-                objectFit: "contain",
-                display: "block",
-              }}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("cl2LogoUrl");
-              }}
+                    height: "40px",
+                    width: "auto",
+                    objectFit: "contain",
+                    display: "block",
+                    ...getElementStyle(data.cl2LogoUrlStyle ?? CULTURE_LETTER_DEFAULTS.cl2LogoUrlStyle, viewport)
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("cl2LogoUrl");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("cl2LogoUrl");
+                    } else if (data.cl2LogoUrlLink) {
+                      window.open(data.cl2LogoUrlLink, "_self");
+                    }
+                  }}
             />
           </div>
 
@@ -3154,17 +3292,24 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout2CultureLetterStyle") && (
             <SafeHtml
               html={
-                data.layout2CultureLetter ||
-                CULTURE_LETTER_DEFAULTS.layout2CultureLetter
+                data.layout2CultureLetter ?? CULTURE_LETTER_DEFAULTS.layout2CultureLetter
               }
               className={`not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
               style={getCultureLetterTextStyle("layout2CultureLetterStyle", {
                 justifySelf: "center",
               })}
               onDoubleClick={(e) => {
-                e.stopPropagation();
-                onElementSelect?.("layout2CultureLetter");
-              }}
+                    e.stopPropagation();
+                    onElementSelect?.("layout2CultureLetter");
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onElementSelect) {
+                      onElementSelect("layout2CultureLetter");
+                    } else if (data.layout2CultureLetterLink) {
+                      window.open(data.layout2CultureLetterLink, "_self");
+                    }
+                  }}
             />
           )}
 
@@ -3180,7 +3325,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout2IssueNoStyle") && (
               <SafeHtml
                 html={
-                  data.layout2IssueNo || CULTURE_LETTER_DEFAULTS.layout2IssueNo
+                  data.layout2IssueNo ?? CULTURE_LETTER_DEFAULTS.layout2IssueNo
                 }
                 className={`not-italic shrink-0 whitespace-nowrap cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all flex items-center`}
                 style={getCultureLetterTextStyle("layout2IssueNoStyle")}
@@ -3193,8 +3338,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
             {!isCultureLetterTextHidden("layout2IssueDateStyle") && (
               <SafeHtml
                 html={
-                  data.layout2IssueDate ||
-                  CULTURE_LETTER_DEFAULTS.layout2IssueDate
+                  data.layout2IssueDate ?? CULTURE_LETTER_DEFAULTS.layout2IssueDate
                 }
                 className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                 style={getCultureLetterTextStyle("layout2IssueDateStyle")}
@@ -3223,7 +3367,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout2TitleStyle") && (
             <SafeHtml
               html={toHtmlWithBreaks(
-                data.layout2Title || CULTURE_LETTER_DEFAULTS.layout2Title,
+                data.layout2Title ?? CULTURE_LETTER_DEFAULTS.layout2Title,
               )}
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={getCultureLetterTextStyle("layout2TitleStyle")}
@@ -3236,7 +3380,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           {!isCultureLetterTextHidden("layout2DescStyle") && (
             <SafeHtml
               html={toHtmlWithBreaks(
-                data.layout2Desc || CULTURE_LETTER_DEFAULTS.layout2Desc,
+                data.layout2Desc ?? CULTURE_LETTER_DEFAULTS.layout2Desc,
               )}
               className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
               style={getCultureLetterTextStyle("layout2DescStyle")}
@@ -3296,18 +3440,16 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
       cardStyle: React.CSSProperties,
       wrapperStyle: React.CSSProperties,
     ) => {
-      const svgImg =
-        (data as any)[card.svgKey] ||
-        CULTURE_LETTER_DEFAULTS[card.svgKey] ||
-        "";
-      const cardBgImgR =
-        (data as any)[card.cardBgImgKey] ||
-        CULTURE_LETTER_DEFAULTS[card.cardBgImgKey] ||
-        "";
+      const svgImg =((data as any)[card.svgKey] ?? CULTURE_LETTER_DEFAULTS[card.svgKey]) || "";
+      const cardBgImgR =((data as any)[card.cardBgImgKey] ?? CULTURE_LETTER_DEFAULTS[card.cardBgImgKey]) || "";
       const cardBgImgStyleRaw =
-        (data as any)[card.cardBgImgStyleKey] ||
-        CULTURE_LETTER_DEFAULTS[card.cardBgImgStyleKey];
+        (data as any)[card.cardBgImgStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.cardBgImgStyleKey];
       const cardBgImgStyleR = getElementStyle(cardBgImgStyleRaw, viewport);
+      const svgImgStyle = getElementStyle(
+        (data as any)[card.svgStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.svgStyleKey],
+        viewport,
+      );
+      const isSvgHidden = svgImgStyle.display === "none";
       const linkHref = (data as any)[card.linkKey] || "";
       const cardBgColor =
         cardBgImgStyleR.backgroundColor || "rgba(255,255,255,0.8)";
@@ -3381,7 +3523,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                 flexShrink: 0,
                 position: "relative",
                 cursor: "pointer",
-                display: "flex",
+                display: isSvgHidden ? "none" : "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
@@ -3395,14 +3537,10 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                 <img
                   alt="icon"
                   style={{
-                    ...getElementStyle(
-                      (data as any)[card.svgStyleKey] ||
-                        CULTURE_LETTER_DEFAULTS[card.svgStyleKey],
-                      viewport,
-                    ),
+                    ...svgImgStyle,
                     width: "80px",
                     height: "80px",
-                    display: "block",
+                    display: svgImgStyle.display === "none" ? "none" : "block",
                     objectFit: "contain",
                   }}
                   src={svgImg || (CULTURE_LETTER_DEFAULTS as any)[card.svgKey]}
@@ -3445,8 +3583,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden(card.titleStyleKey) && (
                 <SafeHtml
                   html={
-                    (data as any)[card.titleKey] ||
-                    CULTURE_LETTER_DEFAULTS[card.titleKey]
+                    (data as any)[card.titleKey] ?? CULTURE_LETTER_DEFAULTS[card.titleKey]
                   }
                   className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                   style={{
@@ -3470,8 +3607,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
               {!isCultureLetterTextHidden(card.descStyleKey) && (
                 <SafeHtml
                   html={
-                    (data as any)[card.descKey] ||
-                    CULTURE_LETTER_DEFAULTS[card.descKey]
+                    (data as any)[card.descKey] ?? CULTURE_LETTER_DEFAULTS[card.descKey]
                   }
                   className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                   style={{
@@ -3638,18 +3774,16 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
           }}
         >
           {cards.map((card, idx) => {
-            const svgImg =
-              (data as any)[card.svgKey] ||
-              CULTURE_LETTER_DEFAULTS[card.svgKey] ||
-              "";
-            const cardBgImg =
-              (data as any)[card.cardBgImgKey] ||
-              CULTURE_LETTER_DEFAULTS[card.cardBgImgKey] ||
-              "";
+            const svgImg =((data as any)[card.svgKey] ?? CULTURE_LETTER_DEFAULTS[card.svgKey]) || "";
+            const cardBgImg =((data as any)[card.cardBgImgKey] ?? CULTURE_LETTER_DEFAULTS[card.cardBgImgKey]) || "";
             const cardBgImgStyleRaw =
-              (data as any)[card.cardBgImgStyleKey] ||
-              CULTURE_LETTER_DEFAULTS[card.cardBgImgStyleKey];
+              (data as any)[card.cardBgImgStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.cardBgImgStyleKey];
             const cardBgImgStyle = getElementStyle(cardBgImgStyleRaw, viewport);
+            const svgImgStyle = getElementStyle(
+              (data as any)[card.svgStyleKey] ?? CULTURE_LETTER_DEFAULTS[card.svgStyleKey],
+              viewport,
+            );
+            const isSvgHidden = svgImgStyle.display === "none";
             const cardBgColor =
               cardBgImgStyle.backgroundColor || "rgba(255,255,255,0.8)";
             const cardBorderRadius = cardBgImgStyle.borderRadius || "24px";
@@ -3722,7 +3856,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                     flexShrink: 0,
                     position: "relative",
                     cursor: "pointer",
-                    display: "flex",
+                    display: isSvgHidden ? "none" : "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
@@ -3737,14 +3871,10 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                       alt="icon"
                       className={`block max-w-none ${getBorderRadiusClass(viewport, "")} hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer`}
                       style={{
-                        ...getElementStyle(
-                          (data as any)[card.svgStyleKey] ||
-                            CULTURE_LETTER_DEFAULTS[card.svgStyleKey],
-                          viewport,
-                        ),
+                        ...svgImgStyle,
                         width: "80px",
                         height: "80px",
-                        display: "block",
+                        display: svgImgStyle.display === "none" ? "none" : "block",
                         objectFit: "contain",
                       }}
                       src={
@@ -3788,8 +3918,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   {!isCultureLetterTextHidden(card.titleStyleKey) && (
                     <SafeHtml
                       html={
-                        (data as any)[card.titleKey] ||
-                        CULTURE_LETTER_DEFAULTS[card.titleKey]
+                        (data as any)[card.titleKey] ?? CULTURE_LETTER_DEFAULTS[card.titleKey]
                       }
                       className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                       style={getCultureLetterTextStyle(card.titleStyleKey, {
@@ -3805,8 +3934,7 @@ export const CultureLetterRenderer: React.FC<WidgetRendererProps> = ({
                   {!isCultureLetterTextHidden(card.descStyleKey) && (
                     <SafeHtml
                       html={
-                        (data as any)[card.descKey] ||
-                        CULTURE_LETTER_DEFAULTS[card.descKey]
+                        (data as any)[card.descKey] ?? CULTURE_LETTER_DEFAULTS[card.descKey]
                       }
                       className={`cursor-text hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "")} transition-all`}
                       style={getCultureLetterTextStyle(card.descStyleKey, {

@@ -8,6 +8,7 @@ import {
   formatUnit,
   getPaddingClass,
   getVerticalPaddingClass,
+  getWidgetVerticalPaddingStyle,
 } from "./WidgetUtils";
 
 export const TAB_BUTTON_DEFAULTS = {
@@ -157,8 +158,14 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
             className={`self-stretch ${getPaddingClass(viewport)} inline-flex flex-col justify-start items-center w-full hover:ring-2 hover:ring-transparent transition-all`}
             style={{
               ...style,
-              paddingTop: viewport === "mobile" ? "30px" : style.paddingTop,
-              paddingBottom: viewport === "mobile" ? "30px" : style.paddingBottom,
+              paddingTop:
+                viewport === "mobile"
+                  ? "var(--widget-mobile-padding-top)"
+                  : style.paddingTop,
+              paddingBottom:
+                viewport === "mobile"
+                  ? "var(--widget-mobile-padding-bottom)"
+                  : style.paddingBottom,
               gap: viewport === "mobile" ? "24px" : "40px",
             }}
           >
@@ -315,7 +322,15 @@ export const TabButtonRenderer: React.FC<WidgetRendererProps> = ({
       className={`w-full relative overflow-hidden group hover:ring-2 hover:ring-blue-500 transition-all ${!data.imageUrl && !data.videoUrl ? "bg-white" : ""}`}
     >
       <div
-        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport)} py-12 md:py-24 relative z-10`}
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport)} relative z-10`}
+        style={getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+          desktopTop: "96px",
+          desktopBottom: "96px",
+          tabletTop: "96px",
+          tabletBottom: "96px",
+          mobileTop: "48px",
+          mobileBottom: "48px",
+        })}
       >
         <div className="flex flex-col max-w-4xl mx-auto items-center text-center opacity-50 p-10 bg-시안-mode-gray10 rounded-xl">
           <p className="text-시안-mode-gray50 font-bold mb-2">

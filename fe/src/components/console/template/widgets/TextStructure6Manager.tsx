@@ -326,25 +326,7 @@ const TextStructure6Manager: React.FC<Props> = ({
                   {/* IMAGE */}
                   {section.type === "image" && (
                     <>
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-500 w-16 shrink-0">
-                          이미지 높이
-                        </label>
-                        <input
-                          type="number"
-                          min={80}
-                          max={800}
-                          className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={section.imageHeight || ""}
-                          onChange={(e) =>
-                            updateSection(section.id, {
-                              imageHeight: e.target.value,
-                            })
-                          }
-                        />
-                        <span className="text-[10px] text-gray-400">px</span>
-                      </div>
-                      {(section.images || []).map((img, imgIdx) => (
+	                      {(section.images || []).map((img, imgIdx) => (
                         <div key={imgIdx} className="space-y-1">
                           <label className="text-[10px] text-gray-400 font-semibold">
                             이미지 {imgIdx + 1}
@@ -491,25 +473,7 @@ const TextStructure6Manager: React.FC<Props> = ({
                   {/* STRIP BANNER */}
                   {section.type === "stripBanner" && (
                     <>
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-500 w-16 shrink-0">
-                          배너 높이
-                        </label>
-                        <input
-                          type="number"
-                          min={80}
-                          max={800}
-                          className="flex-1 bg-gray-50 border-none p-2 rounded-lg text-xs text-center font-mono focus:ring-2 focus:ring-blue-100 outline-none"
-                          value={section.imageHeight || ""}
-                          onChange={(e) =>
-                            updateSection(section.id, {
-                              imageHeight: e.target.value,
-                            })
-                          }
-                        />
-                        <span className="text-[10px] text-gray-400">px</span>
-                      </div>
-                      <div className="space-y-1">
+	                      <div className="space-y-1">
                         <label className="text-[10px] text-gray-400 font-semibold">
                           배너 이미지
                         </label>

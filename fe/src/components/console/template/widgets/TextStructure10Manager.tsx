@@ -24,6 +24,12 @@ export interface Section10Card {
     isHidden?: boolean;
   };
   iconUrl: string;
+  imageStyle?: {
+    isHidden?: boolean;
+    objectFit?: string;
+    width?: string;
+    height?: string;
+  };
   iconUrlStyle?: {
     isHidden?: boolean;
   };
@@ -40,6 +46,12 @@ export interface Section10Card {
     isHidden?: boolean;
   };
   checkIconUrl: string;
+  checkIconStyle?: {
+    isHidden?: boolean;
+    objectFit?: string;
+    width?: string;
+    height?: string;
+  };
   checkIconUrlStyle?: {
     isHidden?: boolean;
   };
@@ -80,14 +92,28 @@ const TextStructure10Manager: React.FC<Props> = ({
 
   const toggleSectionHidden = (
     id: string,
-    key: "numberStyle" | "titleStyle" | "iconUrlStyle" | "subTitleStyle" | "descStyle" | "checkTitleStyle" | "checkIconUrlStyle" | "badgesStyle",
+    key:
+      | "numberStyle"
+      | "titleStyle"
+      | "imageStyle"
+      | "subTitleStyle"
+      | "descStyle"
+      | "checkTitleStyle"
+      | "checkIconStyle"
+      | "badgesStyle",
+    legacyKey?: "iconUrlStyle" | "checkIconUrlStyle",
   ) => {
     const target = sections.find((section) => section.id === id);
     if (!target) return;
+    const currentStyle = (target as any)[key] || {};
+    const legacyStyle = legacyKey ? (target as any)[legacyKey] || {} : {};
+    const currentHidden =
+      currentStyle.isHidden ?? legacyStyle.isHidden ?? false;
+
     updateSection(id, {
       [key]: {
-        ...(target[key] || {}),
-        isHidden: !(target[key]?.isHidden ?? false),
+        ...currentStyle,
+        isHidden: !currentHidden,
       },
     });
   };
@@ -190,9 +216,15 @@ const TextStructure10Manager: React.FC<Props> = ({
         카드 리스트 관리
       </label>
 
-      <div className="space-y-1.5">
+        <div className="space-y-1.5">
         {sections.map((section, idx) => {
           const isExpanded = expandedId === section.id;
+          const isMainImageHidden =
+            section.imageStyle?.isHidden ?? section.iconUrlStyle?.isHidden ?? false;
+          const isCheckIconHidden =
+            section.checkIconStyle?.isHidden ??
+            section.checkIconUrlStyle?.isHidden ??
+            false;
           return (
             <div
               key={section.id}
@@ -340,10 +372,14 @@ const TextStructure10Manager: React.FC<Props> = ({
                         type="button"
                         className="text-[10px] text-gray-500 font-semibold"
                         onClick={() =>
-                          toggleSectionHidden(section.id, "iconUrlStyle")
+                          toggleSectionHidden(
+                            section.id,
+                            "imageStyle",
+                            "iconUrlStyle",
+                          )
                         }
                       >
-                        {section.iconUrlStyle?.isHidden ? "보이기" : "숨기기"}
+                        {isMainImageHidden ? "보이기" : "숨기기"}
                       </button>
                     </div>
                     <div className="flex gap-1.5">
@@ -460,10 +496,14 @@ const TextStructure10Manager: React.FC<Props> = ({
                         type="button"
                         className="text-[10px] text-gray-500 font-semibold"
                         onClick={() =>
-                          toggleSectionHidden(section.id, "checkIconUrlStyle")
+                          toggleSectionHidden(
+                            section.id,
+                            "checkIconStyle",
+                            "checkIconUrlStyle",
+                          )
                         }
                       >
-                        {section.checkIconUrlStyle?.isHidden ? "보이기" : "숨기기"}
+                        {isCheckIconHidden ? "보이기" : "숨기기"}
                       </button>
                     </div>
                     <div className="flex gap-1.5">

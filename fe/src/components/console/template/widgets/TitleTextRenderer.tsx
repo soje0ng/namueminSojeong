@@ -9,6 +9,7 @@ import {
   getPaddingClass,
   getBorderRadiusClass,
   getVerticalPaddingClass,
+  getWidgetVerticalPaddingStyle,
 } from "./WidgetUtils";
 
 export const TITLE_TEXT_DEFAULTS = {
@@ -200,11 +201,13 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       ["quoteLeftUrl"],
       TITLE_TEXT_DEFAULTS.layout1LeftImageUrl,
     );
+    const leftImageStyle = getStyle("layout1LeftImageUrlStyle", [], {});
     const rightImage = getValue(
       "layout1RightImageUrl",
       ["quoteRightUrl"],
       TITLE_TEXT_DEFAULTS.layout1RightImageUrl,
     );
+    const rightImageStyle = getStyle("layout1RightImageUrlStyle", [], {});
 
     return (
       <section
@@ -219,13 +222,12 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               gap:
                 viewport === "mobile"
                   ? "8px"
-                  : viewport === "tablet"
-                    ? "20px"
-                    : "60px",
+                  : "20px",
             }}
           >
+            {/* 따옴표 + 타이틀 row */}
             <div
-              className="inline-flex flex-col xl:flex-row justify-start items-start xl:items-start w-full xl:w-auto"
+              className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start w-full xl:w-auto"
               style={{
                 gap:
                   viewport === "mobile"
@@ -236,64 +238,68 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
               }}
             >
               {/* Left Image Area Slot */}
-              <div
-                className={`${viewport === "mobile" ? "w-5 h-5 mt-1" : "hidden xl:block w-[50px] h-[50px]"} shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400`}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onElementSelect?.("layout1LeftImageUrl");
-                }}
-              >
-                <UniversalMedia
-                  url={leftImage}
-                  className="w-full h-full object-contain"
-                  style={{ objectFit: "contain" }}
-                  alt="Left Content Image"
-                />
-              </div>
+              {!leftImageStyle?.isHidden && (
+                <div
+                  className={`${viewport === "mobile" ? "w-5 h-5 mt-1" : "hidden xl:block w-[50px] h-[50px]"} shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400`}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1LeftImageUrl");
+                  }}
+                >
+                  <UniversalMedia
+                    url={leftImage}
+                    className="w-full h-full object-contain"
+                    style={{ objectFit: "contain" }}
+                    alt="Left Content Image"
+                  />
+                </div>
+              )}
 
-              <div className="inline-flex flex-col justify-start items-center text-center w-full">
-                {!titleStyle?.isHidden && (
-                  <div className="justify-start transition-all w-fit mx-auto">
-                    <SafeHtml
-                      html={title}
-                      className={`text-시안-mode-gray90 text-2xl xl:text-5xl font-bold leading-relaxed break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
-                      style={getElementStyle(titleStyle, viewport)}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("layout1Title");
-                      }}
-                    />
-                  </div>
-                )}
-                {!subTitleStyle?.isHidden && (
+              {!titleStyle?.isHidden && (
+                <div className="justify-start transition-all w-fit mx-auto text-center">
                   <SafeHtml
-                    html={subTitle}
-                    className={`text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-2 cursor-text break-keep`}
-                    style={getElementStyle(subTitleStyle, viewport)}
+                    html={title}
+                    className={`text-시안-mode-gray90 text-2xl xl:text-5xl font-bold leading-relaxed break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
+                    style={getElementStyle(titleStyle, viewport)}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
-                      onElementSelect?.("layout1SubTitle");
+                      onElementSelect?.("layout1Title");
                     }}
                   />
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Right Image Area Slot */}
-              <div
-                className={`${viewport === "mobile" ? "w-5 h-5 align-bottom mt-1" : "hidden xl:block w-[50px] h-[50px]"} shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400`}
+              {!rightImageStyle?.isHidden && (
+                <div
+                  className={`${viewport === "mobile" ? "w-5 h-5 align-bottom mt-1" : "hidden xl:block w-[50px] h-[50px]"} shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-blue-400`}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("layout1RightImageUrl");
+                  }}
+                >
+                  <UniversalMedia
+                    url={rightImage}
+                    className="w-full h-full object-contain"
+                    style={{ objectFit: "contain" }}
+                    alt="Right Content Image"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* 서브타이틀 — 따옴표 바깥 아래 */}
+            {!subTitleStyle?.isHidden && (
+              <SafeHtml
+                html={subTitle}
+                className={`text-center justify-start text-시안-mode-gray50 text-lg xl:text-xl font-medium leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-400 ${getBorderRadiusClass(viewport, "rounded")} transition-all cursor-text break-keep`}
+                style={getElementStyle(subTitleStyle, viewport)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  onElementSelect?.("layout1RightImageUrl");
+                  onElementSelect?.("layout1SubTitle");
                 }}
-              >
-                <UniversalMedia
-                  url={rightImage}
-                  className="w-full h-full object-contain"
-                  style={{ objectFit: "contain" }}
-                  alt="Right Content Image"
-                />
-              </div>
-            </div>
+              />
+            )}
           </div>
         </div>
       </section>
@@ -326,11 +332,13 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       ["quoteLeftWhiteUrl"],
       TITLE_TEXT_DEFAULTS.layout2LeftImageUrl,
     );
+    const leftImageStyle = getStyle("layout2LeftImageUrlStyle", [], {});
     const rightImage = getValue(
       "layout2RightImageUrl",
       ["quoteRightWhiteUrl"],
       TITLE_TEXT_DEFAULTS.layout2RightImageUrl,
     );
+    const rightImageStyle = getStyle("layout2RightImageUrlStyle", [], {});
     const backgroundImageUrl = getValue(
       "layout2BackgroundImageUrl",
       ["backgroundImage"],
@@ -348,10 +356,15 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       backgroundPosition: "center" as const,
       backgroundRepeat: "no-repeat" as const,
     };
+    const layout2SectionStyle = {
+      ...style,
+      paddingTop: "0px",
+      paddingBottom: "0px",
+    };
 
     return (
       <section
-        style={style}
+        style={layout2SectionStyle}
         className="w-full relative overflow-hidden bg-white cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-100 transition-all"
         onDoubleClick={() => onElementSelect?.("style")}
       >
@@ -363,8 +376,14 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 ...l2BgStyle,
                 paddingLeft: "20px",
                 paddingRight: "20px",
-                paddingTop: viewport === "mobile" ? "30px" : "60px",
-                paddingBottom: viewport === "mobile" ? "30px" : "60px",
+                paddingTop:
+                  viewport === "mobile"
+                    ? "var(--widget-mobile-padding-top)"
+                    : "60px",
+                paddingBottom:
+                  viewport === "mobile"
+                    ? "var(--widget-mobile-padding-bottom)"
+                    : "60px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -375,6 +394,7 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 onElementSelect?.("layout2BackgroundImageUrl");
               }}
             >
+              {/* 따옴표 + 타이틀 row */}
               <div
                 style={{
                   display: "flex",
@@ -385,43 +405,42 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 }}
               >
                 {/* Left Quote Icon */}
-                <div
-                  style={{
-                    width: "25px",
-                    height: "20px",
-                    flexShrink: 0,
-                    cursor: "pointer",
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("layout2LeftImageUrl");
-                  }}
-                >
-                  <UniversalMedia
-                    url={leftImage}
-                    className="w-full h-full"
+                {!leftImageStyle?.isHidden && (
+                  <div
                     style={{
-                      objectFit: "contain",
-                      width: "100%",
-                      height: "100%",
+                      width: "25px",
+                      height: "20px",
+                      flexShrink: 0,
+                      cursor: "pointer",
                     }}
-                    alt="Left Quote"
-                  />
-                </div>
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout2LeftImageUrl");
+                    }}
+                  >
+                    <UniversalMedia
+                      url={leftImage}
+                      className="w-full h-full"
+                      style={{
+                        objectFit: "contain",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                      alt="Left Quote"
+                    />
+                  </div>
+                )}
 
-                {/* Text Content */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flex: "1 0 0",
-                    alignItems: "center",
-                    textAlign: "center",
-                    lineHeight: 1.5,
-                    minWidth: 0,
-                  }}
-                >
-                  {!titleStyle?.isHidden && (
+                {/* 타이틀만 따옴표 안에 */}
+                {!titleStyle?.isHidden && (
+                  <div
+                    style={{
+                      flex: "1 0 0",
+                      textAlign: "center",
+                      lineHeight: 1.5,
+                      minWidth: 0,
+                    }}
+                  >
                     <SafeHtml
                       html={title}
                       className={`hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded cursor-text transition-all break-keep`}
@@ -439,130 +458,149 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                         onElementSelect?.("layout2Title");
                       }}
                     />
-                  )}
-                  {!subTitleStyle?.isHidden && (
-                    <SafeHtml
-                      html={subTitle}
-                      className={`hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded transition-all cursor-text break-keep`}
-                      style={{
-                        ...getElementStyle(subTitleStyle, viewport),
-                        fontFamily: "Pretendard, sans-serif",
-                        fontWeight: 500,
-                        letterSpacing: "-0.36px",
-                        lineHeight: 1.5,
-                        color: "#e6e8ea",
-                        backgroundColor: "transparent",
-                      }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        onElementSelect?.("layout2SubTitle");
-                      }}
-                    />
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Right Quote Icon */}
-                <div
+                {!rightImageStyle?.isHidden && (
+                  <div
+                    style={{
+                      width: "25px",
+                      height: "20px",
+                      flexShrink: 0,
+                      cursor: "pointer",
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout2RightImageUrl");
+                    }}
+                  >
+                    <UniversalMedia
+                      url={rightImage}
+                      className="w-full h-full"
+                      style={{
+                        objectFit: "contain",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                      alt="Right Quote"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* 서브타이틀 — 따옴표 바깥 아래 */}
+              {!subTitleStyle?.isHidden && (
+                <SafeHtml
+                  html={subTitle}
+                  className={`hover:outline-dashed hover:outline-2 hover:outline-blue-200 rounded transition-all cursor-text break-keep`}
                   style={{
-                    width: "25px",
-                    height: "20px",
-                    flexShrink: 0,
-                    cursor: "pointer",
+                    ...getElementStyle(subTitleStyle, viewport),
+                    fontFamily: "Pretendard, sans-serif",
+                    fontWeight: 500,
+                    letterSpacing: "-0.36px",
+                    lineHeight: 1.5,
+                    color: "#e6e8ea",
+                    backgroundColor: "transparent",
+                    textAlign: "center",
+                    marginTop: "12px",
                   }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
-                    onElementSelect?.("layout2RightImageUrl");
+                    onElementSelect?.("layout2SubTitle");
                   }}
-                >
-                  <UniversalMedia
-                    url={rightImage}
-                    className="w-full h-full"
-                    style={{
-                      objectFit: "contain",
-                      width: "100%",
-                      height: "100%",
-                    }}
-                    alt="Right Quote"
-                  />
-                </div>
-              </div>
+                />
+              )}
             </div>
           ) : (
             /* ── PC / Tablet Layout (unchanged) ── */
             <div
-              style={l2BgStyle}
+              style={{
+                ...l2BgStyle,
+                ...getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                  desktopTop: "112px",
+                  desktopBottom: "112px",
+                  tabletTop: "64px",
+                  tabletBottom: "64px",
+                }),
+              }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 onElementSelect?.("layout2BackgroundImageUrl");
               }}
-              className={`self-stretch ${getPaddingClass(viewport)} py-16 xl:py-28 inline-flex flex-col justify-start items-center gap-14 w-full`}
+              className={`self-stretch ${getPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-5 w-full`}
             >
-              <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-start gap-5 xl:gap-14 w-full xl:w-auto">
+              {/* 따옴표 + 타이틀 row */}
+              <div className="inline-flex flex-col xl:flex-row justify-start items-center xl:items-center gap-5 xl:gap-14 w-full xl:w-auto">
                 {/* Left Image Area Slot */}
-                <div
-                  className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-white/50"
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    onElementSelect?.("layout2LeftImageUrl");
-                  }}
-                >
-                  <UniversalMedia
-                    url={leftImage}
-                    className="w-full h-full object-contain"
-                    style={{ objectFit: "contain" }}
-                    alt="Left Content Image"
-                  />
-                </div>
+                {!leftImageStyle?.isHidden && (
+                  <div
+                    className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-white/50"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout2LeftImageUrl");
+                    }}
+                  >
+                    <UniversalMedia
+                      url={leftImage}
+                      className="w-full h-full object-contain"
+                      style={{ objectFit: "contain" }}
+                      alt="Left Content Image"
+                    />
+                  </div>
+                )}
 
-                <div className="inline-flex flex-col justify-start items-center text-center max-w-[800px]">
-                  {!titleStyle?.isHidden && (
-                    <div className="justify-start transition-all w-fit mx-auto">
-                      <SafeHtml
-                        html={title}
-                        className={`text-white text-2xl xl:text-4xl font-bold leading-relaxed break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-200 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
-                        style={{
-                          ...getElementStyle(titleStyle, viewport),
-                          backgroundColor: "transparent",
-                        }}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          onElementSelect?.("layout2Title");
-                        }}
-                      />
-                    </div>
-                  )}
-                  {!subTitleStyle?.isHidden && (
+                {!titleStyle?.isHidden && (
+                  <div className="justify-start transition-all w-fit mx-auto text-center max-w-[800px]">
                     <SafeHtml
-                      html={subTitle}
-                      className={`text-center justify-start text-white/90 text-lg xl:text-xl font-medium leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-200 ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-4 cursor-text break-keep`}
+                      html={title}
+                      className={`text-white text-2xl xl:text-4xl font-bold leading-relaxed break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-200 ${getBorderRadiusClass(viewport, "rounded")} cursor-text transition-all`}
                       style={{
-                        ...getElementStyle(subTitleStyle, viewport),
+                        ...getElementStyle(titleStyle, viewport),
                         backgroundColor: "transparent",
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        onElementSelect?.("layout2SubTitle");
+                        onElementSelect?.("layout2Title");
                       }}
                     />
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Right Image Area Slot */}
-                <div
-                  className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-white/50"
+                {!rightImageStyle?.isHidden && (
+                  <div
+                    className="hidden xl:block w-[50px] h-[50px] shrink-0 cursor-pointer transition-all hover:ring-2 hover:ring-white/50"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      onElementSelect?.("layout2RightImageUrl");
+                    }}
+                  >
+                    <UniversalMedia
+                      url={rightImage}
+                      className="w-full h-full object-contain"
+                      style={{ objectFit: "contain" }}
+                      alt="Right Content Image"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* 서브타이틀 — 따옴표 바깥 아래 */}
+              {!subTitleStyle?.isHidden && (
+                <SafeHtml
+                  html={subTitle}
+                  className={`text-center justify-start text-white/90 text-lg xl:text-xl font-medium leading-relaxed hover:outline-dashed hover:outline-2 hover:outline-blue-200 ${getBorderRadiusClass(viewport, "rounded")} transition-all mt-4 cursor-text break-keep`}
+                  style={{
+                    ...getElementStyle(subTitleStyle, viewport),
+                    backgroundColor: "transparent",
+                  }}
                   onDoubleClick={(e) => {
                     e.stopPropagation();
-                    onElementSelect?.("layout2RightImageUrl");
+                    onElementSelect?.("layout2SubTitle");
                   }}
-                >
-                  <UniversalMedia
-                    url={rightImage}
-                    className="w-full h-full object-contain"
-                    style={{ objectFit: "contain" }}
-                    alt="Right Content Image"
-                  />
-                </div>
-              </div>
+                />
+              )}
             </div>
           )}
         </div>
@@ -616,8 +654,8 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 ? {
                     paddingLeft: "20px",
                     paddingRight: "20px",
-                    paddingTop: "30px",
-                    paddingBottom: "30px",
+                    paddingTop: "var(--widget-mobile-padding-top)",
+                    paddingBottom: "var(--widget-mobile-padding-bottom)",
                     gap: "12px",
                   }
                 : undefined
@@ -737,8 +775,8 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
                 ? {
                     paddingLeft: "20px",
                     paddingRight: "20px",
-                    paddingTop: "30px",
-                    paddingBottom: "30px",
+                    paddingTop: "var(--widget-mobile-padding-top)",
+                    paddingBottom: "var(--widget-mobile-padding-bottom)",
                     gap: "0px",
                   }
                 : undefined
@@ -839,7 +877,15 @@ export const TitleTextRenderer: React.FC<WidgetRendererProps> = ({
       className={`w-full relative overflow-hidden group hover:ring-2 hover:ring-blue-500 transition-all ${!data.imageUrl && !data.videoUrl ? "bg-white" : ""}`}
     >
       <div
-        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport)} py-12 md:py-24 relative z-10`}
+        className={`mx-auto w-full max-w-[1920px] ${getPaddingClass(viewport)} relative z-10`}
+        style={getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+          desktopTop: "96px",
+          desktopBottom: "96px",
+          tabletTop: "96px",
+          tabletBottom: "96px",
+          mobileTop: "48px",
+          mobileBottom: "48px",
+        })}
       >
         <div
           className={`flex flex-col max-w-4xl mx-auto items-center text-center opacity-50 p-10 bg-시안-mode-gray10 ${getBorderRadiusClass(viewport, "rounded-xl")}`}

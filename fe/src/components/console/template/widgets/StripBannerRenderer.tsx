@@ -183,7 +183,7 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
           ? {
               flexDirection: "column",
               alignItems: "flex-start",
-              padding: "24px 20px",
+              padding: "30px 20px",
               gap: "8px",
               minHeight: "unset",
               borderRadius: 0,
@@ -347,8 +347,13 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
           }}
         >
           <div
-            className={`self-stretch ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-center items-center w-full`}
-            style={{ paddingLeft: 0, paddingRight: 0 }}
+            className={`self-stretch inline-flex flex-col justify-center items-center w-full`}
+            style={{
+              paddingLeft: 0,
+              paddingRight: 0,
+              paddingTop: "var(--widget-mobile-padding-top)",
+              paddingBottom: "var(--widget-mobile-padding-bottom)",
+            }}
           >
             <div
               className="overflow-hidden w-full"
@@ -980,27 +985,29 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
         >
           {/* Title bar */}
           {!titleStyleObj?.isHidden && (
-            <div
-              style={{
-                ...getBgStyle(titleStyleObj?.backgroundColor),
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: titlePadding,
-                borderRadius,
-              }}
-            >
+	            <div
+	              style={{
+	                ...getBgStyle(titleStyleObj?.backgroundColor),
+	                width: "100%",
+	                display: "flex",
+	                alignItems: "center",
+	                justifyContent: "center",
+	                padding: titlePadding,
+	                borderRadius,
+	                textAlign: "center",
+	              }}
+	            >
               <SafeHtml
                 html={titleText}
                 className="font-['Pretendard'] break-keep hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded p-1 cursor-text transition-all"
                 style={{
                   ...getElementStyle(titleStyleObj, viewport),
                   fontSize: titleFontSize,
-                  backgroundColor: "transparent",
-                  wordBreak: "keep-all",
-                  overflowWrap: "break-word",
-                }}
+	                  backgroundColor: "transparent",
+	                  wordBreak: "keep-all",
+	                  overflowWrap: "break-word",
+	                  textAlign: "center",
+	                }}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -1031,10 +1038,11 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 style={{
                   ...getElementStyle(subStyleObj, viewport),
                   fontSize: subFontSize,
-                  backgroundColor: "transparent",
-                  wordBreak: "keep-all",
-                  overflowWrap: "break-word",
-                }}
+	                  backgroundColor: "transparent",
+	                  wordBreak: "keep-all",
+	                  overflowWrap: "break-word",
+	                  textAlign: "center",
+	                }}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -1049,10 +1057,11 @@ export const StripBannerRenderer: React.FC<WidgetRendererProps> = ({
                 style={{
                   ...getElementStyle(mainStyleObj, viewport),
                   fontSize: mainFontSize,
-                  backgroundColor: "transparent",
-                  wordBreak: "keep-all",
-                  overflowWrap: "break-word",
-                }}
+	                  backgroundColor: "transparent",
+	                  wordBreak: "keep-all",
+	                  overflowWrap: "break-word",
+	                  textAlign: "center",
+	                }}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();

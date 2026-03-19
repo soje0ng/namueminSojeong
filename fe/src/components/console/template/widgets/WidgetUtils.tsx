@@ -14,14 +14,57 @@ export const formatUnit = (val: any, unit: string = "px") => {
   return val;
 };
 
+const getMobileCappedPaddingValue = (
+  val: any,
+  fallback: string = "30px",
+  max: number = 30,
+) => {
+  const formatted = formatUnit(val);
+
+  if (!formatted) return fallback;
+
+  const numeric = Number.parseFloat(String(formatted));
+  if (!Number.isFinite(numeric) || numeric <= max) {
+    return formatted;
+  }
+
+  const unitMatch = String(formatted).match(/[a-z%]+$/i);
+  const unit = unitMatch?.[0] || "px";
+  return `${max}${unit}`;
+};
+
 export const useWidgetStyle = (
   style?: WidgetStyle,
   viewport: "mobile" | "tablet" | "desktop" = "desktop",
 ) => {
   const isMobile = viewport === "mobile";
+  const hasExplicitPaddingTop =
+    style?.paddingTop !== undefined &&
+    style?.paddingTop !== null &&
+    String(style.paddingTop).trim() !== "";
+  const hasExplicitPaddingBottom =
+    style?.paddingBottom !== undefined &&
+    style?.paddingBottom !== null &&
+    String(style.paddingBottom).trim() !== "";
+  const mobilePaddingTop = hasExplicitPaddingTop
+    ? getMobileCappedPaddingValue(style?.paddingTop, "0px")
+    : "30px";
+  const mobilePaddingBottom = hasExplicitPaddingBottom
+    ? getMobileCappedPaddingValue(style?.paddingBottom, "0px")
+    : "30px";
   return {
-    paddingTop: isMobile ? "30px" : formatUnit(style?.paddingTop),
-    paddingBottom: isMobile ? "30px" : formatUnit(style?.paddingBottom),
+    "--widget-padding-top": hasExplicitPaddingTop
+      ? formatUnit(style?.paddingTop) || "0px"
+      : undefined,
+    "--widget-padding-bottom": hasExplicitPaddingBottom
+      ? formatUnit(style?.paddingBottom) || "0px"
+      : undefined,
+    "--widget-mobile-padding-top": mobilePaddingTop,
+    "--widget-mobile-padding-bottom": mobilePaddingBottom,
+    paddingTop: isMobile ? mobilePaddingTop : formatUnit(style?.paddingTop),
+    paddingBottom: isMobile
+      ? mobilePaddingBottom
+      : formatUnit(style?.paddingBottom),
     marginTop: formatUnit(style?.marginTop),
     marginBottom: formatUnit(style?.marginBottom),
     backgroundColor: style?.backgroundColor,
@@ -154,13 +197,13 @@ export const getImageUrl = (
 
   // 1. Mobile view: Only use srcMobile if it exists.
   if (viewport === "mobile") {
-    if (styleAny.srcMobile) return styleAny.srcMobile;
+    if (styleAny.srcMobile !== undefined && styleAny.srcMobile !== "") return styleAny.srcMobile;
     // Fallback to PC image if mobile image is not set
-    if (styleAny.src) return styleAny.src;
+    if (styleAny.src !== undefined && styleAny.src !== "") return styleAny.src;
   }
 
   // 2. Default/PC view: Use src if it exists, else defaultUrl
-  return styleAny.src || defaultUrl;
+  return styleAny.src !== undefined ? styleAny.src : defaultUrl;
 };
 
 /**
@@ -176,6 +219,63 @@ export const getPaddingClass = (
   return `px-5 md:px-10 ${desktopPadding}`.trim(); // Desktop (Responsive)
 };
 
+type WidgetVerticalPaddingFallbacks = {
+  desktopTop: string;
+  desktopBottom: string;
+  tabletTop?: string;
+  tabletBottom?: string;
+  mobileTop?: string;
+  mobileBottom?: string;
+};
+
+export const getWidgetVerticalPaddingStyle = (
+  style: WidgetStyle | undefined,
+  viewport: "mobile" | "tablet" | "desktop" = "desktop",
+  fallbacks: WidgetVerticalPaddingFallbacks = {
+    desktopTop: "56px",
+    desktopBottom: "56px",
+    tabletTop: "56px",
+    tabletBottom: "56px",
+    mobileTop: "30px",
+    mobileBottom: "30px",
+  },
+) => {
+  const hasExplicitPaddingTop =
+    style?.paddingTop !== undefined &&
+    style?.paddingTop !== null &&
+    String(style.paddingTop).trim() !== "";
+  const hasExplicitPaddingBottom =
+    style?.paddingBottom !== undefined &&
+    style?.paddingBottom !== null &&
+    String(style.paddingBottom).trim() !== "";
+
+  const fallbackTop =
+    viewport === "mobile"
+      ? fallbacks.mobileTop || "30px"
+      : viewport === "tablet"
+        ? fallbacks.tabletTop || fallbacks.desktopTop
+        : fallbacks.desktopTop;
+  const fallbackBottom =
+    viewport === "mobile"
+      ? fallbacks.mobileBottom || "30px"
+      : viewport === "tablet"
+        ? fallbacks.tabletBottom || fallbacks.desktopBottom
+        : fallbacks.desktopBottom;
+
+  return {
+    paddingTop: hasExplicitPaddingTop
+      ? viewport === "mobile"
+        ? getMobileCappedPaddingValue(style?.paddingTop, "0px")
+        : formatUnit(style?.paddingTop) || "0px"
+      : fallbackTop,
+    paddingBottom: hasExplicitPaddingBottom
+      ? viewport === "mobile"
+        ? getMobileCappedPaddingValue(style?.paddingBottom, "0px")
+        : formatUnit(style?.paddingBottom) || "0px"
+      : fallbackBottom,
+  } as React.CSSProperties;
+};
+
 /**
  * getVerticalPaddingClass helper to handle responsive vertical padding
  * Mobile: 30px, Tablet/Desktop: 56px (py-14) or similar
@@ -184,8 +284,30 @@ export const getVerticalPaddingClass = (
   viewport: string,
   desktopPadding: string = "py-14",
 ) => {
-  if (viewport === "mobile") return "py-[30px]";
-  return desktopPadding;
+  const nonMobilePaddingClassMap: Record<string, string> = {
+    "py-0":
+      "pt-[var(--widget-padding-top,0px)] pb-[var(--widget-padding-bottom,0px)]",
+    "py-12":
+      "pt-[var(--widget-padding-top,48px)] pb-[var(--widget-padding-bottom,48px)]",
+    "py-14":
+      "pt-[var(--widget-padding-top,56px)] pb-[var(--widget-padding-bottom,56px)]",
+    "py-16":
+      "pt-[var(--widget-padding-top,64px)] pb-[var(--widget-padding-bottom,64px)]",
+    "py-20":
+      "pt-[var(--widget-padding-top,80px)] pb-[var(--widget-padding-bottom,80px)]",
+    "py-24":
+      "pt-[var(--widget-padding-top,96px)] pb-[var(--widget-padding-bottom,96px)]",
+    "py-28":
+      "pt-[var(--widget-padding-top,112px)] pb-[var(--widget-padding-bottom,112px)]",
+    "py-[60px]":
+      "pt-[var(--widget-padding-top,60px)] pb-[var(--widget-padding-bottom,60px)]",
+  };
+
+  if (viewport === "mobile") {
+    return "pt-[var(--widget-mobile-padding-top)] pb-[var(--widget-mobile-padding-bottom)]";
+  }
+  return nonMobilePaddingClassMap[desktopPadding] ||
+    nonMobilePaddingClassMap["py-14"];
 };
 
 /**
@@ -422,11 +544,26 @@ export const UniversalMedia: React.FC<{
   onClick,
   onDoubleClick,
 }) => {
-  if (!url) return null;
+  const isEditor = !!onDoubleClick || !!onClick;
+
+  if (!url) {
+    if (isEditor) {
+      return (
+        <div
+          className="w-full h-full flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
+          style={style}
+          onDoubleClick={onDoubleClick}
+          onClick={onClick}
+        >
+          {mediaType === "video" ? "비디오 설정" : "이미지 설정"}
+        </div>
+      );
+    }
+    return null;
+  }
 
   const isVideo =
     mediaType === "video" || (mediaType !== "image" && isVideoUrl(url));
-  const isEditor = !!onDoubleClick || !!onClick;
 
   const renderMedia = () => {
     // Shared media styles for consistent object-fit and full-content scaling

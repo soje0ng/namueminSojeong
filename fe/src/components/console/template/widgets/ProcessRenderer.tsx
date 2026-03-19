@@ -158,7 +158,7 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
     textStyle: any,
     overrides: React.CSSProperties = {},
   ) => {
-    return {
+    const resolvedStyle = {
       ...getElementStyle(
         mergeTextStyleWithFallback(textStyle, {
           ...(role === "title"
@@ -177,14 +177,128 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
         }),
         viewport as any,
       ),
+    };
+
+    return {
+      ...resolvedStyle,
+      ...(role === "title"
+        ? {
+            display: "block",
+            textAlign: "center" as const,
+            width: "100%",
+          }
+        : {}),
       ...overrides,
     };
   };
+  const getProcessStepTextStyle = (
+    role:
+      | "stepTitle"
+      | "stepDesc"
+      | "stepNumber"
+      | "layout4Number"
+      | "stepLabel",
+    textStyle: any,
+    overrides: React.CSSProperties = {},
+  ) => {
+    const fallbackMap: Record<string, any> = {
+	      stepTitle: {
+	        fontSize: "24px",
+	        fontSizeMobile: "20px",
+	        fontWeight: "700",
+	        color: "#131416",
+      },
+      stepDesc: {
+        fontSize: "18px",
+        fontSizeMobile: "18px",
+        fontWeight: "400",
+        color: "#6D7882",
+      },
+      stepNumber: {
+        fontSize: "14px",
+        fontSizeMobile: "14px",
+        fontWeight: "700",
+        color: "#FFFFFF",
+      },
+      layout4Number: {
+        fontSize: "18px",
+        fontSizeMobile: "18px",
+        fontWeight: "700",
+      },
+      stepLabel: {
+        fontSize: "18px",
+        fontSizeMobile: "16px",
+        fontWeight: "500",
+        color: "#6D7882",
+      },
+    };
+
+    const resolvedStyle = {
+      ...getElementStyle(
+        mergeTextStyleWithFallback(textStyle, fallbackMap[role] || {}),
+        viewport as any,
+      ),
+    };
+    const {
+      borderColor: _borderColor,
+      borderWidth: _borderWidth,
+      borderStyle: _borderStyle,
+      borderRadius: _borderRadius,
+      boxShadow: _boxShadow,
+      backgroundImage: _backgroundImage,
+      backgroundSize: _backgroundSize,
+      backgroundPosition: _backgroundPosition,
+      backgroundRepeat: _backgroundRepeat,
+      ...stepLabelTextStyle
+    } = resolvedStyle;
+
+    return {
+      ...(role === "stepLabel" ? stepLabelTextStyle : resolvedStyle),
+	      ...(role === "stepLabel"
+	        ? {
+	            backgroundColor: "transparent" as const,
+	            display: "block" as const,
+	            width: "100%",
+	            whiteSpace: "pre-wrap" as const,
+	            overflowWrap: "anywhere" as const,
+	            wordBreak: "break-word" as const,
+	          }
+	        : {}),
+      ...overrides,
+    };
+  };
+	const getProcessStepLabelContainerStyle = (
+	  textStyle: any,
+	  overrides: React.CSSProperties = {},
+	) => {
+	  const resolvedStyle = getElementStyle(
+	    mergeTextStyleWithFallback(textStyle, {
+	      backgroundColor: "#f6f7fb",
+	    }),
+	    viewport as any,
+	  ) as React.CSSProperties;
+
+	  return {
+	    backgroundColor: resolvedStyle.backgroundColor || "#f6f7fb",
+	    backgroundImage: resolvedStyle.backgroundImage,
+	    backgroundSize: resolvedStyle.backgroundSize,
+	    backgroundPosition: resolvedStyle.backgroundPosition,
+	    backgroundRepeat: resolvedStyle.backgroundRepeat,
+	    borderColor: resolvedStyle.borderColor,
+	    borderWidth: resolvedStyle.borderWidth,
+	    borderStyle: resolvedStyle.borderStyle,
+	    borderRadius: resolvedStyle.borderRadius,
+	    boxShadow: resolvedStyle.boxShadow,
+	    opacity: resolvedStyle.opacity,
+	    ...overrides,
+	  };
+	};
   const isLayout1 =
     (layout === "1" || layout === "layout1" || typeStr === "processCard") &&
     typeStr !== "comparisonCard";
   const isLayout2 = layout === "2" || layout === "layout2";
   const isLayout3 = layout === "3" || layout === "layout3";
+  const isLayout4 = layout === "4" || layout === "layout4";
   const isComparisonCard =
     typeStr === "comparisonCard" && (layout === "1" || layout === "layout1");
   const containerPaddingClass = getPaddingClass(viewport);
@@ -444,8 +558,8 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       className="w-24 h-24 relative bg-시안-mode-gray5 rounded-[80px] flex justify-center items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden"
                       style={{
                         display: step.iconStyle?.isHidden ? "none" : undefined,
-                        width: "96px",
-                        height: "96px",
+                        width: viewport === "mobile" ? "96px" : "160px",
+                        height: viewport === "mobile" ? "96px" : "160px",
                       }}
                     >
                       <UniversalMedia
@@ -465,10 +579,12 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                         <div className="flex-1 h-px bg-zinc-300"></div>
                         {!step.numberStyle?.isHidden && (
                           <div
-                            className="px-4 py-1 rounded-[30px] flex justify-center items-center gap-2.5"
+                            className="px-4 py-1 rounded-[30px] flex justify-center items-center gap-2.5 overflow-hidden flex-shrink-0"
                             style={{
                               backgroundColor:
                                 step.numberStyle?.backgroundColor || "#285DE1",
+                              maxWidth: viewport === "mobile" ? "80px" : "120px",
+                              minWidth: 0,
                               ...getElementStyle(
                                 step.numberStyle,
                                 viewport as any,
@@ -476,8 +592,12 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                             }}
                           >
                             <SafeHtml
-                              html={step.number || `${idx + 1}`}
-                              className="justify-start text-white text-base font-bold font-['Pretendard'] leading-6 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text min-w-6 text-center"
+                              html={(step.number || `${idx + 1}`).toString().slice(0, 10)}
+                              className="justify-center text-white text-base font-bold font-['Pretendard'] leading-6 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text truncate whitespace-nowrap block w-full text-center"
+                              style={{
+                                minWidth: 0,
+                                flexShrink: 0,
+                              }}
                               onDoubleClick={(e) => {
                                 e.stopPropagation();
                                 onElementSelect?.("number", step.id);
@@ -682,6 +802,490 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
     );
   }
 
+  if (isLayout4) {
+    return (
+      <section
+        style={{
+          ...style,
+          backgroundColor: "transparent",
+          backgroundImage: "none",
+        }}
+        className="w-full h-auto"
+      >
+        <div className="mx-auto w-full max-w-[1920px]">
+          <div
+            style={{
+              backgroundColor: style?.backgroundColor || "#FFFFFF",
+              backgroundImage: style?.backgroundImage || "none",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+            className={`self-stretch ${containerPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-6" : "gap-10"} w-full transition-all cursor-pointer hover:outline-dashed hover:outline-2 hover:outline-blue-400`}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              onElementSelect?.("style");
+            }}
+          >
+            {/* 1. Header Area: 3-tier */}
+            <div className="flex flex-col justify-start items-center">
+              {!data.subTitleStyle?.isHidden && (
+                <SafeHtml
+                  html={data.subTitle || "( 서브타이틀 )"}
+                  className="text-center justify-start text-[#285DE1] font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={getProcessRootTextStyle(
+                    "subTitle",
+                    data.subTitleStyle,
+                  )}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("subTitle");
+                  }}
+                />
+              )}
+              {!data.titleStyle?.isHidden && (
+                <SafeHtml
+                  html={data.title || "타이틀명 입력"}
+                  className="justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={getProcessRootTextStyle("title", data.titleStyle)}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("title");
+                  }}
+                />
+              )}
+              {!(data as any).descStyle?.isHidden && (
+                <SafeHtml
+                  html={(data as any).desc || "이민 프로그램명 입력"}
+                  className="text-center justify-start text-시안-mode-gray50 font-medium font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+                  style={getProcessRootTextStyle(
+                    "desc",
+                    (data as any).descStyle,
+                  )}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onElementSelect?.("desc");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* 2. Body Area: Steps Grid Layout 4 */}
+            <div
+              className={`self-stretch w-full grid ${viewport === "mobile" ? "grid-cols-1 gap-3" : `${processGridColsClass} gap-6`}`}
+            >
+              {(data.steps || (data as any).items || []).map(
+                (step: any, idx: number) => {
+                  const ringColor =
+                    step.numberStyle?.backgroundColor || "#285DE1";
+                  const isLayout4Mobile = viewport === "mobile";
+                  const layout4Items: Array<{
+                    id: string;
+                    number: string;
+                    text: string;
+                  }> = step.layout4Items || [
+                    {
+                      id: "l4i-1",
+                      number: "01",
+                      text: "체계적인 절차에 따라 업무를 수행합니다.",
+                    },
+                  ];
+                  const showLayout4Number = !step.layout4NumberStyle?.isHidden;
+                  const showLayout4Text = !step.descStyle?.isHidden;
+                  const showLayout4Items = showLayout4Number || showLayout4Text;
+
+                  const stepsArr = data.steps || (data as any).items || [];
+                  const isLastItem = idx === stepsArr.length - 1;
+                  const currentCols = viewport === "desktop" ? pcCols : 2;
+                  const isLastInRow = !isLayout4Mobile && (idx + 1) % currentCols === 0;
+
+                  return (
+                    <div
+                      key={step.id || idx}
+                      className={`self-stretch bg-white border border-시안-mode-gray10 flex ${isLayout4Mobile ? "flex-row flex-wrap items-start gap-4 p-4 overflow-hidden" : "flex-col items-center p-6 overflow-visible"} relative break-words`}
+                    >
+                      {/* Arrow Between Cards (Desktop/Tablet) */}
+                      {!isLayout4Mobile && !isLastInRow && !isLastItem && (
+                        <div
+                          className="absolute z-20 w-12 h-12 bg-white rounded-full shadow-lg border border-zinc-200 flex justify-center items-center pointer-events-none"
+                          style={{
+                            top: "50%",
+                            right: "-40px",
+                            transform: "translateY(-50%)",
+                          }}
+                        >
+                          <ChevronRight size={32} className="text-blue-500 stroke-[3px]" />
+                        </div>
+                      )}
+
+                      {/* Icon: 원형 + 컬러 링 */}
+                      {!step.iconStyle?.isHidden && (
+                        <div
+                          className="rounded-full flex justify-center items-center hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer overflow-hidden"
+                          style={{
+                            width: isLayout4Mobile ? "80px" : "160px",
+                            height: isLayout4Mobile ? "80px" : "160px",
+                            border: `3px solid ${ringColor}`,
+                            flexShrink: 0,
+                          }}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("icon", step.id);
+                          }}
+                        >
+                          <UniversalMedia
+                            url={
+                              step.icon ||
+                              "/images/placeholder/step_consult.jpg"
+                            }
+                            className="w-full h-full object-contain"
+                            alt="step icon"
+                            style={getLayout2StepMediaStyle(step.iconStyle)}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("icon", step.id);
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      <div
+                        className={`${isLayout4Mobile ? "min-w-0 flex-1 flex flex-col items-start" : "w-full min-w-0 flex flex-col items-center"}`}
+                      >
+                        {isLayout4Mobile ? (
+                          <>
+                            <div className="w-full flex items-center gap-2 min-w-0">
+                              {!step.numberStyle?.isHidden && (
+                                <div
+                                  className="px-3 py-0.5 rounded-[30px] flex justify-center items-center flex-shrink-0 overflow-hidden"
+                                  style={{
+                                    backgroundColor: ringColor,
+                                    maxWidth: "80px",
+                                    minWidth: 0,
+                                  }}
+                                >
+                                  <SafeHtml
+                                    html={
+                                      (step.number ||
+                                      `${(idx + 1).toString().padStart(2, "0")}`).toString().slice(0, 10)
+                                    }
+                                    className="text-white text-sm font-bold font-['Pretendard'] leading-6 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text truncate whitespace-nowrap block w-full text-center"
+                                    style={{
+                                      minWidth: 0,
+                                      flexShrink: 0,
+                                      ...getElementStyle(
+                                        step.numberStyle,
+                                        viewport as any,
+                                      ),
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onElementSelect?.("number", step.id);
+                                    }}
+                                    onDoubleClick={(e) => {
+                                      e.stopPropagation();
+                                      onElementSelect?.("number", step.id);
+                                    }}
+                                  />
+                                </div>
+                              )}
+	                              {!step.titleStyle?.isHidden && (
+	                                <SafeHtml
+	                                  html={step.title || "과정명 입력"}
+	                                  className="min-w-0 flex-1 text-left justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
+	                                  style={getProcessStepTextStyle(
+	                                    "stepTitle",
+	                                    step.titleStyle,
+	                                    {
+	                                      lineHeight:
+	                                        step.titleStyle?.lineHeight ||
+	                                        (viewport === "mobile" ? "28px" : "32px"),
+	                                    },
+	                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.("stepTitle", step.id);
+                                  }}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.("stepTitle", step.id);
+                                  }}
+                                />
+                              )}
+                            </div>
+
+                            {showLayout4Items && (
+                              <div
+                                className="w-full mt-2 flex flex-col gap-1"
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.(
+                                    "layout4Item",
+                                    `${step.id}::${layout4Items[0]?.id || "l4i-1"}`,
+                                  );
+                                }}
+                              >
+                                {layout4Items.map(
+                                  (
+                                    item: {
+                                      id: string;
+                                      number: string;
+                                      text: string;
+                                    },
+                                  ) => (
+                                    <div
+                                      key={item.id}
+                                      className="flex items-start gap-2 rounded transition-all w-full min-w-0"
+                                      onDoubleClick={(e) => {
+                                        e.stopPropagation();
+                                        onElementSelect?.(
+                                          "layout4Item",
+                                          `${step.id}::${item.id}`,
+                                        );
+                                      }}
+                                    >
+                                      {showLayout4Number && (
+                                        <span
+                                          className="font-bold font-['Pretendard'] shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-pointer px-0.5"
+                                          style={getProcessStepTextStyle(
+                                            "layout4Number",
+                                            step.layout4NumberStyle,
+                                            {
+                                              color: ringColor,
+                                              fontWeight:
+                                                step.layout4NumberStyle?.fontWeight ||
+                                                "700",
+                                            },
+                                          )}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            onElementSelect?.(
+                                              "layout4Number",
+                                              `${step.id}::${item.id}`,
+                                            );
+                                          }}
+                                        >
+                                          {item.number}
+                                        </span>
+                                      )}
+                                      {showLayout4Text && (
+                                        <SafeHtml
+                                          html={item.text}
+                                          className="min-w-0 flex-1 text-시안-mode-gray70 font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-pointer break-all"
+                                          style={getProcessStepTextStyle(
+                                            "stepDesc",
+                                            step.descStyle,
+                                          )}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            onElementSelect?.(
+                                              "layout4Text",
+                                              `${step.id}::${item.id}`,
+                                            );
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  ),
+                                )}
+                              </div>
+                            )}
+
+                          </>
+                        ) : (
+                          <>
+                            {/* STEP 배지 */}
+                            {!step.numberStyle?.isHidden && (
+                              <div
+                                className="mt-3 px-4 py-1 rounded-[30px] flex justify-center items-center flex-shrink-0 overflow-hidden"
+                                style={{
+                                  backgroundColor: ringColor,
+                                  maxWidth: "120px",
+                                  minWidth: 0,
+                                }}
+                              >
+                                <SafeHtml
+                                  html={
+                                    (step.number ||
+                                    `STEP ${(idx + 1).toString().padStart(2, "0")}`).toString().slice(0, 10)
+                                  }
+                                  className="text-white text-sm font-bold font-['Pretendard'] leading-6 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text truncate whitespace-nowrap block w-full text-center"
+                                    style={{
+                                      minWidth: 0,
+                                      flexShrink: 0,
+                                      ...getProcessStepTextStyle(
+                                        "stepNumber",
+                                        step.numberStyle,
+                                      ),
+                                    }}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.("number", step.id);
+                                  }}
+                                />
+                              </div>
+                            )}
+
+                            {/* 타이틀 */}
+	                            {!step.titleStyle?.isHidden && (
+	                              <SafeHtml
+	                                html={step.title || "과정명 입력"}
+	                                className="mt-4 text-center justify-start text-시안-mode-gray95 font-bold font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep w-full"
+	                                  style={getProcessStepTextStyle(
+	                                    "stepTitle",
+	                                    step.titleStyle,
+	                                    {
+	                                      lineHeight:
+	                                        step.titleStyle?.lineHeight || "32px",
+	                                    },
+	                                  )}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.("stepTitle", step.id);
+                                }}
+                              />
+                            )}
+
+                            {/* 번호 리스트 (layout4Items) */}
+                            {showLayout4Items && (
+                              <div
+                                className="w-full flex flex-col mt-5 gap-2"
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  onElementSelect?.(
+                                    "layout4Item",
+                                    `${step.id}::${layout4Items[0]?.id || "l4i-1"}`,
+                                  );
+                                }}
+                              >
+                                {layout4Items.map(
+                                  (
+                                    item: {
+                                      id: string;
+                                      number: string;
+                                      text: string;
+                                    },
+                                  ) => (
+                                    <div
+                                      key={item.id}
+                                      className="flex items-start gap-2 rounded transition-all p-1 w-full min-w-0"
+                                      onDoubleClick={(e) => {
+                                        e.stopPropagation();
+                                        onElementSelect?.(
+                                          "layout4Item",
+                                          `${step.id}::${item.id}`,
+                                        );
+                                      }}
+                                    >
+                                      {showLayout4Number && (
+                                        <span
+                                          className="font-bold font-['Pretendard'] shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-pointer px-0.5"
+                                          style={getProcessStepTextStyle(
+                                            "layout4Number",
+                                            step.layout4NumberStyle,
+                                            {
+                                              color: ringColor,
+                                              fontWeight:
+                                                step.layout4NumberStyle?.fontWeight ||
+                                                "700",
+                                            },
+                                          )}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            onElementSelect?.(
+                                              "layout4Number",
+                                              `${step.id}::${item.id}`,
+                                            );
+                                          }}
+                                        >
+                                          {item.number}
+                                        </span>
+                                      )}
+                                      {showLayout4Text && (
+                                        <SafeHtml
+                                          html={item.text}
+                                          className="min-w-0 flex-1 text-시안-mode-gray70 font-['Pretendard'] leading-7 hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded cursor-pointer break-all"
+                                          style={getProcessStepTextStyle(
+                                            "stepDesc",
+                                            step.descStyle,
+                                          )}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            onElementSelect?.(
+                                              "layout4Text",
+                                              `${step.id}::${item.id}`,
+                                            );
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  ),
+                                )}
+                              </div>
+                            )}
+
+                            {/* 하단 주의사항 (label) */}
+                            {(step.label || onElementSelect) && (
+                                <div
+                                  className="w-full mt-5 p-4 bg-시안-mode-gray5 rounded hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all overflow-hidden break-words"
+                                  style={getProcessStepLabelContainerStyle(
+                                    step.labelStyle,
+                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.("stepLabel", step.id);
+                                  }}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    onElementSelect?.("stepLabel", step.id);
+                                  }}
+                                >
+                                  <SafeHtml
+                                    html={`※ ${step.label || "안내 문구"}`}
+                                    className="font-['Pretendard'] break-words whitespace-pre-wrap w-full block"
+                                    style={getProcessStepTextStyle(
+                                      "stepLabel",
+                                      step.labelStyle,
+                                    )}
+                                  />
+                                </div>
+                              )}
+                          </>
+                        )}
+                      </div>
+
+                      {/* 모바일: label을 카드 전체 너비로 표시 */}
+                      {isLayout4Mobile && (step.label || onElementSelect) && (
+                        <div
+                          className="w-full mt-3 p-3 bg-시안-mode-gray5 rounded hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-text transition-all overflow-hidden break-words"
+                          style={getProcessStepLabelContainerStyle(
+                            step.labelStyle,
+                          )}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            onElementSelect?.("stepLabel", step.id);
+                          }}
+                        >
+                          <SafeHtml
+                            html={step.label || "안내 문구 입력"}
+	                            className="font-['Pretendard'] break-words whitespace-pre-wrap w-full block"
+	                            style={getProcessStepTextStyle(
+	                              "stepLabel",
+	                              step.labelStyle,
+	                            )}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                },
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (isLayout1) {
     return (
       <section
@@ -784,11 +1388,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                       className="w-full grid items-start"
                       style={{
                         gridTemplateColumns: Array.from({
-                          length: isDesktopViewport ? rowSteps.length : visibleCols,
+                          length: visibleCols,
                         })
                           .flatMap((_, columnIdx) =>
-                            columnIdx ===
-                            (isDesktopViewport ? rowSteps.length : visibleCols) - 1
+                            columnIdx === visibleCols - 1
                               ? ["minmax(0,1fr)"]
                               : ["minmax(0,1fr)", `${arrowSlotWidth}px`],
                           )
@@ -833,21 +1436,25 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                               >
                                 {!step.numberStyle?.isHidden && (
                                   <div
-                                    className={`px-4 ${viewport === "mobile" ? "py-0" : "py-1"} rounded-[30px] flex justify-center items-center gap-2.5`}
+                                    className={`px-4 ${viewport === "mobile" ? "py-0" : "py-1"} rounded-[30px] flex justify-center items-center gap-2.5 overflow-hidden flex-shrink-0`}
                                     style={{
                                       backgroundColor:
                                         step.numberStyle?.backgroundColor ||
                                         "#285DE1",
+                                      maxWidth: viewport === "mobile" ? "80px" : "120px",
+                                      minWidth: 0,
                                     }}
                                   >
                                     <SafeHtml
-                                      html={step.number || `${globalIdx + 1}`}
-                                      className="justify-start font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text"
+                                      html={(step.number || `${globalIdx + 1}`).toString().slice(0, 10)}
+                                      className="justify-center font-['Pretendard'] leading-8 hover:outline-dashed hover:outline-2 hover:outline-white/50 rounded transition-all cursor-text truncate whitespace-nowrap block w-full text-center"
                                       style={{
                                         color:
                                           step.numberStyle?.color || "#ffffff",
                                         fontWeight:
                                           step.numberStyle?.fontWeight || "700",
+                                        minWidth: 0,
+                                        flexShrink: 0,
                                         ...getElementStyle(
                                           mergeTextStyleWithFallback(
                                             step.numberStyle,
@@ -1142,6 +1749,10 @@ export const ProcessRenderer: React.FC<WidgetRendererProps> = ({
                               step.labelStyle,
                               viewport as any,
                             )}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.("stepLabel", step.id);
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               onElementSelect?.("stepLabel", step.id);

@@ -10,6 +10,7 @@ import {
   UniversalMedia,
   getPaddingClass,
   getVerticalPaddingClass,
+  getWidgetVerticalPaddingStyle,
   isVideoUrl,
 } from "./WidgetUtils";
 import {
@@ -69,6 +70,17 @@ const mergeWithOpacity = (
   if (!base) return opacityStyle;
   if (!opacityStyle) return base;
   return { ...base, ...opacityStyle };
+};
+
+const isZeroDimensionValue = (value: any) => {
+  if (value === undefined || value === null || value === "") return false;
+  if (typeof value === "number") return value === 0;
+
+  const normalized = String(value).trim().toLowerCase();
+  if (!normalized) return false;
+
+  const parsed = Number.parseFloat(normalized);
+  return !Number.isNaN(parsed) && parsed === 0;
 };
 
 const getTextStructureBannerMediaProps = (
@@ -665,7 +677,7 @@ export const TEXT_STRUCTURE_10_DEFAULT_SECTIONS = [
     title: "프로그램 특징",
     titleStyle: { fontSize: "28px", fontSizeMobile: "20px", fontWeight: "700", color: "#060606" },
     iconUrl: "/images/placeholder/textcard10.png",
-    imageStyle: { width: "200px", height: "200px", objectFit: "cover" },
+    imageStyle: { objectFit: "contain" },
     subTitle: "서브 타이틀 입력",
     subTitleStyle: {
       isHidden: false,
@@ -778,7 +790,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
             style={
               viewport === "tablet"
-                ? { paddingLeft: "40px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px", gap: "40px" }
+                ? { paddingLeft: "40px", paddingRight: "40px", gap: "40px" }
                 : viewport === "mobile"
                   ? { gap: "40px" }
                   : undefined
@@ -842,7 +854,20 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
 
             {/* 카드 리스트 */}
             <div className="self-stretch flex flex-col justify-start items-center w-full border-t border-[#131416]">
-              {sections10.map((section: any, i: number) => (
+              {sections10.map((section: any, i: number) => {
+                const resolvedSectionImageStyle = {
+                  ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]?.imageStyle || {}),
+                  ...(section.iconUrlStyle || {}),
+                  ...(section.imageStyle || {}),
+                };
+                const resolvedSectionCheckIconStyle = {
+                  ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]?.checkIconStyle ||
+                    {}),
+                  ...(section.checkIconUrlStyle || {}),
+                  ...(section.checkIconStyle || {}),
+                };
+
+                return (
                 <div
                   key={section.id}
                   className="self-stretch py-10 bg-white border-b border-[#E6E8EA] flex flex-col xl:flex-row justify-center items-start gap-6 w-full group/card relative hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all"
@@ -881,9 +906,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           style={{
                             ...getElementStyle(
                               {
-                                fontSizeMobile: "20px",
                                 ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
                                   ?.numberStyle || {}),
+                                fontSizeMobile: "20px",
                                 ...(section.numberStyle || {}),
                               },
                               viewport,
@@ -917,9 +942,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           style={{
                             ...getElementStyle(
                               {
-                                fontSizeMobile: "20px",
                                 ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
                                   ?.titleStyle || {}),
+                                fontSizeMobile: "20px",
                                 ...(section.titleStyle || {}),
                               },
                               viewport,
@@ -938,9 +963,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         />
                       )}
                     </div>
-                    {!section.iconUrlStyle?.isHidden && (
+                    {!resolvedSectionImageStyle.isHidden && (
                       <div
-                        className="w-[200px] h-[200px] shrink-0 relative flex justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer"
+                        className="w-[200px] shrink-0 relative flex justify-center items-center overflow-hidden hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-pointer h-auto self-start"
                         style={mobileImageRadiusStyle}
                       >
                         <UniversalMedia
@@ -948,17 +973,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             section.iconUrl ||
                             "/images/placeholder/textcard10.png"
                           }
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto block"
                           alt="card image"
                           style={{
-                            ...getElementStyle(
-                              {
-                                ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
-                                  ?.imageStyle || {}),
-                                ...(section.imageStyle || {}),
-                              },
-                              viewport,
-                            ),
+                            ...getElementStyle(resolvedSectionImageStyle, viewport),
+                            width: "200px",
+                            height: "auto",
+                            minHeight: "initial",
+                            maxHeight: "initial",
+                            objectFit: "initial",
                             ...mobileImageRadiusStyle,
                           }}
                           onDoubleClick={(e) => {
@@ -992,9 +1015,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         style={{
                           ...getElementStyle(
                             {
-                              fontSizeMobile: "20px",
                               ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
                                 ?.subTitleStyle || {}),
+                              fontSizeMobile: "20px",
                               ...(section.subTitleStyle || {}),
                             },
                             viewport,
@@ -1025,9 +1048,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                         style={{
                           ...getElementStyle(
                             {
-                              fontSizeMobile: "18px",
                               ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
                                 ?.descStyle || {}),
+                              fontSizeMobile: "18px",
                               ...(section.descStyle || {}),
                             },
                             viewport,
@@ -1058,7 +1081,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           );
                         }}
                       >
-                        {!section.checkIconUrlStyle?.isHidden && (
+                        {!resolvedSectionCheckIconStyle.isHidden && (
                           <UniversalMedia
                             url={
                               section.checkIconUrl ||
@@ -1067,11 +1090,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             className="w-6 h-6 object-contain"
                             alt="check icon"
                             style={getElementStyle(
-                              {
-                                ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
-                                  ?.checkIconStyle || {}),
-                                ...(section.checkIconStyle || {}),
-                              },
+                              resolvedSectionCheckIconStyle,
                               viewport,
                             )}
                             onDoubleClick={(e) => {
@@ -1089,9 +1108,9 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                           style={{
                             ...getElementStyle(
                               {
-                                fontSizeMobile: "18px",
                                 ...(TEXT_STRUCTURE_10_DEFAULT_SECTIONS[i]
                                   ?.checkTitleStyle || {}),
+                                fontSizeMobile: "18px",
                                 ...(section.checkTitleStyle || {}),
                               },
                               viewport,
@@ -1135,7 +1154,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -1151,7 +1171,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 pt-[var(--widget-mobile-padding-top)] pb-[var(--widget-mobile-padding-bottom)]" : viewport === "tablet" ? "px-[40px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+            style={
+              viewport === "tablet"
+                ? getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                    desktopTop: "56px",
+                    desktopBottom: "56px",
+                    tabletTop: "60px",
+                    tabletBottom: "60px",
+                  })
+                : undefined
+            }
           >
             <div
               className={`self-stretch flex flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"} justify-start items-center gap-10 xl:gap-20 w-full`}
@@ -1391,7 +1421,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingWideClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-[24px]" : viewport === "tablet" ? "gap-[40px]" : "gap-10"} w-full hover:ring-2 hover:ring-transparent transition-all`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 pt-[var(--widget-mobile-padding-top)] pb-[var(--widget-mobile-padding-bottom)]" : viewport === "tablet" ? "px-[40px]" : `${sectionPaddingWideClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center ${viewport === "mobile" ? "gap-[24px]" : viewport === "tablet" ? "gap-[40px]" : "gap-10"} w-full hover:ring-2 hover:ring-transparent transition-all`}
+            style={
+              viewport === "tablet"
+                ? getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                    desktopTop: "56px",
+                    desktopBottom: "56px",
+                    tabletTop: "60px",
+                    tabletBottom: "60px",
+                  })
+                : undefined
+            }
           >
             {/* Top Common Header Area */}
             <div
@@ -1589,7 +1629,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} py-0`} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 pt-[var(--widget-mobile-padding-top)] pb-[var(--widget-mobile-padding-bottom)]" : viewport === "tablet" ? "px-[40px]" : `${sectionPaddingClass} py-0`} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            style={
+              viewport === "tablet"
+                ? getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                    desktopTop: "0px",
+                    desktopBottom: "0px",
+                    tabletTop: "60px",
+                    tabletBottom: "60px",
+                  })
+                : undefined
+            }
           >
             {/* 글로벌 헤더 */}
             <div
@@ -1616,7 +1666,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                 <TextStructureSafeHtml
                   html={data.title || "타이틀명 입력"}
                   className="justify-start text-[#131416] text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
-                  style={getElementStyle(data.titleStyle, viewport)}
+                  style={{
+                    ...getElementStyle(data.titleStyle, viewport),
+                    textAlign: "center",
+                    width: "100%",
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     onElementSelect?.("title");
@@ -1653,6 +1707,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
               const isL4CheckIconHidden = Boolean(
                 (data as any).l4CheckIconUrlStyle?.isHidden,
               );
+              const resolvedLogoStyle = getElementStyle(
+                c.logoStyle,
+                viewport,
+              ) as React.CSSProperties;
+              const hasVisibleLogoGrid =
+                !c.logoStyle?.isHidden &&
+                (c.avatars || []).length > 0 &&
+                !isZeroDimensionValue(resolvedLogoStyle.width) &&
+                !isZeroDimensionValue(resolvedLogoStyle.height);
               return (
                 <div
                   key={c.id || i}
@@ -1704,7 +1767,11 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   <div
                     className={`flex-1 ${
                       imageOnRight ? "xl:pr-14 xl:pl-5" : "xl:pl-14 xl:pr-5"
-                    } py-10 xl:py-0 inline-flex flex-col justify-start items-start gap-10 w-full`}
+                    } py-10 xl:py-0 inline-flex flex-col ${
+                      !hasVisibleLogoGrid && viewport === "desktop"
+                        ? "justify-center"
+                        : "justify-start"
+                    } items-start gap-10 w-full`}
                     style={
                       viewport === "mobile"
                         ? { padding: "0", gap: "12px" }
@@ -1719,6 +1786,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       style={
                         viewport === "mobile" || viewport === "tablet"
                           ? { paddingTop: "0" }
+                          : !hasVisibleLogoGrid
+                            ? { paddingTop: "0" }
                           : undefined
                       }
                     >
@@ -1852,56 +1921,58 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     </div>
 
                     {/* 로고 그리드 (동적 폭) */}
-                    <div
-                      className={`self-stretch w-full grid gap-3 ${
-                        (c.avatars || []).length === 1
-                          ? "grid-cols-1"
-                          : (c.avatars || []).length === 2
-                            ? "grid-cols-2"
-                            : (c.avatars || []).length === 3
-                              ? "grid-cols-3"
-                              : "grid-cols-2 md:grid-cols-4"
-                      } group/logo relative hover:outline-dashed hover:outline-2 hover:outline-blue-300 rounded cursor-pointer p-1 transition-all`}
-                      style={viewport === "mobile" ? { gap: "8px" } : undefined}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      {(c.avatars || []).map((avatar: string, aIdx: number) => (
-                        <div
-                          key={aIdx}
-                          className="w-full flex justify-center items-center p-6 bg-white/50 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#20202020] hover:outline-dashed hover:outline-2 hover:outline-blue-300 cursor-pointer transition-all min-h-[120px]"
-                          style={
-                            viewport === "mobile"
-                              ? {
-                                  padding: "8px",
-                                  borderRadius: "8px",
-                                  minHeight: "unset",
-                                }
-                              : undefined
-                          }
-                          onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            onElementSelect?.(
-                              "caseLogoUrl",
-                              `${c.id || i.toString()}:${aIdx}`,
-                            );
-                          }}
-                        >
-                          <img
-                            className="object-contain"
-                            style={{
-                              ...getElementStyle(c.logoStyle, viewport),
-                              width: "100%",
-                              maxWidth: "140px",
-                              maxHeight: "140px",
+                    {hasVisibleLogoGrid && (
+                      <div
+                        className={`self-stretch w-full grid gap-3 ${
+                          (c.avatars || []).length === 1
+                            ? "grid-cols-1"
+                            : (c.avatars || []).length === 2
+                              ? "grid-cols-2"
+                              : (c.avatars || []).length === 3
+                                ? "grid-cols-3"
+                                : "grid-cols-2 md:grid-cols-4"
+                        } group/logo relative hover:outline-dashed hover:outline-2 hover:outline-blue-300 rounded cursor-pointer p-1 transition-all`}
+                        style={viewport === "mobile" ? { gap: "8px" } : undefined}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        {(c.avatars || []).map((avatar: string, aIdx: number) => (
+                          <div
+                            key={aIdx}
+                            className="w-full flex justify-center items-center p-6 bg-white/50 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#20202020] hover:outline-dashed hover:outline-2 hover:outline-blue-300 cursor-pointer transition-all min-h-[120px]"
+                            style={
+                              viewport === "mobile"
+                                ? {
+                                    padding: "8px",
+                                    borderRadius: "8px",
+                                    minHeight: "unset",
+                                  }
+                                : undefined
+                            }
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              onElementSelect?.(
+                                "caseLogoUrl",
+                                `${c.id || i.toString()}:${aIdx}`,
+                              );
                             }}
-                            src={avatar || "https://placehold.co/100x100"}
-                            alt={`Logo ${aIdx + 1}`}
-                          />
-                        </div>
-                      ))}
-                    </div>
+                          >
+                            <img
+                              className="object-contain"
+                              style={{
+                                ...resolvedLogoStyle,
+                                width: "100%",
+                                maxWidth: "140px",
+                                maxHeight: "140px",
+                              }}
+                              src={avatar || "https://placehold.co/100x100"}
+                              alt={`Logo ${aIdx + 1}`}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -1959,13 +2030,23 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 pt-[var(--widget-mobile-padding-top)] pb-[var(--widget-mobile-padding-bottom)]" : viewport === "tablet" ? "px-[40px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full`}
             style={
-              viewport === "mobile"
-                ? { gap: "40px" }
-                : viewport === "tablet"
+              {
+                ...(viewport === "tablet"
+                  ? getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                      desktopTop: "56px",
+                      desktopBottom: "56px",
+                      tabletTop: "60px",
+                      tabletBottom: "60px",
+                    })
+                  : {}),
+                ...(viewport === "mobile"
                   ? { gap: "40px" }
-                  : undefined
+                  : viewport === "tablet"
+                    ? { gap: "40px" }
+                    : {}),
+              }
             }
           >
             {/* 글로벌 헤더 (중앙 정렬) */}
@@ -2592,15 +2673,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             width: isStackedLabelListImage ? "100%" : "480px",
                             maxWidth: "100%",
                             flexShrink: isStackedLabelListImage ? 1 : 0,
-                            height: isStackedLabelListImage ? "auto" : undefined,
-                            alignSelf:
-                              isStackedLabelListImage
-                                ? "auto"
-                                : "stretch",
-                            minHeight:
-                              isStackedLabelListImage
-                                ? "0"
-                                : "240px",
+                            height: "auto",
                             ...mobileImageRadiusStyle,
                           }}
                           onDoubleClick={(e) => {
@@ -2623,11 +2696,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                               section.imageUrl ||
                               "/images/placeholder/card-sm.jpg"
                             }
-                            className={
-                              isStackedLabelListImage
-                                ? "w-full"
-                                : "w-full object-cover"
-                            }
+                            className="w-full h-auto block"
                             alt=""
                             naturalSize={isStackedLabelListImage}
                             style={{
@@ -2849,7 +2918,17 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 pt-[var(--widget-mobile-padding-top)] pb-[var(--widget-mobile-padding-bottom)]" : viewport === "tablet" ? "px-[40px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
+            style={
+              viewport === "tablet"
+                ? getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                    desktopTop: "56px",
+                    desktopBottom: "56px",
+                    tabletTop: "60px",
+                    tabletBottom: "60px",
+                  })
+                : undefined
+            }
           >
             <div
               className={`self-stretch flex flex-col ${reverseLayout ? "xl:flex-row-reverse" : "xl:flex-row"} justify-start items-center gap-10 xl:gap-20 w-full`}
@@ -2943,10 +3022,18 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
 
                 {isTabletOrMobile && renderLayout1ImageBlock()}
 
-                {/* Feature Cards Grid */}
+                {/* Feature Cards Grid — Using grid for equal height rows */}
                 <div
-                  className="self-stretch flex flex-row justify-start items-start flex-wrap"
+                  className="self-stretch grid grid-cols-1"
                   style={{
+                    gridTemplateColumns:
+                      viewport === "mobile"
+                        ? "repeat(2, 1fr)"
+                        : viewport === "tablet"
+                          ? "repeat(2, 1fr)"
+                          : (data.itemColumns ?? 2) === 2
+                            ? "repeat(2, 1fr)"
+                            : "repeat(1, 1fr)",
                     gap:
                       viewport === "mobile"
                         ? "8px"
@@ -2957,9 +3044,6 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                       viewport === "mobile" || viewport === "tablet"
                         ? "0"
                         : "40px",
-                    ...(viewport === "tablet"
-                      ? { justifyContent: "center", alignItems: "center" }
-                      : {}),
                   }}
                 >
                   {(data.items || []).map((item: any, i: number) => {
@@ -3031,17 +3115,10 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                     return (
                       <div
                         key={item.id || i}
-                        className="bg-white outline outline-1 outline-offset-[-1px] outline-시안-mode-gray20 flex flex-col justify-center items-center gap-3 hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                        className="bg-white outline outline-1 outline-offset-[-1px] outline-시안-mode-gray20 flex flex-col justify-center items-center gap-3 hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer h-full"
                         style={{
                           ...itemCardBackgroundStyle,
-                          width:
-                            viewport === "mobile"
-                              ? "calc(50% - 4px)"
-                              : viewport === "tablet"
-                                ? `calc(50% - 10px)`
-                                : (data.itemColumns ?? 2) === 2
-                                  ? `calc(50% - ${(data.itemGap ?? 20) / 2}px)`
-                                  : "100%",
+                          width: "100%",
                           padding:
                             viewport === "mobile" ? "16px 8px" : "40px 24px",
                           borderRadius: viewport === "mobile" ? "8px" : "16px",
@@ -3173,13 +3250,23 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       >
         <div className="mx-auto w-full max-w-[1920px] relative">
           <div
-            className={`self-stretch ${viewport === "mobile" ? "px-5 py-[30px]" : viewport === "tablet" ? "px-[40px] py-[60px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full`}
+            className={`self-stretch ${viewport === "mobile" ? "px-5 pt-[var(--widget-mobile-padding-top)] pb-[var(--widget-mobile-padding-bottom)]" : viewport === "tablet" ? "px-[40px]" : `${sectionPaddingClass} ${getVerticalPaddingClass(viewport)}`} inline-flex flex-col justify-start items-center gap-10 w-full`}
             style={
-              viewport === "mobile"
-                ? { gap: "24px" }
-                : viewport === "tablet"
-                  ? { gap: "40px" }
-                  : undefined
+              {
+                ...(viewport === "tablet"
+                  ? getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+                      desktopTop: "56px",
+                      desktopBottom: "56px",
+                      tabletTop: "60px",
+                      tabletBottom: "60px",
+                    })
+                  : {}),
+                ...(viewport === "mobile"
+                  ? { gap: "24px" }
+                  : viewport === "tablet"
+                    ? { gap: "40px" }
+                    : {}),
+              }
             }
           >
             {/* Fixed Header */}
@@ -3743,7 +3830,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full hover:ring-2 hover:ring-transparent transition-all`}
             style={
               viewport === "tablet"
-                ? { paddingLeft: "40px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px", gap: "40px" }
+                ? { paddingLeft: "40px", paddingRight: "40px", gap: "40px" }
                 : viewport === "mobile"
                   ? { paddingLeft: "20px", paddingRight: "20px", gap: "24px" }
                   : undefined
@@ -3892,14 +3979,14 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                             `/images/placeholder/card-sm.jpg`,
                         );
                     return (
-                      <div
-                        key={section.id}
-                        className={`grid ${colClass} w-full`}
-                        style={{
-                          ...getOpacityStyle(section.opacity),
-                          gap: viewport === "mobile" ? "8px" : "20px",
-                        }}
-                      >
+                        <div
+                          key={section.id}
+                          className={`grid ${colClass} w-full`}
+                          style={{
+                            ...getOpacityStyle(section.opacity),
+                            gap: viewport === "mobile" ? "8px" : "20px",
+                          }}
+                        >
                         {images.map((img: string, imgIdx: number) => (
                           <div
                             key={imgIdx}
@@ -4224,7 +4311,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
             style={
               viewport === "tablet"
-                ? { paddingLeft: "40px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px", gap: "40px" }
+                ? { paddingLeft: "40px", paddingRight: "40px", gap: "40px" }
                 : viewport === "mobile"
                   ? { paddingLeft: "20px", paddingRight: "20px", gap: "24px" }
                   : undefined
@@ -4255,6 +4342,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   className="justify-start text-시안-mode-gray95 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
                     ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
+                    textAlign: "center",
+                    width: "100%",
                     lineHeight: "1.5",
                     letterSpacing: viewport === "mobile" ? "-0.56px" : "-0.8px",
                   }}
@@ -4312,8 +4401,16 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   return (
                     <div
                       key={section.id}
-                      className={`grid ${colClass} gap-5 w-full`}
-                      style={getOpacityStyle(section.opacity)}
+                      className={`grid ${colClass} w-full`}
+                      style={{
+                        ...getOpacityStyle(section.opacity),
+                        gap:
+                          viewport === "mobile"
+                            ? "8px"
+                            : viewport === "tablet"
+                              ? "20px"
+                              : "20px",
+                      }}
                     >
                       {images.map((img: string, imgIdx: number) => (
                         <div
@@ -4454,7 +4551,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                     ? { width: "100%" }
                                     : isDescHidden
                                       ? { flex: "1 1 0", minWidth: 0, width: "100%" }
-                                      : { width: "160px", flexShrink: 0 }
+                                      : { width: "240px", flexShrink: 0 }
                                 }
                               >
                                 <TextStructureSafeHtml
@@ -4586,9 +4683,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
             style={
               viewport === "tablet"
-                ? { paddingLeft: "40px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px", gap: "40px" }
+                ? { paddingLeft: "40px", paddingRight: "40px", gap: "40px" }
                 : viewport === "mobile"
-                  ? { paddingLeft: "20px", paddingRight: "20px", paddingTop: "30px", paddingBottom: "30px", gap: "24px" }
+                  ? {
+                      paddingLeft: "20px",
+                      paddingRight: "20px",
+                      paddingTop: "var(--widget-mobile-padding-top)",
+                      paddingBottom: "var(--widget-mobile-padding-bottom)",
+                      gap: "24px",
+                    }
                   : undefined
             }
           >
@@ -4946,7 +5049,7 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
             className={`self-stretch ${sectionPaddingClass} ${getVerticalPaddingClass(viewport)} inline-flex flex-col justify-start items-center gap-10 w-full`}
             style={
               viewport === "tablet"
-                ? { paddingLeft: "40px", paddingRight: "40px", paddingTop: "60px", paddingBottom: "60px", gap: "40px" }
+                ? { paddingLeft: "40px", paddingRight: "40px", gap: "40px" }
                 : viewport === "mobile"
                   ? { gap: "24px" }
                   : undefined
@@ -4980,6 +5083,8 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   className="justify-start text-gray-900 text-4xl font-bold font-['Pretendard'] leading-[60px] hover:outline-dashed hover:outline-2 hover:outline-blue-400 rounded transition-all cursor-text break-keep"
                   style={{
                     ...getElementStyle(mergeTextStyleWithFallback(data.titleStyle , { fontSizeMobile: "28px", }), viewport),
+                    textAlign: "center",
+                    width: "100%",
                     letterSpacing: viewport === "tablet" ? "-0.8px" : viewport === "mobile" ? "-0.56px" : undefined,
                   }}
                   onClick={(e) => {
@@ -5142,19 +5247,32 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                   <div className="w-full xl:flex-1 shrink-0 flex flex-col gap-5">
                     {sections11
                       .filter((s: any) => s.type === "image")
-                      .map((section: any) => {
+                      .map((section: any, i: number) => {
                         const cols = section.columns || 1;
                         const colClass =
-                          cols === 1 ? "grid-cols-1" : "grid-cols-2";
+                          cols === 1
+                            ? "grid-cols-1"
+                            : cols === 2
+                              ? "grid-cols-2"
+                              : cols === 3
+                                ? "grid-cols-3"
+                                : "grid-cols-4";
                         const images: string[] =
-                          section.images ||
-                          Array(cols)
-                            .fill("")
-                            .map(() => `/images/placeholder/card-sm.jpg`);
+                          Array.isArray(section.images) &&
+                          section.images.length > 0
+                            ? section.images
+                            : section.imageUrl
+                              ? [section.imageUrl]
+                              : Array(cols)
+                                  .fill("")
+                                  .map(() => `/images/placeholder/card-sm.jpg`);
+                        const resolvedImageHeight = section.imageHeight
+                          ? formatUnit(section.imageHeight, "px")
+                          : "auto";
                         return (
                           <div
                             key={section.id}
-                            className={`grid ${colClass} gap-5 w-full`}
+                            className={`grid ${colClass} gap-5 w-full ${section.imageStyle?.isHidden ? "hidden" : ""}`}
                             style={getOpacityStyle(section.opacity)}
                           >
                             {images.map((img: string, imgIdx: number) => (
@@ -5166,25 +5284,25 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                   ...getOpacityStyle(
                                     section.imageOpacities?.[imgIdx],
                                   ),
-                                  ...(viewport === "tablet" ? { height: "358px" } : viewport === "mobile" ? { height: "160px" } : {}),
+                                  height: resolvedImageHeight,
                                 }}
                                 onDoubleClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.(
                                     "image",
-                                    `s11img_${section.id}_${imgIdx}`,
+                                    `s11img_${section.id || i}_${imgIdx}`,
                                   );
                                 }}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   onElementSelect?.(
                                     "image",
-                                    `s11img_${section.id}_${imgIdx}`,
+                                    `s11img_${section.id || i}_${imgIdx}`,
                                   );
                                 }}
                               >
                                 <UniversalMedia
-                                  url={img}
+                                  url={img || "/images/placeholder/card-sm.jpg"}
                                   className="w-full h-auto object-contain"
                                   alt=""
                                   style={{
@@ -5193,7 +5311,6 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                       viewport,
                                     ),
                                     ...mobileImageRadiusStyle,
-                                    ...(viewport === "tablet" || viewport === "mobile" ? { objectFit: "cover", height: "100%" } : {}),
                                   }}
                                 />
                               </div>
@@ -5270,40 +5387,55 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
                                       }}
                                     >
                                       {/* 이미지 영역 (기존 아이콘) */}
-                                      <div
-                                        className="shrink-0 relative transition-all overflow-hidden flex items-center justify-center"
-                                        style={
-                                          viewport === "tablet"
-                                            ? { width: "120px", height: "120px", backgroundColor: "#F6F7FB", borderRadius: "60px", flexShrink: 0 }
-                                            : viewport === "mobile"
-                                              ? { width: "60px", height: "60px", backgroundColor: "#F6F7FB", borderRadius: "60px", flexShrink: 0 }
-                                              : { width: "80px", flexShrink: 0 }
-                                        }
-                                      >
-                                        <UniversalMedia
-                                          url={
-                                            item.iconUrl ||
-                                            item.icon ||
-                                            "/images/placeholder/icon_program_thumb.png"
-                                          }
-                                          className="w-full h-auto object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
-                                          alt="item image"
-                                          onDoubleClick={(e) => {
-                                            e.stopPropagation();
-                                            onElementSelect?.(
-                                              "itemIcon",
-                                              featureItemId,
-                                            );
-                                          }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            onElementSelect?.(
-                                              "itemIcon",
-                                              featureItemId,
-                                            );
-                                          }}
-                                        />
-                                      </div>
+                                      {!item.iconUrlStyle?.isHidden &&
+                                        !item.iconStyle?.isHidden && (
+                                          <div
+                                            className="shrink-0 relative transition-all overflow-hidden flex items-center justify-center"
+                                            style={
+                                              viewport === "tablet"
+                                                ? {
+                                                    width: "120px",
+                                                    height: "120px",
+                                                    backgroundColor: "#F6F7FB",
+                                                    borderRadius: "60px",
+                                                    flexShrink: 0,
+                                                  }
+                                                : viewport === "mobile"
+                                                  ? {
+                                                      width: "60px",
+                                                      height: "60px",
+                                                      backgroundColor: "#F6F7FB",
+                                                      borderRadius: "60px",
+                                                      flexShrink: 0,
+                                                    }
+                                                  : { width: "80px", flexShrink: 0 }
+                                            }
+                                          >
+                                            <UniversalMedia
+                                              url={
+                                                item.iconUrl ||
+                                                item.icon ||
+                                                "/images/placeholder/icon_program_thumb.png"
+                                              }
+                                              className="w-full h-auto object-contain hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer"
+                                              alt="item image"
+                                              onDoubleClick={(e) => {
+                                                e.stopPropagation();
+                                                onElementSelect?.(
+                                                  "itemIcon",
+                                                  featureItemId,
+                                                );
+                                              }}
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                onElementSelect?.(
+                                                  "itemIcon",
+                                                  featureItemId,
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        )}
 
                                       {/* 텍스트 */}
                                       <div
@@ -5561,7 +5693,15 @@ export const TextStructureRenderer: React.FC<WidgetRendererProps> = ({
       className={`w-full relative overflow-hidden group hover:ring-2 hover:ring-blue-500 transition-all ${!data.imageUrl && !data.videoUrl ? "bg-white" : ""}`}
     >
       <div
-        className={`mx-auto w-full max-w-[1920px] ${sectionPaddingFallbackClass} py-12 md:py-24 relative z-10`}
+        className={`mx-auto w-full max-w-[1920px] ${sectionPaddingFallbackClass} relative z-10`}
+        style={getWidgetVerticalPaddingStyle(w.style, viewport as any, {
+          desktopTop: "96px",
+          desktopBottom: "96px",
+          tabletTop: "96px",
+          tabletBottom: "96px",
+          mobileTop: "48px",
+          mobileBottom: "48px",
+        })}
       >
         <div className="flex flex-col max-w-4xl mx-auto items-center text-center opacity-50 p-10 bg-시안-mode-gray10 rounded-xl">
           <p className="text-시안-mode-gray50 font-bold mb-2">

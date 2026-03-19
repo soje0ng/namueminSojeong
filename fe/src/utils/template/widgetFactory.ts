@@ -1,15 +1,11 @@
 import { Widget, WidgetType } from "@/types/console/template";
-import { VIDEO_DEFAULTS } from "@/components/console/template/widgets/VideoRenderer";
 import { PROCESS_DEFAULTS } from "@/components/console/template/widgets/ProcessRenderer";
-import { TEXT_SECTION_DEFAULTS } from "@/components/console/template/widgets/TextSectionRenderer";
 import { ICON_CARD_DEFAULTS } from "@/components/console/template/widgets/IconCardRenderer";
 import { FAQ_DEFAULTS } from "@/components/console/template/widgets/FaqRenderer";
 import { MAIN_TITLE_DEFAULTS } from "@/components/console/template/widgets/MainTitleRenderer";
-import { BANNER_SECTION_DEFAULTS } from "@/components/console/template/widgets/BannerSectionRenderer";
 import { INFO_BANNER_DEFAULTS } from "@/components/console/template/widgets/InfoBannerRenderer";
-import { GRID_CARD_DEFAULTS } from "@/components/console/template/widgets/GridCardRenderer";
 import { TABLE_DEFAULTS } from "@/components/console/template/widgets/TableRenderer";
-import { CARD_LIST_DEFAULTS } from "@/components/console/template/widgets/CardRenderer";
+
 import { TITLE_BANNER_DEFAULTS } from "@/components/console/template/widgets/TitleBannerRenderer";
 import { IMAGE_AREA_DEFAULTS } from "@/components/console/template/widgets/ImageAreaRenderer";
 import { TITLE_TEXT_DEFAULTS } from "@/components/console/template/widgets/TitleTextRenderer";
@@ -84,27 +80,6 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
         data: cloneDefaults(MAIN_TITLE_DEFAULTS) as any,
       };
 
-    case "textSection":
-      return {
-        id: widgetId,
-        type: "textSection",
-        data: cloneDefaults(TEXT_SECTION_DEFAULTS),
-      } as any;
-
-    case "bannerSection":
-      return {
-        id: widgetId,
-        type: "bannerSection",
-        data: cloneDefaults(BANNER_SECTION_DEFAULTS),
-      } as any;
-
-    case "video":
-      return {
-        id: widgetId,
-        type,
-        data: cloneDefaults(VIDEO_DEFAULTS) as any,
-      };
-
     case "infoBanner":
       return {
         id: widgetId,
@@ -154,13 +129,6 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
         data: textStructureDefaults as any,
       };
 
-    case "gridCard":
-      return {
-        id: widgetId,
-        type,
-        data: cloneDefaults(GRID_CARD_DEFAULTS) as any,
-      };
-
     case "iconCard":
       return {
         id: widgetId,
@@ -188,13 +156,6 @@ function _createWidget(type: WidgetType, widgetId: string): Widget | null {
         type,
         data: cloneDefaults(FAQ_DEFAULTS) as any,
       };
-
-    case "cardList":
-      return {
-        id: widgetId,
-        type: "cardList",
-        data: cloneDefaults(CARD_LIST_DEFAULTS),
-      } as any;
 
     case "titleBanner":
       return {

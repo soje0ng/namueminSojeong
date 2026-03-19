@@ -1,7 +1,5 @@
 import { Widget } from "@/types/console/template";
-import { VIDEO_ITEM_DEFAULT } from "@/components/console/template/widgets/VideoRenderer";
 import { PROCESS_STEP_DEFAULT } from "@/components/console/template/widgets/ProcessRenderer";
-import { TEXT_SECTION_BLOCK_DEFAULTS } from "@/components/console/template/widgets/TextSectionRenderer";
 import { ICON_CARD_ITEM_DEFAULT } from "@/components/console/template/widgets/IconCardRenderer";
 
 /**
@@ -33,10 +31,6 @@ export const getArrayNameForWidget = (widget: Widget): string => {
     if (widget.type === "process") return "steps";
     if (widget.type === "tabCarousel") return "tabs";
     if (widget.type === "textSplit" && data.variant === "image-left-list") return "listItems";
-    if (widget.type === "textSection") {
-        if (data.variant === "text2" || data.variant === "text3") return "items";
-        return "blocks";
-    }
     return "items";
 };
 
@@ -85,14 +79,6 @@ export function createNewItem(widget: Widget): any {
             isActive: false,
             style: { fontSize: "16px", fontWeight: "400" },
         };
-    } else if (widget.type === "bannerSection") {
-        if (data.variant === "banner3") {
-            newItem = { id, text: "버튼 텍스트", link: "#", icon: "download" };
-        } else if (data.variant === "banner1") {
-            newItem = { id, image: "/images/template/img1.png", link: "#" };
-        } else {
-            newItem = { id, image: "/images/template/icon.png", link: "#" };
-        }
     } else if (
         widget.type === "banner1" ||
         widget.type === "banner2" ||
@@ -122,47 +108,8 @@ export function createNewItem(widget: Widget): any {
         newItem = { id, text: "새 리스트 항목", icon: "/images/template/icon.png" };
     } else if (widget.type === "textSplit" && data.variant === "image-left-list") {
         newItem = { id, icon: "/images/template/icon.png", text: "새 항목" };
-    } else if (widget.type === "gridCard") {
-        newItem = {
-            id,
-            title: "새 카드",
-            desc: "설명",
-            image: "/images/template/banner_img.jpg",
-        };
-    } else if (widget.type === "video") {
-        newItem = { id, ...VIDEO_ITEM_DEFAULT };
-    } else if (widget.type === "textSection") {
-        if (data.variant === "text2") {
-            newItem = {
-                id,
-                number: "0N",
-                title: "새 항목 제목",
-                subTitle: "서브타이틀영역입니다.",
-                desc: "설명을 입력하세요.",
-            };
-        } else if (data.variant === "text3") {
-            newItem = {
-                id,
-                number: "N",
-                title: "새 항목 제목",
-                desc: "설명을 입력하세요.",
-                icon: "/images/template/icon.png",
-            };
-        } else {
-            newItem = { id, ...TEXT_SECTION_BLOCK_DEFAULTS };
-        }
     } else if (widget.type === "comingSoon") {
         newItem = { id, text: "새로운 Coming Soon 항목" };
-    } else if (widget.type === "cardList") {
-        newItem = {
-            id,
-            image: "/images/template/img1.png",
-            title: "새 카드 제목",
-            desc: "설명을 입력하세요.",
-            tag: "카테고리",
-            imageStyle: { borderRadius: "12px" },
-            titleStyle: { fontSize: "20px", fontWeight: "600" },
-        };
     }
 
     return { item: newItem, arrayName };

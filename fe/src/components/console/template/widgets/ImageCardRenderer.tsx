@@ -247,17 +247,28 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
             }
         : role === "itemTitle" && ["3", "4", "5", "6"].includes(layout)
           ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleLarge
-          : role === "itemTitle"
+        : role === "itemTitle"
             ? IMAGE_CARD_STYLE_DEFAULTS.itemTitleSmall
             : (IMAGE_CARD_STYLE_DEFAULTS as Record<string, any>)[role] || {};
 
-    return getElementStyle(
+    const resolvedStyle = getElementStyle(
       {
         ...fallback,
         ...(style || {}),
       },
       viewport,
     );
+
+    if (role === "rootTitle") {
+      return {
+        ...resolvedStyle,
+        display: "block",
+        textAlign: "center" as const,
+        width: "100%",
+      };
+    }
+
+    return resolvedStyle;
   };
   const getItemImageFrameStyle = (imageStyle: any) => ({
     display: imageStyle?.isHidden ? "none" : undefined,
@@ -1554,13 +1565,13 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
               const featureRows = getItemFeatureRows(item);
               const imageBlock = (
                 <div
-                  className={`${isLayout6Mobile ? "self-stretch h-80" : "w-48 h-48"} relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center`}
+                  className={`${isLayout6Mobile ? "self-stretch" : "w-48"} relative overflow-hidden shrink-0 hover:outline-dashed hover:outline-2 hover:outline-blue-400 cursor-pointer transition-all flex justify-center items-center`}
                   style={{
-                    ...getItemImageFrameStyle(item.imageStyle),
+                    display: getItemImageFrameStyle(item.imageStyle).display,
                     ...(isLayout6Mobile
-                      ? { width: "100%", height: "320px" }
+                      ? { width: "100%" }
                       : isLayout6Tablet
-                        ? { width: "192px", height: "192px" }
+                        ? { width: "192px" }
                         : {}),
                   }}
                   onDoubleClick={(e) => {
@@ -1573,13 +1584,15 @@ export const ImageCardRenderer: React.FC<WidgetRendererProps> = ({
                       e.stopPropagation();
                       onElementSelect?.("image", item.id || idx.toString());
                     }}
-                    className="w-full h-full object-cover"
+                    className="w-full object-cover"
                     url={item.image || item.imageUrl}
                     alt="card_image"
+                    naturalSize
                     style={{
                       ...getItemImageStyle(item.imageStyle),
                       width: "100%",
-                      height: "100%",
+                      height: "auto",
+                      objectFit: "cover",
                     }}
                   />
                 </div>

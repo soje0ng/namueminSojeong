@@ -14,9 +14,7 @@ import {
 } from "@/types/console/template";
 import { DEFAULT_TEMPLATE } from "@/constants/console/widgetDefaults";
 import { MainTitleRenderer } from "./widgets/MainTitleRenderer";
-import { TextSectionRenderer } from "./widgets/TextSectionRenderer";
-import { VideoRenderer } from "./widgets/VideoRenderer";
-import { GridCardRenderer } from "./widgets/GridCardRenderer";
+
 import {
   InfoBannerRenderer,
   INFO_BANNER_DEFAULTS,
@@ -26,8 +24,7 @@ import { IconCardRenderer } from "./widgets/IconCardRenderer";
 import { ImageCardRenderer } from "./widgets/ImageCardRenderer";
 import { TableRenderer } from "./widgets/TableRenderer";
 import { FaqRenderer } from "./widgets/FaqRenderer";
-import { BannerSectionRenderer } from "./widgets/BannerSectionRenderer";
-import { CardRenderer } from "./widgets/CardRenderer";
+
 import {
   TitleBannerRenderer,
   TITLE_BANNER_DEFAULTS,
@@ -67,6 +64,7 @@ import {
   ChevronUp,
   ChevronDown,
   Code,
+  HelpCircle,
 } from "lucide-react";
 
 import { usePopupStore } from "@/store/console/usePopupStore";
@@ -846,11 +844,6 @@ const Builder: React.FC<BuilderProps> = ({
     else if (widget.type === "tabCarousel") arrayName = "tabs";
     else if (widget.type === "textSplit" && data.variant === "image-left-list")
       arrayName = "listItems";
-    else if (widget.type === "textSection") {
-      if (data.variant === "text2" || data.variant === "text3")
-        arrayName = "items";
-      else arrayName = "blocks";
-    }
 
     let newItem: any = null;
 
@@ -939,27 +932,19 @@ const Builder: React.FC<BuilderProps> = ({
           isActive: false,
           style: { fontSize: "16px", fontWeight: "400" },
         };
-      } else if (widget.type === "bannerSection") {
-        if (data.variant === "banner3") {
-          newItem = { id, text: "버튼 텍스트", link: "#", icon: "download" };
-        } else if (data.variant === "banner1") {
-          newItem = { id, image: "/images/template/img1.png", link: "#" };
-        } else {
-          newItem = { id, image: "/images/template/icon.png", link: "#" };
-        }
-      } else if (
-        widget.type === "banner1" ||
-        widget.type === "banner2" ||
-        widget.type === "banner3" ||
-        widget.type === "banner4" ||
-        widget.type === "banner7"
-      ) {
-        newItem = {
-          id,
-          text: "새 항목",
-          textStyle: { fontSize: "18px" },
-          iconUrl: "/images/template/icon.png",
-        };
+    } else if (
+      widget.type === "banner1" ||
+      widget.type === "banner2" ||
+      widget.type === "banner3" ||
+      widget.type === "banner4" ||
+      widget.type === "banner7"
+    ) {
+      newItem = {
+        id,
+        text: "새 항목",
+        textStyle: { fontSize: "18px" },
+        iconUrl: "/images/template/icon.png",
+      };
       } else if (widget.type === "faq") {
         // ↓ 여기서 FAQ의 새 항목 추가 시 기본 폰트 사이즈를 고칠 수 있습니다.
         newItem = {
@@ -989,45 +974,6 @@ const Builder: React.FC<BuilderProps> = ({
         data.variant === "image-left-list"
       ) {
         newItem = { id, icon: "/images/template/icon.png", text: "새 항목" };
-      } else if (widget.type === "gridCard") {
-        newItem = {
-          id,
-          title: "새 카드",
-          desc: "설명",
-          image: "/images/template/banner_img.jpg",
-        };
-      } else if (widget.type === "video") {
-        newItem = {
-          id,
-          videoUrl: "https://www.youtube.com/watch?v=jicErY0RiMg",
-          title: "새 영상 제목",
-          desc: "설명 입력",
-        };
-      } else if (widget.type === "textSection") {
-        if (data.variant === "text2") {
-          newItem = {
-            id,
-            number: "0N",
-            title: "새 항목 제목",
-            subTitle: "서브타이틀영역입니다.",
-            desc: "설명을 입력하세요.",
-          };
-        } else if (data.variant === "text3") {
-          newItem = {
-            id,
-            number: "N",
-            title: "새 항목 제목",
-            desc: "설명을 입력하세요.",
-            icon: "/images/template/icon.png",
-          };
-        } else {
-          newItem = {
-            id,
-            title: "새 항목 제목",
-            desc: "설명을 입력하세요.",
-            image: "/images/placeholder/card-lg.jpg",
-          };
-        }
       } else if (widget.type === "comingSoon") {
         newItem = { id, text: "새로운 Coming Soon 항목" };
       } else if (widget.type === "infoBanner") {
@@ -1103,16 +1049,6 @@ const Builder: React.FC<BuilderProps> = ({
           titleStyle: { fontSize: "24px", fontWeight: "700", color: "#09090b" },
           desc: "프로그램 특징 내용 입력",
           descStyle: { fontSize: "18px", fontWeight: "400", color: "#6b7280" },
-        };
-      } else if (widget.type === "cardList") {
-        newItem = {
-          id,
-          image: "/images/template/img1.png",
-          title: "새 카드 제목",
-          desc: "설명을 입력하세요.",
-          tag: "카테고리",
-          imageStyle: { borderRadius: "12px" },
-          titleStyle: { fontSize: "20px", fontWeight: "600" },
         };
       } else if (widget.type === "imageTitle") {
         newItem = {
@@ -1566,10 +1502,6 @@ const Builder: React.FC<BuilderProps> = ({
     else if (widget.type === "tabCarousel") arrayName = "tabs";
     else if (widget.type === "textSplit" && d.variant === "image-left-list")
       arrayName = "listItems";
-    else if (widget.type === "textSection") {
-      if (d.variant === "text2" || d.variant === "text3") arrayName = "items";
-      else arrayName = "blocks";
-    }
 
     const items =
       arrayName === "sections11_features"
@@ -1625,9 +1557,6 @@ const Builder: React.FC<BuilderProps> = ({
     const names: Record<string, string> = {
       table: " 테이블",
       faq: "FAQ",
-      textSection: "텍스트 섹션",
-      bannerSection: "안내배너",
-      cardList: "카드 리스트",
       imageArea: "이미지 영역",
       codeSection: "코드 섹션",
     };
@@ -1869,6 +1798,14 @@ const Builder: React.FC<BuilderProps> = ({
               </button>
             }
           />
+          <button
+            type="button"
+            onClick={() => window.open("/console/template/help", "_blank")}
+            className="px-4 py-2 text-xs rounded-full font-bold transition-all flex items-center gap-1.5 text-slate-500 hover:text-violet-600 hover:bg-violet-50"
+          >
+            <HelpCircle size={14} />
+            도움말
+          </button>
           <div className="relative">
             <button
               onClick={() => setIsSectionListOpen(!isSectionListOpen)}
@@ -2087,24 +2024,7 @@ const Builder: React.FC<BuilderProps> = ({
                         }
                       />
                     )}
-                    {w.type === "video" && (
-                      <VideoRenderer
-                        widget={w}
-                        viewport={viewport}
-                        onElementSelect={(k, i) =>
-                          handleElementSelect(section.id, w.id, k, i)
-                        }
-                      />
-                    )}
-                    {w.type === "gridCard" && (
-                      <GridCardRenderer
-                        widget={w}
-                        viewport={viewport}
-                        onElementSelect={(k, i) =>
-                          handleElementSelect(section.id, w.id, k, i)
-                        }
-                      />
-                    )}
+
                     {w.type === "iconCard" && (
                       <IconCardRenderer
                         widget={w}
@@ -2123,25 +2043,7 @@ const Builder: React.FC<BuilderProps> = ({
                         }
                       />
                     )}
-                    {w.type === "cardList" && (
-                      <CardRenderer
-                        widget={w}
-                        viewport={viewport}
-                        onElementSelect={(k, i) =>
-                          handleElementSelect(section.id, w.id, k, i)
-                        }
-                        onItemReorder={(d, t) => handleItemReorder(w.id, d, t)}
-                      />
-                    )}
-                    {w.type === "bannerSection" && (
-                      <BannerSectionRenderer
-                        widget={w}
-                        viewport={viewport}
-                        onElementSelect={(k, i) =>
-                          handleElementSelect(section.id, w.id, k, i)
-                        }
-                      />
-                    )}
+
                     {w.type === "titleBanner" && (
                       <TitleBannerRenderer
                         widget={w}
